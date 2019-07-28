@@ -16,18 +16,23 @@
 
 *** Secrets
 
-Variables that I don't want to share with the world.
+Config that I don't want to share with the world.
+
+They will be stored in here:
 
 #+BEGIN_SRC elisp
 (setq secrets-file "~/.config/secrets.el")
+#+END_SRC
 
+And I will load them on system start:
+
+#+BEGIN_SRC elisp
 (defun floscr/load-secrets-file ()
   (if-let ((file (if (file-exists-p secrets-file) secrets-file)))
       (load-library file)))
 
 (floscr/load-secrets-file)
 #+END_SRC
-
 
 ** About
 
