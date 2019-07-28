@@ -1,0 +1,7 @@
+#+TITLE:   Readme
+
+* Emacs Config
+
+This is my emacs config for [[https://github.com/hlissner/doom-emacs][doom-emacs]].
+
+You can view the main config file in my [[file:config.org][config.org]].
