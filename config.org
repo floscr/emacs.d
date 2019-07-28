@@ -8,10 +8,27 @@
 
 * Configuration
 ** Required Packages
+
 #+BEGIN_SRC elisp
 (require 'dash)
 (require 's)
 #+END_SRC
+
+*** Secrets
+
+Variables that I don't want to share with the world.
+
+#+BEGIN_SRC elisp
+(setq secrets-file "~/.config/secrets.el")
+
+(defun floscr/load-secrets-file ()
+  (if-let ((file (if (file-exists-p secrets-file) secrets-file)))
+      (require 'file)))
+
+(floscr/load-secrets-file)
+#+END_SRC
+
+
 ** About
 
 This is my emacs config for [[https://github.com/hlissner/doom-emacs][doom-emacs]].
@@ -1785,6 +1802,24 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 )
 #+END_SRC
+*** Org Caldav
+
+Calendar management using org mode and [[https://github.com/dengste/org-caldav][org-caldav]].
+
+To sync the calendars use ~org-caldav-sync~.
+
+#+BEGIN_SRC elisp
+(def-package! org-caldav
+  :after org
+  :commands (org-caldav-sync)
+  :config
+  ;; org-caldav-url is set in secrets.el
+  (setq org-caldav-calendar-id "family"
+        org-caldav-inbox (f-join org-directory "calendar-family.org")
+        org-icalendar-timezone "Europe/Berlin")
+  (setq org-caldav-files (list org-caldav-inbox)))
+#+END_SRC
+
 *** Org QL
 #+BEGIN_SRC elisp
 (def-package! org-ql

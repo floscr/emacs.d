@@ -29,6 +29,8 @@
 
 (package! nov)
 
+(package! org-caldav)
+
 (package! define-word)
 
 ;; Install frame cmds
