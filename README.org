@@ -1,5 +1,3 @@
-#+TITLE:   Readme
-
 * Emacs Config
 
 This is my emacs config for [[https://github.com/hlissner/doom-emacs][doom-emacs]].
