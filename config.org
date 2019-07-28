@@ -23,7 +23,7 @@ Variables that I don't want to share with the world.
 
 (defun floscr/load-secrets-file ()
   (if-let ((file (if (file-exists-p secrets-file) secrets-file)))
-      (require 'file)))
+      (load-library file)))
 
 (floscr/load-secrets-file)
 #+END_SRC
