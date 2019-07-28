@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Js.Console.log
+# key: log
+# --
+Js.Console.log($0)

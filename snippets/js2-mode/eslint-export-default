@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Eslint Export Default
+# key: es-exd
+# --
+/* eslint import/prefer-default-export: 0 */

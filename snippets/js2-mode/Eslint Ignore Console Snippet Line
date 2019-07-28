@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Eslint Ignore Console Snippet Line
+# key: esics
+# --
+// eslint-disable-next-line no-console

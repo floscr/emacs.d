@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Elisp SRC Block
+# key: <
+# --
+#+BEGIN_SRC elisp
+$0
+#+END_SRC

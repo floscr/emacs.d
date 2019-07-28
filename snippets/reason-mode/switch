@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Switch
+# key: s
+# --
+switch ($1) {
+| x => $0;
+| _ => None;
+}

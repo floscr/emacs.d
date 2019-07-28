@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: List.fold_left
+# key: foldl
+# --
+List.fold_left((acc, val) => $0, ${1:[]}, ${2:xs})

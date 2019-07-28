@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Example Block
+# key: <q
+# --
+#+BEGIN_QUOTE
+$0
+#+END_QUOTE

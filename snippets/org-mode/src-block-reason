@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Reason SRC Block
+# key: <re
+# --
+#+BEGIN_SRC reason
+$0
+#+END_SRC

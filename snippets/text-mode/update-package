@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Update Package
+# key: up
+# --
+Update package: $0

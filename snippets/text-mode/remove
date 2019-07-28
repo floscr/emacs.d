@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Remove
+# key: r
+# --
+Remove $0

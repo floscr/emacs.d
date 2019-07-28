@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Cooking Ingredients
+# key: ing
+# --
+*** Ingredients
+- $0

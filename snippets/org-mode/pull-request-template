@@ -1,0 +1,40 @@
+# -*- mode: snippet -*-
+# name: Pull Request Template
+# key: pr
+# --
+** Overview
+
+
+*What features/fixes does this PR include?*
+
+*What was the original problem and how to reproduce it?*
+
+*What is the expected behavior of this branch?*
+
+** Implementation
+
+*Describe technical (nontrivial / non-obvious) parts of your code*
+
+*Does this branch require a server deploy?*
+
+*Does this branch affect desktop apps?*
+
+*Does this branch introduce backwards compatibility issues?*
+
+** Testing
+
+*How to test this branch? What to consider when testing the branch, eg.
+browser/OS?*
+
+*How would our non-technical testers go about testing this branch?*
+
+** Resources
+
+[Include the link to related Task if available.]
+
+[Include links to Zeplin, Google Doc specs, or other resources to
+provide context.]
+
+** Assets
+
+[Include screenshots/videos if it makes reviewing easier.]

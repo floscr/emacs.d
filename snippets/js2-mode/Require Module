@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: require
+# key: re
+# --
+const ${1:} = require('$1');

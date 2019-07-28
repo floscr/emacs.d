@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Translation
+# key: tr
+# --
+Adding translation: $0

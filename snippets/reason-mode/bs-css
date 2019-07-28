@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: BsCss
+# key: css
+# --
+module Styles = {
+  open Css;
+
+  let root =
+    style([
+      display(flexBox),
+      flexDirection(column),
+      flexGrow(1.0),
+      flexShrink(1),
+    ]);
+};
