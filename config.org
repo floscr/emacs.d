@@ -437,6 +437,40 @@ Macro Expansion
        (birthday-msg it)
        (copy-message it)))
 #+END_SRC
+*** Guitar Timer
+
+I log my guitar learning into an org file that is formated like this.
+
+#+BEGIN_SRC org
+| Date                   | Progression | Progressions |
+| [2019-07-28 Sun 22:26] | A-D         |           12 |
+#+END_SRC
+
+This function starts a timer and after 60 seconds,
+plays a sound and prompts me to insert my count.
+
+#+BEGIN_SRC elisp
+(setq +guitar-chords '("A" "D" "E")
+      +guitar-beep  "/System/Library/Sounds/Glass.aiff"
+      +guitar-timer-duration 60)
+
+(defun +guitar/read-timer (from to)
+  (let ((amount (read-string "Count: "))
+        (timestamp (format-time-string "[%F %a %H:%M]" (current-time)))
+        (progression (template "<<from>>-<<to>>")))
+    (save-excursion
+      (evil-insert-newline-above)
+      (insert (concat "| " (s-join " | " (list timestamp progression amount))))
+      (call-interactively #'org-cycle))
+    (play-sound-file +guitar-beep)))
+
+(defun +guitar|start-timer (&optional from to)
+  "Start a timer for a chord progression."
+  (interactive)
+  (let ((from (or from (ivy-read "From: " +guitar-chords)))
+        (to (or to (ivy-read "To: " +guitar-chords))))
+    (run-with-timer +guitar-timer-duration nil #'+guitar/read-timer from to)))
+#+END_SRC
 ** Package Config
 *** Blimp
 #+BEGIN_SRC elisp
@@ -1381,6 +1415,7 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
 **** Config
 ***** General Config
 ****** Todo Keywords
+
 #+BEGIN_SRC elisp
 (after! org
   :config
@@ -1732,7 +1767,7 @@ Helper to reset the org agenda custom commands.
              '("e" "Emacs Items" alltodo ""
                ((org-agenda-prefix-format "  %?-12t% s")
                 (org-agenda-sorting-strategy '(timestamp-down todo-state-down))
-                (org-agenda-files (f-join org-directory "Emacs.org"))
+                (org-agenda-files (list (f-join org-directory "Emacs.org")))
                 (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
                                            (:name "Next" :todo "NEXT")
                                            (:name "Low Effort" :effort< "0:30")
