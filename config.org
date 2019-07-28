@@ -1640,6 +1640,19 @@ Needs ~dvisvgm~
 #+END_SRC
 ***** Agenda
 ****** Config
+******* Agenda Files
+#+BEGIN_SRC elisp
+(after! org-agenda
+  :config
+  (setq org-agenda-files
+        (--map (f-join org-directory it)
+               '("home.org"
+                 "inbox.org"
+                 "calendar-family.org"
+                 "Work/work.org"))))
+#+END_SRC
+
+******* Custom Date Property
 #+BEGIN_SRC elisp
 (after! org-agenda
   (setq-default
@@ -1649,7 +1662,6 @@ Needs ~dvisvgm~
                                  (tags priority-down category-keep user-defined-up time-up)
                                  (search category-keep))))
 #+END_SRC
-
 ****** Bindings
 #+BEGIN_SRC elisp
 (evil-define-key 'motion org-agenda-mode-map
@@ -1661,18 +1673,26 @@ Needs ~dvisvgm~
 #+END_SRC
 ****** Custom Agenda Commands
 
+Helper to reset the org agenda custom commands.
+
+#+BEGIN_SRC elisp :tangle no
+(setq org-agenda-custom-commands '())
+#+END_SRC
+
+******* Opening Tag
+
 #+BEGIN_SRC elisp
 (after! org-agenda
 #+END_SRC
 
 ******* Today View
+
 #+BEGIN_SRC elisp
 (add-to-list 'org-agenda-custom-commands
              '("d" "Today" ((agenda "a"
                                     ((org-agenda-prefix-format "  %?-12t% s")
                                      (org-agenda-start-on-weekday nil)
                                      (org-agenda-span 1)
-                                     (org-agenda-files (--map (concat org-directory "/" it) '("inbox.org" "home.org" "Work/work.org")))
                                      (org-agenda-start-day ".")
                                      (org-agenda-skip-scheduled-if-done t)
                                      (org-agenda-sorting-strategy '(timestamp-up time-up))
@@ -1686,10 +1706,9 @@ Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (add-to-list 'org-agenda-custom-commands
-             '("x" "Todo Items" alltodo ""
+             '("x" "Todo Items" alltodo "-WORK"
                ((org-agenda-prefix-format "  %?-12t% s")
                 (org-agenda-sorting-strategy '(timestamp-down todo-state-down))
-                (org-agenda-files (--map (concat org-directory "/" it) '("inbox.org" "home.org")))
                 (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
                                            (:name "Scheduled" :scheduled t)
                                            (:name "Inbox" :file-path ".*inbox.org$" :order 2)
@@ -1704,7 +1723,7 @@ Needs ~dvisvgm~
              '("e" "Emacs Items" alltodo ""
                ((org-agenda-prefix-format "  %?-12t% s")
                 (org-agenda-sorting-strategy '(timestamp-down todo-state-down))
-                (org-agenda-files (--map (concat org-directory "/" it) '("Emacs.org")))
+                (org-agenda-files (f-join org-directory "Emacs.org"))
                 (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
                                            (:name "Next" :todo "NEXT")
                                            (:name "Low Effort" :effort< "0:30")
@@ -1712,6 +1731,7 @@ Needs ~dvisvgm~
 #+END_SRC
 
 ******* Work
+
 #+BEGIN_SRC elisp
 (add-to-list 'org-agenda-custom-commands
              '("w" "Work Agenda"
@@ -1730,7 +1750,7 @@ Needs ~dvisvgm~
                                                (:name "Reading List" :tag "TEXT" :order 10))))))
                ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
                 (org-agenda-tag-filter-preset '("+WORK"))
-                (org-agenda-files (--map (concat org-directory "/" it) '("Work/work.org" "inbox.org"))))))
+                (org-agenda-files (--map (f-join it) '("Work/work.org" "inbox.org"))))))
 #+END_SRC
 
 ******* Calendar
@@ -1747,15 +1767,9 @@ Needs ~dvisvgm~
 ******* Closing Tag
 
 #+BEGIN_SRC elisp
-:config
-(setq org-agenda-files (list org-directory (concat org-directory "/Work"))))
+)
 #+END_SRC
 
-******* Helper to reset the org agenda custom commands.
-
-#+BEGIN_SRC elisp :tangle no
-(setq org-agenda-custom-commands '())
-#+END_SRC
 ***** Clocking
 ****** Automatically set clocking or todo state
 :PROPERTIES:
