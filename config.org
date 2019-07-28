@@ -1400,6 +1400,15 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
      ("LATER" :inherit default :weight bold)
      ("PROJECT" :inherit 'org-todo :weight bold))))
 #+END_SRC
+
+****** Attachments
+
+#+BEGIN_SRC elisp
+(after! org
+  :config
+  (add-to-list 'org-link-abbrev-alist (cons "attach" (abbreviate-file-name org-attach-directory))))
+#+END_SRC
+
 ****** Projectile Ignore
 
 #+BEGIN_SRC elisp
