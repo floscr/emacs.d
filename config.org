@@ -1706,7 +1706,7 @@ Helper to reset the org agenda custom commands.
 
 #+BEGIN_SRC elisp
 (add-to-list 'org-agenda-custom-commands
-             '("x" "Todo Items" alltodo "-WORK"
+             '("x" "Todo Items" tags-todo "-WORK"
                ((org-agenda-prefix-format "  %?-12t% s")
                 (org-agenda-sorting-strategy '(timestamp-down todo-state-down))
                 (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
