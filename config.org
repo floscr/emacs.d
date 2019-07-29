@@ -441,7 +441,7 @@ Macro Expansion
 
 I log my guitar learning into an org file that is formated like this.
 
-#+BEGIN_SRC org
+#+BEGIN_SRC org :tangle no
 | Date                   | Progression | Progressions |
 | [2019-07-28 Sun 22:26] | A-D         |           12 |
 #+END_SRC
