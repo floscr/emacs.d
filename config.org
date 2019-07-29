@@ -1794,7 +1794,7 @@ Helper to reset the org agenda custom commands.
                                                (:name "Reading List" :tag "TEXT" :order 10))))))
                ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
                 (org-agenda-tag-filter-preset '("+WORK"))
-                (org-agenda-files (--map (f-join it) '("Work/work.org" "inbox.org"))))))
+                (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "inbox.org"))))))
 #+END_SRC
 
 ******* Calendar
