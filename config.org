@@ -454,7 +454,8 @@ plays a sound and prompts me to insert my count.
 
 (defvar +guitar-timer-status-paused)
 (defvar +guitar-timer-status-ticking)
-(setq +guitar-timer-status '+guitar-timer-status-paused)
+(setq +guitar-timer-status '+guitar-timer-status-paused
+      +guitar-timer-time nil)
 
 (setq +guitar-chords '("A" "D" "E")
       +guitar-beep  "/System/Library/Sounds/Glass.aiff"
@@ -478,19 +479,33 @@ plays a sound and prompts me to insert my count.
         (to (or to (ivy-read "To: " +guitar-chords))))
     (run-with-timer +guitar-timer-duration nil #'+guitar/read-timer from to)))
 
-(defun +guitar/quit ()
+(defun +guitar|resume-timer ()
+  (interactive)
+  (if-let ((buffer (get-buffer +guitar-timer-buffer-name)))
+      (progn
+        (setq +guitar-timer-status '+guitar-timer-status-ticking)
+        (+guitar/tick-timer-buffer buffer +guitar-timer-time))
+    (message "No guitar timer buffer!")))
+
+(defun +guitar|pause-timer ()
+  (interactive)
+  (setq +guitar-timer-status '+guitar-timer-status-paused))
+
+(defun +guitar|quit ()
+  (interactive)
   (setq +guitar-timer-status '+guitar-timer-status-paused)
   (if-let ((buffer (get-buffer +guitar-timer-buffer-name)))
       (kill-buffer buffer)))
 
 (defun +guitar/tick-timer-buffer (buffer time)
-  (when (and (get-buffer +guitar-timer-buffer-name)
+  (when (and (get-buffer buffer)
              (eq +guitar-timer-status '+guitar-timer-status-ticking))
     (with-current-buffer buffer
       (erase-buffer)
       (let ((new-time (- time 1)))
         (insert (number-to-string new-time))
         (when (> new-time 0)
+          (setq +guitar-timer-time new-time)
           (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time))))))
 
 (defun +guitar/create-timer-buffer ()
