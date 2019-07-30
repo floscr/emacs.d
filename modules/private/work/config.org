@@ -138,7 +138,7 @@ Create an canvas action
        (-split-on header)
        (-first-item)))
 
-(defun +MM:goto-or-add-header (header)
+(defun +MM:import-file/goto-or-add-header (header)
   "Goes to a comment header or if it doesnt exist creates one"
   (goto-char (point-min))
   (if (search-forward header nil t)
@@ -147,17 +147,52 @@ Create an canvas action
         (previous-line 2))
     ;; Create header when none was found
     (progn
-      (let* ((headers (reverse (+MM:get-remaining-headers-list header))))
-        (--first (search-forward it nil t) headers))
-      (search-forward-regexp "^/\\*\\*" nil t)
-      (evil-insert-newline-above)
-      (insert (template  "/** <<header>> **/\n\n\n\n"))
-      (previous-line 1))))
+      (let* ((headers (+MM:get-remaining-headers-list header))
+             (next-nearest-header (--first (search-forward it nil t) headers)))
 
-(defun +MM:import-file/find-import (import)
+        (if (< (-elem-index header +MM-comment-headers)
+               (-elem-index next-nearest-header +MM-comment-headers))
+            (evil-insert-newline-above)
+          (evil-insert-newline-below))
+
+        (insert (template  "/** <<header>> **/\n\n\n\n"))
+        (previous-line 1)))))
+
+(defun +MM:import-file/goto-or-add-import-header (header)
+  "Goes to a comment header or if it doesnt exist creates one"
+  (goto-char (point-min))
+  (if (search-forward header nil t)
+      (progn
+        (search-forward-regexp "^/\\*\\*" nil t)
+        (previous-line 2))
+    (progn
+      (cond ((string= header "EXTERNALS")
+             (progn
+               (insert (template  "/** EXTERNALS **/\n\n\n\n"))
+               (previous-line 1)
+               (evil-insert-newline-below)
+               (previous-line 1)))
+
+            ((and (string= header "LOCALS") (search-forward-regexp "/\\*\\* EXTERNALS" nil t))
+             (progn
+               (search-forward-regexp "^/\\*\\*" nil t)
+               (evil-insert-newline-above)
+               (insert (template  "/** LOCALS **/\n\n\n"))
+               (evil-insert-newline-below)
+               (previous-line 1)))
+
+            (t
+             (progn
+               (insert (template  "/** LOCALS **/\n\n\n\n"))
+               (previous-line 1)
+               (evil-insert-newline-below)
+               (previous-line 1)))))))
+
+(defun +MM:import-file/add-import (import)
   (goto-char (point-min))
 
-  (if (search-forward-regexp "knightrider" nil t)
+  (if (search-forward-regexp import nil t)
+      ;; Import Exists
       (progn
         (beginning-of-visual-line)
         (if
@@ -170,21 +205,19 @@ Create an canvas action
           ;; Multiline import
           (progn
             (evil-insert-newline-above)
-            (evil-insert-state))))))
+            (evil-insert-state))))
 
-(defun +MM:add-import-to-file (import)
-  (goto-char (point-min))
-  (let* ((is-local (s-contains? "./" import))
-         (comment-header-title (if is-local "LOCALS" "EXTERNALS"))
-         (import-exists-p (search)))
-    (+MM:goto-or-add-header comment-header-title)
-    (evil-insert-newline-below)
-    (previous-line 1)
-    (+js/import-file import)))
+    (progn
+      (let* ((is-local (s-contains? "./" import))
+             (comment-header-title (if is-local "LOCALS" "EXTERNALS")))
+        (+MM:import-file/goto-or-add-import-header comment-header-title)
+        (evil-insert-newline-below)
+        (previous-line 1)
+        (+js/import-file import)))))
 
 (defun +MM|import-file ()
   (interactive)
-  (+js|ivy-import-file '+MM:add-import-to-file))
+  (+js|ivy-import-file '+MM:import-file/add-import))
 #+END_SRC
 
 *** CSS Rules
