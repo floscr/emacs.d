@@ -87,7 +87,7 @@ This is my emacs config for [[https://github.com/hlissner/doom-emacs][doom-emacs
 *** General Helpers
 **** Noop
 #+BEGIN_SRC elisp
-(defun noop (args) nil)
+(defun noop (&optional args) nil)
 #+END_SRC
 **** Run JXA scripts
 #+BEGIN_SRC elisp
