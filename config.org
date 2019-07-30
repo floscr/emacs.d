@@ -463,7 +463,7 @@ plays a sound and prompts me to insert my count.
 
 (setq +guitar-chords '("A" "D" "E")
       +guitar-beep  "/System/Library/Sounds/Glass.aiff"
-      +guitar-timer-duration 60
+      +guitar-timer-duration 80
       +guitar-timer-buffer-name "*Guitar Timer")
 
 (defun +guitar/read-timer (from to)
