@@ -453,7 +453,8 @@ plays a sound and prompts me to insert my count.
 #+BEGIN_SRC elisp
 (setq +guitar-chords '("A" "D" "E")
       +guitar-beep  "/System/Library/Sounds/Glass.aiff"
-      +guitar-timer-duration 60)
+      +guitar-timer-duration 60
+      +guitar-timer-buffer-name "*Guitar Timer")
 
 (defun +guitar/read-timer (from to)
   (let ((amount (read-string "Count: "))
@@ -473,15 +474,16 @@ plays a sound and prompts me to insert my count.
     (run-with-timer +guitar-timer-duration nil #'+guitar/read-timer from to)))
 
 (defun +guitar/tick-timer-buffer (buffer time)
-  (with-current-buffer buffer
-    (erase-buffer)
-    (let ((new-time (- time 1)))
-      (insert (number-to-string new-time))
-      (when (> new-time 0)
-        (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time)))))
+  (when (get-buffer +guitar-timer-buffer-name)
+    (with-current-buffer buffer
+      (erase-buffer)
+      (let ((new-time (- time 1)))
+        (insert (number-to-string new-time))
+        (when (> new-time 0)
+          (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time))))))
 
 (defun +guitar/create-timer-buffer ()
-  (let ((buffer (generate-new-buffer "*Guitar Timer")))
+  (let ((buffer (generate-new-buffer +guitar-timer-buffer-name)))
     (pop-to-buffer buffer)
     (with-current-buffer buffer
       (let ((inhibit-read-only t))
@@ -489,7 +491,7 @@ plays a sound and prompts me to insert my count.
         (insert (number-to-string +guitar-timer-duration))
         (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer +guitar-timer-duration)))))
 
-(+guitar/create-timer-buffer)
+;; (+guitar/create-timer-buffer)
 #+END_SRC
 ** Package Config
 *** Blimp
