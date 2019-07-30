@@ -921,8 +921,6 @@ Remove the ~js~ extension for ~company-files~.
 #+END_SRC
 ***** Import JS File
 #+BEGIN_SRC elisp
-;; TODO Make template accepts a cursor placeholder
-;; TODO Maybe even look at exports
 (defun +js/import-file (file)
   (let ((cursor-postion (point))
         (filename (+js/remove-js-ext file)))
@@ -933,13 +931,19 @@ Remove the ~js~ extension for ~company-files~.
 
 (defun +js|ivy-import-file (&optional action)
   (interactive)
-  (ivy-read "Import file "
-            (append
-             (--map (concat "./" it)
-                    (split-string (shell-command-to-string (concat find-program " " counsel-file-jump-args)) "\n" t))
-             (split-string (shell-command-to-string
-                            (concat "jq -r '.dependencies | keys | .[]' " (concat (projectile-project-root) "package.json"))) "\n" t))
-            :action (or action '+js/import-file)))
+  (let* ((local-files
+          (-->
+           (-concat (list find-program) counsel-file-jump-args)
+           (string-join it " ")
+           shell-command-to-string
+           split-string))
+         (node-packages
+          (-->
+           (concat "jq -r '.dependencies | keys | .[]' " (concat (projectile-project-root) "package.json"))
+           shell-command-to-string
+           split-string))
+         (imports (append local-files node-packages)))
+    (ivy-read "Import file " imports :action (or action '+js/import-file))))
  #+END_SRC
 
 *** JSON
