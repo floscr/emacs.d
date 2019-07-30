@@ -221,11 +221,12 @@ This fix opens the folder and selects the file.
 (defun +macos/reveal-in-finder ()
   "Reveal the current file in finder and select it"
   (interactive)
-  (do-applescript (concat
-                   "tell application \"Finder\"\n"
-                   "    activate\n"
-                   "    reveal POSIX file \"" (buffer-file-name) "\"\n"
-                   "end tell")))
+  (let ((file-name (or buffer-file-name (dired-get-filename))))
+    (do-applescript (concat
+                     "tell application \"Finder\"\n"
+                     "    activate\n"
+                     "    reveal POSIX file \"" file-name "\"\n"
+                     "end tell"))))
 #+END_SRC
 *** Hydras
 **** Hydra Expand Region
