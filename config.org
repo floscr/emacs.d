@@ -1642,47 +1642,6 @@ Needs ~dvisvgm~
                 :desc "Work"                      "w"  (λ! (find-file (concat org-directory "/Work/work.org")))
                 :desc "Store Link"                "y"  #'org-store-link))
 #+END_SRC
-***** General Bindings
-#+BEGIN_SRC elisp
-(after! org
-  (map! :map evil-org-mode-map
-        :n "s-j" #'org-move-subtree-down
-        :n "s-k" #'org-move-subtree-up
-
-        :localleader
-        :desc "Archive Subtree"          :m "a" #'org-archive-subtree
-        :desc "Archive Subtree and Done" :m "A" #'+org|archive-and-done
-        :desc "Paste Chrome Link"        :m "p" #'+org|paste-chrome-link
-        :desc "Grab tabs"                :m "P" #'+org|grab-chrome-tabs
-        :desc "Cut Subtree"              :m "C" #'org-cut-subtree
-        :desc "Paste Subtree"            :m "P" #'org-paste-subtree
-        :desc "Sort Entries"             :m "S" #'+org|sort-entries
-
-        :desc "Create/Edit Todo"  :nve "o" #'org-todo
-        :desc "Schedule"          :nve "s" #'org-schedule
-        :desc "Deadline"          :nve "d" #'org-deadline
-        :desc "Refile"            :nve "r" #'org-refile
-        :desc "Filter"            :nve "f" #'org-match-sparse-tree
-        :desc "Tag heading"       :nve "t" #'org-set-tags-command
-
-        (:desc "Attach" :prefix "F"
-          :desc "Downloads File" :m "d" '+org-attach/downloads-file
-          :desc "Screenshot" :m "s" '+org-attach/last-screenshot
-          :desc "URI" :m "u" '+org-attach/uri
-          :desc "File" :m "f" '+org-attach/file)
-
-        (:desc "Insert" :prefix "i"
-          :desc "Subheadeing" :m "s" (λ!
-                                      (call-interactively 'org-insert-subheading)
-                                      (evil-insert-state))
-          :desc "Inavtive Timestamp" :m "i" 'org-time-stamp-inactive)
-        (:desc "Narrow" :prefix "n"
-          :desc "Indirect Buffer Tree" :m "i" #'org-tree-to-indirect-buffer
-          :desc "Subtree"              :m "s" #'org-narrow-to-subtree
-          :desc "Block"                :m "b" #'org-narrow-to-block
-          :desc "Element"              :m "e" #'org-narrow-to-element
-          :desc "widen"                :m "w" #'widen)))
-#+END_SRC
 ***** Agenda
 ****** Config
 ******* Agenda Files
@@ -2522,27 +2481,61 @@ Pacakge/Mode specific bindings
 **** Org Mode
 ***** Local Leader Mapping
 #+BEGIN_SRC elisp
-(map! :map org-mode-map
+(map! :map evil-org-mode-map
       :localleader
-      :desc  "Set source key to tab"    "k"  #'+org|source-properties-key-from-browser
-      :desc  "Copy Buffer To Markdown"  "y"  #'+org|copy-buffer-as-markdown
-      :desc  "Align Tags"               "%"  #'+org|align-all-tags
-      :desc  "Goto Archive"             "$"  #'+org|visit-archive-file
-      :desc  "Schedule Tomorrow"        "+"  #'+org|schedule-tomorrow
+      :desc  "Goto Archive"              :m    "$"  #'+org|visit-archive-file
+      :desc  "Align Tags"                :m    "%"  #'+org|align-all-tags
+      :desc  "Schedule Tomorrow"         :m    "+"  #'+org|schedule-tomorrow
+      :desc  "Archive Subtree and Done"  :m    "A"  #'+org|archive-and-done
+      :desc  "Cut Subtree"               :m    "C"  #'org-cut-subtree
+      :desc  "Grab tabs"                 :m    "P"  #'+org|grab-chrome-tabs
+      :desc  "Paste Subtree"             :m    "P"  #'org-paste-subtree
+      :desc  "Sort Entries"              :m    "S"  #'+org|sort-entries
+      :desc  "Archive Subtree"           :m    "a"  #'org-archive-subtree
+      :desc  "Deadline"                  :nve  "d"  #'org-deadline
+      :desc  "Filter"                    :nve  "f"  #'org-match-sparse-tree
+      :desc  "Set source key to tab"     :m    "k"  #'+org|source-properties-key-from-browser
+      :desc  "Create/Edit Todo"          :nve  "o"  #'org-todo
+      :desc  "Paste Chrome Link"         :m    "p"  #'+org|paste-chrome-link
+      :desc  "Refile"                    :nve  "r"  #'org-refile
+      :desc  "Schedule"                  :nve  "s"  #'org-schedule
+      :desc  "Tag heading"               :nve  "t"  #'org-set-tags-command
+      :desc  "Copy Buffer To Markdown"   :m    "y"  #'+org|copy-buffer-as-markdown
+
+      (:desc "Insert" :prefix "i"
+        :desc "Subheadeing" :m "s" (λ!
+                                    (call-interactively 'org-insert-subheading)
+                                    (evil-insert-state))
+        :desc "Inavtive Timestamp" :m "i" 'org-time-stamp-inactive)
+
+      (:desc "Attach" :prefix "F"
+        :desc "Downloads File" :m "d" '+org-attach/downloads-file
+        :desc "Screenshot" :m "s" '+org-attach/last-screenshot
+        :desc "URI" :m "u" '+org-attach/uri
+        :desc "File" :m "f" '+org-attach/file)
+
       (:prefix ("g" . "goto")
-        :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point))
+        :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
+
+      (:desc "Narrow" :prefix "n"
+        :desc "Indirect Buffer Tree" :m "i" #'org-tree-to-indirect-buffer
+        :desc "Subtree"              :m "s" #'org-narrow-to-subtree
+        :desc "Block"                :m "b" #'org-narrow-to-block
+        :desc "Element"              :m "e" #'org-narrow-to-element
+        :desc "widen"                :m "w" #'widen))
 #+END_SRC
 ***** Meta Mapping
 #+BEGIN_SRC elisp
 (map! :niv "s-X" #'+org-capture/open-frame)
 
-(map! :map org-mode-map
-        :gni [s-return]   #'+org/insert-item-below
-        :gni [s-S-return] #'+org/insert-item-above)
+(after! org
+  (map! :map org-mode-map
+          :gni [s-return]   #'+org/insert-item-below
+          :gni [s-S-return] #'+org/insert-item-above)
 
-(map! :map outline-mode-map
-      :n "s-k" #'org-metaup
-      :n "s-j" #'org-metadown)
+  (map! :map evil-org-mode-map
+        :n "s-k" #'org-metaup
+        :n "s-j" #'org-metadown))
 #+END_SRC
 ***** Agenda Mapping
 ****** Evil Customizations
