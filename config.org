@@ -503,7 +503,7 @@ plays a sound and prompts me to insert my count.
     (with-current-buffer buffer
       (erase-buffer)
       (let ((new-time (- time 1)))
-        (insert (number-to-string new-time))
+        (insert (format-time-string "%M:%S" (seconds-to-time new-time) t))
         (if (> new-time 0)
             (progn
               (setq +guitar-timer-time new-time)
