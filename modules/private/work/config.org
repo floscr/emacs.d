@@ -196,6 +196,14 @@ Create an canvas action
      (-map 'cdr))
 
 
+(defun +MM:import-file/grep-index-file ()
+  (let ((file-contents
+         (with-temp-buffer
+           (insert-file-contents "/Users/flo/Code/Meisterlabs/kits-2.0/packages/common/src/index.js")
+           (buffer-string))))
+    (->> (s-match-strings-all "{\\(.*\n\\)}" file-contents)
+         (-map 'last))))
+
 (defun +MM:import-file/add-import (import)
   (goto-char (point-min))
 
