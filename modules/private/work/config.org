@@ -188,6 +188,14 @@ Create an canvas action
                (evil-insert-newline-below)
                (previous-line 1)))))))
 
+(last '(1 2
+        (-map 'identityl)))
+
+
+(->> (list (list "{ default as typeOf }" "typeOf"))
+     (-map 'cdr))
+
+
 (defun +MM:import-file/add-import (import)
   (goto-char (point-min))
 
@@ -195,17 +203,22 @@ Create an canvas action
       ;; Import Exists
       (progn
         (beginning-of-visual-line)
-        (if
-            ;; Inline import
-            (search-forward-regexp "{.*}" (point-at-eol) t)
-            (progn
-              (left-char 2)
-              (insert ", ")
-              (evil-insert-state))
-          ;; Multiline import
+        (cond
+         ;; Inline import
+         ((search-forward-regexp "{.*}" (point-at-eol) t)
+          (progn
+            (left-char 2)
+            (insert ", ")
+            (evil-insert-state)))
+
+         ;; Multiline import
+         ((search-forward-regexp "}" (point-at-eol) t)
           (progn
             (evil-insert-newline-above)
-            (evil-insert-state))))
+            (evil-insert-state)))
+
+         ;; Default import
+         (t (noop))))
 
     (progn
       (let* ((is-local (s-contains? "./" import))
