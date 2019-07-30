@@ -154,14 +154,33 @@ Create an canvas action
       (insert (template  "/** <<header>> **/\n\n\n\n"))
       (previous-line 1))))
 
-(defun +MM:add-import-to-file (file)
+(defun +MM:import-file/find-import (import)
   (goto-char (point-min))
-  (let* ((is-local (s-contains? "./" file))
-         (comment-header-title (if is-local "LOCALS" "EXTERNALS")))
+
+  (if (search-forward-regexp "knightrider" nil t)
+      (progn
+        (beginning-of-visual-line)
+        (if
+            ;; Inline import
+            (search-forward-regexp "{.*}" (point-at-eol) t)
+            (progn
+              (left-char 2)
+              (insert ", ")
+              (evil-insert-state))
+          ;; Multiline import
+          (progn
+            (evil-insert-newline-above)
+            (evil-insert-state))))))
+
+(defun +MM:add-import-to-file (import)
+  (goto-char (point-min))
+  (let* ((is-local (s-contains? "./" import))
+         (comment-header-title (if is-local "LOCALS" "EXTERNALS"))
+         (import-exists-p (search)))
     (+MM:goto-or-add-header comment-header-title)
     (evil-insert-newline-below)
     (previous-line 1)
-    (+js/import-file file)))
+    (+js/import-file import)))
 
 (defun +MM|import-file ()
   (interactive)
