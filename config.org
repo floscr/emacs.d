@@ -521,6 +521,10 @@ plays a sound and prompts me to insert my count.
         (insert (number-to-string +guitar-timer-duration))
         (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer +guitar-timer-duration)))))
 
+(defun +guitar|start ()
+  (interactive)
+  (+guitar/create-timer-buffer))
+
 (+guitar/create-timer-buffer)
 #+END_SRC
 ** Package Config
