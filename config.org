@@ -939,8 +939,7 @@ Remove the ~js~ extension for ~company-files~.
                     (split-string (shell-command-to-string (concat find-program " " counsel-file-jump-args)) "\n" t))
              (split-string (shell-command-to-string
                             (concat "jq -r '.dependencies | keys | .[]' " (concat (projectile-project-root) "package.json"))) "\n" t))
-            :action (or action 'my-js-import-file)))
-
+            :action (or action '+js/import-file)))
  #+END_SRC
 
 *** JSON
