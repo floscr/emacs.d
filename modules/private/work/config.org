@@ -16,7 +16,9 @@ this mode is enabled.
 #+BEGIN_SRC elisp
 (def-project-mode! +MM-Web-mode
   :match "\\/Code\\/Meisterlabs\\/"
-  :add-hooks (+MM/setup-keybindings))
+  :add-hooks (+MM/setup-keybindings)
+  :on-load
+  (setq yas-snippet-dirs (append yas-snippet-dirs '("~/Code/Meisterlabs/Snippets"))))
 #+END_SRC
 
 ** Utils
