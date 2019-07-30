@@ -504,9 +504,11 @@ plays a sound and prompts me to insert my count.
       (erase-buffer)
       (let ((new-time (- time 1)))
         (insert (number-to-string new-time))
-        (when (> new-time 0)
-          (setq +guitar-timer-time new-time)
-          (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time))))))
+        (if (> new-time 0)
+            (progn
+              (setq +guitar-timer-time new-time)
+              (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time))
+          (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))))
 
 (defun +guitar/create-timer-buffer ()
   (let ((buffer (generate-new-buffer +guitar-timer-buffer-name)))
