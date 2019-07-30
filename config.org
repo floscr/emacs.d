@@ -1085,13 +1085,6 @@ When no BRANCH is given, take the current one."
     (magit-git-push branch remote nil)))
 #+END_SRC
 
-Add to an transient popup
-
-#+BEGIN_SRC elisp
-(after! magit
-  (transient-append-suffix 'magit-push "p" '("d" "dated" +git|push-dated)))
-#+END_SRC
-
 ***** TODO Browse git link
 
 Browse the current thing at point for git
@@ -1152,6 +1145,14 @@ Fixes evil window navigation for magit special buffers
    :n "C-k" #'evil-window-up
    :n "C-h" #'evil-window-left
    :n "C-l" #'evil-window-right))
+#+END_SRC
+**** Transient
+
+#+BEGIN_SRC elisp
+(after! magit
+  (transient-append-suffix 'magit-push "p" '("d" "dated" +git|push-dated))
+  (transient-append-suffix 'magit-commit
+    "-D" '("-D" "Override the author date" "--date=" transient-read-date)))
 #+END_SRC
 
 *** Markdown
