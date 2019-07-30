@@ -466,6 +466,20 @@ plays a sound and prompts me to insert my count.
       +guitar-timer-duration 80
       +guitar-timer-buffer-name "*Guitar Timer")
 
+(defvar +guitar-timer-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [remap kill-current-buffer] #'+guitar|quit)
+    (define-key map [remap kill-buffer]         #'+guitar|quit))
+  "TODO")
+
+(after! +guitar-timer-mode
+  (map! :map +guitar-timer-mode-map
+        :n "q" #'+guitar|quit))
+
+(define-minor-mode +guitar-timer-mode
+  "A little timer."
+  :keymap +guitar-timer-mode-map)
+
 (defun +guitar/read-timer (from to)
   (let ((amount (read-string "Count: "))
         (timestamp (format-time-string "[%F %a %H:%M]" (current-time)))
