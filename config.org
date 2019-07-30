@@ -451,6 +451,11 @@ This function starts a timer and after 60 seconds,
 plays a sound and prompts me to insert my count.
 
 #+BEGIN_SRC elisp
+
+(defvar +guitar-timer-status-paused)
+(defvar +guitar-timer-status-ticking)
+(setq +guitar-timer-status '+guitar-timer-status-paused)
+
 (setq +guitar-chords '("A" "D" "E")
       +guitar-beep  "/System/Library/Sounds/Glass.aiff"
       +guitar-timer-duration 60
@@ -473,8 +478,14 @@ plays a sound and prompts me to insert my count.
         (to (or to (ivy-read "To: " +guitar-chords))))
     (run-with-timer +guitar-timer-duration nil #'+guitar/read-timer from to)))
 
+(defun +guitar/quit ()
+  (setq +guitar-timer-status '+guitar-timer-status-paused)
+  (if-let ((buffer (get-buffer +guitar-timer-buffer-name)))
+      (kill-buffer buffer)))
+
 (defun +guitar/tick-timer-buffer (buffer time)
-  (when (get-buffer +guitar-timer-buffer-name)
+  (when (and (get-buffer +guitar-timer-buffer-name)
+             (eq +guitar-timer-status '+guitar-timer-status-ticking))
     (with-current-buffer buffer
       (erase-buffer)
       (let ((new-time (- time 1)))
@@ -486,12 +497,14 @@ plays a sound and prompts me to insert my count.
   (let ((buffer (generate-new-buffer +guitar-timer-buffer-name)))
     (pop-to-buffer buffer)
     (with-current-buffer buffer
+      (setq +guitar-timer-status '+guitar-timer-status-ticking)
       (let ((inhibit-read-only t))
+        (+guitar-timer-mode)
         (erase-buffer)
         (insert (number-to-string +guitar-timer-duration))
         (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer +guitar-timer-duration)))))
 
-;; (+guitar/create-timer-buffer)
+(+guitar/create-timer-buffer)
 #+END_SRC
 ** Package Config
 *** Blimp
