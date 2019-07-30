@@ -519,7 +519,7 @@ plays a sound and prompts me to insert my count.
         (+guitar-timer-mode)
         (erase-buffer)
         (insert (number-to-string +guitar-timer-duration))
-        (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer +guitar-timer-duration)))))
+        (+guitar/tick-timer-buffer buffer (+ +guitar-timer-duration 1))))))
 
 (defun +guitar|start ()
   (interactive)
