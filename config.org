@@ -457,6 +457,10 @@ plays a sound and prompts me to insert my count.
 (setq +guitar-timer-status '+guitar-timer-status-paused
       +guitar-timer-time nil)
 
+(defface +guitar-timer-face
+  '((t . (:height 2.5)))
+  "The timer face")
+
 (setq +guitar-chords '("A" "D" "E")
       +guitar-beep  "/System/Library/Sounds/Glass.aiff"
       +guitar-timer-duration 60
@@ -502,8 +506,10 @@ plays a sound and prompts me to insert my count.
              (eq +guitar-timer-status '+guitar-timer-status-ticking))
     (with-current-buffer buffer
       (erase-buffer)
-      (let ((new-time (- time 1)))
-        (insert (format-time-string "%M:%S" (seconds-to-time new-time) t))
+      (let* ((new-time (- time 1))
+             (time-string (format-time-string "%M:%S" (seconds-to-time new-time) t)))
+        (put-text-property 0 (length time-string) 'face '+guitar-timer-face time-string)
+        (insert time-string)
         (if (> new-time 0)
             (progn
               (setq +guitar-timer-time new-time)
