@@ -466,6 +466,17 @@ plays a sound and prompts me to insert my count.
       +guitar-timer-duration 80
       +guitar-timer-buffer-name "*Guitar Timer")
 
+(defun +guitar/chord-combinations ()
+  (-reduce-from
+        (lambda (acc cur)
+          (--> +guitar-chords
+               (-map (lambda (x)
+                       (unless (or (eq cur x) (-contains? acc (concat x "-" cur)))
+                         (concat cur "-" x))) it)
+               (-snoc acc it)
+               -flatten))
+        '() +guitar-chords))
+
 (defvar +guitar-timer-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map [remap kill-current-buffer] #'+guitar|quit)
