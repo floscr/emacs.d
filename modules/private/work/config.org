@@ -130,6 +130,15 @@ Create an canvas action
 *** Import File
 
 #+BEGIN_SRC elisp
+(defvar +MM-header-start-regex "^/\\*\\* ")
+(defvar +MM-header-end-regex " \\*\\*/")
+#+END_SRC
+
+**** Utils
+
+**** Main
+
+#+BEGIN_SRC elisp
 (setq +MM-comment-headers '("EXTERNALS" "LOCALS" "HELPERS" "MAIN"))
 
 (defun +MM:get-remaining-headers-list (header)
@@ -240,6 +249,21 @@ Create an canvas action
   (interactive)
   (+js|ivy-import-file '+MM:import-file/add-import))
 #+END_SRC
+**** Add section line
+
+#+BEGIN_SRC elisp
+(defun +MM|last-section-header-expression (header &optional expr)
+  "Go to the last expression of a header"
+  (interactive)
+  (goto-char (point-min))
+  (if-let* ((header-line (search-forward-regexp (concat +MM-header-start-regex header)))
+            (following-header-line (search-forward-regexp +MM-header-start-regex))
+            (lines-between (count-lines header-line following-header-line))
+            (has-expression-p (> lines-between 3)))
+      (if has-expression-p
+          (search-backward-regexp "^[^\\/\s\n]" header-line t))))
+#+END_SRC
+
 
 *** CSS Rules
 **** Requirements
