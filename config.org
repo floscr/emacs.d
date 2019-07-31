@@ -451,9 +451,34 @@ This function starts a timer and after 60 seconds,
 plays a sound and prompts me to insert my count.
 
 #+BEGIN_SRC elisp
+
+(defvar +guitar-timer-status-paused)
+(defvar +guitar-timer-status-ticking)
+(setq +guitar-timer-status '+guitar-timer-status-paused
+      +guitar-timer-time nil)
+
+(defface +guitar-timer-face
+  '((t . (:height 2.5)))
+  "The timer face")
+
 (setq +guitar-chords '("A" "D" "E")
       +guitar-beep  "/System/Library/Sounds/Glass.aiff"
-      +guitar-timer-duration 60)
+      +guitar-timer-duration 80
+      +guitar-timer-buffer-name "*Guitar Timer")
+
+(defvar +guitar-timer-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [remap kill-current-buffer] #'+guitar|quit)
+    (define-key map [remap kill-buffer]         #'+guitar|quit))
+  "TODO")
+
+(after! +guitar-timer-mode
+  (map! :map +guitar-timer-mode-map
+        :n "q" #'+guitar|quit))
+
+(define-minor-mode +guitar-timer-mode
+  "A little timer."
+  :keymap +guitar-timer-mode-map)
 
 (defun +guitar/read-timer (from to)
   (let ((amount (read-string "Count: "))
@@ -471,6 +496,54 @@ plays a sound and prompts me to insert my count.
   (let ((from (or from (ivy-read "From: " +guitar-chords)))
         (to (or to (ivy-read "To: " +guitar-chords))))
     (run-with-timer +guitar-timer-duration nil #'+guitar/read-timer from to)))
+
+(defun +guitar|resume-timer ()
+  (interactive)
+  (if-let ((buffer (get-buffer +guitar-timer-buffer-name)))
+      (progn
+        (setq +guitar-timer-status '+guitar-timer-status-ticking)
+        (+guitar/tick-timer-buffer buffer +guitar-timer-time))
+    (message "No guitar timer buffer!")))
+
+(defun +guitar|pause-timer ()
+  (interactive)
+  (setq +guitar-timer-status '+guitar-timer-status-paused))
+
+(defun +guitar|quit ()
+  (interactive)
+  (setq +guitar-timer-status '+guitar-timer-status-paused)
+  (if-let ((buffer (get-buffer +guitar-timer-buffer-name)))
+      (kill-buffer buffer)))
+
+(defun +guitar/tick-timer-buffer (buffer time)
+  (when (and (get-buffer buffer)
+             (eq +guitar-timer-status '+guitar-timer-status-ticking))
+    (with-current-buffer buffer
+      (erase-buffer)
+      (let* ((new-time (- time 1))
+             (time-string (format-time-string "%M:%S" (seconds-to-time new-time) t)))
+        (put-text-property 0 (length time-string) 'face '+guitar-timer-face time-string)
+        (insert time-string)
+        (if (> new-time 0)
+            (progn
+              (setq +guitar-timer-time new-time)
+              (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time))
+          (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))))
+
+(defun +guitar/create-timer-buffer ()
+  (let ((buffer (generate-new-buffer +guitar-timer-buffer-name)))
+    (pop-to-buffer buffer)
+    (with-current-buffer buffer
+      (setq +guitar-timer-status '+guitar-timer-status-ticking)
+      (let ((inhibit-read-only t))
+        (+guitar-timer-mode)
+        (erase-buffer)
+        (insert (number-to-string +guitar-timer-duration))
+        (+guitar/tick-timer-buffer buffer (+ +guitar-timer-duration 1))))))
+
+(defun +guitar|start ()
+  (interactive)
+  (+guitar/create-timer-buffer))
 #+END_SRC
 ** Package Config
 *** Blimp
@@ -1417,6 +1490,25 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
          (cmp (compare-strings a-date nil nil b-date nil nil)))
     (if (eq cmp t) nil (signum cmp))))
 #+END_SRC
+***** Org search in files
+
+#+BEGIN_SRC elisp
+(defun +org|search-in-notes ()
+  "Search in the org directory for a file.
+Projectile search is not fast reliable enough."
+  (interactive)
+  (let ((counsel-file-jump-args ". -name '*.org' -type f -print | cut -c 3-"))
+    (counsel-file-jump nil org-directory)))
+#+END_SRC
+
+***** Org find in files
+
+#+BEGIN_SRC elisp
+(defun +org/find-in-files (file)
+  "Find file in org"
+  (find-file (f-join org-directory file)))
+#+END_SRC
+
 **** Config
 ***** General Config
 ****** Todo Keywords
@@ -1621,31 +1713,6 @@ Needs ~dvisvgm~
 (add-to-list 'org-structure-template-alist '("rb" "#+BEGIN_SRC ruby\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("md" "#+BEGIN_SRC markdown\n?\n#+END_SRC\n"))
 #+END_SRC
-***** Leader Bindings
-#+BEGIN_SRC elisp
-(map! :leader (:desc "Notes" :prefix "n"
-                :desc "Pinboard File"             "B"  (λ! (find-file org-pinboard-file))
-                :desc "Save All Org Buffers"      "S"  #'org-save-all-org-buffers
-                :desc "Agenda"                    "a"  #'org-agenda
-                :desc "Search Pinboard"           "b"  #'helm-org-pinboard
-                (:prefix-map ("c" . "clock")
-                  :desc "Clock In"                "c"  #'org-clock-in
-                  :desc "Clock Out"               "C"  #'org-clock-out
-                  :desc "Mark Default Task"       "d"  #'org-clock-mark-default-task
-                  :desc "Modify Effort Estimate"  "e"  #'org-clock-modify-effort-estimate
-                  :desc "Clock In Last"           "l"  #'org-clock-in-last
-                  :desc "Goto Current"            "g"  #'org-clock-goto
-                  :desc "Goto Select"             "G"  (λ! (org-clock-goto 'select))
-                  :desc "Cancel"                  "x"  #'org-clock-cancel
-                  :desc "Timestamp Up"            "="  #'org-clock-timestamps-up
-                  :desc "Timestamp Down"          "-"  #'org-clock-timestamps-down)
-                :desc "Emacs"                     "e"  (λ! (find-file (concat org-directory "/Emacs.org")))
-                :desc "Home"                      "h"  (λ! (find-file (concat org-directory "/home.org")))
-                :desc "Inbox"                     "i"  (λ! (find-file (concat org-directory "/inbox.org")))
-                :desc "Reading List"              "r"  #'+org-reading-list/org-open-reading-list-file
-                :desc "Work"                      "w"  (λ! (find-file (concat org-directory "/Work/work.org")))
-                :desc "Store Link"                "y"  #'org-store-link))
-#+END_SRC
 ***** Agenda
 ****** Config
 ******* Agenda Files
@@ -1730,7 +1797,7 @@ Helper to reset the org agenda custom commands.
 (add-to-list 'org-agenda-custom-commands
              '("e" "Emacs Items" alltodo ""
                ((org-agenda-prefix-format "  %?-12t% s")
-                (org-agenda-sorting-strategy '(timestamp-down todo-state-down))
+                (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
                 (org-agenda-files (list (f-join org-directory "Emacs.org")))
                 (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
                                            (:name "Next" :todo "NEXT")
@@ -2324,13 +2391,13 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "buffer" :prefix "b"
    :desc "Rename Buffer" :n "r" #'rename-buffer))
 #+END_SRC
-**** File
+**** Code
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "file" :prefix "f"
-   :desc "find in literate config file" :n  "D" (λ! (counsel-find-file (projectile-project-root)))
-   :desc "find in literate config file" :n  "p" #'counsel-org-doom-config))
+ (:desc "code" :prefix "c"
+   :desc "Compile" "c" #'compile
+   :desc "Compile" "Compile last command" (λ! (compile (car compile-history)))))
 #+END_SRC
 **** Dir
 #+BEGIN_SRC elisp
@@ -2339,6 +2406,13 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "dir" :prefix "d"
    :desc "find in literate config file" :n  "r" #'dired-recent-open
    :desc "Project Root"                 :n  "p" #'projectile-dired))
+#+END_SRC
+**** File
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:desc "file" :prefix "f"
+   :desc "Open Private Config" "P" (λ! (find-file (f-join doom-private-dir "config.org")))))
 #+END_SRC
 **** Git
 #+BEGIN_SRC elisp
@@ -2364,6 +2438,44 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "insert" :prefix "i"
    :desc "Killring"   :n  "y" #'counsel-yank-pop))
 #+END_SRC
+**** Notes (Org)
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:desc "Notes" :prefix "n"
+   :desc "Emacs"                "e" (λ! (+org/find-in-files "Emacs.org"))
+   :desc "Home"                 "h" (λ! (+org/find-in-files "home.org"))
+   :desc "Inbox"                "i" (λ! (+org/find-in-files "inbox.org"))
+   :desc "Work"                 "w" (λ! (+org/find-in-files "Work/work.org"))
+   :desc "Reading List"         "r" #'+org-reading-list/org-open-reading-list-file
+   :desc "Store Link"           "y" #'org-store-link
+   :desc "Find in notes"        "n" #'+org|search-in-notes
+   :desc "Pinboard File"        "B" (λ! (find-file org-pinboard-file))
+   :desc "Save All Org Buffers" "S" #'org-save-all-org-buffers
+   :desc "Agenda"               "a" #'org-agenda
+   :desc "Search Pinboard"      "b" #'helm-org-pinboard)
+
+ (:prefix-map ("c" . "clock")
+   :desc "Clock In"               "c" #'org-clock-in
+   :desc "Clock Out"              "C" #'org-clock-out
+   :desc "Mark Default Task"      "d" #'org-clock-mark-default-task
+   :desc "Modify Effort Estimate" "e" #'org-clock-modify-effort-estimate
+   :desc "Clock In Last"          "l" #'org-clock-in-last
+   :desc "Goto Current"           "g" #'org-clock-goto
+   :desc "Goto Select"            "G" (λ! (org-clock-goto 'select))
+   :desc "Cancel"                 "x" #'org-clock-cancel
+   :desc "Timestamp Up"           "=" #'org-clock-timestamps-up
+   :desc "Timestamp Down"         "-" #'org-clock-timestamps-down))
+#+END_SRC
+
+**** Open
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:desc "open" :prefix "o"
+   :desc "Eshell in Current Dir" :n  "." (λ! (+eshell/open t))
+   :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))))
+#+END_SRC
 **** Projects
 #+BEGIN_SRC elisp
 (map!
@@ -2379,23 +2491,6 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "toggle" :prefix "t"
    :desc "Theme Dark/Light" :n  "t" #'+doom|toggle-theme))
 #+END_SRC
-**** Code
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:desc "code" :prefix "c"
-   :desc "Compile" "c" #'compile
-   :desc "Compile" "Compile last command" (λ! (compile (car compile-history)))))
-#+END_SRC
-**** Open
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:desc "open" :prefix "o"
-   :desc "Eshell in Current Dir" :n  "." (λ! (+eshell/open t))
-   :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))))
-#+END_SRC
-
 **** Window
 #+BEGIN_SRC elisp
 (map!
