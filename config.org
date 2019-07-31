@@ -1690,31 +1690,6 @@ Needs ~dvisvgm~
 (add-to-list 'org-structure-template-alist '("rb" "#+BEGIN_SRC ruby\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("md" "#+BEGIN_SRC markdown\n?\n#+END_SRC\n"))
 #+END_SRC
-***** Leader Bindings
-#+BEGIN_SRC elisp
-(map! :leader (:desc "Notes" :prefix "n"
-                :desc "Pinboard File"             "B"  (λ! (find-file org-pinboard-file))
-                :desc "Save All Org Buffers"      "S"  #'org-save-all-org-buffers
-                :desc "Agenda"                    "a"  #'org-agenda
-                :desc "Search Pinboard"           "b"  #'helm-org-pinboard
-                (:prefix-map ("c" . "clock")
-                  :desc "Clock In"                "c"  #'org-clock-in
-                  :desc "Clock Out"               "C"  #'org-clock-out
-                  :desc "Mark Default Task"       "d"  #'org-clock-mark-default-task
-                  :desc "Modify Effort Estimate"  "e"  #'org-clock-modify-effort-estimate
-                  :desc "Clock In Last"           "l"  #'org-clock-in-last
-                  :desc "Goto Current"            "g"  #'org-clock-goto
-                  :desc "Goto Select"             "G"  (λ! (org-clock-goto 'select))
-                  :desc "Cancel"                  "x"  #'org-clock-cancel
-                  :desc "Timestamp Up"            "="  #'org-clock-timestamps-up
-                  :desc "Timestamp Down"          "-"  #'org-clock-timestamps-down)
-                :desc "Emacs"                     "e"  (λ! (find-file (concat org-directory "/Emacs.org")))
-                :desc "Home"                      "h"  (λ! (find-file (concat org-directory "/home.org")))
-                :desc "Inbox"                     "i"  (λ! (find-file (concat org-directory "/inbox.org")))
-                :desc "Reading List"              "r"  #'+org-reading-list/org-open-reading-list-file
-                :desc "Work"                      "w"  (λ! (find-file (concat org-directory "/Work/work.org")))
-                :desc "Store Link"                "y"  #'org-store-link))
-#+END_SRC
 ***** Agenda
 ****** Config
 ******* Agenda Files
@@ -2441,6 +2416,36 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "insert" :prefix "i"
    :desc "Killring"   :n  "y" #'counsel-yank-pop))
 #+END_SRC
+**** Notes
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ :desc "Emacs"                    "e" (λ! (find-file (concat org-directory "/Emacs.org")))
+ :desc "Home"                     "h" (λ! (find-file (concat org-directory "/home.org")))
+ :desc "Inbox"                    "i" (λ! (find-file (concat org-directory "/inbox.org")))
+ :desc "Reading List"             "r" #'+org-reading-list/org-open-reading-list-file
+ :desc "Work"                     "w" (λ! (find-file (concat org-directory "/Work/work.org")))
+ :desc "Store Link"               "y" #'org-store-link
+
+ (:desc "Notes" :prefix "n"
+   :desc "Pinboard File"          "B" (λ! (find-file org-pinboard-file))
+   :desc "Save All Org Buffers"   "S" #'org-save-all-org-buffers
+   :desc "Agenda"                 "a" #'org-agenda
+   :desc "Search Pinboard"        "b" #'helm-org-pinboard)
+
+ (:prefix-map ("c" . "clock")
+   :desc "Clock In"               "c" #'org-clock-in
+   :desc "Clock Out"              "C" #'org-clock-out
+   :desc "Mark Default Task"      "d" #'org-clock-mark-default-task
+   :desc "Modify Effort Estimate" "e" #'org-clock-modify-effort-estimate
+   :desc "Clock In Last"          "l" #'org-clock-in-last
+   :desc "Goto Current"           "g" #'org-clock-goto
+   :desc "Goto Select"            "G" (λ! (org-clock-goto 'select))
+   :desc "Cancel"                 "x" #'org-clock-cancel
+   :desc "Timestamp Up"           "=" #'org-clock-timestamps-up
+   :desc "Timestamp Down"         "-" #'org-clock-timestamps-down))
+#+END_SRC
+
 **** Open
 #+BEGIN_SRC elisp
 (map!
@@ -2449,7 +2454,6 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Eshell in Current Dir" :n  "." (λ! (+eshell/open t))
    :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))))
 #+END_SRC
-
 **** Projects
 #+BEGIN_SRC elisp
 (map!
