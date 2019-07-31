@@ -1791,7 +1791,7 @@ Helper to reset the org agenda custom commands.
 (add-to-list 'org-agenda-custom-commands
              '("e" "Emacs Items" alltodo ""
                ((org-agenda-prefix-format "  %?-12t% s")
-                (org-agenda-sorting-strategy '(timestamp-down todo-state-down))
+                (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
                 (org-agenda-files (list (f-join org-directory "Emacs.org")))
                 (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
                                            (:name "Next" :todo "NEXT")
