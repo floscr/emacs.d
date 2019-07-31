@@ -97,13 +97,15 @@ Create an canvas action
 
 *** Search MapEditor Only
 
+**** Canvas Files
+
 #+BEGIN_SRC elisp
 (defun +MM|canvas-files ()
   "Project files but only for canvas"
   (interactive)
   (ivy-read "Find File: "
             (--filter (s-contains? "MapEditor" it) (projectile-current-project-files))
-            :action #'projectile-find-file))
+            :action (lambda (x) (find-file (f-join (projectile-project-root) x)))))
 #+END_SRC
 
 ** Packages
