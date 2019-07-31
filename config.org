@@ -1910,6 +1910,7 @@ To sync the calendars use ~org-caldav-sync~.
   ;; org-caldav-url is set in secrets.el
   (setq org-caldav-calendar-id "family"
         org-caldav-inbox (f-join org-directory "calendar-family.org")
+        org-caldav-save-directory doom-cache-dir
         org-icalendar-timezone "Europe/Berlin")
   (setq org-caldav-files (list org-caldav-inbox)))
 #+END_SRC
