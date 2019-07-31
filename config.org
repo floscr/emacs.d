@@ -1487,6 +1487,7 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
     (if (eq cmp t) nil (signum cmp))))
 #+END_SRC
 ***** Org search in files
+
 #+BEGIN_SRC elisp
 (defun +org|search-in-notes ()
   "Search in the org directory for a file.
@@ -1495,6 +1496,7 @@ Projectile search is not fast reliable enough."
   (let ((counsel-file-jump-args ". -name '*.org' -type f -print | cut -c 3-"))
     (counsel-file-jump nil org-directory)))
 #+END_SRC
+
 ***** Org find in files
 
 #+BEGIN_SRC elisp
@@ -2406,8 +2408,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 (map!
  :leader
  (:desc "file" :prefix "f"
-   :desc "find in literate config file" :n  "D" (λ! (counsel-find-file (projectile-project-root)))
-   :desc "find in literate config file" :n  "p" #'counsel-org-doom-config))
+   :desc "Open Private Config" "P" (λ! (find-file (f-join doom-private-dir "config.org")))))
 #+END_SRC
 **** Git
 #+BEGIN_SRC elisp
