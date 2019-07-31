@@ -2393,13 +2393,13 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "buffer" :prefix "b"
    :desc "Rename Buffer" :n "r" #'rename-buffer))
 #+END_SRC
-**** File
+**** Code
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "file" :prefix "f"
-   :desc "find in literate config file" :n  "D" (λ! (counsel-find-file (projectile-project-root)))
-   :desc "find in literate config file" :n  "p" #'counsel-org-doom-config))
+ (:desc "code" :prefix "c"
+   :desc "Compile" "c" #'compile
+   :desc "Compile" "Compile last command" (λ! (compile (car compile-history)))))
 #+END_SRC
 **** Dir
 #+BEGIN_SRC elisp
@@ -2408,6 +2408,14 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "dir" :prefix "d"
    :desc "find in literate config file" :n  "r" #'dired-recent-open
    :desc "Project Root"                 :n  "p" #'projectile-dired))
+#+END_SRC
+**** File
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:desc "file" :prefix "f"
+   :desc "find in literate config file" :n  "D" (λ! (counsel-find-file (projectile-project-root)))
+   :desc "find in literate config file" :n  "p" #'counsel-org-doom-config))
 #+END_SRC
 **** Git
 #+BEGIN_SRC elisp
@@ -2433,6 +2441,15 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "insert" :prefix "i"
    :desc "Killring"   :n  "y" #'counsel-yank-pop))
 #+END_SRC
+**** Open
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:desc "open" :prefix "o"
+   :desc "Eshell in Current Dir" :n  "." (λ! (+eshell/open t))
+   :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))))
+#+END_SRC
+
 **** Projects
 #+BEGIN_SRC elisp
 (map!
@@ -2448,23 +2465,6 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "toggle" :prefix "t"
    :desc "Theme Dark/Light" :n  "t" #'+doom|toggle-theme))
 #+END_SRC
-**** Code
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:desc "code" :prefix "c"
-   :desc "Compile" "c" #'compile
-   :desc "Compile" "Compile last command" (λ! (compile (car compile-history)))))
-#+END_SRC
-**** Open
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:desc "open" :prefix "o"
-   :desc "Eshell in Current Dir" :n  "." (λ! (+eshell/open t))
-   :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))))
-#+END_SRC
-
 **** Window
 #+BEGIN_SRC elisp
 (map!
