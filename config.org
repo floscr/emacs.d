@@ -980,6 +980,15 @@ Converts self closing JSX tags to closing tags.
   (call-interactively #'evil-indent-line)
   (call-interactively #'evil-open-above))
 #+END_SRC
+***** Extract Props from function arguments to body
+#+BEGIN_SRC elisp
+(fset '+js|extract-props
+      (lambda (&optional arg)
+        "Extract function props to statement"
+        (interactive "p")
+        (kmacro-exec-ring-item (quote ([?c ?i ?b ?p ?r ?o ?p ?s escape ?o escape ?p ?= ?= ?^ ?i ?c ?o ?n ?s ?t ?  escape ?a escape escape ?A ?  ?= ?  ?p ?r ?o ?p ?s escape ?A ?\; escape ?b ?b ?b ?b ?  ?m ?r ?e ?e ?A ?\C-? ?, escape ?j ?b])) arg)))
+#+END_SRC
+
 ***** Company Files
 
 Remove the ~js~ extension for ~company-files~.
