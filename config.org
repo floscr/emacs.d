@@ -1486,6 +1486,15 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
          (cmp (compare-strings a-date nil nil b-date nil nil)))
     (if (eq cmp t) nil (signum cmp))))
 #+END_SRC
+***** Org search in files
+#+BEGIN_SRC elisp
+(defun +org|search-in-notes ()
+  "Search in the org directory for a file.
+Projectile search is not fast reliable enough."
+  (interactive)
+  (let ((counsel-file-jump-args ". -name '*.org' -type f -print | cut -c 3-"))
+    (counsel-file-jump nil org-directory)))
+#+END_SRC
 **** Config
 ***** General Config
 ****** Todo Keywords
@@ -2416,7 +2425,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "insert" :prefix "i"
    :desc "Killring"   :n  "y" #'counsel-yank-pop))
 #+END_SRC
-**** Notes
+**** Notes (Org)
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2428,6 +2437,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :desc "Store Link"               "y" #'org-store-link
 
  (:desc "Notes" :prefix "n"
+   :desc "Find in notes"          "n" #'+org|search-in-notes
    :desc "Pinboard File"          "B" (λ! (find-file org-pinboard-file))
    :desc "Save All Org Buffers"   "S" #'org-save-all-org-buffers
    :desc "Agenda"                 "a" #'org-agenda
