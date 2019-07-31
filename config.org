@@ -1495,6 +1495,14 @@ Projectile search is not fast reliable enough."
   (let ((counsel-file-jump-args ". -name '*.org' -type f -print | cut -c 3-"))
     (counsel-file-jump nil org-directory)))
 #+END_SRC
+***** Org find in files
+
+#+BEGIN_SRC elisp
+(defun +org/find-in-files (file)
+  "Find file in org"
+  (find-file (f-join org-directory file)))
+#+END_SRC
+
 **** Config
 ***** General Config
 ****** Todo Keywords
@@ -2429,11 +2437,11 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- :desc "Emacs"                    "e" (λ! (find-file (concat org-directory "/Emacs.org")))
- :desc "Home"                     "h" (λ! (find-file (concat org-directory "/home.org")))
- :desc "Inbox"                    "i" (λ! (find-file (concat org-directory "/inbox.org")))
+ :desc "Emacs"                    "e" (λ! (+org/find-in-files "Emacs.org"))
+ :desc "Home"                     "h" (λ! (+org/find-in-files "home.org"))
+ :desc "Inbox"                    "i" (λ! (+org/find-in-files "inbox.org"))
+ :desc "Work"                     "w" (λ! (+org/find-in-files "Work/work.org"))
  :desc "Reading List"             "r" #'+org-reading-list/org-open-reading-list-file
- :desc "Work"                     "w" (λ! (find-file (concat org-directory "/Work/work.org")))
  :desc "Store Link"               "y" #'org-store-link
 
  (:desc "Notes" :prefix "n"
