@@ -526,7 +526,7 @@ plays a sound and prompts me to insert my count.
   (if-let ((buffer (get-buffer +guitar-timer-buffer-name)))
       (kill-buffer buffer)))
 
-(defun +guitar/tick-timer-buffer (buffer time)
+(defun +guitar/tick-timer-buffer (buffer time &optional callback)
   (when (and (get-buffer buffer)
              (eq +guitar-timer-status '+guitar-timer-status-ticking))
     (with-current-buffer buffer
@@ -538,10 +538,12 @@ plays a sound and prompts me to insert my count.
         (if (> new-time 0)
             (progn
               (setq +guitar-timer-time new-time)
-              (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time))
-          (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))))
+              (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time callback))
+          (if callback
+              (funcall callback)))))))
 
-(defun +guitar/create-timer-buffer ()
+
+(defun +guitar/create-timer-buffer (&optional callback)
   (let ((buffer (generate-new-buffer +guitar-timer-buffer-name)))
     (pop-to-buffer buffer)
     (with-current-buffer buffer
@@ -550,11 +552,11 @@ plays a sound and prompts me to insert my count.
         (+guitar-timer-mode)
         (erase-buffer)
         (insert (number-to-string +guitar-timer-duration))
-        (+guitar/tick-timer-buffer buffer (+ +guitar-timer-duration 1))))))
+        (+guitar/tick-timer-buffer buffer (+ +guitar-timer-duration 1) callback)))))
 
 (defun +guitar|start ()
   (interactive)
-  (+guitar/create-timer-buffer))
+  (+guitar/create-timer-buffer '(lambda () (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))
 #+END_SRC
 ** Package Config
 *** Blimp
