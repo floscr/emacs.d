@@ -2437,19 +2437,18 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- :desc "Emacs"                    "e" (λ! (+org/find-in-files "Emacs.org"))
- :desc "Home"                     "h" (λ! (+org/find-in-files "home.org"))
- :desc "Inbox"                    "i" (λ! (+org/find-in-files "inbox.org"))
- :desc "Work"                     "w" (λ! (+org/find-in-files "Work/work.org"))
- :desc "Reading List"             "r" #'+org-reading-list/org-open-reading-list-file
- :desc "Store Link"               "y" #'org-store-link
-
  (:desc "Notes" :prefix "n"
-   :desc "Find in notes"          "n" #'+org|search-in-notes
-   :desc "Pinboard File"          "B" (λ! (find-file org-pinboard-file))
-   :desc "Save All Org Buffers"   "S" #'org-save-all-org-buffers
-   :desc "Agenda"                 "a" #'org-agenda
-   :desc "Search Pinboard"        "b" #'helm-org-pinboard)
+   :desc "Emacs"                "e" (λ! (+org/find-in-files "Emacs.org"))
+   :desc "Home"                 "h" (λ! (+org/find-in-files "home.org"))
+   :desc "Inbox"                "i" (λ! (+org/find-in-files "inbox.org"))
+   :desc "Work"                 "w" (λ! (+org/find-in-files "Work/work.org"))
+   :desc "Reading List"         "r" #'+org-reading-list/org-open-reading-list-file
+   :desc "Store Link"           "y" #'org-store-link
+   :desc "Find in notes"        "n" #'+org|search-in-notes
+   :desc "Pinboard File"        "B" (λ! (find-file org-pinboard-file))
+   :desc "Save All Org Buffers" "S" #'org-save-all-org-buffers
+   :desc "Agenda"               "a" #'org-agenda
+   :desc "Search Pinboard"      "b" #'helm-org-pinboard)
 
  (:prefix-map ("c" . "clock")
    :desc "Clock In"               "c" #'org-clock-in
