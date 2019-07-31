@@ -7,6 +7,12 @@
 #+END_SRC
 
 * Configuration
+** Required Packages
+
+#+BEGIN_SRC elisp
+(require 'dash)
+(require 's)
+#+END_SRC
 ** Minor Mode
 
 Custom minor mode for work,
