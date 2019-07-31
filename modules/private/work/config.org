@@ -251,6 +251,7 @@ Create an canvas action
   (interactive)
   (+js|ivy-import-file '+MM:import-file/add-import))
 #+END_SRC
+
 **** Add section line
 
 #+BEGIN_SRC elisp
@@ -481,7 +482,11 @@ Create an canvas action
 
         :localleader
         :desc  "Import File"          "i"  #'+MM|import-file
-        :desc  "Search Canvas Files"  "/"  #'+MM|canvas-files
+
+        (:prefix ("f" . "file")
+          :desc  "Jump to Entity                " "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
+          :desc  "Search Canvas Files"          "f"    #'+MM|canvas-files
+          :desc  "Convert into new Redux Style" "X"    #'+MM|turn-style-object-into-function)
 
         (:prefix ("r" . "Refactor")
           :desc  "Style function into object"    "rs"  #'+MM|turn-style-object-into-function
