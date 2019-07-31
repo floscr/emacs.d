@@ -827,6 +827,16 @@ To enable the checker press ~SPC u C-c ! x~
   :config
   (setq indium-chrome-executable "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"))
 #+END_SRC
+*** Ivy / Swiper
+**** Counsel Project File Jump
+
+#+BEGIN_SRC elisp
+(defun +ivy/counsel-project-file-jump (x)
+  "Jump to file in project"
+  (interactive)
+  (counsel-file-jump nil (f-join (projectile-project-root) x)))
+#+END_SRC
+
 *** Javascript
 **** Config
 #+BEGIN_SRC elisp
