@@ -119,26 +119,44 @@ Create an canvas action
             :action (lambda (x) (find-file (f-join (projectile-project-root) x)))))
 #+END_SRC
 *** Insert tap
+
 #+BEGIN_SRC elisp
 (defun +MM|chain-tap-log (&optional str)
   "Adds a tap method to a chain."
   (interactive)
   (let ((str (or str "console.log")))
     (save-excursion
-      (let ((curent-prefix-arg nil))
-        (call-interactively #'evil-open-below)
-        (insert (template ".tap(<<str>>)"))
-        (evil-normal-state)
-        (call-interactively #'evil-indent-line)))))
-        ;; (evil-insert-newline-above)
-        ;; (next-line)
-        ;; (evil-insert-newline-below)))))
+      (end-of-line)
+      (newline-and-indent)
+      (insert (template ".tap(<<str>>)"))
+      (call-interactively #'evil-indent-line)
+      (when current-prefix-arg
+        (progn
+          (evil-insert-newline-above)
+          (next-line)
+          (evil-insert-newline-below))))))
+
 
 (defun +MM|chain-tap-log-state ()
   "Adds a tap method to a chain."
   (interactive)
   (+MM|chain-tap-log "x => console.log(x.state)"))
 #+END_SRC
+*** Insert debugger
+
+#+BEGIN_SRC elisp
+(defun +js|insert-debugger ()
+  (interactive)
+  (save-excursion
+    (if current-prefix-arg
+        (progn
+          (evil-insert-newline-above))
+      (evil-insert-newline-below))
+    (insert "debugger;")
+    (call-interactively #'evil-indent-line)))
+#+END_SRC
+
+
 
 ** Packages
 *** New Worktree
