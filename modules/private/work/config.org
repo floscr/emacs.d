@@ -177,7 +177,7 @@ Create an canvas action
 
 #+BEGIN_SRC elisp
 (after! magit
-  (transient-append-suffix 'magit-worktree "y" '("m" "+MM|Worktree" +MM|new-worktree)))
+  (transient-append-suffix 'magit-worktree "b" '("m" "+MM|Worktree" +MM|new-worktree)))
 #+END_SRC
 *** Import File
 
