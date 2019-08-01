@@ -1135,7 +1135,8 @@ If possible also go to the pointing line"
   (when magit-buffer-file-name
     (let ((file-name magit-buffer-file-name)
           (line-number (line-number-at-pos)))
-      (delete-other-windows)
+      (if current-prefix-arg
+          (delete-other-windows))
       (find-file file-name)
       (goto-line line-number))))
 #+END_SRC
