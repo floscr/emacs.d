@@ -1855,7 +1855,9 @@ Helper to reset the org agenda custom commands.
 #+BEGIN_SRC elisp
 (add-to-list 'org-agenda-custom-commands
              '("w" "Work Agenda"
-               ((agenda "a" ((org-agenda-span 1)
+               ((agenda "a" ((org-agenda-span 3)
+                             (org-agenda-start-on-weekday t)
+                             (org-agenda-show-all-dates nil)
                              (org-agenda-use-time-grid 'require-timed)
                              (org-agenda-start-day ".")))
                 (tags-todo "+WORK-EVENT"
