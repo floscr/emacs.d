@@ -545,7 +545,8 @@ Create an canvas action
 
         (:prefix ("d" . "Debug")
           :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
-          :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state)
+          :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state
+          :desc  "Debugger"                     "d"  #'+js|insert-debugger)
 
         (:prefix ("c" . "Create")
           :desc  "action"                       "r"  #'+MM|add-rule
