@@ -1,6 +1,8 @@
 # -*- mode: snippet -*-
 # name: defun
-# key: f
+# key: d                   
 # --
-(defun ${1:name} ()
-   $0)
+(defun ${1:function-name} ()
+    "${3:Function docstring}"
+    (interactive)
+    ${2:(message)})
