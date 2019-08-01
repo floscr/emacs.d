@@ -1861,12 +1861,12 @@ Helper to reset the org agenda custom commands.
                              (org-agenda-use-time-grid 'require-timed)
                              (org-agenda-start-day ".")))
                 (tags-todo "+WORK-EVENT"
-                   ((org-agenda-sorting-strategy '(timestamp-down time-down))
                     (org-super-agenda-groups '((:name "In Progress" :todo "ACTIVE")
                                                (:name "Coming Up Today" :scheduled today)
                                                (:name "Meta Work" :tag "META_WORK" :order 3)
                                                (:name "Reviews" :tag "REVIEW" :order 5)
                                                (:name "Tasks" :not (:todo "SOMEDAY" :todo "WAITING" :tag ("BACKLOG" "TEXT" "EMACS")) :order 4)
+                   ((org-agenda-sorting-strategy '(user-defined-down timestamp-down time-down))
                                                (:name "Waiting" :todo "WAITING" :order 6)
                                                (:name "Backlog" :tag "BACKLOG" :order 11)
                                                (:name "Reading List" :tag "TEXT" :order 10))))))
