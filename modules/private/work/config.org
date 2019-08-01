@@ -119,6 +119,26 @@ Create an canvas action
             :action (lambda (x) (find-file (f-join (projectile-project-root) x)))))
 #+END_SRC
 *** Insert tap
+#+BEGIN_SRC elisp
+(defun +MM|chain-tap-log (&optional str)
+  "Adds a tap method to a chain."
+  (interactive)
+  (let ((str (or str "console.log")))
+    (save-excursion
+      (let ((curent-prefix-arg nil))
+        (call-interactively #'evil-open-below)
+        (insert (template ".tap(<<str>>)"))
+        (evil-normal-state)
+        (call-interactively #'evil-indent-line)))))
+        ;; (evil-insert-newline-above)
+        ;; (next-line)
+        ;; (evil-insert-newline-below)))))
+
+(defun +MM|chain-tap-log-state ()
+  "Adds a tap method to a chain."
+  (interactive)
+  (+MM|chain-tap-log "x => console.log(x.state)"))
+#+END_SRC
 
 ** Packages
 *** New Worktree
@@ -504,6 +524,10 @@ Create an canvas action
         (:prefix ("r" . "Refactor")
           :desc  "Style function into object"   "rs" #'+MM|turn-style-object-into-function
           :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
+
+        (:prefix ("d" . "Debug")
+          :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
+          :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state)
 
         (:prefix ("c" . "Create")
           :desc  "action"                       "r"  #'+MM|add-rule
