@@ -1193,6 +1193,17 @@ When no BRANCH is given, take the current one."
          (remote (template "origin/<<date>>-<<branch>>")))
     (magit-git-push branch remote nil)))
 #+END_SRC
+***** Diff Range from current branch to ~magit-thing-at-point~
+
+When I'm on the log view, I want to quickliy diff it against the currently checked out branch.
+The transient shortcut for this is ~d R~ define [[*Transient][here]].
+
+#+BEGIN_SRC elisp
+(defun +magit|diff-range-from-current-branch ()
+  "Ranged diff from the checked out branch to the commit at point."
+  (interactive)
+  (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
+#+END_SRC
 
 ***** TODO Browse git link
 
@@ -1260,6 +1271,7 @@ Fixes evil window navigation for magit special buffers
 #+BEGIN_SRC elisp
 (after! magit
   (transient-append-suffix 'magit-push "p" '("d" "dated" +git|push-dated))
+  (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" +magit|diff-range-from-current-branch))
   (transient-append-suffix 'magit-commit
     "-D" '("-D" "Override the author date" "--date=" transient-read-date)))
 #+END_SRC
