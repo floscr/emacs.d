@@ -1,0 +1,39 @@
+#+TITLE: Utils
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle yes
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+* Macros
+
+** Aliases
+#+BEGIN_SRC elisp
+(defalias 'λ 'lambda)
+#+END_SRC
+** Template Literals
+:PROPERTIES:
+:SOURCE:   https://gist.github.com/cbowdon/012d623920bd28453bf8
+:END:
+
+#+BEGIN_SRC elisp :tangle no
+(template "2 = <<(+ 1 1)>>")
+#+END_SRC
+
+#+RESULTS:
+: 2 = 2
+
+#+BEGIN_SRC elisp
+(defmacro template (text)
+  "Template literals"
+  (let ((pattern "<<\\(.*?\\)>>"))
+    ;; The regexp matches anything between delimiters, non-greedily
+    (with-temp-buffer
+      (save-excursion (insert text))
+      (let ((matches '()))
+        (while (re-search-forward pattern nil t)
+          (push (match-string 1) matches)
+          (replace-match "%s" t t))
+        `(format ,(buffer-string) ,@(reverse (mapcar 'read matches)))))))
+#+END_SRC
