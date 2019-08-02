@@ -571,6 +571,7 @@ Helper to reset the org agenda custom commands.
                                       (org-agenda-start-day ".")
                                       (org-agenda-prefix-format '((agenda . "  ")))
                                       (org-super-agenda-header-separator "")
+                                      (org-agenda-sorting-strategy '(scheduled-down ts-down todo-state-down))
                                       (org-super-agenda-groups '((:name nil :discard (:tag "REPEATING" :todo "CANCELLED" :scheduled past))))))
                 (tags-todo "-WORK" ((org-agenda-prefix-format "  %?-12t% s")
                                     (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
