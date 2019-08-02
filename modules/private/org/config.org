@@ -243,7 +243,7 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
     (if (eq cmp t) nil (signum cmp))))
 #+END_SRC
 
-*** Org search in files
+*** Search in files
 
 #+BEGIN_SRC elisp
 (defun +org|search-in-notes ()
@@ -254,7 +254,7 @@ Projectile search is not fast reliable enough."
     (counsel-file-jump nil org-directory)))
 #+END_SRC
 
-*** Org find in files
+*** Find in files
 
 #+BEGIN_SRC elisp
 (defun +org/find-in-files (file)
