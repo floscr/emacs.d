@@ -1,0 +1,799 @@
+#+TITLE: Org Mode Configuration
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle yes
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+* Configuration
+** Required Packages
+
+#+BEGIN_SRC elisp
+(require 'dash)
+(require 's)
+(load (concat doom-private-dir "utils.el"))
+#+END_SRC
+
+** Additional files
+
+#+BEGIN_SRC elisp
+(if (featurep! +org-noter)        (load! "+org-noter"))
+(if (featurep! +org-reading-list) (load! "+org-reading-list"))
+(if (featurep! +org-web-tools)    (load! "+org-web-tools"))
+#+END_SRC
+** Utils
+*** Add source property from chrome
+
+#+BEGIN_SRC elisp
+(defun +org|source-properties-key-from-browser ()
+  "Add the link from the frontmost chrome tab as a source property."
+  (interactive)
+  (org-set-property "SOURCE" (org-mac-chrome-get-frontmost-url)))
+#+END_SRC
+
+*** Archive all done tasks
+
+#+BEGIN_SRC elisp :tangle no
+(defun +org|archive-done-tasks ()
+  "Archive tasks with DONE or CANCELED todo state."
+  (interactive)
+  (org-map-entries
+   (lambda ()
+     (org-archive-subtree)
+     (setq org-map-continue-from (outline-previous-heading)))
+   "/+{|DONE|CANCELED}" 'tree))
+#+END_SRC
+
+*** Archive and Done
+
+#+BEGIN_SRC elisp
+(defun +org|archive-and-done ()
+  "Mark task as done and archive"
+  (interactive)
+  (org-todo "DONE")
+  (org-archive-subtree))
+
+(defun +org|agenda-archive-and-done ()
+  "Mark agenda task as done and archive"
+  (interactive)
+  (org-agenda-todo "DONE")
+  (org-agenda-archive))
+#+END_SRC
+
+*** Copy block to clipboard
+
+#+BEGIN_SRC elisp
+(defun +org|copy-block ()
+  "Copies the current block to clipboard"
+  (interactive)
+  (org-edit-src-code)
+  (clipboard-kill-ring-save (point-min) (point-max)))
+#+END_SRC
+
+*** Export As Markdown
+
+#+BEGIN_SRC elisp
+(defun +org/copy-as-markdown (&optional subtree-p)
+  "Copy the current subtree as markdown to clipboard"
+    (let* ((org-export-with-toc nil)
+           (md (org-md-export-as-markdown nil subtree-p)))
+      (kill-ring-save (point-min) (point-max))
+      (kill-buffer md)))
+
+(defun +org|copy-buffer-as-markdown ()
+  "Copy the entire buffer as markdown to clipboard."
+  (interactive)
+  (+org/copy-as-markdown))
+
+(defun +org|copy-subtree-as-markdown ()
+  "Copy the subtree as markdown to clipboard."
+  (interactive)
+  (+org/copy-as-markdown t))
+#+END_SRC
+
+*** Grab Tablist from Chrome
+
+#+BEGIN_SRC elisp
+(defun +org|grab-chrome-tabs ()
+  "Grab all the chrome tabs as an org list to save for later inspection"
+  (interactive)
+  (let ((tabs
+         (do-jxa-script
+          (concat
+           "Application(\"Chrome\").windows[0].tabs()"
+           ".map(tab => `"
+           "- [[${tab.url()}][${tab.title()}]]"
+           "`)"
+           ".join(\"\\n\")"))))
+    (insert tabs)))
+#+END_SRC
+
+*** Org Attach
+
+**** Download
+
+#+BEGIN_SRC elisp
+(defun +org-attach/downloads-file (file)
+  "Attach a file in your downloads-directory"
+  (interactive (list (read-file-name "Attach File: " downloads-dir)))
+  (+org-attach/uri file))
+#+END_SRC
+
+**** Screenshot
+
+#+BEGIN_SRC elisp
+(defun +org-attach/last-screenshot ()
+  "Attaches the last screenshot"
+  (interactive)
+  (+org-attach/file (+file/latest-file-in-dir screenshot-dir)))
+#+END_SRC
+
+*** Paste Chrome Link Fix
+
+Fixes wrong paste behaviour where the link would be inserted directly on the character by adding a space
+
+E.g.: (Brackets signal the cursor position)
+
+: **[*]
+: ***[]"
+
+#+BEGIN_SRC elisp
+(defun +org|paste-chrome-link ()
+  "Paste the frontmost chrome link"
+  (interactive)
+  (unless (looking-at-p "[\s\t\n\r]") (forward-char))
+  (insert " ")
+  (insert (org-mac-chrome-get-frontmost-url)))
+#+END_SRC
+
+*** Paste Markdown as org
+
+#+BEGIN_SRC elisp
+(defun +org|paste-markdown-as-org ()
+  "Convert the current clipboard to markdown"
+  (interactive)
+  (insert (shell-command-to-string "pbpaste | pandoc -f markdown -t org")))
+#+END_SRC
+
+*** Schedule Tomorrow
+:PROPERTIES:
+:SOURCE:   [[https://github.com/xandeer/.doom/blob/master/modules/private/xandeer/+org.el][.doom/+org.el at master · xandeer/.doom]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun +org|schedule-tomorrow ()
+  "Return scheduled string on tomorrow."
+  (format-time-string "SCHEDULED: <%F %a>"
+                      (time-add (current-time) (* 24 3600))))
+#+END_SRC
+
+*** Sort org entries
+
+#+BEGIN_SRC elisp
+(defun +org|sort-entries ()
+  "Go to header and sort entries"
+  (interactive)
+  (org-up-element)
+  (org-sort)
+  (org-shifttab)
+  (org-cycle))
+#+END_SRC
+
+*** Visit archive file
+
+#+BEGIN_SRC elisp
+(defun +org|visit-archive-file ()
+  (interactive)
+  (let ((archive-filename (car (org-archive--compute-location org-archive-location))))
+    (find-file archive-filename)
+    (end-of-buffer)))
+#+END_SRC
+
+*** Algin All Tags
+
+#+BEGIN_SRC elisp
+(defun +org|align-all-tags ()
+  "Interactive version of org-align-all-tags"
+  (interactive)
+  (org-align-all-tags))
+#+END_SRC
+
+*** Org get chrome tab formatted
+
+The Github Review Title is very long,
+shorten it a bit for the org capture templates.
+
+#+BEGIN_SRC elisp
+(defun +github/just-pr-title (title)
+  (car (s-split " · " title)))
+
+(defun +org/mac-chrome-get-frontmost-url-custom-format ()
+  "Adaption for org-as-mac-chrome-get-frontmost-url"
+    (--> (org-as-mac-chrome-get-frontmost-url)
+
+         (s-split "::split::" it)
+
+         (pcase it
+           ((pred (s-contains? "github.com" (-first-item it)))
+            (-update-at (- (length it) 1)
+                        #'+github/just-pr-title
+                        it))
+           (_ it))
+
+         (s-join "::split::" it)
+
+         (org-mac-paste-applescript-links it)))
+#+END_SRC
+
+*** Custom Agenda Compare
+
+Sort my agenda entries by a ~DATE_CREATED~ property.
+
+#+BEGIN_SRC elisp
+(setq-default +org-created-property "DATE_CREATED")
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(defun +org|compare-created-date-property (a b)
+  "Compare two `org-mode' agenda entries, `A' and `B', by the \"CREATED\" property."
+  (let* ((a-pos (get-text-property 0 'org-marker a))
+         (b-pos (get-text-property 0 'org-marker b))
+         (a-date (or (org-entry-get a-pos +org-created-property)
+                     (format "<%s>" (org-read-date t nil "now"))))
+         (b-date (or (org-entry-get b-pos +org-created-property)
+                     (format "<%s>" (org-read-date t nil "now"))))
+         (cmp (compare-strings a-date nil nil b-date nil nil)))
+    (if (eq cmp t) nil (signum cmp))))
+#+END_SRC
+
+*** Org search in files
+
+#+BEGIN_SRC elisp
+(defun +org|search-in-notes ()
+  "Search in the org directory for a file.
+Projectile search is not fast reliable enough."
+  (interactive)
+  (let ((counsel-file-jump-args ". -name '*.org' -type f -print | cut -c 3-"))
+    (counsel-file-jump nil org-directory)))
+#+END_SRC
+
+*** Org find in files
+
+#+BEGIN_SRC elisp
+(defun +org/find-in-files (file)
+  "Find file in org"
+  (find-file (f-join org-directory file)))
+#+END_SRC
+
+** Config
+*** General Config
+**** Todo Keywords
+
+#+BEGIN_SRC elisp
+(after! org
+  :config
+  (setq org-todo-keywords
+        '((sequence "ACTIVE(a)" "NEXT(n)" "|" "DONE")
+          (sequence "TODO(t)" "|" "DONE(x)")
+          (sequence "[ ]([)" "|" "[X](])")
+          (sequence "PROJECT(p)" "|" "DONE")
+          (sequence "NOTE(N)")
+          (sequence "WAITING(w)" "LATER(l)" "SOMEDAY(s)" "|" "DONE" "CANCELLED(c)"))
+   org-todo-keyword-faces
+   '(("ACTIVE" :inherit warning :weight bold)
+     ("NEXT" :inherit warning :weight bold)
+     ("NOTE" :inherit warning :weight bold)
+     ("WAITING" :inherit default :weight bold)
+     ("SOMEDAY" :inherit default :weight bold)
+     ("LATER" :inherit default :weight bold)
+     ("PROJECT" :inherit 'org-todo :weight bold))))
+#+END_SRC
+
+**** Attachments
+
+#+BEGIN_SRC elisp
+(after! org
+  :config
+  (add-to-list 'org-link-abbrev-alist (cons "attach" (abbreviate-file-name org-attach-directory))))
+#+END_SRC
+
+**** Projectile Ignore
+
+#+BEGIN_SRC elisp
+(after! projectile
+  (add-to-list 'projectile-globally-ignored-file-suffixes ".org_archive")
+  (add-to-list 'projectile-globally-ignored-file-suffixes ".DS_Store"))
+#+END_SRC
+
+**** Org variables
+#+BEGIN_SRC elisp
+(setq
+ org-directory (expand-file-name "~/Dropbox/org")
+ org-pinboard-dir org-directory
+ org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
+ org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
+ org-default-notes-file (concat org-directory "/inbox.org")
+ org-shopping-list-file (concat org-directory "/shoppinglist.org")
+ +org-reading-list-file (concat org-directory "/reading-list.org"))
+
+(after! org
+  :config
+  (setq
+   org-tags-column (- fill-column)
+   org-image-actual-width 600
+   org-default-notes-file (concat org-directory "/inbox.org")))
+#+END_SRC
+**** Latex
+Needs ~dvisvgm~
+
+#+BEGIN_SRC elisp
+(setq org-latex-create-formula-image-program 'dvisvgm)
+#+END_SRC
+**** Attachment short link
+#+BEGIN_SRC elisp :tangle no
+(add-to-list 'org-link-abbrev-alist (cons "attach" (abbreviate-file-name org-attach-directory)))
+#+END_SRC
+*** Refile Targets
+
+#+BEGIN_SRC elisp
+(defun expand-org-file-names (xs)
+  (mapcar (λ (x) (expand-file-name x org-directory)) xs))
+
+(setq level-1-refile-targets (expand-org-file-names '("reading-list.org"
+                                                      "cooking.org"
+                                                      ;; "books.org"
+                                                      "programming.org"
+                                                      "shoppinglist.org")))
+
+(setq max-level-2-refile-targets (expand-org-file-names '("Emacs.org"
+                                                          "art.org"
+                                                          "diary"
+                                                          "games.org"
+                                                          "hardware.org"
+                                                          "home.org"
+                                                          "inbox.org"
+                                                          "mealplan.org"
+                                                          "misc.org"
+                                                          "movies.org"
+                                                          "music.org"
+                                                          "osx.org"
+                                                          "personal.org"
+                                                          "podcasts.org"
+                                                          "projects.org"
+                                                          "sleep.org"
+                                                          "sports.org"
+                                                          "travel.org"
+                                                          "Work/work.org")))
+
+(defun level-1-refile-targets () level-1-refile-targets)
+
+(defun max-level-2-refile-targets () max-level-2-refile-targets)
+
+(after! org
+  :config
+  (setq org-refile-targets (quote ((nil :maxlevel . 5)
+                                   (max-level-2-refile-targets :maxlevel . 2)
+                                   (level-1-refile-targets :level . 1)))
+        org-agenda-refile org-agenda-files))
+#+END_SRC
+*** Journal
+#+BEGIN_SRC elisp :tangle no
+(defvar org-journal-dir-default "~/Dropbox/org/journal")
+(defvar org-journal-dir-diary "~/Dropbox/org/diary")
+
+(setq org-journal-dir org-journal-dir-default)
+(setq org-journal-file-format "%Y-%m-%d")
+(setq org-journal-date-prefix "#+TITLE: ")
+(setq org-journal-date-format "%A, %B %d %Y")
+(setq org-journal-time-prefix "* ")
+(setq org-journal-time-format "")
+#+END_SRC
+*** Org Capture
+**** Org Capture Config
+
+#+BEGIN_SRC elisp
+(setq +org-capture-frame-parameters
+  `((name . "org-capture")
+    (width . 120)
+    (height . 35)
+    (transient . t)))
+#+END_SRC
+
+**** Add created property after capture
+#+BEGIN_SRC elisp
+(defun +org|add-created-date-property ()
+  "Add DATE_CAPTURED property to the current item."
+  (interactive)
+  (org-set-property +org-created-property (format-time-string  "[%Y-%m-%d %a %H:%M]")))
+
+(add-hook 'org-capture-before-finalize-hook '+org|add-created-date-property)
+#+END_SRC
+
+**** Org Capture Templates
+
+#+BEGIN_SRC elisp
+(defun org-capture-bookmark-pair ()
+  (split-string (org-as-mac-chrome-get-frontmost-url) "::split::"))
+
+(defun org-capture-bookmark-string-url ()
+  (car (org-capture-bookmark-pair)))
+
+(defun org-capture-bookmark-string-description ()
+  (cadr (org-capture-bookmark-pair)))
+
+(after! org
+  :config
+  (setq org-capture-templates
+        `(("t" "todo" entry
+           (file org-default-notes-file)
+           "* TODO %?")
+
+          ("c" "Calendar Event" entry
+           (file+headline ,(concat org-directory "/home.org") "Calendar")
+           "* %?")
+
+          ("e" "Emacs Todo" entry
+           (file+headline ,(concat org-directory "/emacs.org") "Emacs Todos")
+           "* TODO %?")
+
+          ("p" "Pin Bookmark" entry (file+headline org-pinboard-file "Pinboard")
+           "* %(org-capture-bookmark-string-description)%?\n:PROPERTIES:\n:URL:  %(org-capture-bookmark-string-url)\n:TIME: %U\n:END:")
+
+          ("rr" "Add to reading list" entry (file+headline +org-reading-list-file "Reading List")
+           "* TODO %(org-mac-chrome-get-frontmost-url)%?")
+
+          ("rw" "Add to watching list" entry (file+headline +org-reading-list-file "Watching List")
+           "* TODO %(org-mac-chrome-get-frontmost-url)%?")
+
+          ("C" "Browser" entry
+           (file org-default-notes-file)
+           "* TODO %(org-mac-chrome-get-frontmost-url)%?")
+
+          ("ww" "Work Task" entry
+           (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
+           "* TODO %?")
+
+          ("wr" "Work Review" entry
+           (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
+           "* TODO %(+org/mac-chrome-get-frontmost-url-custom-format)%? :REVIEW: "))))
+#+END_SRC
+*** Src Block Snippets
+#+BEGIN_SRC elisp :tangle no
+(add-to-list 'org-structure-template-alist '("es" "#+BEGIN_SRC elisp\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("E" "#+BEGIN_EXAMPLE\n?\n#+END_EXAMPLE"))
+(add-to-list 'org-structure-template-alist '("j" "#+BEGIN_SRC js\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("ps" "#+BEGIN_SRC purescript\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("b" "#+BEGIN_SRC bash\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("re" "#+BEGIN_SRC reason\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("oc" "#+BEGIN_SRC ocaml\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("rb" "#+BEGIN_SRC ruby\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("md" "#+BEGIN_SRC markdown\n?\n#+END_SRC\n"))
+#+END_SRC
+*** Agenda
+**** Config
+***** Agenda Files
+#+BEGIN_SRC elisp
+(after! org-agenda
+  :config
+  (setq org-agenda-files
+        (--map (f-join org-directory it)
+               '("home.org"
+                 "inbox.org"
+                 "calendar-family.org"
+                 "Work/work.org"))))
+#+END_SRC
+
+***** Custom Date Property
+#+BEGIN_SRC elisp
+(after! org-agenda
+  (setq-default
+   org-agenda-cmp-user-defined #'+org|compare-created-date-property
+   org-agenda-sorting-strategy '((agenda habit-down user-defined-up time-up priority-down category-keep)
+                                 (todo priority-down category-keep user-defined-up time-up)
+                                 (tags priority-down category-keep user-defined-up time-up)
+                                 (search category-keep))))
+#+END_SRC
+**** Bindings
+#+BEGIN_SRC elisp
+(evil-define-key 'motion org-agenda-mode-map
+  "vd" 'org-agenda-day-view
+  "ds" 'org-agenda-schedule
+  "vw" 'org-agenda-week-view
+  "vm" 'org-agenda-month-view
+  "vy" 'org-agenda-year-view)
+#+END_SRC
+**** Custom Agenda Commands
+
+Helper to reset the org agenda custom commands.
+
+#+BEGIN_SRC elisp :tangle no
+(setq org-agenda-custom-commands '())
+#+END_SRC
+
+***** Opening Tag
+
+#+BEGIN_SRC elisp
+(after! org-agenda
+#+END_SRC
+
+***** Today View
+
+#+BEGIN_SRC elisp
+(add-to-list 'org-agenda-custom-commands
+             '("d" "Today" ((agenda "a"
+                                    ((org-agenda-prefix-format "  %?-12t% s")
+                                     (org-agenda-start-on-weekday nil)
+                                     (org-agenda-span 1)
+                                     (org-agenda-start-day ".")
+                                     (org-agenda-skip-scheduled-if-done t)
+                                     (org-agenda-sorting-strategy '(timestamp-up time-up))
+                                     (org-agenda-day-view)
+                                     (org-super-agenda-groups '((:name "Today" :date today :time-grid t)
+                                                                (:name "Overdue" :deadline past :scheduled past)
+                                                                (:name "Future" :anything (:scheduled future)))))))))
+#+END_SRC
+
+***** All TODO Items
+
+#+BEGIN_SRC elisp
+(add-to-list 'org-agenda-custom-commands
+             '("x" "Todo Items" tags-todo "-WORK"
+               ((org-agenda-prefix-format "  %?-12t% s")
+                (org-agenda-sorting-strategy '(timestamp-down todo-state-down))
+                (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
+                                           (:name "Scheduled" :scheduled t)
+                                           (:name "Inbox" :file-path ".*inbox.org$" :order 2)
+                                           (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
+                                           (:name "Backlog" :tag "BACKLOG" :order 3))))))
+#+END_SRC
+
+***** Emacs
+
+#+BEGIN_SRC elisp
+(add-to-list 'org-agenda-custom-commands
+             '("e" "Emacs Items" alltodo ""
+               ((org-agenda-prefix-format "  %?-12t% s")
+                (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
+                (org-agenda-files (list (f-join org-directory "Emacs.org")))
+                (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
+                                           (:name "Next" :todo "NEXT")
+                                           (:name "Low Effort" :effort< "0:30")
+                                           (:name "Todo" :todo "TODO"))))))
+#+END_SRC
+
+***** Work
+
+#+BEGIN_SRC elisp
+(add-to-list 'org-agenda-custom-commands
+             '("w" "Work Agenda"
+               ((agenda "a" ((org-agenda-span 3)
+                             (org-agenda-start-on-weekday t)
+                             (org-agenda-show-all-dates nil)
+                             (org-agenda-use-time-grid 'require-timed)
+                             (org-agenda-start-day ".")))
+                (tags-todo "+WORK-EVENT"
+                   ((org-agenda-sorting-strategy '(user-defined-down timestamp-down time-down))
+                    (org-super-agenda-groups '((:name "In Progress" :todo "ACTIVE" :time-grid t)
+                                               (:name "DevTools" :tag "DEV_TOOLS" :order 5)
+                                               (:name "Meta Work" :tag "META_WORK" :order 5)
+                                               (:name "Reviews" :tag "REVIEW" :order 4)
+                                               (:name "Tasks" :not (:todo "SOMEDAY" :todo "WAITING" :tag ("BACKLOG" "TEXT" "EMACS")) :order 3)
+                                               (:name "Waiting" :todo "WAITING" :order 6)
+                                               (:name "Backlog" :tag "BACKLOG" :todo "SOMEDAY" :order 11)
+                                               (:name "Reading List" :tag "TEXT" :order 10))))))
+               ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
+                (org-agenda-tag-filter-preset '("+WORK"))
+                (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "inbox.org"))))))
+#+END_SRC
+
+***** Calendar
+
+#+BEGIN_SRC elisp
+(add-to-list 'org-agenda-custom-commands
+             '("c" "Calendar" agenda ""
+               ((org-agenda-span 7)
+                (org-agenda-start-on-weekday nil)
+                (org-agenda-start-day "-1d")
+                (org-agenda-tag-filter-preset '("+CALENDAR")))))
+#+END_SRC
+
+***** Closing Tag
+
+#+BEGIN_SRC elisp
+)
+#+END_SRC
+
+*** Clocking
+**** Automatically set clocking or todo state
+:PROPERTIES:
+:SOURCE:   [[https://github.com/magnars/dash.el#-contains-list-element][magnars/dash.el: A modern list library for Emacs]]
+:END:
+
+#+BEGIN_SRC elisp
+(after! org
+#+END_SRC
+
+Clock in when the todo state has been changed to ~ACTIVE~
+
+#+BEGIN_SRC elisp
+(defun +org/org-clock-in-if-starting ()
+  "Clock in when the task is marked ACTIVE."
+  (when (and (string= org-state "ACTIVE")
+             (not (string= org-last-state org-state)))
+    (org-clock-in)))
+
+(add-hook 'org-after-todo-state-change-hook '+org/org-clock-in-if-starting)
+#+END_SRC
+
+Clock out when the todo state is set to a delay state.
+
+#+BEGIN_SRC elisp
+(defun +org/org-clock-out-if-waiting ()
+  "Clock out when the task is marked WAITING."
+  (when (and (-contains? '("WAITING" "SOMEDAY" "CANCELLED") org-state)
+             (equal (marker-buffer org-clock-marker) (current-buffer))
+             (< (point) org-clock-marker)
+             (> (save-excursion (outline-next-heading) (point))
+               org-clock-marker)
+             (not (string= org-last-state org-state)))
+    (org-clock-out)))
+
+(add-hook 'org-after-todo-state-change-hook '+org/org-clock-out-if-waiting)
+#+END_SRC
+
+Set the active state when clocking in.
+
+#+BEGIN_SRC elisp
+(defun +org/org-set-active-state (&optional args)
+  "Set the active state for the current item."
+  (org-todo "ACTIVE"))
+
+(advice-add #'org-clock-in :after #'+org/org-set-active-state)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+)
+#+END_SRC
+
+** Package Config
+*** Org Caldav
+
+Calendar management using org mode and [[https://github.com/dengste/org-caldav][org-caldav]].
+
+To sync the calendars use ~org-caldav-sync~.
+
+#+BEGIN_SRC elisp
+(def-package! org-caldav
+  :after org
+  :commands (org-caldav-sync)
+  :config
+  ;; org-caldav-url is set in secrets.el
+  (setq org-caldav-calendar-id "family"
+        org-caldav-inbox (f-join org-directory "calendar-family.org")
+        org-caldav-save-directory doom-cache-dir
+        org-icalendar-timezone "Europe/Berlin")
+  (setq org-caldav-files (list org-caldav-inbox)))
+#+END_SRC
+
+*** Org QL
+#+BEGIN_SRC elisp
+(def-package! org-ql
+  :commands (org-ql-search))
+#+END_SRC
+
+*** Org SuperAgenda
+#+BEGIN_SRC elisp
+(def-package! org-super-agenda
+  :after org
+  :config
+  (org-super-agenda-mode 1)
+  ;; Disable org-super-agenda keymap which breaks evil mappings
+  (setq org-super-agenda-header-map (make-sparse-keymap)))
+#+END_SRC
+** Bindings
+*** Local Leader Bindings
+**** Local Leader Mapping
+#+BEGIN_SRC elisp
+(map! :map evil-org-mode-map
+      :localleader
+      :desc  "Goto Archive"              :m    "$"  #'+org|visit-archive-file
+      :desc  "Align Tags"                :m    "%"  #'+org|align-all-tags
+      :desc  "Schedule Tomorrow"         :m    "+"  #'+org|schedule-tomorrow
+      :desc  "Archive Subtree and Done"  :m    "A"  #'+org|archive-and-done
+      :desc  "Cut Subtree"               :m    "C"  #'org-cut-subtree
+      :desc  "Grab tabs"                 :m    "P"  #'+org|grab-chrome-tabs
+      :desc  "Paste Subtree"             :m    "P"  #'org-paste-subtree
+      :desc  "Sort Entries"              :m    "S"  #'+org|sort-entries
+      :desc  "Archive Subtree"           :m    "a"  #'org-archive-subtree
+      :desc  "Deadline"                  :nve  "d"  #'org-deadline
+      :desc  "Filter"                    :nve  "f"  #'org-match-sparse-tree
+      :desc  "Set source key to tab"     :m    "k"  #'+org|source-properties-key-from-browser
+      :desc  "Create/Edit Todo"          :nve  "o"  #'org-todo
+      :desc  "Paste Chrome Link"         :m    "p"  #'+org|paste-chrome-link
+      :desc  "Refile"                    :nve  "r"  #'org-refile
+      :desc  "Schedule"                  :nve  "s"  #'org-schedule
+      :desc  "Tag heading"               :nve  "t"  #'org-set-tags-command
+      :desc  "Copy Buffer To Markdown"   :m    "y"  #'+org|copy-buffer-as-markdown
+
+      (:desc "Insert" :prefix "i"
+        :desc "Subheadeing" :m "s" (λ!
+                                    (call-interactively 'org-insert-subheading)
+                                    (evil-insert-state))
+        :desc "Inavtive Timestamp" :m "i" 'org-time-stamp-inactive)
+
+      (:desc "Attach" :prefix "F"
+        :desc "Downloads File" :m "d" '+org-attach/downloads-file
+        :desc "Screenshot" :m "s" '+org-attach/last-screenshot
+        :desc "URI" :m "u" '+org-attach/uri
+        :desc "File" :m "f" '+org-attach/file)
+
+      (:prefix ("g" . "goto")
+        :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
+
+      (:desc "Narrow" :prefix "n"
+        :desc "Indirect Buffer Tree" :m "i" #'org-tree-to-indirect-buffer
+        :desc "Subtree"              :m "s" #'org-narrow-to-subtree
+        :desc "Block"                :m "b" #'org-narrow-to-block
+        :desc "Element"              :m "e" #'org-narrow-to-element
+        :desc "widen"                :m "w" #'widen))
+#+END_SRC
+**** Meta Mapping
+#+BEGIN_SRC elisp
+(map! :niv "s-X" #'+org-capture/open-frame)
+
+(after! org
+  (map! :map org-mode-map
+          :gni [s-return]   #'+org/insert-item-below
+          :gni [s-S-return] #'+org/insert-item-above)
+
+  (map! :map evil-org-mode-map
+        :n "s-k" #'org-metaup
+        :n "s-j" #'org-metadown))
+#+END_SRC
+**** Agenda Mapping
+***** Evil Customizations
+#+BEGIN_SRC elisp
+(defun my-evil-org-agenda-set-keys ()
+  (evil-define-key 'motion org-agenda-mode-map
+    "da" 'org-agenda-archive
+    "dA" '+org|agenda-archive-and-done))
+
+(advice-add #'evil-org-agenda-set-keys :after #'my-evil-org-agenda-set-keys)
+#+END_SRC
+***** Fix Window Navigation
+#+BEGIN_SRC elisp
+(map! :map org-agenda-mode-map
+      :desc "Org Window Left" "C-h" #'evil-window-left
+      :desc "Org Window Left" "C-l" #'evil-window-right)
+#+END_SRC
+*** Leader Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:desc "Notes" :prefix "n"
+   :desc "Emacs"                "e" (λ! (+org/find-in-files "Emacs.org"))
+   :desc "Home"                 "h" (λ! (+org/find-in-files "home.org"))
+   :desc "Inbox"                "i" (λ! (+org/find-in-files "inbox.org"))
+   :desc "Work"                 "w" (λ! (+org/find-in-files "Work/work.org"))
+   :desc "Reading List"         "r" #'+org-reading-list/org-open-reading-list-file
+   :desc "Store Link"           "y" #'org-store-link
+   :desc "Find in notes"        "n" #'+org|search-in-notes
+   :desc "Pinboard File"        "B" (λ! (find-file org-pinboard-file))
+   :desc "Save All Org Buffers" "S" #'org-save-all-org-buffers
+   :desc "Agenda"               "a" #'org-agenda
+   :desc "Search Pinboard"      "b" #'helm-org-pinboard
+
+   (:prefix-map ("c" . "clock")
+     :desc "Clock In"               "c" #'org-clock-in
+     :desc "Clock Out"              "C" #'org-clock-out
+     :desc "Mark Default Task"      "d" #'org-clock-mark-default-task
+     :desc "Modify Effort Estimate" "e" #'org-clock-modify-effort-estimate
+     :desc "Clock In Last"          "l" #'org-clock-in-last
+     :desc "Goto Current"           "g" #'org-clock-goto
+     :desc "Goto Select"            "G" (λ! (org-clock-goto 'select))
+     :desc "Cancel"                 "x" #'org-clock-cancel
+     :desc "Timestamp Up"           "=" #'org-clock-timestamps-up
+     :desc "Timestamp Down"         "-" #'org-clock-timestamps-down)))
+#+END_SRC
