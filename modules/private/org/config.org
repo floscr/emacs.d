@@ -22,6 +22,7 @@
 (if (featurep! +org-reading-list) (load! "+org-reading-list"))
 (if (featurep! +org-web-tools)    (load! "+org-web-tools"))
 #+END_SRC
+
 ** Utils
 *** Add source property from chrome
 
@@ -49,13 +50,13 @@
 
 #+BEGIN_SRC elisp
 (defun +org|archive-and-done ()
-  "Mark task as done and archive"
+  "Mark task as done and archive."
   (interactive)
   (org-todo "DONE")
   (org-archive-subtree))
 
 (defun +org|agenda-archive-and-done ()
-  "Mark agenda task as done and archive"
+  "Mark agenda task as done and archive."
   (interactive)
   (org-agenda-todo "DONE")
   (org-agenda-archive))
@@ -65,7 +66,7 @@
 
 #+BEGIN_SRC elisp
 (defun +org|copy-block ()
-  "Copies the current block to clipboard"
+  "Copies the current block to clipboard."
   (interactive)
   (org-edit-src-code)
   (clipboard-kill-ring-save (point-min) (point-max)))
@@ -75,7 +76,7 @@
 
 #+BEGIN_SRC elisp
 (defun +org/copy-as-markdown (&optional subtree-p)
-  "Copy the current subtree as markdown to clipboard"
+  "Copy the current subtree as markdown to clipboard."
     (let* ((org-export-with-toc nil)
            (md (org-md-export-as-markdown nil subtree-p)))
       (kill-ring-save (point-min) (point-max))
@@ -96,7 +97,7 @@
 
 #+BEGIN_SRC elisp
 (defun +org|grab-chrome-tabs ()
-  "Grab all the chrome tabs as an org list to save for later inspection"
+  "Grab all the chrome tabs as an org list."
   (interactive)
   (let ((tabs
          (do-jxa-script
@@ -110,12 +111,11 @@
 #+END_SRC
 
 *** Org Attach
-
 **** Download
 
 #+BEGIN_SRC elisp
 (defun +org-attach/downloads-file (file)
-  "Attach a file in your downloads-directory"
+  "Attach a file in your downloads-directory."
   (interactive (list (read-file-name "Attach File: " downloads-dir)))
   (+org-attach/uri file))
 #+END_SRC
@@ -151,7 +151,7 @@ E.g.: (Brackets signal the cursor position)
 
 #+BEGIN_SRC elisp
 (defun +org|paste-markdown-as-org ()
-  "Convert the current clipboard to markdown"
+  "Convert the current clipboard to markdown."
   (interactive)
   (insert (shell-command-to-string "pbpaste | pandoc -f markdown -t org")))
 #+END_SRC
@@ -172,7 +172,7 @@ E.g.: (Brackets signal the cursor position)
 
 #+BEGIN_SRC elisp
 (defun +org|sort-entries ()
-  "Go to header and sort entries"
+  "Go to header and sort entries."
   (interactive)
   (org-up-element)
   (org-sort)
@@ -190,11 +190,11 @@ E.g.: (Brackets signal the cursor position)
     (end-of-buffer)))
 #+END_SRC
 
-*** Algin All Tags
+*** Algin all tags
 
 #+BEGIN_SRC elisp
 (defun +org|align-all-tags ()
-  "Interactive version of org-align-all-tags"
+  "Interactive version of org-align-all-tags."
   (interactive)
   (org-align-all-tags))
 #+END_SRC
@@ -209,20 +209,16 @@ shorten it a bit for the org capture templates.
   (car (s-split " · " title)))
 
 (defun +org/mac-chrome-get-frontmost-url-custom-format ()
-  "Adaption for org-as-mac-chrome-get-frontmost-url"
+  "Adaption for org-as-mac-chrome-get-frontmost-url."
     (--> (org-as-mac-chrome-get-frontmost-url)
-
          (s-split "::split::" it)
-
          (pcase it
            ((pred (s-contains? "github.com" (-first-item it)))
             (-update-at (- (length it) 1)
                         #'+github/just-pr-title
                         it))
            (_ it))
-
          (s-join "::split::" it)
-
          (org-mac-paste-applescript-links it)))
 #+END_SRC
 
@@ -262,7 +258,7 @@ Projectile search is not fast reliable enough."
 
 #+BEGIN_SRC elisp
 (defun +org/find-in-files (file)
-  "Find file in org"
+  "Find file in org directory."
   (find-file (f-join org-directory file)))
 #+END_SRC
 
@@ -307,6 +303,7 @@ Projectile search is not fast reliable enough."
 #+END_SRC
 
 **** Org variables
+
 #+BEGIN_SRC elisp
 (setq
  org-directory (expand-file-name "~/Dropbox/org")
@@ -324,47 +321,50 @@ Projectile search is not fast reliable enough."
    org-image-actual-width 600
    org-default-notes-file (concat org-directory "/inbox.org")))
 #+END_SRC
+
 **** Latex
+
 Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (setq org-latex-create-formula-image-program 'dvisvgm)
 #+END_SRC
-**** Attachment short link
-#+BEGIN_SRC elisp :tangle no
-(add-to-list 'org-link-abbrev-alist (cons "attach" (abbreviate-file-name org-attach-directory)))
-#+END_SRC
+
 *** Refile Targets
 
 #+BEGIN_SRC elisp
 (defun expand-org-file-names (xs)
   (mapcar (λ (x) (expand-file-name x org-directory)) xs))
 
-(setq level-1-refile-targets (expand-org-file-names '("reading-list.org"
-                                                      "cooking.org"
-                                                      ;; "books.org"
-                                                      "programming.org"
-                                                      "shoppinglist.org")))
+(setq level-1-refile-targets
+      (expand-org-file-names
+       '("reading-list.org"
+         "cooking.org"
+         ;; "books.org"
+         "programming.org"
+         "shoppinglist.org")))
 
-(setq max-level-2-refile-targets (expand-org-file-names '("Emacs.org"
-                                                          "art.org"
-                                                          "diary"
-                                                          "games.org"
-                                                          "hardware.org"
-                                                          "home.org"
-                                                          "inbox.org"
-                                                          "mealplan.org"
-                                                          "misc.org"
-                                                          "movies.org"
-                                                          "music.org"
-                                                          "osx.org"
-                                                          "personal.org"
-                                                          "podcasts.org"
-                                                          "projects.org"
-                                                          "sleep.org"
-                                                          "sports.org"
-                                                          "travel.org"
-                                                          "Work/work.org")))
+(setq max-level-2-refile-targets
+      (expand-org-file-names
+       '("Emacs.org"
+         "art.org"
+         "diary"
+         "games.org"
+         "hardware.org"
+         "home.org"
+         "inbox.org"
+         "mealplan.org"
+         "misc.org"
+         "movies.org"
+         "music.org"
+         "osx.org"
+         "personal.org"
+         "podcasts.org"
+         "projects.org"
+         "sleep.org"
+         "sports.org"
+         "travel.org"
+         "Work/work.org")))
 
 (defun level-1-refile-targets () level-1-refile-targets)
 
@@ -378,6 +378,7 @@ Needs ~dvisvgm~
         org-agenda-refile org-agenda-files))
 #+END_SRC
 *** Journal
+
 #+BEGIN_SRC elisp :tangle no
 (defvar org-journal-dir-default "~/Dropbox/org/journal")
 (defvar org-journal-dir-diary "~/Dropbox/org/diary")
@@ -389,6 +390,7 @@ Needs ~dvisvgm~
 (setq org-journal-time-prefix "* ")
 (setq org-journal-time-format "")
 #+END_SRC
+
 *** Org Capture
 **** Org Capture Config
 
@@ -401,6 +403,7 @@ Needs ~dvisvgm~
 #+END_SRC
 
 **** Add created property after capture
+
 #+BEGIN_SRC elisp
 (defun +org|add-created-date-property ()
   "Add DATE_CAPTURED property to the current item."
@@ -459,20 +462,23 @@ Needs ~dvisvgm~
            "* TODO %(+org/mac-chrome-get-frontmost-url-custom-format)%? :REVIEW: "))))
 #+END_SRC
 *** Src Block Snippets
+
 #+BEGIN_SRC elisp :tangle no
 (add-to-list 'org-structure-template-alist '("es" "#+BEGIN_SRC elisp\n?\n#+END_SRC\n"))
-(add-to-list 'org-structure-template-alist '("E" "#+BEGIN_EXAMPLE\n?\n#+END_EXAMPLE"))
-(add-to-list 'org-structure-template-alist '("j" "#+BEGIN_SRC js\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("E"  "#+BEGIN_EXAMPLE\n?\n#+END_EXAMPLE"))
+(add-to-list 'org-structure-template-alist '("j"  "#+BEGIN_SRC js\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("ps" "#+BEGIN_SRC purescript\n?\n#+END_SRC\n"))
-(add-to-list 'org-structure-template-alist '("b" "#+BEGIN_SRC bash\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("b"  "#+BEGIN_SRC bash\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("re" "#+BEGIN_SRC reason\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("oc" "#+BEGIN_SRC ocaml\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("rb" "#+BEGIN_SRC ruby\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("md" "#+BEGIN_SRC markdown\n?\n#+END_SRC\n"))
 #+END_SRC
+
 *** Agenda
 **** Config
 ***** Agenda Files
+
 #+BEGIN_SRC elisp
 (after! org-agenda
   :config
@@ -485,6 +491,7 @@ Needs ~dvisvgm~
 #+END_SRC
 
 ***** Custom Date Property
+
 #+BEGIN_SRC elisp
 (after! org-agenda
   (setq-default
@@ -494,7 +501,9 @@ Needs ~dvisvgm~
                                  (tags priority-down category-keep user-defined-up time-up)
                                  (search category-keep))))
 #+END_SRC
+
 **** Bindings
+
 #+BEGIN_SRC elisp
 (evil-define-key 'motion org-agenda-mode-map
   "vd" 'org-agenda-day-view
@@ -503,6 +512,7 @@ Needs ~dvisvgm~
   "vm" 'org-agenda-month-view
   "vy" 'org-agenda-year-view)
 #+END_SRC
+
 **** Custom Agenda Commands
 
 Helper to reset the org agenda custom commands.
@@ -677,12 +687,14 @@ To sync the calendars use ~org-caldav-sync~.
 #+END_SRC
 
 *** Org QL
+
 #+BEGIN_SRC elisp
 (def-package! org-ql
   :commands (org-ql-search))
 #+END_SRC
 
 *** Org SuperAgenda
+
 #+BEGIN_SRC elisp
 (def-package! org-super-agenda
   :after org
@@ -691,9 +703,11 @@ To sync the calendars use ~org-caldav-sync~.
   ;; Disable org-super-agenda keymap which breaks evil mappings
   (setq org-super-agenda-header-map (make-sparse-keymap)))
 #+END_SRC
+
 ** Bindings
 *** Local Leader Bindings
 **** Local Leader Mapping
+
 #+BEGIN_SRC elisp
 (map! :map evil-org-mode-map
       :localleader
@@ -738,7 +752,9 @@ To sync the calendars use ~org-caldav-sync~.
         :desc "Element"              :m "e" #'org-narrow-to-element
         :desc "widen"                :m "w" #'widen))
 #+END_SRC
+
 **** Meta Mapping
+
 #+BEGIN_SRC elisp
 (map! :niv "s-X" #'+org-capture/open-frame)
 
@@ -751,8 +767,10 @@ To sync the calendars use ~org-caldav-sync~.
         :n "s-k" #'org-metaup
         :n "s-j" #'org-metadown))
 #+END_SRC
+
 **** Agenda Mapping
 ***** Evil Customizations
+
 #+BEGIN_SRC elisp
 (defun my-evil-org-agenda-set-keys ()
   (evil-define-key 'motion org-agenda-mode-map
@@ -761,12 +779,15 @@ To sync the calendars use ~org-caldav-sync~.
 
 (advice-add #'evil-org-agenda-set-keys :after #'my-evil-org-agenda-set-keys)
 #+END_SRC
+
 ***** Fix Window Navigation
+
 #+BEGIN_SRC elisp
 (map! :map org-agenda-mode-map
       :desc "Org Window Left" "C-h" #'evil-window-left
       :desc "Org Window Left" "C-l" #'evil-window-right)
 #+END_SRC
+
 *** Leader Bindings
 
 #+BEGIN_SRC elisp

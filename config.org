@@ -214,7 +214,6 @@ This fix opens the folder and selects the file.
     (dired path)))
 #+END_SRC
 
-
 *** Hydras
 **** Hydra Expand Region
 :PROPERTIES:
