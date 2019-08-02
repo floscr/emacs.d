@@ -228,6 +228,22 @@ This fix opens the folder and selects the file.
                      "    reveal POSIX file \"" file-name "\"\n"
                      "end tell"))))
 #+END_SRC
+
+**** Open frontmost finder dir in dired
+
+#+BEGIN_SRC elisp
+(defun +macos|dired-finder-directory ()
+  "Open the frontmost dired directory in dired."
+  (let ((path (--> (concat
+                     "tell application \"Finder\"\n"
+                     "    return POSIX path of (target of window 1 as alias)\n"
+                     "end tell")
+                  (do-applescript it)
+                  (s-replace "\"" "" it))))
+    (dired path)))
+#+END_SRC
+
+
 *** Hydras
 **** Hydra Expand Region
 :PROPERTIES:
