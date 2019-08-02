@@ -261,6 +261,15 @@ Projectile search is not fast reliable enough."
   "Find file in org directory."
   (find-file (f-join org-directory file)))
 #+END_SRC
+*** Agenda show enty
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-visit-entry ()
+  "Visit entry and narrow to section."
+  (interactive)
+  (org-agenda-switch-to)
+  (org-narrow-to-subtree))
+#+END_SRC
 
 ** Config
 *** General Config
@@ -722,6 +731,13 @@ To sync the calendars use ~org-caldav-sync~.
 ** Bindings
 *** Local Leader Bindings
 **** Local Leader Mapping
+
+#+BEGIN_SRC elisp
+(map! :map org-agenda-mode-map
+      :nm "RET" #'+org|agenda-visit-entry
+      :nm [return] #'+org|agenda-visit-entry)
+#+END_SRC
+
 
 #+BEGIN_SRC elisp
 (map! :map evil-org-mode-map
