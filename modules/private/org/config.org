@@ -556,31 +556,28 @@ Helper to reset the org agenda custom commands.
 ***** All TODO Items
 
 #+BEGIN_SRC elisp
-;; (defun my-skip-unless-waiting ()
-;;        "Skip trees that are not waiting"
-;;        (let ((subtree-end (save-excursion (org-end-of-subtree t))))
-;;          (if (re-search-forward ":waiting:" subtree-end t)
-;;              nil          ; tag found, do not skip
-;;            subtree-end))) ; tag not found, continue after end of subtree
-
 (add-to-list 'org-agenda-custom-commands
              '("x" "Todo Items"
-               ((agenda "-REPEATING" ((org-agenda-span 3)
-                                      (org-agenda-show-all-dates nil)
-                                      (org-agenda-use-time-grid nil)
-                                      (org-agenda-start-day ".")
-                                      (org-agenda-prefix-format '((agenda . "  ")))
-                                      (org-super-agenda-header-separator "")
-                                      (org-agenda-sorting-strategy '(scheduled-down ts-down todo-state-down))
-                                      (org-super-agenda-groups '((:name nil :discard (:tag "REPEATING" :todo "CANCELLED" :scheduled past))))))
-                (tags-todo "-WORK" ((org-agenda-prefix-format "  %?-12t% s")
-                                    (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
-                                    (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
-                                                               (:name "Overdue" :scheduled past)
-                                                               (:name nil :discard (:scheduled t))
-                                                               (:name "Inbox" :file-path ".*inbox.org$" :order 2)
-                                                               (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
-                                                               (:name "Backlog" :tag "BACKLOG" :order 3))))))))
+               ((agenda
+                 "-REPEATING"
+                  ((org-agenda-span 3)
+                   (org-agenda-show-all-dates nil)
+                   (org-agenda-use-time-grid nil)
+                   (org-agenda-start-day ".")
+                   (org-agenda-prefix-format '((agenda . "  ")))
+                   (org-super-agenda-header-separator "")
+                   (org-agenda-sorting-strategy '(scheduled-down ts-down todo-state-down))
+                   (org-super-agenda-groups '((:name nil :discard (:tag "REPEATING" :todo "CANCELLED" :scheduled past))))))
+                (tags-todo
+                 "-WORK"
+                 ((org-agenda-prefix-format "  %?-12t% s")
+                  (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
+                  (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
+                                             (:name "Overdue" :scheduled past)
+                                             (:name nil :discard (:scheduled t))
+                                             (:name "Inbox" :file-path ".*inbox.org$" :order 2)
+                                             (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
+                                             (:name "Backlog" :tag "BACKLOG" :order 3))))))))
 #+END_SRC
 
 ***** Emacs
