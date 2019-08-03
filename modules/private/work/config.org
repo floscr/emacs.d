@@ -156,8 +156,6 @@ Create an canvas action
     (call-interactively #'evil-indent-line)))
 #+END_SRC
 
-
-
 ** Packages
 *** New Worktree
 
