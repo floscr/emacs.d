@@ -11,6 +11,7 @@
 ;;; Org-Mode Packages
 (package! helm-org-rifle)
 (package! org-pinboard :recipe (:fetcher github :repo "floscr/org-pinboard"))
+(package! org-media-info :recipe (:fetcher github :repo "floscr/org-media-info"))
 (package! poporg)
 (package! org-ql :recipe (:fetcher github :repo "alphapapa/org-ql"))
 (package! org-super-agenda :recipe (:fetcher github :repo "alphapapa/org-super-agenda"))

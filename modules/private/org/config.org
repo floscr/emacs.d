@@ -725,6 +725,13 @@ To sync the calendars use ~org-caldav-sync~.
   ;; Disable org-super-agenda keymap which breaks evil mappings
   (setq org-super-agenda-header-map (make-sparse-keymap)))
 #+END_SRC
+*** Org Media Info
+
+#+BEGIN_SRC elisp
+(def-package! org-media-info
+  :commands (org-media-insert-book org-media-insert-book-german))
+#+END_SRC
+
 
 ** Bindings
 *** Local Leader Bindings
