@@ -1325,6 +1325,7 @@ brew cask install font-liberation-sans
   (npm-mode--exec-process "npm ci"))
 #+END_SRC
 *** PDF Tools
+
 #+BEGIN_SRC elisp
 ;; Enable Retina pdfs
 (setq pdf-view-use-scaling t)
