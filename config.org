@@ -1912,11 +1912,11 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 (map!
   :leader
   (:desc "Yank" :prefix "y"
-    :desc "filename"  :n  "f" (λ! (copy-message (file-name-nondirectory buffer-file-name)))
-    :desc "base"      :n  "b" (λ! (copy-message (file-name-base (buffer-file-name))))
-    :desc "directory" :n  "d" (λ! (copy-message (file-name-directory (buffer-file-name))))
-    :desc "path"      :n  "p" (λ! (copy-message (file-name-directory (buffer-file-name))))
-    :desc "project"   :n  "r" (λ! (copy-message (s-replace (projectile-project-root) "" (buffer-file-name))))))
+    :desc "filename"                     :n "f" (λ! (copy-message (file-name-nondirectory buffer-file-name)))
+    :desc "base"                         :n "b" (λ! (copy-message (file-name-base (or buffer-file-name dired-directory))))
+    :desc "directory"                    :n "d" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
+    :desc "path"                         :n "p" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
+    :desc "relative to propject project" :n "r" (λ! (copy-message (s-replace (projectile-project-root) "" (or buffer-file-name dired-directory))))))
 #+END_SRC
 
 *** Little Word Motion
