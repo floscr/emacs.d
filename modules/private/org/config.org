@@ -809,12 +809,12 @@ To sync the calendars use ~org-caldav-sync~.
 ***** Evil Customizations
 
 #+BEGIN_SRC elisp
-(defun my-evil-org-agenda-set-keys ()
+(defun +org/set-evil-org-agenda-keys ()
   (evil-define-key 'motion org-agenda-mode-map
     "da" 'org-agenda-archive
     "dA" '+org|agenda-archive-and-done))
 
-(advice-add #'evil-org-agenda-set-keys :after #'my-evil-org-agenda-set-keys)
+(advice-add #'evil-org-agenda-set-keys :after #'+org/set-evil-org-agenda-keys)
 #+END_SRC
 
 ***** Fix Window Navigation
