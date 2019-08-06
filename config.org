@@ -111,6 +111,15 @@ shuffling is done in place."
              (swap-list-items LIST i j)))
   LIST)
 #+END_SRC
+**** Tangle org files
+#+BEGIN_SRC elisp
+(defun +utils|tangle-org-files ()
+  (interactive)
+  (let ((default-directory doom-private-dir))
+    (save-window-excursion
+      (async-shell-command "org-tangle **/*.org" nil))))
+#+END_SRC
+
 *** Math on Numbers
 #+BEGIN_SRC elisp
 (defun math-on-number (f &optional num)
