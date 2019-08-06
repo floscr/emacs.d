@@ -738,14 +738,6 @@ To sync the calendars use ~org-caldav-sync~.
 **** Local Leader Mapping
 
 #+BEGIN_SRC elisp
-(after! org-agenda
-  (map! :map org-agenda-mode-map
-        :nm "RET" #'+org|agenda-visit-entry
-        :nm [return] #'+org|agenda-visit-entry))
-#+END_SRC
-
-
-#+BEGIN_SRC elisp
 (map! :map evil-org-mode-map
       :localleader
       :desc  "Goto Archive"              :m    "$"  #'+org|visit-archive-file
@@ -811,8 +803,9 @@ To sync the calendars use ~org-caldav-sync~.
 #+BEGIN_SRC elisp
 (defun +org/set-evil-org-agenda-keys ()
   (evil-define-key 'motion org-agenda-mode-map
-    "da" 'org-agenda-archive
-    "dA" '+org|agenda-archive-and-done))
+    "<return>" '+org|agenda-visit-entry
+    "da"       'org-agenda-archive
+    "dA"       '+org|agenda-archive-and-done))
 
 (advice-add #'evil-org-agenda-set-keys :after #'+org/set-evil-org-agenda-keys)
 #+END_SRC
