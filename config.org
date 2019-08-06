@@ -463,19 +463,8 @@ plays a sound and prompts me to insert my count.
                -flatten))
         '() +guitar-chords))
 
-(defvar +guitar-timer-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map [remap kill-current-buffer] #'+guitar|quit)
-    (define-key map [remap kill-buffer]         #'+guitar|quit))
-  "TODO")
-
-(after! +guitar-timer-mode
-  (map! :map +guitar-timer-mode-map
-        :n "q" #'+guitar|quit))
-
 (define-minor-mode +guitar-timer-mode
-  "A little timer."
-  :keymap +guitar-timer-mode-map)
+  "A little timer.")
 
 (defun +guitar/read-timer (from to)
   (let ((amount (read-string "Count: "))
@@ -543,6 +532,8 @@ plays a sound and prompts me to insert my count.
 (defun +guitar|start ()
   (interactive)
   (+guitar/create-timer-buffer '(lambda () (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))
+
+(set-popup-rule! "^\\*Guitar" :quit t :height 2 :select nil :transient t)
 #+END_SRC
 ** Package Config
 *** Blimp
