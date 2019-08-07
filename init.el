@@ -69,7 +69,6 @@
 
  :config
  (default +bindings +snippets +evil-commands)
- literate
 
  :private
  reason
