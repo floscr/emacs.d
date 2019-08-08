@@ -1226,6 +1226,7 @@ Browse the current thing at point for git
     (call-interactively 'git-link)))
 #+END_SRC
 **** Config
+
 #+BEGIN_SRC elisp
 (setq-default magit-save-repository-buffers 'dontask)
 
@@ -1235,6 +1236,7 @@ Browse the current thing at point for git
    magithub-clone-default-directory "~/Code/Repositories"
    git-commit-summary-max-length 120))
 #+END_SRC
+
 **** Bindings
 ***** Diff Navigation
 

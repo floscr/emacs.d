@@ -315,7 +315,6 @@ Create an canvas action
           (search-backward-regexp "^[^\\/\s\n]" header-line t))))
 #+END_SRC
 
-
 *** CSS Rules
 **** Requirements
 #+BEGIN_SRC elisp
