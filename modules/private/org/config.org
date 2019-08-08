@@ -589,9 +589,9 @@ Helper to reset the org agenda custom commands.
                 (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
                 (org-agenda-files (list (f-join org-directory "Emacs.org")))
                 (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
+                                           (:auto-priority t)
                                            (:name "Next" :todo "NEXT")
-                                           (:name "Low Effort" :effort< "0:30")
-                                           (:name "Todo" :todo "TODO"))))))
+                                           (:name "Backlog" :todo "TODO"))))))
 #+END_SRC
 
 ***** Work
