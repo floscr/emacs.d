@@ -559,7 +559,7 @@ Helper to reset the org agenda custom commands.
 (add-to-list 'org-agenda-custom-commands
              '("x" "Todo Items"
                ((agenda
-                 "-REPEATING"
+                 "a"
                   ((org-agenda-span 3)
                    (org-agenda-show-all-dates nil)
                    (org-agenda-use-time-grid nil)
@@ -567,7 +567,8 @@ Helper to reset the org agenda custom commands.
                    (org-agenda-prefix-format '((agenda . "  ")))
                    (org-super-agenda-header-separator "")
                    (org-agenda-sorting-strategy '(scheduled-down ts-down todo-state-down))
-                   (org-super-agenda-groups '((:name nil :discard (:tag "REPEATING" :todo "CANCELLED" :scheduled past))))))
+                   (org-super-agenda-groups '((:name nil :discard (:tag "REPEATING" :todo "CANCELLED" :scheduled past
+                                                                        :and (:tag "WORK" :not (:tag "EVENT"))))))))
                 (tags-todo
                  "-WORK"
                  ((org-agenda-prefix-format "  %?-12t% s")
@@ -589,17 +590,20 @@ Helper to reset the org agenda custom commands.
                 (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
                 (org-agenda-files (list (f-join org-directory "Emacs.org")))
                 (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
+                                           (:auto-priority t)
                                            (:name "Next" :todo "NEXT")
-                                           (:name "Low Effort" :effort< "0:30")
-                                           (:name "Todo" :todo "TODO"))))))
+                                           (:name "Backlog" :todo "TODO"))))))
 #+END_SRC
 
 ***** Work
 
+****** Todo Agenda
+
 #+BEGIN_SRC elisp
 (add-to-list 'org-agenda-custom-commands
              '("w" "Work Agenda"
-               ((agenda "a" ((org-agenda-span 3)
+               ((agenda "a" ((org-agenda-sorting-strategy '(deadline-up user-defined-down timestamp-down time-down))
+                             (org-agenda-span 3)
                              (org-agenda-start-on-weekday t)
                              (org-agenda-show-all-dates nil)
                              (org-agenda-use-time-grid 'require-timed)
