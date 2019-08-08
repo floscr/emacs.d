@@ -597,6 +597,8 @@ Helper to reset the org agenda custom commands.
 
 ***** Work
 
+****** Todo Agenda
+
 #+BEGIN_SRC elisp
 (add-to-list 'org-agenda-custom-commands
              '("w" "Work Agenda"
