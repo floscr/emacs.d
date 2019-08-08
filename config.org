@@ -1190,6 +1190,29 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
   (interactive)
   (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
 #+END_SRC
+***** Create review branch
+
+#+BEGIN_SRC elisp
+(defun +magit|checkout-review-branch (&optional branch start-point)
+  "Create a branch with review prefix for easy cleanup afterwards."
+  (interactive)
+  (let* ((remotes (magit-list-remote-branch-names))
+         (atpoint (magit-branch-at-point))
+         (branch (magit-completing-read
+                  "Checkout branch" remotes
+                  nil nil nil 'magit-revision-history
+                  (or (car (member atpoint remotes))
+                      (and atpoint
+                           (car (member (and (string-match "[^/]+/" atpoint)
+                                             (substring atpoint (match-end 0)))
+                                        remotes)))))))
+    (magit-checkout branch)
+    (when (magit-anything-modified-p)
+      (user-error "Cannot checkout when there are uncommitted changes"))
+    (magit-branch-and-checkout (concat "REVIEW-" branch) branch)))
+
+#+END_SRC
+
 
 ***** TODO Browse git link
 
@@ -1259,7 +1282,8 @@ Fixes evil window navigation for magit special buffers
   (transient-append-suffix 'magit-push "p" '("d" "dated" +git|push-dated))
   (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" +magit|diff-range-from-current-branch))
   (transient-append-suffix 'magit-commit
-    "-D" '("-D" "Override the author date" "--date=" transient-read-date)))
+    "-D" '("-D" "Override the author date" "--date=" transient-read-date))
+  (transient-append-suffix 'magit-diff "l" '("R" "Checkout remote branch for review" +magit|create-review-branch)))
 #+END_SRC
 
 *** Markdown
