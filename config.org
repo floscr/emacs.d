@@ -1817,6 +1817,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :leader
  (:desc "git" :prefix "g"
    :desc "Worktree Popup"              :n "%" #'magit-worktree
+   :desc "Amend Commit (No Message)"   :n "A" (λ! (magit-commit-amend "--no-edit"))
    :desc "Blame"                       :n "B" #'magit-blame
    :desc "Changed Files"               :n "F" #'+git|ivy-changed-files
    :desc "New Branch"                  :n "N" #'magit-branch-spinoff
