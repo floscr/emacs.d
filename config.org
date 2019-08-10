@@ -334,6 +334,26 @@ Allows me to toggle quickly between two themes.
          (doom/reload-theme))
         (t (message "Toggling theme is not possible. Theme is not currently light-theme (%s) or dark-theme (%s)." light-theme dark-theme))))
 #+END_SRC
+*** Theme Modifications
+**** Dired Output
+
+#+BEGIN_SRC elisp
+(defun *doom-themes-custom-set-faces ()
+  (custom-set-faces!
+   '(diredfl-read-priv :foreground "#80899E")
+   '(diredfl-write-priv :foreground "#80899E")
+   '(diredfl-exec-priv :foreground "#80899E")
+   '(diredfl-other-priv :foreground "#80899E")
+
+   '(diredfl-dir-priv :foreground "#282C34")
+
+   '(diredfl-number :foreground "#80899E")
+   '(diredfl-date-time :foreground "#49505F")
+   `(diredfl-dir-name :foreground "#2DADF2")))
+
+(add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
+#+END_SRC
+
 *** Scrolloff
 
 Start scrolling X lines before the end of a screen.
