@@ -270,6 +270,29 @@ Projectile search is not fast reliable enough."
   (org-agenda-switch-to)
   (org-narrow-to-subtree))
 #+END_SRC
+*** Rename Attachment
+
+#+BEGIN_SRC elisp
+(defun +org-attach|rename-attachment-in-org ()
+  "Rename the attachment under the cursor."
+  (interactive)
+  (save-excursion
+    (while (not (org-element-link-parser))
+      (backward-char))
+    (if-let* ((link (org-element-link-parser))
+              (filename (org-element-property :path link))
+              (begin (org-element-property :begin link))
+              (end (org-element-property :end link))
+
+              (path (f-join org-attach-directory filename))
+              (new-path (let ((ivy--directory org-attach-directory))
+                          (counsel-find-file-move path)))
+              (new-filename (s-replace org-attach-directory "" new-path))
+              (new-attach-link (template "[[attach:<<new-filename>>]]")))
+        (progn
+          (delete-region begin end)
+          (insert new-attach-link)))))
+#+END_SRC
 
 ** Config
 *** General Config
