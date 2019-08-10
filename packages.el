@@ -39,6 +39,8 @@
 (package! frame-cmds :recipe (:fetcher wiki))
 
 (package! dired-recent)
+(package! dired-narrow)
+(package! dired-subtree)
 
 ;; Disabled packages
 (package! lsp-ui :disable t)         ;; Annoying LSP Interface
