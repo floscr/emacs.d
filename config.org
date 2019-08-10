@@ -710,8 +710,7 @@ Stay in normal mode when switching to wdired
   "Simple forward to wdired-change-to-wdired-mode, but staying in normal mode."
   (interactive)
   (wdired-change-to-wdired-mode)
-  (evil-normal-state)
-  (forward-char))
+  (evil-normal-state))
 #+END_SRC
 
 Map ~\~ to change to wdired mode, like text mode in maggit buffers.
