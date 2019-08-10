@@ -273,7 +273,7 @@ Projectile search is not fast reliable enough."
 *** Rename Attachment
 
 #+BEGIN_SRC elisp
-(defun +org-attach|rename-attachment-in-org ()
+(defun +org-attach|rename-attachment ()
   "Rename the attachment under the cursor."
   (interactive)
   (save-excursion

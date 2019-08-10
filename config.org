@@ -712,10 +712,10 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
       :n "\\" #'+dired|change-to-wdired-mode)
 #+END_SRC
 *** Dired Recent
+
 #+BEGIN_SRC elisp
 (def-package! dired-recent
   :after dired
-  :init
   :config
   (setq dired-recent-directories-file (concat doom-cache-dir "recentdir")
         dired-recent-max-directories 300)
