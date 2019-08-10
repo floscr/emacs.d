@@ -667,6 +667,7 @@ Otherwise dired comes to a grinding halt on some sizes.
           dired-k-human-readable t
           insert-directory-program "gls" dired-use-ls-dired t)))
 #+END_SRC
+
 ***** Window targeting
 
 When there are two visual splits with dired buffers.
@@ -678,6 +679,7 @@ The cursor has to be on the dired frame with the marked files.
 #+END_SRC
 
 ***** Ignore .bs.js
+
 #+BEGIN_SRC elisp
 (def-package! dired-x
   :after dired
@@ -687,10 +689,13 @@ The cursor has to be on the dired frame with the marked files.
                 ;; Reason Compiled Files
                 "\\|\\.bs.js$")))
 #+END_SRC
+
 ***** Disable dired from opening files in a new window
+
 #+BEGIN_SRC elisp
 (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
+
 ***** Auto Refresh
 :PROPERTIES:
 :SOURCE:   [[https://www.reddit.com/r/emacs/comments/1acg6q/how_to_configure_dired_to_update_instantly_when/][How to configure dired to update instantly when files/folders change? : emacs]]
@@ -701,6 +706,7 @@ Automatically revert dired buffers.
 #+BEGIN_SRC elisp
 (add-hook 'dired-mode-hook 'auto-revert-mode)
 #+END_SRC
+
 ***** Automatically create directories when moving/copying items
 :PROPERTIES:
 :SOURCE:   [[https://stackoverflow.com/questions/12994164/allow-dired-do-copy-and-dired-do-rename-to-create-new-dir-on-the-fly][emacs - Allow dired-do-copy and dired-do-rename to create new dir on the fly - Stack Overflow]]
@@ -737,6 +743,7 @@ But at some time I want to purge those buffers"
       :map dired-mode-map
       :n "Q" #'+dired|kill-dired-buffers)
 #+END_SRC
+
 ***** Wdired Mode Switch
 
 Stay in normal mode when switching to wdired
@@ -757,6 +764,7 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
       :map dired-mode-map
       :n "\\" #'+dired|change-to-wdired-mode)
 #+END_SRC
+
 *** Dired Recent
 
 #+BEGIN_SRC elisp
