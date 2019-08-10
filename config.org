@@ -671,6 +671,17 @@ The cursor has to be on the dired frame with the marked files.
 #+BEGIN_SRC elisp
 (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
+***** Auto Refresh
+:PROPERTIES:
+:SOURCE:   [[https://www.reddit.com/r/emacs/comments/1acg6q/how_to_configure_dired_to_update_instantly_when/][How to configure dired to update instantly when files/folders change? : emacs]]
+:END:
+
+Automatically revert dired buffers.
+
+#+BEGIN_SRC elisp
+(add-hook 'dired-mode-hook 'auto-revert-mode)
+#+END_SRC
+
 **** Functions
 ***** Kill all dired buffers with ~Q~
 #+BEGIN_SRC elisp
