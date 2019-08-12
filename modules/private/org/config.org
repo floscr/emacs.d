@@ -759,7 +759,6 @@ To sync the calendars use ~org-caldav-sync~.
   :commands (org-media-insert-book org-media-insert-book-german))
 #+END_SRC
 
-
 ** Bindings
 *** Local Leader Bindings
 **** Local Leader Mapping

@@ -652,6 +652,18 @@ Bindings
 
 *** Dired
 **** Config
+
+#+BEGIN_SRC elisp
+(def-package! dired
+  :init
+  (setq
+    dired-recursive-copies 'always
+    dired-recursive-deletes 'top
+    ;; Auto refresh dired, but be quiet about it
+    global-auto-revert-non-file-buffers t))
+#+END_SRC
+
+
 ***** Use gls
 
 Use ~gls~ with dired which is way faster than osx ~ls~
