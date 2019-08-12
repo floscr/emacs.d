@@ -345,7 +345,10 @@ Allows me to toggle quickly between two themes.
    '(diredfl-exec-priv :foreground "#80899E")
    '(diredfl-other-priv :foreground "#80899E")
 
+   '(all-the-icons-dired-dir-face :foreground "#80899E")
+
    '(diredfl-dir-priv :foreground "#282C34")
+   '(diredfl-k-modified :foreground "#FF8E90")
 
    '(diredfl-number :foreground "#80899E")
    '(diredfl-date-time :foreground "#49505F")

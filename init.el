@@ -33,7 +33,7 @@
  term
 
  :emacs
- dired
+ (dired +icons)
  electric
  vc
 
