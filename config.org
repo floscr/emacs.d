@@ -816,14 +816,6 @@ Widen can be restored with ~gr~.
                           (dired-revert))
     (kbd "gh") 'dired-subtree-up))
 #+END_SRC
-*** Dired Quick Sort
-
-#+BEGIN_SRC elisp
-(def-package! dired-quick-sort
-  :after dired
-  :config
-  (dired-quick-sort-setup))
-#+END_SRC
 
 *** Eldoc
 
