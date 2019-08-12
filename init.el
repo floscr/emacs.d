@@ -75,7 +75,8 @@
  work
  (org
   +org-web-tools
-  +org-reading-list))
+  +org-reading-list
+  +org-tags))
 
 (provide 'init)
 ;;; init.el ends here

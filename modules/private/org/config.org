@@ -21,6 +21,7 @@
 (if (featurep! +org-noter)        (load! "+org-noter"))
 (if (featurep! +org-reading-list) (load! "+org-reading-list"))
 (if (featurep! +org-web-tools)    (load! "+org-web-tools"))
+(if (featurep! +org-tags)         (load! "+org-tags"))
 #+END_SRC
 
 ** Utils
