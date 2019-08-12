@@ -88,7 +88,7 @@ Create an action from a controller and import directly
 
 *** Create canvas action
 
-Create an canvas action
+Create a canvas action
 
 #+BEGIN_SRC elisp
 (defun +MM|canvas-create-action ()
