@@ -250,7 +250,7 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
   "Search in the org directory for a file.
 Projectile search is not fast reliable enough."
   (interactive)
-  (let ((counsel-file-jump-args ". -name '*.org' -type f -print | cut -c 3-"))
+  (let ((counsel-file-jump-args (split-string ". -name *.org -type f -print")))
     (counsel-file-jump nil org-directory)))
 #+END_SRC
 
