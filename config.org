@@ -671,8 +671,7 @@ Must enable =dired-k-human-readable= when =-h= flag is given.
 Otherwise dired comes to a grinding halt on some sizes.
 
 #+BEGIN_SRC elisp
-(after!
-  dired
+(after! dired
   :config
   (when (and IS-MAC (locate-file "gls" exec-path))
     (setq dired-listing-switches "-la -h --group-directories-first"
