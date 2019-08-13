@@ -13,6 +13,7 @@
 (require 'dash)
 (require 's)
 #+END_SRC
+
 ** Minor Mode
 
 Custom minor mode for work,
