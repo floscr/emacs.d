@@ -1627,20 +1627,30 @@ I want buffers added whenever I visit a buffer.
 Enhancement of the default ~+workspace/switch-to~.
 
 #+BEGIN_SRC elisp
+(defvar counsel-workspace-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-<backspace>") #'+workspace/switch-to-delete-space)
+    map))
+
+(defun +workspace//switch-to-delete-space (workspace)
+  (let* ((current-workspace-name (+workspace-current-name))
+         (new-workspace-name
+            (or (--first (string= current-workspace-name it) (+workspace-list-names)) "main")))
+    (+workspace/delete workspace)
+    (+workspace-switch new-workspace-name)
+    (+workspace/my-switch-to)))
+
+(defun +workspace/switch-to-delete-space ()
+  (interactive)
+  (ivy-set-action #'+workspace//switch-to-delete-space)
+  (ivy-done))
+
 (defun +workspace/my-switch-to ()
   (interactive)
   (ivy-read "Switch to workspace: "
             (+workspace-list-names)
-            :action '(1
-                      ("RET" +workspace/switch-to "Switch to workspace")
-                      ("C-<backspace>" (lambda (x)
-                                         (let* ((current-workspace-name (+workspace-current-name))
-                                                (new-workspace-name
-                                                 (or (--first (string= current-workspace-name it) (+workspace-list-names)) "main")))
-                                           (+workspace/delete x)
-                                           (+workspace-switch new-workspace-name)
-                                           (+workspace/my-switch-to)))
-                       "Continous delete workspace"))))
+            :keymap counsel-workspace-map
+            :action #'+workspace/switch-to))
 #+END_SRC
 ***** Switch to last visited workspace
 #+BEGIN_SRC elisp
