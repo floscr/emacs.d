@@ -924,6 +924,20 @@ To enable the checker press ~SPC u C-c ! x~
   (setq indium-chrome-executable "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"))
 #+END_SRC
 *** Ivy / Swiper
+**** Bindings
+
+Adds general bindings to ivy.
+~⌘ + ↩~ will insert the current item and continue with a new instance of the same ivy buffer.
+~CTRL + ↩~ will abort completion and insert the inserted text.
+
+#+BEGIN_SRC elisp
+(map!
+ :after ivy
+ :map ivy-minibuffer-map
+  "<s-return>" 'ivy-call
+  "<C-return>" 'ivy-immediate-done)
+#+END_SRC
+
 **** Counsel Project File Jump
 
 #+BEGIN_SRC elisp
