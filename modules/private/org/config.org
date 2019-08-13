@@ -830,14 +830,14 @@ To sync the calendars use ~org-caldav-sync~.
 #+BEGIN_SRC elisp
 (defun +org/set-evil-org-agenda-keys ()
   (evil-define-key 'motion org-agenda-mode-map
-    "<return>" '+org|agenda-visit-entry
-    "da"       'org-agenda-archive
-    "dA"       '+org|agenda-archive-and-done))
+    (kbd "RET") '+org|agenda-visit-entry
+    "da"        'org-agenda-archive
+    "dA"        '+org|agenda-archive-and-done))
 
 (advice-add #'evil-org-agenda-set-keys :after #'+org/set-evil-org-agenda-keys)
 #+END_SRC
 
-***** Fix Window Navigation
+***** Org Agenda Keybindings
 
 #+BEGIN_SRC elisp
 (map! :map org-agenda-mode-map
