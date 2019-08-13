@@ -715,6 +715,16 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 )
 #+END_SRC
+*** Tables
+**** Copy Table Field
+
+#+BEGIN_SRC elisp
+(defun +org|table-copy-field ()
+  "Copy a table field under the cursor."
+  (interactive)
+  (save-excursion
+    (kill-new (s-trim (org-table-get-field)))))
+#+END_SRC
 
 ** Package Config
 *** Org Caldav
