@@ -155,6 +155,19 @@ Create a canvas action
     (insert "debugger;")
     (call-interactively #'evil-indent-line)))
 #+END_SRC
+*** NodeJs Repl
+
+#+BEGIN_SRC elisp
+(defun +MM|nodejs-repl ()
+  "Start a repl with the standard library already loaded."
+  (interactive)
+  (if (not (get-buffer "*nodejs*"))
+      (progn
+        (nodejs-repl)
+        (insert "const M = require('@meisterlabs/common/node');")
+        (comint-send-input nil t))
+    (nodejs-repl)))
+#+END_SRC
 
 ** Packages
 *** New Worktree
@@ -530,6 +543,7 @@ Create a canvas action
 
         :localleader
         :desc  "Import File"                    "i"  #'+MM|import-file
+        :desc  "Repl"                           "R"  #'+MM|nodejs-repl
 
         (:prefix ("f" . "file")
           :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
