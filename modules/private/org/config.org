@@ -888,7 +888,11 @@ To sync the calendars use ~org-caldav-sync~.
 #+BEGIN_SRC elisp
 (defun +org/set-evil-org-agenda-keys ()
   (evil-define-key 'motion org-agenda-mode-map
+    ;; Terminal
     (kbd "RET") '+org|agenda-visit-entry
+    ;; GUI
+    [return]    '+org|agenda-visit-entry
+
     "K"         '+org-agenda|prev-super-agenda-group
     "J"         '+org-agenda|next-super-agenda-group
 
