@@ -754,6 +754,7 @@ To sync the calendars use ~org-caldav-sync~.
 #+END_SRC
 
 *** Org SuperAgenda
+**** Config
 
 #+BEGIN_SRC elisp
 (def-package! org-super-agenda
@@ -763,6 +764,53 @@ To sync the calendars use ~org-caldav-sync~.
   ;; Disable org-super-agenda keymap which breaks evil mappings
   (setq org-super-agenda-header-map (make-sparse-keymap)))
 #+END_SRC
+
+**** Utils
+***** Move between super agenda sections
+
+#+BEGIN_SRC elisp
+(defun +org-agenda/goto-super-agenda-group (forward?)
+  "Move the cursor to a super agenda group."
+  (let ((is-at-agenda-header
+         (lambda () (eq (get-text-property (point) 'face) 'org-super-agenda-header)))
+        (line-move-fn (if forward? #'next-line #'previous-line))
+        (char-move-fn (if forward? #'forward-char #'backward-char)))
+
+    ;; When the cursor is on a group already
+    (if (funcall is-at-agenda-header)
+        (funcall line-move-fn))
+
+    ;; Special case for moving backward
+    ;; Since moving backward would just stop at the current header
+    (if (and (not forward?) (not (funcall is-at-agenda-header)))
+        (progn
+          (while (not (funcall is-at-agenda-header))
+            (backward-char))
+          (previous-line)
+          (previous-line)))
+
+    ;; Find the next header
+    (while (not (funcall is-at-agenda-header))
+      (funcall char-move-fn))
+
+    ;; Move below the header to the first item
+    (if (funcall is-at-agenda-header)
+        (progn
+          (next-line)
+          (beginning-of-line)
+          (back-to-indentation)))))
+
+(defun +org-agenda|next-super-agenda-group ()
+  "Move the cursor to the next super agenda group."
+  (interactive)
+  (+org-agenda/goto-super-agenda-group t))
+
+(defun +org-agenda|prev-super-agenda-group ()
+  "Move the cursor to the previous super agenda group."
+  (interactive)
+  (+org-agenda/goto-super-agenda-group nil))
+#+END_SRC
+
 *** Org Media Info
 
 #+BEGIN_SRC elisp
@@ -841,6 +889,9 @@ To sync the calendars use ~org-caldav-sync~.
 (defun +org/set-evil-org-agenda-keys ()
   (evil-define-key 'motion org-agenda-mode-map
     (kbd "RET") '+org|agenda-visit-entry
+    "K"         '+org-agenda|prev-super-agenda-group
+    "J"         '+org-agenda|next-super-agenda-group
+
     "da"        'org-agenda-archive
     "dA"        '+org|agenda-archive-and-done))
 
