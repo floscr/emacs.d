@@ -1148,6 +1148,19 @@ Remove the ~js~ extension for ~company-files~.
          (imports (append local-files node-packages)))
     (ivy-read "Import file " imports :action (or action '+js/import-file))))
  #+END_SRC
+***** Ignore Flycheck error on line
+
+#+BEGIN_SRC elisp
+(defun +js|flycheck-add-ignore-error-on-line ()
+  "Adds an ignore with the current flycheck error."
+  (interactive)
+  (if-let ((error-id (flycheck-copy-errors-as-kill (point) #'flycheck-error-id)))
+    (save-excursion
+      (previous-line)
+      (end-of-line)
+      (newline-and-indent)
+      (insert (template "// eslint-disable-next-line <<error-id>>")))))
+#+END_SRC
 
 *** JSON
 **** Autofix JSON
