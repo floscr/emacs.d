@@ -1409,7 +1409,7 @@ Fixes evil window navigation for magit special buffers
   (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" +magit|diff-range-from-current-branch))
   (transient-append-suffix 'magit-commit
     "-D" '("-D" "Override the author date" "--date=" transient-read-date))
-  (transient-append-suffix 'magit-diff "l" '("R" "Checkout remote branch for review" +magit|create-review-branch)))
+  (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" +magit|checkout-review-branch)))
 #+END_SRC
 
 *** Markdown
