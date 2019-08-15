@@ -937,6 +937,7 @@ To sync the calendars use ~org-caldav-sync~.
      :desc "Mark Default Task"      "d" #'org-clock-mark-default-task
      :desc "Modify Effort Estimate" "e" #'org-clock-modify-effort-estimate
      :desc "Goto Current"           "g" #'org-clock-goto
+     :desc "Resolve"                "g" #'org-resolve-clocks
      :desc "Clock In Last"          "l" #'org-clock-in-last
      :desc "Cancel"                 "x" #'org-clock-cancel)))
 #+END_SRC
