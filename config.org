@@ -1334,8 +1334,7 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
     (magit-checkout branch)
     (when (magit-anything-modified-p)
       (user-error "Cannot checkout when there are uncommitted changes"))
-    (magit-branch-and-checkout (concat "REVIEW-" branch) branch)))
-
+    (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch)))
 #+END_SRC
 
 
