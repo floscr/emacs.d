@@ -917,6 +917,11 @@ To enable the checker press ~SPC u C-c ! x~
 (def-package! git-lens
   :commands (git-lens))
 #+END_SRC
+*** Symex
+#+BEGIN_SRC elisp
+(def-package! symex
+  :commands (symex-mode symex-mode-interface))
+#+END_SRC
 *** Indium
 #+BEGIN_SRC elisp
 (def-package! indium
