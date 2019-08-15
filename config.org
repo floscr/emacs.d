@@ -1837,7 +1837,87 @@ The history can be accessed with ~C-n~ / ~C-p~
   (define-key evil-visual-state-map
     evil-replace-with-register-key 'evil-replace-with-register))
 #+END_SRC
-**** Evil Quotes/Brackets Motion
+**** Org Mode Text Objects
+
+#+BEGIN_SRC elisp
+(after! evil
+  (require 'evil-textobj-anyblock)
+  (evil-define-text-object my-evil-textobj-anyblock-inner-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "'")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count nil)))
+
+  (evil-define-text-object my-evil-textobj-anyblock-a-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "'")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count t)))
+
+  (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
+  (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
+  (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket))
+#+END_SRC
+
+
+**** Go up one directory from the current buffer
+#+BEGIN_SRC elisp
+(after! evil
+  (map! :m  "-"  #'dired-jump))
+#+END_SRC
+**** Fix history navigation for the minibuffer
+#+BEGIN_SRC elisp
+(define-key minibuffer-local-map "\C-p" 'previous-history-element)
+(define-key minibuffer-local-map "\C-n" 'next-history-element)
+#+END_SRC
+**** Jump to last buffer
+#+BEGIN_SRC elisp
+(map! :n "gb" #'evil-switch-to-windows-last-buffer)
+#+END_SRC
+*** Evil Text Objects
+
+Custom evil text objects mostly stolen from [[https://github.com/jerryxgh/lambda-x/blob/master/lambda-evil.el#L236][Spacemacs|define-text-object-regexp]].
+
+**** Utils
+***** Define Text Objects
+
+#+BEGIN_SRC elisp
+(defmacro +evil/define-text-object-regexp (key name start-regexp end-regexp)
+  "Define a text object.
+START-REGEXP and END-REGEXP are the boundaries of the text object."
+  (let ((inner-name (make-symbol (concat "evil-inner-" name)))
+        (outer-name (make-symbol (concat "evil-outer-" name))))
+    `(progn
+       (evil-define-text-object ,inner-name (count &optional beg end type)
+         (evil-select-paren ,start-regexp ,end-regexp beg end type count nil))
+       (evil-define-text-object ,outer-name (count &optional beg end type)
+         (evil-select-paren ,start-regexp ,end-regexp beg end type count t))
+       (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
+       (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
+#+END_SRC
+**** Config
+
+#+BEGIN_SRC elisp
+(+evil/define-text-object-regexp "~" "tilde" "~" "~")
+(+evil/define-text-object-regexp "=" "equal" "=" "=")
+(+evil/define-text-object-regexp "|" "bar" "|" "|")
+(+evil/define-text-object-regexp "*" "star" "*" "*")
+(+evil/define-text-object-regexp "$" "dollar" "$" "$")
+(+evil/define-text-object-regexp "%" "percent" "%" "%")
+(+evil/define-text-object-regexp "/" "slash" "/" "/")
+(+evil/define-text-object-regexp "_" "underscore" "_" "_")
+(+evil/define-text-object-regexp "-" "hyphen" "-" "-")
+#+END_SRC
+
+**** Quotes Text Objet
 
 Changes the text matching inside quotes with ~q~ motion (e.g. ~ciq~)
 Change inner bracket with ~r~
@@ -1868,20 +1948,6 @@ Change inner bracket with ~r~
   (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
   (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
   (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket))
-#+END_SRC
-**** Go up one directory from the current buffer
-#+BEGIN_SRC elisp
-(after! evil
-  (map! :m  "-"  #'dired-jump))
-#+END_SRC
-**** Fix history navigation for the minibuffer
-#+BEGIN_SRC elisp
-(define-key minibuffer-local-map "\C-p" 'previous-history-element)
-(define-key minibuffer-local-map "\C-n" 'next-history-element)
-#+END_SRC
-**** Jump to last buffer
-#+BEGIN_SRC elisp
-(map! :n "gb" #'evil-switch-to-windows-last-buffer)
 #+END_SRC
 *** Evil Square Bracket Bindings
 
