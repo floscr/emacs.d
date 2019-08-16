@@ -9,6 +9,10 @@
 * Configuration
 ** Required Packages
 
+Packages and utilities needed for this config.
+- [[https://github.com/magnars/dash.el][magnars/dash.el: List Manipulation]]
+- [[https://github.com/magnars/s.el][magnars/s.el: String Manipulation]]
+
 #+BEGIN_SRC elisp
 (require 'dash)
 (require 's)
@@ -35,38 +39,36 @@ And I will load them on system start:
 (floscr/load-secrets-file)
 #+END_SRC
 
-** About
-
-This is my emacs config for [[https://github.com/hlissner/doom-emacs][doom-emacs]].
-
-#+BEGIN_SRC elisp
-(setq user-full-name "Florian Schrödl")
-#+END_SRC
-
 ** Essentials
 *** Directories
+
 #+BEGIN_SRC elisp
 (defcustom downloads-dir "~/Downloads/"
-  "Directory containing my downloads."
+  "Downloads Directory"
   :type 'string)
 
 (defcustom screenshot-dir "~/Pictures/Screenshots"
-  "Directory containing my screenshots."
+  "Screenshots Directory"
   :type 'string)
 #+END_SRC
+
 ** Utilities
 *** General Helpers
 **** Noop
+
 #+BEGIN_SRC elisp
 (defun noop (&optional args) nil)
 #+END_SRC
+
 **** Run JXA scripts
+
 #+BEGIN_SRC elisp
 (defun do-jxa-script (cmd)
-  "Run a osx javascript automation script via bash"
+  "Run a osx javascript automation script via bash."
   (shell-command-to-string
    (concat "osascript -l 'JavaScript' -e '" cmd "'")))
 #+END_SRC
+
 **** Eval and Replace sexp
 :PROPERTIES:
 :SOURCE:   https://emacsredux.com/blog/2013/06/21/eval-and-replace/
@@ -84,13 +86,16 @@ This is my emacs config for [[https://github.com/hlissner/doom-emacs][doom-emacs
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
 #+END_SRC
+
 **** Kill and Message
+
 #+BEGIN_SRC elisp
 (defun copy-message (x)
-  "Executes kill-new but with a message log side effect"
+  "Executes kill-new but with a message log side effect."
   (kill-new x)
   (message "Copied to clipboard: %s" x))
 #+END_SRC
+
 **** Shuffle List
 :PROPERTIES:
 :SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
@@ -111,59 +116,13 @@ shuffling is done in place."
              (swap-list-items LIST i j)))
   LIST)
 #+END_SRC
-**** Tangle org files
-#+BEGIN_SRC elisp
-(defun +utils|tangle-org-files ()
-  (interactive)
-  (let ((default-directory doom-private-dir))
-    (save-window-excursion
-      (async-shell-command "org-tangle **/*.org" nil))))
-#+END_SRC
 
-*** Math on Numbers
-#+BEGIN_SRC elisp
-(defun math-on-number (f &optional num)
-  "Read user input and apply with function f to the number at point"
-  (let* ((x (thing-at-point 'number))
-         (arithmetic-symbol (pcase f
-                              ('+ "+")
-                              ('- "-")
-                              ('/ "/")
-                              ('* "*")
-                              (_ (error "Unknown function %s" f))))
-         (readline (concat (number-to-string x) " " arithmetic-symbol " "))
-         (y (or num (read-number readline)))
-         (result (funcall f x y))
-         (bounds (bounds-of-thing-at-point 'evil-WORD)))
-    (delete-region (car bounds) (cdr bounds))
-    (insert (format "%.02f" result))))
-
-(defun +math|add-to-number ()
-  (interactive)
-  (math-on-number '+))
-
-(defun +math|subtract-from-number ()
-  (interactive)
-  (math-on-number '-))
-
-(defun +math|subtract-maran-vegan ()
-  (interactive)
-  (math-on-number '- 8.60))
-
-(defun +math|divide-by-number ()
-  (interactive)
-  (math-on-number '/))
-
-(defun +math|multiply-by-number ()
-  (interactive)
-  (math-on-number '*))
-#+END_SRC
 *** Toggle Window Dedicated
 :PROPERTIES:
 :SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
 :END:
 
-To lock a window you set the dedicaded flag on the window.
+Lock a window so the buffer can't be changed or it cant be deleted.
 
 #+BEGIN_SRC elisp
 (defun toggle-window-dedicated ()
@@ -178,10 +137,13 @@ buffer in current window."
    (current-buffer)))
 #+END_SRC
 *** File Utilities
-**** Get the last file in directory
+**** Get the latest file in directory
 :PROPERTIES:
 :SOURCE:   https://stackoverflow.com/a/30886283
 :END:
+
+Get the last created file in a directory.
+Used for getting the last screenshot to attach to an [[file:modules/private/org/config.org::*Screenshot][org document]].
 
 #+BEGIN_SRC elisp
 (defun +file/latest-file-in-dir (path)
@@ -192,13 +154,13 @@ buffer in current window."
 
 (defun file-timestamp (f) (let ((attrs (file-attributes f))) (nth 5 attrs)))
 #+END_SRC
+
 **** Reveal in Finder
 
-The regular ~+macos/reveal-in-finder~ in doom only opens the folder.
-This fix opens the folder and selects the file.
+Open and select the current file/dired-selection in finder.
 
 #+BEGIN_SRC elisp
-(defun +macos/reveal-in-finder ()
+(defun +macos|reveal-in-finder ()
   "Reveal the current file in finder and select it."
   (interactive)
   (let ((file-name (or buffer-file-name (dired-get-filename))))
@@ -207,20 +169,6 @@ This fix opens the folder and selects the file.
                      "    activate\n"
                      "    reveal POSIX file \"" file-name "\"\n"
                      "end tell"))))
-#+END_SRC
-
-**** Open frontmost finder dir in dired
-
-#+BEGIN_SRC elisp
-(defun +macos|dired-finder-directory ()
-  "Open the frontmost dired directory in dired."
-  (let ((path (--> (concat
-                     "tell application \"Finder\"\n"
-                     "    return POSIX path of (target of window 1 as alias)\n"
-                     "end tell")
-                  (do-applescript it)
-                  (s-replace "\"" "" it))))
-    (dired path)))
 #+END_SRC
 
 *** Hydras
@@ -315,7 +263,8 @@ This will be disabled in terminal mode.
 
 *** Theme Toggle
 
-Allows me to toggle quickly between two themes.
+Toggle between a light and a dak theme.
+Bound to ~SPC t t~.
 
 #+BEGIN_SRC elisp
 (defconst light-theme 'doom-one)
@@ -334,8 +283,11 @@ Allows me to toggle quickly between two themes.
          (doom/reload-theme))
         (t (message "Toggling theme is not possible. Theme is not currently light-theme (%s) or dark-theme (%s)." light-theme dark-theme))))
 #+END_SRC
+
 *** Theme Modifications
 **** Dired Output
+
+Remove the rainbow colors from dired.
 
 #+BEGIN_SRC elisp
 (defun *doom-themes-custom-set-faces ()
@@ -360,8 +312,7 @@ Allows me to toggle quickly between two themes.
 *** Scrolloff
 
 Start scrolling X lines before the end of a screen.
-Disable for terminal buffers, since there cane be issues completion/interactive
-shell scripts.
+Disable for certain modes (terminal & ivy) where the window is to small.
 
 #+BEGIN_SRC elisp
 (setq
@@ -371,6 +322,7 @@ shell scripts.
 (add-hook 'term-mode-hook (λ! (setq-local scroll-margin 0)))
 (add-hook 'ivy-mode-hook (λ! (setq-local scroll-margin 0)))
 #+END_SRC
+
 *** Line Spacing
 
 Change and reset line-spacing for all buffers.
@@ -413,6 +365,7 @@ Macro Expansion
   ("q" noop :exit t))
 #+END_SRC
 *** Popups
+
 #+BEGIN_SRC elisp
 (after! org
   (set-popup-rule! "^\\*Org Agenda" :side 'right :size 0.55 :select t :modeline t :ttl nil :quit nil)
@@ -426,7 +379,9 @@ Macro Expansion
 
 (set-popup-rule! "^\\*compilation" :side 'right :size 0.5 :select t :modeline t :ttl nil)
 #+END_SRC
+
 *** (Visual) Fill Column
+
 #+BEGIN_SRC elisp
 (setq-default fill-column 110)
 (setq visual-fill-column-width fill-column)
@@ -436,8 +391,57 @@ Macro Expansion
       ;; take Emacs 26 line numbers into account
       (+ (if EMACS26+ 6 0) fill-column))
 #+END_SRC
+
+*** Disable trailng whitespace warning
+
+#+BEGIN_SRC elisp
+(setq-hook! 'prog-mode-hook show-trailing-whitespace nil)
+#+END_SRC
+
 ** Custom Packages
+*** Math on Numbers
+
+Run a simple mathematic operation on a number under the cursor.
+
+#+BEGIN_SRC elisp
+(defun math-on-number (f &optional num)
+  "Read user input and apply with function f to the number at point"
+  (let* ((x (thing-at-point 'number))
+         (arithmetic-symbol (pcase f
+                              ('+ "+")
+                              ('- "-")
+                              ('/ "/")
+                              ('* "*")
+                              (_ (error "Unknown function %s" f))))
+         (readline (concat (number-to-string x) " " arithmetic-symbol " "))
+         (y (or num (read-number readline)))
+         (result (funcall f x y))
+         (bounds (bounds-of-thing-at-point 'evil-WORD)))
+    (delete-region (car bounds) (cdr bounds))
+    (insert (format "%.02f" result))))
+
+(defun +math|add-to-number ()
+  (interactive)
+  (math-on-number '+))
+
+(defun +math|subtract-from-number ()
+  (interactive)
+  (math-on-number '-))
+
+(defun +math|subtract-maran-vegan ()
+  (interactive)
+  (math-on-number '- 8.60))
+
+(defun +math|divide-by-number ()
+  (interactive)
+  (math-on-number '/))
+
+(defun +math|multiply-by-number ()
+  (interactive)
+  (math-on-number '*))
+#+END_SRC
 *** Birthday Messsage
+
 #+BEGIN_SRC elisp
 (setq birthday-slack-emojis '("🍰" "🎂" "🎉" "🎈" "🎁"))
 
@@ -456,6 +460,7 @@ Macro Expansion
        (birthday-msg it)
        (copy-message it)))
 #+END_SRC
+
 *** Guitar Timer
 
 I log my guitar learning into an org file that is formated like this.
@@ -567,12 +572,15 @@ plays a sound and prompts me to insert my count.
 
 (set-popup-rule! "^\\*Guitar" :quit t :height 2 :select nil :transient t)
 #+END_SRC
+
 ** Package Config
 *** Blimp
+
 #+BEGIN_SRC elisp
 (def-package! blimp
   :hook (image-mode-hook . blimp-mode))
 #+END_SRC
+
 *** Comint
 **** Allow evil enter anywhere
 
@@ -593,10 +601,12 @@ error in process filter: End of buffer
 :PROPERTIES:
 :SOURCE:   [[https://github.com/company-mode/company-mode/issues/52][{Proposal} Improve company-dabbrev candidate ordering · Issue #52 · company-mode/company-mode]]
 :END:
+
 #+BEGIN_SRC elisp
 (setq company-transformers '(company-sort-by-occurrence)
       company-idle-delay 0.5)
 #+END_SRC
+
 **** Functions
 ***** Company complete whole lines for all matching buffers
 
@@ -667,7 +677,6 @@ Bindings
     global-auto-revert-non-file-buffers t))
 #+END_SRC
 
-
 ***** Use gls
 
 Use ~gls~ with dired which is way faster than osx ~ls~
@@ -687,7 +696,6 @@ Otherwise dired comes to a grinding halt on some sizes.
 
 When there are two visual splits with dired buffers.
 ~C~ will take the other window as the copy target.
-The cursor has to be on the dired frame with the marked files.
 
 #+BEGIN_SRC elisp
 (setq dired-dwim-target t)
@@ -741,6 +749,7 @@ Automatically revert dired buffers.
 
 **** Functions
 ***** Kill all dired buffers with ~Q~
+
 #+BEGIN_SRC elisp
 (defun +dired|kill-dired-buffers ()
   "Kills all dired buffers
@@ -794,7 +803,7 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
 *** Dired Narrow
 
 [[https://github.com/Fuco1/dired-hacks#dired-narrow][Dired Narrow]] allows narrowing a dired buffer to a subselection.
-Widen can be restored with ~gr~.
+Widen can be restored with ~g~.
 
 #+BEGIN_SRC elisp
 (def-package! dired-narrow
@@ -833,10 +842,11 @@ Widen can be restored with ~gr~.
 ;; Disable eldoc mode
 (global-eldoc-mode -1)
 #+END_SRC
+
 *** Eshell
 **** Aliases
 
-Overrides dooms aliases.
+Custom eshell aliases.
 
 #+BEGIN_SRC elisp
 (setq +eshell-aliases
@@ -853,7 +863,9 @@ Overrides dooms aliases.
     ("grha"   "git reset --hard; git clean -f -d")
     ("clear"  "clear-scrollback")))
 #+END_SRC
+
 **** Syntax highlighted cat
+
 #+BEGIN_SRC elisp
 (defun +eshell/cat (file)
   "Like `cat' but output with Emacs syntax highlighting."
@@ -870,17 +882,22 @@ Overrides dooms aliases.
 
 (add-to-list '+eshell-aliases '("cat" "+eshell/cat $1"))
 #+END_SRC
+
 *** Evil-Snipe
 **** Repeat snipe after further key press
+
 #+BEGIN_SRC elisp
 (after! evil-snipe
   (setq evil-snipe-repeat-keys t))
 #+END_SRC
+
 *** EWW Web Browser
 **** Set the max page width
+
 #+BEGIN_SRC elisp
 (setq shr-width 120)
 #+END_SRC
+
 *** Flycheck
 **** Proselint
 :PROPERTIES:
@@ -912,23 +929,30 @@ To enable the checker press ~SPC u C-c ! x~
 
   (add-to-list 'flycheck-checkers 'proselint))
 #+END_SRC
+
 *** git-lens
+
 #+BEGIN_SRC elisp
 (def-package! git-lens
   :commands (git-lens))
 #+END_SRC
+
 *** Symex
+
 #+BEGIN_SRC elisp
 (def-package! symex
   :commands (symex-mode symex-mode-interface))
 #+END_SRC
+
 *** Indium
+
 #+BEGIN_SRC elisp
 (def-package! indium
   :commands indium-connect
   :config
   (setq indium-chrome-executable "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"))
 #+END_SRC
+
 *** Ivy / Swiper
 **** Bindings
 
@@ -955,6 +979,7 @@ Adds general bindings to ivy.
 
 *** Javascript
 **** Config
+
 #+BEGIN_SRC elisp
 (setq
  flycheck-javascript-eslint-executable (executable-find "eslint_d")
@@ -979,6 +1004,7 @@ Adds general bindings to ivy.
 #+END_SRC
 
 **** Helpers
+
 #+BEGIN_SRC elisp
 (defun +js/remove-js-ext (f)
   "Remove js extension from string"
@@ -994,6 +1020,7 @@ Adds general bindings to ivy.
   "Returns the current function name at the current line"
   (+js/match-const-function-name (thing-at-point 'line t)))
 #+END_SRC
+
 **** Functions
 ***** Export default variable
 
@@ -1024,6 +1051,7 @@ Extract the ~const~ under the cursor into a new file.
     (find-file path)
     (yank)))
 #+END_SRC
+
 ***** Generate ~index.js~ file index
 
 Generate a file index in the current file for every other file in the current directory.
@@ -1046,6 +1074,7 @@ Generate a file index in the current file for every other file in the current di
     (mapc (lambda (f) (insert "    " f ",\n")) fs)
     (insert "};")))
 #+END_SRC
+
 ***** Convert expression into template string
 
 Converts an expression into a template string.
@@ -1096,7 +1125,9 @@ Converts self closing JSX tags to closing tags.
   (call-interactively #'evil-indent-line)
   (call-interactively #'evil-open-above))
 #+END_SRC
+
 ***** Extract Props from function arguments to body
+
 #+BEGIN_SRC elisp
 (fset '+js|extract-props
       (lambda (&optional arg)
@@ -1127,7 +1158,9 @@ Remove the ~js~ extension for ~company-files~.
 (map! :map js2-mode-map
       :i "C-x C-f" #'company-js-files)
 #+END_SRC
+
 ***** Import JS File
+
 #+BEGIN_SRC elisp
 (defun +js/import-file (file)
   (let ((cursor-postion (point))
@@ -1153,6 +1186,7 @@ Remove the ~js~ extension for ~company-files~.
          (imports (append local-files node-packages)))
     (ivy-read "Import file " imports :action (or action '+js/import-file))))
  #+END_SRC
+
 ***** Ignore Flycheck error on line
 
 #+BEGIN_SRC elisp
@@ -1188,6 +1222,7 @@ npm i -g json-fix
 
 *** LSP
 **** Disable LSP hover
+
 #+BEGIN_SRC elisp
 (def-package! lsp-mode
   :config
@@ -1200,7 +1235,9 @@ npm i -g json-fix
         ;; Disable make error highlighting
         lsp-prefer-flymake nil))
 #+END_SRC
+
 **** Disable LSP hover face
+
 #+BEGIN_SRC elisp
 (add-hook! 'doom-load-theme-hook
   (after! lsp
@@ -1211,6 +1248,7 @@ npm i -g json-fix
        face nil
        :foreground nil :distant-foreground nil :background nil))))
 #+END_SRC
+
 *** Magit / Git
 **** Utils
 ***** Create New Git Worktree Workspace
@@ -1288,12 +1326,14 @@ For now only works on branches that were directly forked from master.
               :caller '+git|ivy-changed-files)))
 #+END_SRC
 ***** Git undo
+
 #+BEGIN_SRC elisp
 (defun +git|undo ()
   "Soft reset current git repo to HEAD~1."
   (interactive)
   (magit-reset-soft "HEAD~1"))
 #+END_SRC
+
 ***** Push dated remote branch
 
 For work I need remote branches with a date prefix.
@@ -1342,7 +1382,6 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
     (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch)))
 #+END_SRC
 
-
 ***** TODO Browse git link
 
 Browse the current thing at point for git
@@ -1354,6 +1393,7 @@ Browse the current thing at point for git
   (let ((git-link-open-in-browser t))
     (call-interactively 'git-link)))
 #+END_SRC
+
 **** Config
 
 #+BEGIN_SRC elisp
@@ -1406,6 +1446,7 @@ Fixes evil window navigation for magit special buffers
    :n "C-h" #'evil-window-left
    :n "C-l" #'evil-window-right))
 #+END_SRC
+
 **** Transient
 
 #+BEGIN_SRC elisp
@@ -1439,6 +1480,7 @@ Always keep markdown centered, without line numbers.
           :n "<"    #'markdown-promote
           :n ">"    #'markdown-demote)))
 #+END_SRC
+
 *** Nov (Epub Reading Mode)
 
 Adds epub reading mode
@@ -1471,14 +1513,17 @@ The font can be installed via brew cask.
 brew tap homebrew/cask-fonts
 brew cask install font-liberation-sans
 #+END_SRC
+
 *** NPM Mode
 **** Add CI command
+
 #+BEGIN_SRC elisp
 (defun npm-mode-npm-ci ()
   "Run the 'npm install' command."
   (interactive)
   (npm-mode--exec-process "npm ci"))
 #+END_SRC
+
 *** PDF Tools
 
 #+BEGIN_SRC elisp
@@ -1488,13 +1533,17 @@ brew cask install font-liberation-sans
 ;; Fix midnight colors for doom-one theme
 (setq pdf-view-midnight-colors '("#BBC2CD" . "#282C34"))
 #+END_SRC
+
 *** rainbow-mode
+
 #+BEGIN_SRC elisp
 (def-package! rainbow-mode
   :commands (rainbow-mode))
 #+END_SRC
+
 *** Smerge Mode
 **** Fix Colors
+
 #+BEGIN_SRC elisp
 (after! smerge-mode
   :config
@@ -1502,6 +1551,7 @@ brew cask install font-liberation-sans
   ;; This fixes the smerge diff color is really bright an ugly
   (set-face-attribute 'smerge-refined-added nil :foreground nil :background nil))
 #+END_SRC
+
 **** Hydra
 :PROPERTIES:
 :SOURCE:   [[https://github.com/alphapapa/unpackaged.el#hydra][alphapapa/unpackaged.el: A collection of useful Emacs Lisp code that isn't substantial enough to be packaged]]
@@ -1599,6 +1649,7 @@ ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline
 #+END_SRC
 *** Treemacs
 **** Treemacs Evil window switching
+
 #+BEGIN_SRC elisp
 (map!
  (:after treemacs-evil
@@ -1622,9 +1673,11 @@ Happypack slows down treemacs quite a bit.
 *** Workspaces
 **** Config
 ***** Always create workspace when switching to project
+
 #+BEGIN_SRC elisp
 (setq +workspaces-on-switch-project-behavior t)
 #+END_SRC
+
 ***** Always add buffers to current workspace
 
 Doom per default adds buffers to the current workspace on ~find-file~.
@@ -1670,12 +1723,14 @@ Enhancement of the default ~+workspace/switch-to~.
             :action #'+workspace/switch-to))
 #+END_SRC
 ***** Switch to last visited workspace
+
 #+BEGIN_SRC elisp
 (defun +workspace/switch-to-last-visited ()
   "Switch to the last visited workspace."
   (interactive)
   (+workspace/switch-to +workspace--last))
 #+END_SRC
+
 ***** Find file for workspace
 
 Most of the time you create workspaces from a project.
@@ -1695,6 +1750,7 @@ the projects cwd to find a file.
 #+END_SRC
 
 ***** New named workspace
+
 #+BEGIN_SRC elisp
 (defun +workspace/new-named ()
   "Create a new named workspace."
@@ -1702,16 +1758,20 @@ the projects cwd to find a file.
   (let ((name (read-string "New workspace name: ")))
     (if name (+workspace/new name))))
 #+END_SRC
+
 *** Yasnippet
 **** TODO Expand first company snippet
+
 #+BEGIN_SRC elisp
 (defun yasnippet/expand-first-item ()
   (interactive)
   (call-interactively #'company-yasnippet)
   (company-complete-selection))
 #+END_SRC
+
 ** General Config
 *** Lookup Sources
+
 #+BEGIN_SRC elisp
 (setq +lookup-provider-url-alist
   '(("DuckDuckGo"        . "https://duckduckgo.com/?q=%s")
@@ -1731,15 +1791,19 @@ the projects cwd to find a file.
     ("Wolfram alpha"     . "https://wolframalpha.com/input/?i=%s")
     ("Wikipedia"         . "https://wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")))
 #+END_SRC
+
 *** Bookmarks
+
 #+BEGIN_SRC elisp
 (setq bookmark-default-file "~/Dropbox/Temp/bookmarks")
 #+END_SRC
 
 *** Open OTF fonts in image mode
+
 #+BEGIN_SRC elisp
 (add-to-list 'auto-mode-alist '("\\.otf\\'" . image-mode))
 #+END_SRC
+
 *** Shorten Yes/No prompts
 :PROPERTIES:
 :SOURCE:   https://github.com/wasamasa/dotemacs/blob/master/init.org#shorten-yesno-prompts
@@ -1752,53 +1816,62 @@ definition to allow a "y" or "n" without even requiring confirmation.
 #+BEGIN_SRC emacs-lisp
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+
 *** Fine undo
+
 Whether actions like "cw" are undone in several steps.
 
 #+BEGIN_SRC elisp
 (setq evil-want-fine-undo t)
 #+END_SRC
+
 *** Move items to trash on delete
+
 #+BEGIN_SRC elisp
 (setq
  trash-directory "~/.Trash/"
  delete-by-moving-to-trash t)
 #+END_SRC
+
 *** Filename Auto Modes
-Automatically set mode for specifc filenames
+
+Automatically set mode for specific filenames.
 
 #+BEGIN_SRC elisp
 ;; auto-mode-alist
 (add-to-list 'auto-mode-alist '("Brewfile" . shell-script-mode))
 #+END_SRC
-*** Terminal Config
-Set the terminal to zsh
+
+*** Default Terminal Shell
 
 #+BEGIN_SRC elisp
 ;; Set the default multi-term to zsh
 (setq multi-term-program "/bin/zsh")
 #+END_SRC
+
 *** Save Hist Mode
-Save the command history between sessions
-The history can be accessed with ~C-n~ / ~C-p~
+
+Save the command history between sessions.
 
 #+BEGIN_SRC elisp
 (savehist-mode 1)
 #+END_SRC
+
 *** Automatically reload tags files
+
 #+BEGIN_SRC elisp
 (setq tags-revert-without-query 1)
 #+END_SRC
-*** Disable trailng whitespace error
-#+BEGIN_SRC elisp
-(setq-hook! 'prog-mode-hook show-trailing-whitespace nil)
-#+END_SRC
+
 ** Bindings
 *** General Bindings
+
 #+BEGIN_SRC elisp
 (map! :en "C-±" #'+popup/raise)
 #+END_SRC
+
 *** Osx / Mac Modifier Bindings
+
 #+BEGIN_SRC elisp
 (map!
  (:map override
@@ -1823,8 +1896,10 @@ The history can be accessed with ~C-n~ / ~C-p~
    :gniv "s--"   #'doom/decrease-font-size
    :gniv "s-0"   #'doom/reset-font-size))
 #+END_SRC
+
 *** Evil Normal Bindings
 **** Window navigation
+
 #+BEGIN_SRC elisp
 (map!
  :en "C-h"   #'evil-window-left
@@ -1832,7 +1907,12 @@ The history can be accessed with ~C-n~ / ~C-p~
  :en "C-k"   #'evil-window-up
  :en "C-l"   #'evil-window-right)
 #+END_SRC
+
 **** Replace With Register Motion
+
+Replace the current selection with a register.
+Works with motions
+
 #+BEGIN_SRC elisp
 (def-package! evil-replace-with-register
   :config
@@ -1842,6 +1922,7 @@ The history can be accessed with ~C-n~ / ~C-p~
   (define-key evil-visual-state-map
     evil-replace-with-register-key 'evil-replace-with-register))
 #+END_SRC
+
 **** Org Mode Text Objects
 
 #+BEGIN_SRC elisp
@@ -1872,21 +1953,26 @@ The history can be accessed with ~C-n~ / ~C-p~
   (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket))
 #+END_SRC
 
-
 **** Go up one directory from the current buffer
+
 #+BEGIN_SRC elisp
 (after! evil
   (map! :m  "-"  #'dired-jump))
 #+END_SRC
+
 **** Fix history navigation for the minibuffer
+
 #+BEGIN_SRC elisp
 (define-key minibuffer-local-map "\C-p" 'previous-history-element)
 (define-key minibuffer-local-map "\C-n" 'next-history-element)
 #+END_SRC
+
 **** Jump to last buffer
+
 #+BEGIN_SRC elisp
 (map! :n "gb" #'evil-switch-to-windows-last-buffer)
 #+END_SRC
+
 *** Evil Text Objects
 
 Custom evil text objects mostly stolen from [[https://github.com/jerryxgh/lambda-x/blob/master/lambda-evil.el#L236][Spacemacs|define-text-object-regexp]].
@@ -1959,17 +2045,21 @@ Change inner bracket with ~r~
 Global ~[~ & ~]~ combinator bindings
 
 **** Dumb Jump
+
 #+BEGIN_SRC elisp
 (map!
  :n "]F" #'dumb-jump-go
  :n "[F" #'dumb-jump-back)
 #+END_SRC
+
 **** Flycheck Error Jumping
+
 #+BEGIN_SRC elisp
 (map!
  :n "]e" #'flycheck-next-error
  :n "[e" #'flycheck-previous-error)
 #+END_SRC
+
 *** Evil Insert Bindings
 
 Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
@@ -1999,8 +2089,9 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :i "M-w"   (λ! (insert "⚠"))
  :i "M-i"   (λ! (insert "ℹ")))
 #+END_SRC
-***** TODO Inserting a character makes one undo state
+
 *** Leader Bindings
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2013,13 +2104,16 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+END_SRC
 
 **** Buffer
+
 #+BEGIN_SRC elisp
 (map!
  :leader
  (:desc "buffer" :prefix "b"
    :desc "Rename Buffer" :n "r" #'rename-buffer))
 #+END_SRC
+
 **** Code
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2027,7 +2121,9 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Compile" "c" #'compile
    :desc "Compile" "Compile last command" (λ! (compile (car compile-history)))))
 #+END_SRC
+
 **** Dir
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2035,14 +2131,18 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "find in literate config file" :n  "r" #'dired-recent-open
    :desc "Project Root"                 :n  "p" #'projectile-dired))
 #+END_SRC
+
 **** File
+
 #+BEGIN_SRC elisp
 (map!
  :leader
  (:desc "file" :prefix "f"
    :desc "Open Private Config" "P" (λ! (find-file (f-join doom-private-dir "config.org")))))
 #+END_SRC
+
 **** Git
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2060,14 +2160,18 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Push"                        :n "p" #'magit-push
    :desc "Undo"                        :n "u" #'+git|undo))
 #+END_SRC
+
 **** Insert
+
 #+BEGIN_SRC elisp
 (map!
  :leader
  (:desc "insert" :prefix "i"
    :desc "Killring"   :n  "y" #'counsel-yank-pop))
 #+END_SRC
+
 **** Open
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2075,7 +2179,9 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Eshell in Current Dir" :n  "." (λ! (+eshell/open t))
    :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))))
 #+END_SRC
+
 **** Projects
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2083,14 +2189,18 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "services" :n  "s" #'prodigy
    :desc "Workspace Project Files" :n  "P" #'+workspace|find-workspace-project-file))
 #+END_SRC
+
 **** Toggle
+
 #+BEGIN_SRC elisp
 (map!
  :leader
  (:desc "toggle" :prefix "t"
    :desc "Theme Dark/Light" :n  "t" #'+doom|toggle-theme))
 #+END_SRC
+
 **** Window
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2103,7 +2213,9 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
   :desc  "Swap"             :n  "SPC"  #'ace-swap-window
   :desc "Toggle Locked" :n "#" #'toggle-window-dedicated))
 #+END_SRC
+
 **** Workspace
+
 #+BEGIN_SRC elisp
 (map!
  :leader
@@ -2140,6 +2252,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+END_SRC
 
 **** Yank
+
 #+BEGIN_SRC elisp
 (map!
   :leader
@@ -2152,6 +2265,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+END_SRC
 
 *** Little Word Motion
+
 #+BEGIN_SRC elisp
 (defun load-evil-camel-case-motion ()
   (require 'evil-little-word)
@@ -2172,11 +2286,13 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 (after! js2-mode
   (load-evil-camel-case-motion))
 #+END_SRC
+
 *** Package (Local-Leader) Bindings
 
 Pacakge/Mode specific bindings
 
 **** Eshell
+
 #+BEGIN_SRC elisp
 (defun floscr|+eshell|init-keymap ()
   "Setup additional custom eshell keybindings to already existing doom bindings. This must be done in a hook because eshell-mode
@@ -2185,7 +2301,9 @@ redefines its keys every time `eshell-mode' is enabled."
         :localleader "l" #'eshell/clear))
 (add-hook 'eshell-first-time-mode-hook #'floscr|+eshell|init-keymap)
 #+END_SRC
+
 **** Elisp
+
 #+BEGIN_SRC elisp
 (map! :map emacs-lisp-mode-map
       ;; Rearrange Sexps
@@ -2204,6 +2322,7 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc  "Raise sexp" "<" #'raise-sexp
       :desc  "Barf Sexp" ">" #'barf-sexp)
 #+END_SRC
+
 *** Minibuffer Bindings
 **** Copy and Paste from the minibuffer
 
