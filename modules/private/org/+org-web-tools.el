@@ -23,6 +23,17 @@
   (visual-fill-column-mode)
   (setq display-line-numbers nil))
 
+(defun +org-web-tools|read-url-from-chrome ()
+  "Open the url under the cursor"
+  (interactive)
+  (--> (org-mac-chrome-get-frontmost-url)
+       (s-match org-bracket-link-regexp it)
+       (nth 1 it)
+       org-web-tools-read-url-as-org)
+  (visual-line-mode)
+  (visual-fill-column-mode)
+  (setq display-line-numbers nil))
+
 (def-package! org-web-tools
   :after org
   :commands (+org-web-tools/read-url-at-point))

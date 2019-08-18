@@ -2155,7 +2155,8 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :leader
  (:desc "open" :prefix "o"
    :desc "Eshell in Current Dir" :n  "." (λ! (+eshell/open t))
-   :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))))
+   :desc "Eshell Popup in Current Dir" :n  ">" (λ! (+eshell/open t))
+   :desc "Org Web Chrome" :g "p" #'+org-web-tools|read-url-from-chrome))
 #+END_SRC
 
 **** Projects
