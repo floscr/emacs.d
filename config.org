@@ -675,7 +675,7 @@ Bindings
     dired-recursive-deletes 'top
     ;; Auto refresh dired, but be quiet about it
     global-auto-revert-non-file-buffers t
-    dired-omit-files (concat dired-omit-files "\\|\\.DS_Store$")))
+    dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$"))
 #+END_SRC
 
 ***** Use gls
