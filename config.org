@@ -2317,11 +2317,13 @@ redefines its keys every time `eshell-mode' is enabled."
       :n "s-r" #'eval-buffer
 
       ;; Slurp and barf
-      :n "g]"   #'sp-slurp-hybrid-sexp
-      :n "g["   #'sp-forward-barf-sexp
+      :n "g]"  #'sp-slurp-hybrid-sexp
+      :n "g["  #'sp-forward-barf-sexp
+
       :localleader
-      :desc  "Raise sexp" "<" #'raise-sexp
-      :desc  "Barf Sexp" ">" #'barf-sexp)
+      :desc "Symex Mode"  "s" #'symex-mode-interface
+      :desc "Raise sexp"  "<" #'raise-sexp
+      :desc "Barf Sexp"   ">" #'barf-sexp)
 #+END_SRC
 
 *** Minibuffer Bindings
