@@ -46,4 +46,3 @@
 
 ;; Disabled packages
 (package! lsp-ui :disable t)         ;; Annoying LSP Interface
-(package! treemacs-magit :disable t) ;; Hangs on large projects

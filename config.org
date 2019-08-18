@@ -1648,29 +1648,6 @@ ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline
 
 (add-hook 'set-language-environment-hook 'flyspell-set-language-environment)
 #+END_SRC
-*** Treemacs
-**** Treemacs Evil window switching
-
-#+BEGIN_SRC elisp
-(map!
- (:after treemacs-evil
-   (:map evil-treemacs-state-map
-     "C-h" #'evil-window-left
-     "C-l" #'evil-window-right)))
-#+END_SRC
-
-**** Ignore ~happypack~                                                                              :HACK:
-
-Happypack slows down treemacs quite a bit.
-
-#+BEGIN_SRC elisp
-(defun treemacs-is-file-happypack? (f _)
-  (string= f ".happypack"))
-
-(after! treemacs
-  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-is-file-happypack?))
-#+END_SRC
-
 *** Workspaces
 **** Config
 ***** Always create workspace when switching to project

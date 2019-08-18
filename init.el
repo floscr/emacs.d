@@ -12,12 +12,14 @@
  modeline
  doom-quit
  hl-todo
- treemacs
  (popup +all +defaults)
  vc-gutter
  vi-tilde-fringe
  window-select
  workspaces
+
+ :email
+ (mu4e +gmail)
 
  :editor
  (evil +everywhere)
