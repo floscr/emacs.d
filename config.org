@@ -1297,6 +1297,17 @@ npm i -g json-fix
        :foreground nil :distant-foreground nil :background nil))))
 #+END_SRC
 
+*** Mail
+**** Config
+
+#+BEGIN_SRC elisp
+(setq mu4e-maildir-shortcuts
+      '(("/mailbox/work/INBOX"     . ?i)
+        ("/mailbox/work/Sent Mail" . ?s)
+        ("/mailbox/work/Trash"     . ?t)
+        ("/mailbox/work/All Mail"  . ?a)))
+#+END_SRC
+
 *** Magit / Git
 **** Utils
 ***** Create New Git Worktree Workspace
