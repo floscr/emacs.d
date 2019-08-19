@@ -1761,7 +1761,6 @@ the projects cwd to find a file.
     ("NPM"               . "https://npmjs.com/search?q=%s")
     ("Hoogle"            . "https://www.haskell.org/hoogle/?hoogle=%s")
     ("Project Gutenberg" . "http://www.gutenberg.org/ebooks/search/?query=%s")
-    ("DevDocs.io"        . "https://devdocs.io/#q=%s")
     ("Explain Shell"     . "https://explainshell.com/explain?cmd=%s")
     ("StackOverflow"     . "https://stackoverflow.com/search?q=%s")
     ("Github"            . "https://github.com/search?ref=simplesearch&q=%s")
