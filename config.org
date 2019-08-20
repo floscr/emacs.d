@@ -1299,6 +1299,13 @@ npm i -g json-fix
 
 *** Mail
 **** Config
+***** Disable Background Color
+
+#+BEGIN_SRC elisp
+(setq shr-use-colors nil)
+#+END_SRC
+
+***** Shortcuts
 
 #+BEGIN_SRC elisp
 (setq mu4e-maildir-shortcuts
