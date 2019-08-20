@@ -25,6 +25,17 @@
 #+END_SRC
 
 ** Utils
+*** Get Frontmost chrome url
+
+#+BEGIN_SRC elisp
+(defun +org/get-frontmost-chrome-url-raw ()
+  "Get just the url for the frontmost chrome instance."
+  (interactive)
+  (--> (org-mac-chrome-get-frontmost-url)
+       (s-match org-bracket-link-regexp it)
+       (nth 1 it)))
+#+END_SRC
+
 *** Add source property from chrome
 
 #+BEGIN_SRC elisp
@@ -140,12 +151,22 @@ E.g.: (Brackets signal the cursor position)
 : ***[]"
 
 #+BEGIN_SRC elisp
-(defun +org|paste-chrome-link ()
-  "Paste the frontmost chrome link"
+(defun +org|insert-chrome-url ()
+  "Insert a link around the current selection."
   (interactive)
-  (unless (looking-at-p "[\s\t\n\r]") (forward-char))
-  (insert " ")
-  (insert (org-mac-chrome-get-frontmost-url)))
+  (org-insert-link nil (+org/get-frontmost-chrome-url-raw)))
+
+(defun +org|paste-chrome-link ()
+  "Paste the frontmost chrome link."
+  (interactive)
+  (cond
+   ;; Visual Selection
+   ((region-active-p) (+org|insert-chrome-url))
+   ;; Normal
+   (t (progn
+        (unless (looking-at-p "[\s\t\n\r]") (forward-char))
+        (insert " ")
+        (insert (org-mac-chrome-get-frontmost-url))))))
 #+END_SRC
 
 *** Paste Markdown as org
