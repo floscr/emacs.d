@@ -870,7 +870,7 @@ To sync the calendars use ~org-caldav-sync~.
 **** Meta Mapping
 
 #+BEGIN_SRC elisp
-(map! :niv "s-X" #'+org-capture/open-frame)
+(map! :g "s-X" #'+org-capture/open-frame)
 
 (after! org
   (map! :map org-mode-map
