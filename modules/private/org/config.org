@@ -486,6 +486,10 @@ Needs ~dvisvgm~
            (file org-default-notes-file)
            "* TODO %?\n")
 
+          ("f" "File Todo" entry
+           (file org-default-notes-file)
+           "* TODO %?\n%a\n")
+
           ("c" "Calendar Event" entry
            (file+headline ,(concat org-directory "/home.org") "Calendar")
            "* %?\n")
