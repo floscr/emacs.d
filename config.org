@@ -2004,7 +2004,7 @@ START-REGEXP and END-REGEXP are the boundaries of the text object."
 (+evil/define-text-object-regexp "-" "hyphen" "-" "-")
 #+END_SRC
 
-**** Quotes Text Objet
+**** Quotes Text Object
 
 Changes the text matching inside quotes with ~q~ motion (e.g. ~ciq~)
 Change inner bracket with ~r~
