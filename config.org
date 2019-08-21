@@ -1044,6 +1044,7 @@ Adds general bindings to ivy.
   (add-hook 'js2-mode-hook #'eslintd-fix-mode)
   :config
   (map! :map js2-mode-map
+        :desc "Goto parent function" :n "gh" (λ! (js2-beginning-of-defun))
         :localleader
         (:desc "import" :n "i" #'+js|ivy-import-file)
         (:desc "Indium" :prefix "I"
