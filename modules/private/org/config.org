@@ -690,16 +690,18 @@ Helper to reset the org agenda custom commands.
                              (org-agenda-show-all-dates nil)
                              (org-agenda-use-time-grid 'require-timed)
                              (org-agenda-start-day ".")))
-                (tags-todo "+WORK-EVENT"
+                (alltodo "+WORK-EVENT"
                    ((org-agenda-sorting-strategy '(user-defined-down timestamp-down time-down))
-                    (org-super-agenda-groups '((:name "In Progress" :todo "ACTIVE" :time-grid t)
+                    (org-super-agenda-groups '((:name "In Progress" :todo ("ACTIVE" "[!]"))
+                                               (:discard (:todo ("[ ]" "[|]")))
                                                (:name "DevTools" :tag "DEV_TOOLS" :order 5)
                                                (:name "Meta Work" :tag "META_WORK" :order 5)
                                                (:name "Reviews" :tag "REVIEW" :order 4)
                                                (:name "Tasks" :not (:scheduled today :scheduled future :todo "SOMEDAY" :todo "WAITING" :tag ("BACKLOG" "TEXT" "EMACS")) :order 3)
-                                               (:name "Waiting" :todo "WAITING" :order 4)
+                                               (:name "Waiting" :todo ("WAITING" "[-]") :order 4)
                                                (:name "Backlog" :tag "BACKLOG" :todo "SOMEDAY" :order 11)
                                                (:name "Reading List" :tag "TEXT" :order 10))))))
+
                ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
                 (org-agenda-tag-filter-preset '("+WORK"))
                 (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "inbox.org"))))))
