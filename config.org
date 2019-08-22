@@ -1535,6 +1535,7 @@ Always keep markdown centered, without line numbers.
   (setq markdown-fontify-code-blocks-natively t)
   :config
   (add-hook! markdown-mode
+    (hl-line-mode -1)
     (visual-line-mode)
     (visual-fill-column-mode)
     (outline-minor-mode)

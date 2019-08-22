@@ -25,6 +25,14 @@
 #+END_SRC
 
 ** Utils
+*** Setup Org Mode Hook
+
+#+BEGIN_SRC elisp
+(defun +org*setup-org-mode-hook ()
+  "Function docstring"
+  (hl-line-mode -1))
+#+END_SRC
+
 *** Get Frontmost chrome url
 
 #+BEGIN_SRC elisp
@@ -332,6 +340,7 @@ Projectile search is not fast reliable enough."
 
 (after! org
   :config
+  (add-hook! org-mode #'+org*setup-org-mode-hook)
   (setq
    org-tags-column (- fill-column)
    org-image-actual-width 600
