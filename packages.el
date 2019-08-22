@@ -9,6 +9,7 @@
 
 ;;; Javascript Packages
 (package! indium)
+(package! impatient-mode)
 
 ;;; Org-Mode Packages
 (package! helm-org-rifle)

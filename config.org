@@ -1001,6 +1001,13 @@ To enable the checker press ~SPC u C-c ! x~
   (setq indium-chrome-executable "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"))
 #+END_SRC
 
+*** Impatient-Mode
+
+#+BEGIN_SRC elisp
+(def-package! impatient-mode
+  :commands impatient-mode)
+#+END_SRC
+
 *** Ivy / Swiper
 **** Bindings
 
