@@ -318,6 +318,26 @@ Projectile search is not fast reliable enough."
 
 ** Config
 *** General Config
+**** Org variables
+
+#+BEGIN_SRC elisp
+(setq
+ org-directory (expand-file-name "~/Dropbox/org")
+ org-pinboard-dir org-directory
+ org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
+ org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
+ org-default-notes-file (concat org-directory "/inbox.org")
+ org-shopping-list-file (concat org-directory "/shoppinglist.org")
+ +org-reading-list-file (concat org-directory "/reading-list.org"))
+
+(after! org
+  :config
+  (setq
+   org-tags-column (- fill-column)
+   org-image-actual-width 600
+   org-default-notes-file (concat org-directory "/inbox.org")))
+#+END_SRC
+
 **** Todo Keywords
 
 #+BEGIN_SRC elisp
@@ -354,26 +374,6 @@ Projectile search is not fast reliable enough."
 (after! projectile
   (add-to-list 'projectile-globally-ignored-file-suffixes ".org_archive")
   (add-to-list 'projectile-globally-ignored-file-suffixes ".DS_Store"))
-#+END_SRC
-
-**** Org variables
-
-#+BEGIN_SRC elisp
-(setq
- org-directory (expand-file-name "~/Dropbox/org")
- org-pinboard-dir org-directory
- org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
- org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
- org-default-notes-file (concat org-directory "/inbox.org")
- org-shopping-list-file (concat org-directory "/shoppinglist.org")
- +org-reading-list-file (concat org-directory "/reading-list.org"))
-
-(after! org
-  :config
-  (setq
-   org-tags-column (- fill-column)
-   org-image-actual-width 600
-   org-default-notes-file (concat org-directory "/inbox.org")))
 #+END_SRC
 
 **** Latex

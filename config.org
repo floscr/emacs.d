@@ -2328,7 +2328,9 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
       :localleader
-      :g "x" #'org-mu4e-store-and-capture)
+      :g "x" (λ!
+              (require 'org-mu4e)
+              (org-mu4e-store-and-capture)))
 #+END_SRC
 
 *** Minibuffer Bindings
