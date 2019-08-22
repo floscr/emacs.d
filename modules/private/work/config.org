@@ -24,6 +24,7 @@ this mode is enabled.
 (def-project-mode! +MM-Web-mode
   :match "\\/Code\\/Meisterlabs\\/"
   :add-hooks (+MM/setup-keybindings)
+  :on-enter (setq sgml-basic-offset 4)
   :on-load)
 #+END_SRC
 
