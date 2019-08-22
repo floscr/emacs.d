@@ -1239,7 +1239,7 @@ Remove the ~js~ extension for ~company-files~.
 ***** Ignore Flycheck error on line
 
 #+BEGIN_SRC elisp
-(defun +js|flycheck-add-ignore-error-on-line ()
+(defun +js|eslint-fix-ignore-error ()
   "Adds an ignore with the current flycheck error."
   (interactive)
   (if-let ((error-id (flycheck-copy-errors-as-kill (point) #'flycheck-error-id)))
