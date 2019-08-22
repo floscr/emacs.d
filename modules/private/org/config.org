@@ -323,6 +323,21 @@ Projectile search is not fast reliable enough."
           (delete-region begin end)
           (insert new-attach-link)))))
 #+END_SRC
+*** Visual Fill Column
+
+#+BEGIN_SRC elisp
+(defun +org|toggle-visual-wrap (&optional center?)
+  "Toggle text wrapping for org buffers."
+  (interactive)
+  (let ((visual-fill-column-center-text (or center? nil)))
+    (if (bound-and-true-p visual-line-mode)
+        (progn
+          (visual-line-mode -1)
+          (visual-fill-column-mode -1))
+      (progn
+        (visual-line-mode)
+        (visual-fill-column-mode)))))
+#+END_SRC
 
 ** Config
 *** General Config
@@ -949,29 +964,33 @@ To sync the calendars use ~org-caldav-sync~.
 #+BEGIN_SRC elisp
 (map!
  :leader
+ (:desc "Toggle" :prefix "t"
+   :desc "Visal Fill Column"          "o" #'+org|toggle-visual-wrap
+   :desc "Visal Fill Column (Center)" "O" (λ! (+org|toggle-visual-wrap)))
+
  (:desc "Notes" :prefix "n"
-   :desc "Pinboard File"            "B" (λ! (find-file org-pinboard-file))
-   :desc "Save All Org Buffers"     "S" #'org-save-all-org-buffers
-   :desc "Agenda"                   "a" #'org-agenda
-   :desc "Search Pinboard"          "b" #'helm-org-pinboard
-   :desc "Emacs"                    "e" (λ! (+org/find-in-files "Emacs.org"))
-   :desc "Home"                     "h" (λ! (+org/find-in-files "home.org"))
-   :desc "Inbox"                    "i" (λ! (+org/find-in-files "inbox.org"))
-   :desc "Find in notes"            "n" #'+org|search-in-notes
-   :desc "Reading List"             "r" #'+org-reading-list/org-open-reading-list-file
-   :desc "Work"                     "w" (λ! (+org/find-in-files "Work/work.org"))
-   :desc "Store Link"               "y" #'org-store-link
+   :desc "Pinboard File"              "B" (λ! (find-file org-pinboard-file))
+   :desc "Save All Org Buffers"       "S" #'org-save-all-org-buffers
+   :desc "Agenda"                     "a" #'org-agenda
+   :desc "Search Pinboard"            "b" #'helm-org-pinboard
+   :desc "Emacs"                      "e" (λ! (+org/find-in-files "Emacs.org"))
+   :desc "Home"                       "h" (λ! (+org/find-in-files "home.org"))
+   :desc "Inbox"                      "i" (λ! (+org/find-in-files "inbox.org"))
+   :desc "Find in notes"              "n" #'+org|search-in-notes
+   :desc "Reading List"               "r" #'+org-reading-list/org-open-reading-list-file
+   :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
+   :desc "Store Link"                 "y" #'org-store-link
 
    (:prefix-map ("c" . "clock")
-     :desc "Timestamp Down"         "-" #'org-clock-timestamps-down
-     :desc "Timestamp Up"           "=" #'org-clock-timestamps-up
-     :desc "Clock Out"              "C" #'org-clock-out
-     :desc "Goto Select"            "G" (λ! (org-clock-goto 'select))
-     :desc "Clock In"               "c" #'org-clock-in
-     :desc "Mark Default Task"      "d" #'org-clock-mark-default-task
-     :desc "Modify Effort Estimate" "e" #'org-clock-modify-effort-estimate
-     :desc "Goto Current"           "g" #'org-clock-goto
-     :desc "Resolve"                "r" #'org-resolve-clocks
-     :desc "Clock In Last"          "l" #'org-clock-in-last
-     :desc "Cancel"                 "x" #'org-clock-cancel)))
+     :desc "Timestamp Down"           "-" #'org-clock-timestamps-down
+     :desc "Timestamp Up"             "=" #'org-clock-timestamps-up
+     :desc "Clock Out"                "C" #'org-clock-out
+     :desc "Goto Select"              "G" (λ! (org-clock-goto 'select))
+     :desc "Clock In"                 "c" #'org-clock-in
+     :desc "Mark Default Task"        "d" #'org-clock-mark-default-task
+     :desc "Modify Effort Estimate    " "e" #'org-clock-modify-effort-estimate
+     :desc "Goto Current"             "g" #'org-clock-goto
+     :desc "Resolve"                  "r" #'org-resolve-clocks
+     :desc "Clock In Last"            "l" #'org-clock-in-last
+     :desc "Cancel"                   "x" #'org-clock-cancel)))
 #+END_SRC
