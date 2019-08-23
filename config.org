@@ -1009,6 +1009,27 @@ To enable the checker press ~SPC u C-c ! x~
 #+END_SRC
 
 *** Ivy / Swiper
+**** Posframe
+***** Override the size function
+
+Ivy posframe will jump around when the candidate size changes.
+This will fix it to a width.
+
+#+BEGIN_SRC elisp
+(defun +ivy-posframe-get-size ()
+  "The default functon used by `ivy-posframe-size-function'."
+  (let ((width 0.75)
+        (height 20))
+    (list
+     :height height
+     :width (round (* (frame-width) width)))))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+(setq ivy-posframe-size-function #'+ivy-posframe-get-size)
+#+END_SRC
+
 **** Bindings
 
 Adds general bindings to ivy.
