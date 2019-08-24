@@ -352,6 +352,26 @@ Projectile search is not fast reliable enough."
     (org-narrow-to-subtree)))
 #+END_SRC
 
+*** Move to shopping list
+
+Moves a todo item from the agenda to the shopping list as a list item.
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-move-to-shopping-list ()
+  "Function docstring"
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      (let ((title (nth 1 (s-match "^.*TODO \\(.*\\)$" (thing-at-point 'line t))))
+            (buffer (find-file org-shopping-list-file)))
+        (with-current-buffer buffer
+          (org-narrow-to-subtree)
+          (goto-char (point-max))
+          (insert (template "\n- [ ] <<title>>"))
+          (org-update-checkbox-count t)
+          (save-buffer)))))
+  (+org|agenda-archive-and-done))
+#+END_SRC
 
 ** Config
 *** General Config
