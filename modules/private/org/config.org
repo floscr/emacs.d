@@ -291,29 +291,6 @@ Projectile search is not fast reliable enough."
   "Find file in org directory."
   (find-file (f-join org-directory file)))
 #+END_SRC
-*** Agenda Visit Enty in Narrow Mode
-
-#+BEGIN_SRC elisp
-(defun +org/todo-state-subtask? ()
-  "If the current taks item is a subtask (which is marked by [ ])."
-  (if-let ((state (org-get-todo-state)))
-      (string-match-p "^\\[" state)))
-
-(defun +org|agenda-visit-entry ()
-  "Visit entry and narrow to section."
-  (interactive)
-  (org-agenda-switch-to)
-  ;; When narrowed on a subtask, narrow to the next parent task
-  (if (+org/todo-state-subtask?)
-      (save-excursion
-        (org-up-element)
-        (while (and (eq (org-get-todo-state) nil)
-                    (eq (+org/todo-state-subtask?) nil))
-          (org-up-element)
-          (org-narrow-to-subtree)))
-    (org-narrow-to-subtree)))
-#+END_SRC
-
 *** Rename Attachment
 
 #+BEGIN_SRC elisp
@@ -352,6 +329,29 @@ Projectile search is not fast reliable enough."
         (visual-line-mode)
         (visual-fill-column-mode)))))
 #+END_SRC
+*** Agenda Visit Enty in Narrow Mode
+
+#+BEGIN_SRC elisp
+(defun +org/todo-state-subtask? ()
+  "If the current taks item is a subtask (which is marked by [ ])."
+  (if-let ((state (org-get-todo-state)))
+      (string-match-p "^\\[" state)))
+
+(defun +org|agenda-visit-entry ()
+  "Visit entry and narrow to section."
+  (interactive)
+  (org-agenda-switch-to)
+  ;; When narrowed on a subtask, narrow to the next parent task
+  (if (+org/todo-state-subtask?)
+      (save-excursion
+        (org-up-element)
+        (while (and (eq (org-get-todo-state) nil)
+                    (eq (+org/todo-state-subtask?) nil))
+          (org-up-element)
+          (org-narrow-to-subtree)))
+    (org-narrow-to-subtree)))
+#+END_SRC
+
 
 ** Config
 *** General Config
