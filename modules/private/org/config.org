@@ -947,7 +947,7 @@ To sync the calendars use ~org-caldav-sync~.
       :desc  "Paste Chrome Link"         :m    "p"  #'+org|paste-chrome-link
       :desc  "Refile"                    :nve  "r"  #'org-refile
       :desc  "Schedule"                  :nve  "s"  #'org-schedule
-      :desc  "Tag heading"               :nve  "t"  #'org-set-tags-command
+      :desc  "Tag heading"               :nve  "t"  #'+org-tags|set-tags
       :desc  "Copy Buffer To Markdown"   :m    "y"  #'+org|copy-buffer-as-markdown
 
       (:desc "Insert" :prefix "i"
