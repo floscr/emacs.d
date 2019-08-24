@@ -927,6 +927,7 @@ To sync the calendars use ~org-caldav-sync~.
 ** Bindings
 *** Local Leader Bindings
 **** Local Leader Mapping
+***** Org Mode
 
 #+BEGIN_SRC elisp
 (map! :map evil-org-mode-map
@@ -971,6 +972,15 @@ To sync the calendars use ~org-caldav-sync~.
         :desc "Block"                :m "b" #'org-narrow-to-block
         :desc "Element"              :m "e" #'org-narrow-to-element
         :desc "widen"                :m "w" #'widen))
+#+END_SRC
+
+***** Agenda
+
+#+BEGIN_SRC elisp
+(map! :map org-agenda-localleader-mode-map
+      :localleader
+      (:desc "Move" :prefix "m"
+        :desc "To shoppping list" :m "s" #'+org|agenda-move-to-shopping-list))
 #+END_SRC
 
 **** Meta Mapping
