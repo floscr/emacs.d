@@ -899,6 +899,24 @@ Widen can be restored with ~g~.
     (kbd "gh") 'dired-subtree-up))
 #+END_SRC
 
+***** Dired Filter
+
+#+BEGIN_SRC elisp
+(def-package! dired-filter
+  :after dired
+  :init
+  (setq dired-filter-saved-filters
+        (quote (("images"
+                 (extension "jpg" "png" "gif"))
+                ("media"
+                 (extension "mp3" "mp4" "MP3" "MP4" "avi" "mpg" "flv" "ogg" "wmv" "mkv" "mov" "wma"))
+                ("archives"
+                 (extension "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+                ("documents"
+                 (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub"))))))
+
+#+END_SRC
+
 *** Eldoc
 
 #+BEGIN_SRC elisp
