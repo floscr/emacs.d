@@ -391,6 +391,7 @@ Moves a todo item from the agenda to the shopping list as a list item.
   :config
   (add-hook! org-mode #'+org*setup-org-mode-hook)
   (setq
+   org-src-window-setup 'current-window
    org-tags-column (- fill-column)
    org-image-actual-width 600
    org-default-notes-file (concat org-directory "/inbox.org")))
