@@ -630,6 +630,16 @@ Needs ~dvisvgm~
 
 **** Bindings
 
+Enable avy/evil-motion for agenda
+
+#+BEGIN_SRC elisp
+(map! :after evil-org-agenda
+      :map org-agenda-mode-map
+      :m "gs" nil)
+#+END_SRC
+
+***** Motions
+
 #+BEGIN_SRC elisp
 (evil-define-key 'motion org-agenda-mode-map
   "vd" 'org-agenda-day-view
