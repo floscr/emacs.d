@@ -44,6 +44,7 @@
 (package! dired-recent)
 (package! dired-narrow)
 (package! dired-subtree)
+(package! dired-filter)
 
 ;; Disabled packages
 (package! lsp-ui :disable t)         ;; Annoying LSP Interface
