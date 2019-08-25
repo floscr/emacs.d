@@ -860,8 +860,8 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
       :map dired-mode-map
       :n "\\" #'+dired|change-to-wdired-mode)
 #+END_SRC
-
-*** Dired Recent
+**** Extensions
+***** Dired Recent
 
 #+BEGIN_SRC elisp
 (def-package! dired-recent
@@ -872,7 +872,7 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
   (dired-recent-mode 1))
 #+END_SRC
 
-*** Dired Narrow
+***** Dired Narrow
 
 [[https://github.com/Fuco1/dired-hacks#dired-narrow][Dired Narrow]] allows narrowing a dired buffer to a subselection.
 Widen can be restored with ~g~.
@@ -884,7 +884,7 @@ Widen can be restored with ~g~.
   (bind-key "C-c C-n" #'dired-narrow))
 #+END_SRC
 
-*** Dired Subtree
+***** Dired Subtree
 
 #+BEGIN_SRC elisp
 (def-package! dired-subtree
