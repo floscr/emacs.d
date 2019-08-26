@@ -571,6 +571,30 @@ plays a sound and prompts me to insert my count.
   (+guitar/create-timer-buffer '(lambda () (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))
 
 (set-popup-rule! "^\\*Guitar" :quit t :height 2 :select nil :transient t)
+
+;; (defun promise-sequence (xs)
+;;   (if-let ((current (car xs)))
+;;     (funcall current (lambda () (promise-sequence (cdr xs))))))
+
+;; (defun +guitar/foo ()
+;;   "Hello"
+;;   (unless (get-buffer +guitar-timer-buffer-name)
+;;     (+guitar/create-timer-buffer '(lambda () (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))
+;;   ())
+
+(defun +guitar|start-progressions ()
+  "Start progression timers"
+  (interactive)
+  (org-ql-search (f-join org-directory "music.org") '(heading "Timer"))
+  (with-current-buffer "*Org QL Search*"
+    (org-agenda-switch-to))
+  (kill-buffer "*Org QL Search*")
+  (search-forward-regexp "Date")
+  (forward-line 2)
+  (call-interactively #'evil-org-open-above)
+  (let ((date (format-time-string "[%Y-%m-%d %a %H:%M]" (current-time))))
+    (insert date)
+    (org-cycle)))
 #+END_SRC
 
 ** Package Config
@@ -836,8 +860,8 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
       :map dired-mode-map
       :n "\\" #'+dired|change-to-wdired-mode)
 #+END_SRC
-
-*** Dired Recent
+**** Extensions
+***** Dired Recent
 
 #+BEGIN_SRC elisp
 (def-package! dired-recent
@@ -848,7 +872,7 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
   (dired-recent-mode 1))
 #+END_SRC
 
-*** Dired Narrow
+***** Dired Narrow
 
 [[https://github.com/Fuco1/dired-hacks#dired-narrow][Dired Narrow]] allows narrowing a dired buffer to a subselection.
 Widen can be restored with ~g~.
@@ -860,7 +884,7 @@ Widen can be restored with ~g~.
   (bind-key "C-c C-n" #'dired-narrow))
 #+END_SRC
 
-*** Dired Subtree
+***** Dired Subtree
 
 #+BEGIN_SRC elisp
 (def-package! dired-subtree
@@ -873,6 +897,24 @@ Widen can be restored with ~g~.
     (kbd "<backtab>") (λ! () (dired-subtree-cycle)
                           (dired-revert))
     (kbd "gh") 'dired-subtree-up))
+#+END_SRC
+
+***** Dired Filter
+
+#+BEGIN_SRC elisp
+(def-package! dired-filter
+  :after dired
+  :init
+  (setq dired-filter-saved-filters
+        (quote (("images"
+                 (extension "jpg" "png" "gif"))
+                ("media"
+                 (extension "mp3" "mp4" "MP3" "MP4" "avi" "mpg" "flv" "ogg" "wmv" "mkv" "mov" "wma"))
+                ("archives"
+                 (extension "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+                ("documents"
+                 (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub"))))))
+
 #+END_SRC
 
 *** Eldoc
@@ -1009,6 +1051,27 @@ To enable the checker press ~SPC u C-c ! x~
 #+END_SRC
 
 *** Ivy / Swiper
+**** Posframe
+***** Override the size function
+
+Ivy posframe will jump around when the candidate size changes.
+This will fix it to a width.
+
+#+BEGIN_SRC elisp
+(defun +ivy-posframe-get-size ()
+  "The default functon used by `ivy-posframe-size-function'."
+  (let ((width 0.75)
+        (height 20))
+    (list
+     :height height
+     :width (round (* (frame-width) width)))))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+(setq ivy-posframe-size-function #'+ivy-posframe-get-size)
+#+END_SRC
+
 **** Bindings
 
 Adds general bindings to ivy.

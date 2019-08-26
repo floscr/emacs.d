@@ -57,15 +57,15 @@
   (find-file +org-reading-list-file))
 
 (after! org-agenda
-  (add-to-list 'org-agenda-custom-commands
-               '("rr" "Reading List" alltodo ""
-                 ((org-agenda-files (list +org-reading-list-file))
-                  ;; Remove the file prefix
-                  (org-agenda-prefix-format "  %?-12t% s")
-                  (org-agenda-hide-tags-regexp "TEXT\\|VIDEO\\|RESEARCH")
-                  (org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down))
-                  (org-super-agenda-groups '((:name "Active" :todo ("NEXT" "ACTIVE") :order 0)
-                                             (:name "Research" :tag "RESEARCH" :order 3)
-                                             (:name "Someday" :todo "SOMEDAY" :order 3)
-                                             (:name "Articles" :tag "TEXT" :order 1)
-                                             (:name "Videos" :regexp "\\(youtube\\|vimeo\\).com" :tag "VIDEO" :order 2)))))))
+  (+org/add-to-agenda-custom-commands
+   '("r" "Reading List" alltodo ""
+     ((org-agenda-files (list +org-reading-list-file))
+      ;; Remove the file prefix
+      (org-agenda-prefix-format "  %?-12t% s")
+      (org-agenda-hide-tags-regexp "TEXT\\|VIDEO\\|RESEARCH")
+      (org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down))
+      (org-super-agenda-groups '((:name "Active" :todo ("NEXT" "ACTIVE") :order 0)
+                                 (:name "Research" :tag "RESEARCH" :order 3)
+                                 (:name "Someday" :todo "SOMEDAY" :order 3)
+                                 (:name "Articles" :tag "TEXT" :order 1)
+                                 (:name "Videos" :regexp "\\(youtube\\|vimeo\\).com" :tag "VIDEO" :order 2)))))))
