@@ -562,6 +562,10 @@ Needs ~dvisvgm~
            (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
            "* TODO %?\n")
 
+          ("wc" "Work Task from Chrome" entry
+           (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
+           "* TODO %?\n:PROPERTIES:\n:MT_URL: %(org-mac-chrome-get-frontmost-url)\n:END:\n")
+
           ("wr" "Work Review" entry
            (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
            "* TODO %(+org/mac-chrome-get-frontmost-url-custom-format)%? :REVIEW:\n"))))
