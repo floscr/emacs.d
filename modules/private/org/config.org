@@ -782,15 +782,15 @@ Helper to reset the org agenda custom commands.
                 (when (and (org-up-heading-safe) (+org/get-parent-project))
                   (org-get-heading 'notags 'notodo)))))
 
-(add-to-list 'org-agenda-custom-commands
-             '("p" "Project Agenda"
-               ((alltodo "+WORK-EVENT"
-                         ((org-agenda-sorting-strategy '(todo-state-down user-defined-down timestamp-down time-down))
-                          (org-agenda-tag-filter-preset '("-EVENT"))
-                          (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
-                                                     (:discard (:anything t)))))))
-               ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
-                (org-agenda-files (list (f-join org-directory "Work/work.org"))))))
+(+org/add-to-agenda-custom-commands
+ '("p" "Project Agenda"
+   ((alltodo "+WORK-EVENT"
+             ((org-agenda-sorting-strategy '(todo-state-down user-defined-down timestamp-down time-down))
+              (org-agenda-tag-filter-preset '("-EVENT"))
+              (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
+                                         (:discard (:anything t)))))))
+   ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
+    (org-agenda-files (list (f-join org-directory "Work/work.org"))))))
 #+END_SRC
 
 ***** Calendar
