@@ -1993,6 +1993,7 @@ Save the command history between sessions.
    :gniv "s-;" #'eval-expression
    :gniv "s-S" #'write-file
    :gniv "s-x" #'execute-extended-command
+   :gniv "M-s-h" #'+mac|hide-others
 
    ;; Workspace Switching
    :gniv "s-1" (λ! (+workspace/switch-to 0))
