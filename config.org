@@ -2293,6 +2293,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Eshell in Current Dir"       :n "." (λ! (+eshell/open t))
    :desc "Eshell Popup in Current Dir" :n ">" (λ! (+eshell/open t))
    :desc "Mail"                        :g "m" #'=mu4e
+   :desc "Calendar"                    :g "c" #'=calendar
    :desc "Org Web Chrome"              :g "p" #'+org-web-tools|read-url-from-chrome))
 #+END_SRC
 
