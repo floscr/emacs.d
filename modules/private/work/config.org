@@ -545,6 +545,7 @@ Create a canvas action
 
         :localleader
         :desc  "Import File"                    "i"  #'+MM|import-file
+        :desc  "Generate Index"                 "I"  #'+js|generate-index
         :desc  "Repl"                           "R"  #'+MM|nodejs-repl
 
         (:prefix ("f" . "file")
