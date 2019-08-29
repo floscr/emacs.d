@@ -1869,6 +1869,10 @@ the projects cwd to find a file.
 
 #+BEGIN_SRC elisp
 (setq bookmark-default-file "~/Dropbox/Temp/bookmarks")
+(setq bookmark-file bookmark-default-file)
+(setq bookmark-old-default-file bookmark-default-file)
+#+END_SRC
+
 #+END_SRC
 
 *** Open OTF fonts in image mode
