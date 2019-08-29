@@ -1386,6 +1386,12 @@ npm i -g json-fix
         ("/mailbox/work/All Mail"  . ?a)))
 #+END_SRC
 
+***** Automatically apply Section without asking
+
+#+BEGIN_SRC elisp
+(setq mu4e-headers-leave-behavior 'apply)
+#+END_SRC
+
 *** Magit / Git
 **** Utils
 ***** Create New Git Worktree Workspace
