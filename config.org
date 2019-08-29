@@ -1873,6 +1873,25 @@ the projects cwd to find a file.
 (setq bookmark-old-default-file bookmark-default-file)
 #+END_SRC
 
+**** Automatically Save Bookmarks
+:PROPERTIES:
+:SOURCE:   [[https://github.com/yangyingchao/tubo-env/blob/b5f61ed6a802af45e461927507de55ed7e527983/.emacs.d/rc/03-fundamental-mode.el#L193][tubo-env/03-fundamental-mode.el at b5f61ed6a802af45e461927507de55ed7e527983 · yangyingchao/tubo-env]]
+:END:
+
+Automatically save bookmarks file after changing bookmarks.
+Also prevent the ~bookmark-save~ function to display the "Saved" message.
+
+#+BEGIN_SRC elisp
+(defun +bookmark/set (func &rest args)
+  "Save bookmark after `bookmark-set'.
+Call FUNC with ARGS."
+  (and (bookmark-time-to-save-p t)
+       (let ((inhibit-message t))
+         (bookmark-save))))
+
+(advice-add 'bookmark-set :after #'+bookmark/set)
+(advice-add 'bookmark-delete :after #'+bookmark/set)
+(advice-add 'bookmark-rename :after #'+bookmark/set)
 #+END_SRC
 
 *** Open OTF fonts in image mode
