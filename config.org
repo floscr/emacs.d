@@ -2015,6 +2015,14 @@ Save the command history between sessions.
    :gniv "s-0"   #'doom/reset-font-size))
 #+END_SRC
 
+*** Function Key Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ (:map override
+   :gniv "<f5>" #'global-auto-revert-mode))
+#+END_SRC
+
 *** Evil Normal Bindings
 **** Window navigation
 
