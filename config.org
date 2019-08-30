@@ -303,28 +303,41 @@ Bound to ~SPC t t~.
 #+END_SRC
 
 *** Theme Modifications
+
+#+BEGIN_SRC elisp
+(add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
+#+END_SRC
+
+**** Function Start
+
+#+BEGIN_SRC elisp
+(defun *doom-themes-custom-set-faces ()
+  (custom-set-faces!
+#+END_SRC
+
 **** Dired Output
 
 Remove the rainbow colors from dired.
 
 #+BEGIN_SRC elisp
-(defun *doom-themes-custom-set-faces ()
-  (custom-set-faces!
-   '(diredfl-read-priv :foreground "#80899E")
-   '(diredfl-write-priv :foreground "#80899E")
-   '(diredfl-exec-priv :foreground "#80899E")
-   '(diredfl-other-priv :foreground "#80899E")
+'(diredfl-read-priv :foreground "#80899E")
+'(diredfl-write-priv :foreground "#80899E")
+'(diredfl-exec-priv :foreground "#80899E")
+'(diredfl-other-priv :foreground "#80899E")
 
-   '(all-the-icons-dired-dir-face :foreground "#80899E")
+'(all-the-icons-dired-dir-face :foreground "#80899E")
 
-   '(diredfl-dir-priv :foreground "#282C34")
-   '(diredfl-k-modified :foreground "#FF8E90")
+'(diredfl-dir-priv :foreground "#282C34")
+'(diredfl-k-modified :foreground "#FF8E90")
 
-   '(diredfl-number :foreground "#80899E")
-   '(diredfl-date-time :foreground "#49505F")
-   `(diredfl-dir-name :foreground "#2DADF2")))
+'(diredfl-number :foreground "#80899E")
+'(diredfl-date-time :foreground "#49505F")
+`(diredfl-dir-name :foreground "#2DADF2")
+#+END_SRC
+**** Function End
 
-(add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
+#+BEGIN_SRC elisp
+))
 #+END_SRC
 
 *** Scrolloff
