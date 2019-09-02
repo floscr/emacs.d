@@ -694,6 +694,23 @@ Helper to reset the org agenda custom commands.
                                                        (:name "Future" :anything (:scheduled future)))))))))
 #+END_SRC
 
+***** Week View
+
+#+BEGIN_SRC elisp
+(+org/add-to-agenda-custom-commands
+ '("D" "Day View" ((agenda "a"
+                           ((org-agenda-prefix-format "  %?-12t% s")
+                            (org-agenda-start-on-weekday nil)
+                            (org-agenda-span 5)
+                            (org-agenda-start-day ".")
+                            (org-agenda-skip-scheduled-if-done t)
+                            (org-agenda-sorting-strategy '(timestamp-up time-up))
+                            (org-agenda-day-view)
+                            (org-super-agenda-groups '((:name "Today" :date today :time-grid t)
+                                                       (:name "Overdue" :deadline past :scheduled past)
+                                                       (:name "Future" :anything (:scheduled future)))))))))
+#+END_SRC
+
 ***** All TODO Items
 
 #+BEGIN_SRC elisp
