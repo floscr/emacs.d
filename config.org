@@ -2029,27 +2029,17 @@ Save the command history between sessions.
 #+BEGIN_SRC elisp
 (map!
  (:map override
-   :gniv "s-w" #'+workspace/close-window-or-workspace
-   :gniv "s-;" #'eval-expression
-   :gniv "s-S" #'write-file
-   :gniv "s-x" #'execute-extended-command
-   :gniv "M-s-h" #'+mac|hide-others
+   :gniv "M-w" #'+workspace/close-window-or-workspace
+   :gniv "M-;" #'eval-expression
+   :gniv "M-S" #'write-file
 
-   ;; Workspace Switching
-   :gniv "s-1" (λ! (+workspace/switch-to 0))
-   :gniv "s-2" (λ! (+workspace/switch-to 1))
-   :gniv "s-3" (λ! (+workspace/switch-to 2))
-   :gniv "s-4" (λ! (+workspace/switch-to 3))
-   :gniv "s-5" (λ! (+workspace/switch-to 4))
-   :gniv "s-6" (λ! (+workspace/switch-to 5))
-   :gniv "s-7" (λ! (+workspace/switch-to 6))
-   :gniv "s-8" (λ! (+workspace/switch-to 7))
-   :gniv "s-9" (λ! (+workspace/switch-to 9))
+   :gniv "s-x" #'execute-extended-command
+   :gniv "M-A-h" #'+mac|hide-others
 
    ;; Text scale
-   :gniv "s-="   #'doom/increase-font-size
-   :gniv "s--"   #'doom/decrease-font-size
-   :gniv "s-0"   #'doom/reset-font-size))
+   :gniv "M-="   #'doom/increase-font-size
+   :gniv "M--"   #'doom/decrease-font-size
+   :gniv "M-0"   #'doom/reset-font-size))
 #+END_SRC
 
 *** Function Key Bindings
@@ -2235,22 +2225,23 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 
 **** Unicode Symbols and German Umlaut
 
+
 #+BEGIN_SRC elisp
 (map!
- :i "M-;"   (λ! (insert "ö"))
- :i "M-:"   (λ! (insert "Ö"))
- :i "M-'"   (λ! (insert "ä"))
- :i "M-\""  (λ! (insert "Ä"))
- :i "M-["   (λ! (insert "ü"))
- :i "M-{"   (λ! (insert "Ü"))
- :i "M-s"   (λ! (insert "ß"))
- :i "M-e"   (λ! (insert "€"))
- :i "M-`"   (λ! (insert "°"))
- :i "M-."   (λ! (insert "…"))
- :i "M-^"   (λ! (insert "°"))
- :i "M-l"   (λ! (insert "λ"))
- :i "M-w"   (λ! (insert "⚠"))
- :i "M-i"   (λ! (insert "ℹ")))
+ :i "A-;"   (λ! (insert "ö"))
+ :i "A-:"   (λ! (insert "Ö"))
+ :i "A-'"   (λ! (insert "ä"))
+ :i "A-\""  (λ! (insert "Ä"))
+ :i "A-["   (λ! (insert "ü"))
+ :i "A-{"   (λ! (insert "Ü"))
+ :i "A-s"   (λ! (insert "ß"))
+ :i "A-e"   (λ! (insert "€"))
+ :i "A-`"   (λ! (insert "°"))
+ :i "A-."   (λ! (insert "…"))
+ :i "A-^"   (λ! (insert "°"))
+ :i "A-l"   (λ! (insert "λ"))
+ :i "A-w"   (λ! (insert "⚠"))
+ :i "A-i"   (λ! (insert "ℹ")))
 #+END_SRC
 
 *** Leader Bindings
@@ -2435,13 +2426,13 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (defun load-evil-camel-case-motion ()
   (require 'evil-little-word)
-  (define-key evil-normal-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-normal-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "i M-w") 'evil-inner-little-word))
+  (define-key evil-normal-state-map (kbd "A-w") 'evil-forward-little-word-begin)
+  (define-key evil-normal-state-map (kbd "A-b") 'evil-backward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "A-w") 'evil-forward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "A-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "A-w") 'evil-forward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "A-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "i A-w") 'evil-inner-little-word))
 
 (after! rjsx-mode
   (load-evil-camel-case-motion))
