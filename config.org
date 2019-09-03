@@ -2012,6 +2012,9 @@ Save the command history between sessions.
 *** General Bindings
 
 #+BEGIN_SRC elisp
+
+(setq mac-option-modifier 'alt)
+
 (map! :en "C-±" #'+popup/raise)
 #+END_SRC
 
