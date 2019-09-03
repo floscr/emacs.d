@@ -441,6 +441,12 @@ Macro Expansion
 (setq-hook! 'prog-mode-hook show-trailing-whitespace nil)
 #+END_SRC
 
+*** Fix underline
+
+#+BEGIN_SRC elisp
+(setq x-underline-at-descent-line nil)
+#+END_SRC
+
 ** Custom Packages
 *** Math on Numbers
 
