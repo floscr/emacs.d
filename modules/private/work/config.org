@@ -535,6 +535,7 @@ Create a canvas action
 
         (:prefix ("r" . "Refactor")
           :desc  "Style function into object"   "rs" #'+MM|turn-style-object-into-function
+          :desc  "Extract Props"                "x"  #'+js|extract-props
           :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
 
         (:prefix ("d" . "Debug")
