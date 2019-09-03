@@ -52,6 +52,7 @@
  lsp
 
  :lang
+ nix
  data
  emacs-lisp
  (javascript +lsp)
