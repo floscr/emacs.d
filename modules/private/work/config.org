@@ -14,26 +14,6 @@
 (require 's)
 #+END_SRC
 
-** Minor Mode
-
-Custom minor mode for work,
-When the variable ~+MM-Web-mode~ is enabled,
-this mode is enabled.
-
-#+BEGIN_SRC elisp
-(def-project-mode! +MM-Web-mode
-  :match "\\/Code\\/Meisterlabs\\/"
-  :add-hooks (+MM/setup-keybindings)
-  :on-enter (setq sgml-basic-offset 4)
-  :on-load)
-#+END_SRC
-
-#+BEGIN_SRC elisp
-(after! yasnippet
-  :config
-  (setq yas-snippet-dirs (append yas-snippet-dirs '("~/Code/Meisterlabs/Snippets"))))
-#+END_SRC
-
 ** Utils
 *** Alternate File
 
@@ -566,4 +546,23 @@ Create a canvas action
           :desc  "action"                       "r"  #'+MM|add-rule
           :desc  "action"                       "a"  #'+MM|create-action
           :desc  "action"                       "A"  #'+MM|canvas-create-action)))
+#+END_SRC
+** Minor Mode
+
+Custom minor mode for work,
+When the variable ~+MM-Web-mode~ is enabled,
+this mode is enabled.
+
+#+BEGIN_SRC elisp
+(def-project-mode! +MM-Web-mode
+  :match "\\/Code\\/Meisterlabs\\/"
+  :add-hooks (+MM/setup-keybindings)
+  :on-enter (setq sgml-basic-offset 4)
+  :on-load)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(after! yasnippet
+  :config
+  (setq yas-snippet-dirs (append yas-snippet-dirs '("~/Code/Meisterlabs/Snippets"))))
 #+END_SRC
