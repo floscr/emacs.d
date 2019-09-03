@@ -2033,7 +2033,7 @@ Save the command history between sessions.
    :gniv "M-;" #'eval-expression
    :gniv "M-S" #'write-file
 
-   :gniv "s-x" #'execute-extended-command
+   :gniv "M-x" #'execute-extended-command
    :gniv "M-A-h" #'+mac|hide-others
 
    ;; Text scale
@@ -2464,13 +2464,13 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map emacs-lisp-mode-map
       ;; Rearrange Sexps
-      :n "s-k"   (λ! (sp-transpose-sexp)
+      :n "M-k"   (λ! (sp-transpose-sexp)
                      (evil-previous-line))
-      :n "s-j"   (λ! (sp-push-hybrid-sexp)
+      :n "M-j"   (λ! (sp-push-hybrid-sexp)
                      (evil-next-line))
 
       ;; Eval Buffer
-      :n "s-r" #'eval-buffer
+      :n "M-r" #'eval-buffer
 
       ;; Slurp and barf
       :n "g]"  #'sp-slurp-hybrid-sexp
@@ -2524,8 +2524,8 @@ E.g.: ?* -> Clipboard Contents"
 
 (defun setup-minibuffer ()
   "Set up keybindings for the minibuffer"
-  (local-set-key (kbd "s-v") 'paste-evil-register-clipboard-pruned)
-  (local-set-key (kbd "s-c") 'copy-minibuffer-line))
+  (local-set-key (kbd "M-v") 'paste-evil-register-clipboard-pruned)
+  (local-set-key (kbd "M-c") 'copy-minibuffer-line))
 
 (add-hook 'minibuffer-setup-hook 'setup-minibuffer)
 #+END_SRC
