@@ -1297,11 +1297,22 @@ Converts self closing JSX tags to closing tags.
 ***** Extract Props from function arguments to body
 
 #+BEGIN_SRC elisp
-(fset '+js|extract-props
-      (lambda (&optional arg)
-        "Extract function props to statement"
-        (interactive "p")
-        (kmacro-exec-ring-item (quote ([?c ?i ?b ?p ?r ?o ?p ?s escape ?o escape ?p ?= ?= ?^ ?i ?c ?o ?n ?s ?t ?  escape ?a escape escape ?A ?  ?= ?  ?p ?r ?o ?p ?s escape ?A ?\; escape ?b ?b ?b ?b ?  ?m ?r ?e ?e ?A ?\C-? ?, escape ?j ?b])) arg)))
+(defun +js|extract-props ()
+  "Extract props object under the cursor."
+  (interactive)
+  (save-excursion
+    (goto-char (point-at-bol))
+    (search-forward-regexp "({.*})")
+    (let* ((point-start (search-backward "{"))
+           (point-end (search-forward "}"))
+           (text (buffer-substring-no-properties point-start point-end)))
+      (delete-region point-start point-end)
+      (insert "props")
+      (evil-open-below 1)
+      (insert (template "const <<text>> = props;"))
+      (search-backward "}")
+      (js2r-expand-node-at-point)))
+  (evil-normal-state))
 #+END_SRC
 
 ***** Company Files
