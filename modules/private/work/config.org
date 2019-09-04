@@ -548,6 +548,7 @@ Create a canvas action
           :desc  "action"                       "a"  #'+MM|create-action
           :desc  "action"                       "A"  #'+MM|canvas-create-action)))
 #+END_SRC
+
 ** Minor Mode
 
 Custom minor mode for work,
