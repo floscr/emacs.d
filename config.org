@@ -1301,8 +1301,6 @@ Converts self closing JSX tags to closing tags.
   "Extract props object under the cursor."
   (interactive)
   (save-excursion
-    (goto-char (point-at-bol))
-    (search-forward-regexp "({.*})")
     (let* ((point-start (search-backward "{"))
            (point-end (search-forward "}"))
            (text (buffer-substring-no-properties point-start point-end)))
