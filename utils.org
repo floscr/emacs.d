@@ -7,11 +7,12 @@
 #+END_SRC
 
 * Macros
-
 ** Aliases
+
 #+BEGIN_SRC elisp
 (defalias 'λ 'lambda)
 #+END_SRC
+
 ** Template Literals
 :PROPERTIES:
 :SOURCE:   https://gist.github.com/cbowdon/012d623920bd28453bf8
@@ -36,4 +37,17 @@
           (push (match-string 1) matches)
           (replace-match "%s" t t))
         `(format ,(buffer-string) ,@(reverse (mapcar 'read matches)))))))
+#+END_SRC
+
+* Utilities
+** Buffer
+
+*** Check current line for regex
+
+#+BEGIN_SRC elisp
+(defun buf-line-has (regexp)
+  "Check for REGEXP at current line."
+  (save-excursion
+    (goto-char (point-at-bol))
+    (search-forward-regexp regexp (point-at-eol) t)))
 #+END_SRC
