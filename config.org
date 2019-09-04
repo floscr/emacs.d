@@ -636,14 +636,15 @@ plays a sound and prompts me to insert my count.
   (interactive)
   (org-ql-search (f-join org-directory "music.org") '(heading "Timer"))
   (with-current-buffer "*Org QL Search*"
-    (org-agenda-switch-to))
+    (org-agenda-switch-to t))
   (kill-buffer "*Org QL Search*")
-  (search-forward-regexp "Date")
-  (forward-line 2)
-  (call-interactively #'evil-org-open-above)
-  (let ((date (format-time-string "[%Y-%m-%d %a %H:%M]" (current-time))))
-    (insert date)
-    (org-cycle)))
+  (with-current-buffer "music.org"
+    (search-forward-regexp "Date")
+    (forward-line 2)
+    (call-interactively #'evil-org-open-above)
+    (let ((date (format-time-string "[%Y-%m-%d %a %H:%M]" (current-time))))
+      (insert date)
+      (org-cycle))))
 #+END_SRC
 
 ** Package Config
