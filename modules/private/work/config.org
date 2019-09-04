@@ -150,6 +150,37 @@ Create a canvas action
         (comint-send-input nil t))
     (nodejs-repl)))
 #+END_SRC
+*** Update Schema Props
+
+#+BEGIN_SRC elisp
+(defun +MM|update-schema-props ()
+  "Update the schema props with all types in the current schema function body."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let* ((point-schema-line
+            (progn
+              (search-forward-regexp "schema({")
+              (backward-char 2)
+              (point)))
+           (point-schema-body-start
+            (progn
+              (forward-line)
+              (point)))
+           (point-schema-body-end (search-forward-regexp "^\s*},?$"))
+           (imports-string
+            (--> (buffer-substring-no-properties point-schema-body-start point-schema-body-end)
+                 (s-match-strings-all
+                  "\\(Array\\|String\\|Object\\|Maybe\\|Any\\|Either\\|Number\\|Boolean\\)" it)
+                 -uniq
+                 (-map #'-last-item it)
+                 (-sort 'string-lessp it)
+                 (s-join ", " it)
+                 (template "{ <<it>> }"))))
+      (goto-char point-schema-line)
+      (goto-char (point-at-bol))
+      (while (re-search-forward "{.*}" (point-at-eol) t) (replace-match imports-string)))))
+#+END_SRC
 
 ** Packages
 *** New Worktree
@@ -524,9 +555,10 @@ Create a canvas action
         :n "]1" #'+MM|alternate-file
 
         :localleader
-        :desc  "Import File"                    "i"  #'+MM|import-file
-        :desc  "Generate Index"                 "I"  #'+js|generate-index
-        :desc  "Repl"                           "R"  #'+MM|nodejs-repl
+        :desc  "Import File"          "i"  #'+MM|import-file
+        :desc  "Generate Index"       "I"  #'+js|generate-index
+        :desc  "Repl"                 "R"  #'+MM|nodejs-repl
+        :desc  "Update props header"  "u"  #'+MM|update-schema-props
 
         (:prefix ("f" . "file")
           :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
