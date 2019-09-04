@@ -2031,7 +2031,8 @@ Save the command history between sessions.
  (:map override
    :gniv "M-w" #'+workspace/close-window-or-workspace
    :gniv "M-;" #'eval-expression
-   :gniv "M-S" #'write-file
+   :gniv "M-s" #'save-buffer
+   :gniv "M-f" #'counsel-grep-or-swiper
 
    :gniv "M-x" #'execute-extended-command
    :gniv "M-A-h" #'+mac|hide-others
