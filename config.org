@@ -1165,10 +1165,10 @@ Adds general bindings to ivy.
   (map! :map js2-mode-map
         :desc "Goto parent function" :n "gh" (λ! (js2-beginning-of-defun))
         :localleader
-        (:desc "import" :n "i" #'+js|ivy-import-file)
-        (:desc "Indium" :prefix "I"
-          :desc "Reload" :n  "r" #'indium-reload
-          :desc "Start" :n  "s" #'indium-connect)))
+        (:desc "import" :n "i" #'+js|ivy-import-file)))
+        ;; (:desc "Indium" :prefix "I"
+        ;;   :desc "Reload" :n  "r" #'indium-reload
+        ;;   :desc "Start" :n  "s" #'indium-connect)))
 #+END_SRC
 
 **** Helpers
