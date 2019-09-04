@@ -552,22 +552,33 @@ plays a sound and prompts me to insert my count.
 (define-minor-mode +guitar-timer-mode
   "A little timer.")
 
-(defun +guitar/read-timer (from to)
-  (let ((amount (read-string "Count: "))
-        (timestamp (format-time-string "[%F %a %H:%M]" (current-time)))
-        (progression (template "<<from>>-<<to>>")))
-    (save-excursion
-      (evil-insert-newline-above)
-      (insert (concat "| " (s-join " | " (list timestamp progression amount))))
-      (call-interactively #'org-cycle))
-    (play-sound-file +guitar-beep)))
+(defun +guitar/read-timer ()
+  (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>"))
+  (let ((amount (read-string "Count: ")))
+    (other-window 1)
+    (insert amount)
+    (org-cycle)
+    (forward-line -1)))
+
+  ;; (let ((amount (read-string "Count: "))
+  ;;       (timestamp (format-time-string "[%F %a %H:%M]" (current-time)))
+  ;;       (progression (template "<<from>>-<<to>>")))
+  ;;   (save-excursion
+  ;;     (evil-insert-newline-above)
+  ;;     (insert (concat "| " (s-join " | " (list timestamp progression amount))))
+  ;;     (call-interactively #'org-cycle))
+  ;;   (play-sound-file +guitar-beep)))
 
 (defun +guitar|start-timer (&optional from to)
   "Start a timer for a chord progression."
   (interactive)
   (let ((from (or from (ivy-read "From: " +guitar-chords)))
         (to (or to (ivy-read "To: " +guitar-chords))))
-    (run-with-timer +guitar-timer-duration nil #'+guitar/read-timer from to)))
+    (insert from)
+    (org-cycle)
+    (insert to)
+    (org-cycle)
+    (+guitar/create-timer-buffer #'+guitar/read-timer)))
 
 (defun +guitar|resume-timer ()
   (interactive)
@@ -602,7 +613,6 @@ plays a sound and prompts me to insert my count.
               (run-with-timer 1 nil #'+guitar/tick-timer-buffer buffer new-time callback))
           (if callback
               (funcall callback)))))))
-
 
 (defun +guitar/create-timer-buffer (&optional callback)
   (let ((buffer (generate-new-buffer +guitar-timer-buffer-name)))
@@ -644,7 +654,8 @@ plays a sound and prompts me to insert my count.
     (call-interactively #'evil-org-open-above)
     (let ((date (format-time-string "[%Y-%m-%d %a %H:%M]" (current-time))))
       (insert date)
-      (org-cycle))))
+      (org-cycle)
+      (+guitar|start-timer))))
 #+END_SRC
 
 ** Package Config
