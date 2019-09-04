@@ -2456,7 +2456,16 @@ Pacakge/Mode specific bindings
   "Setup additional custom eshell keybindings to already existing doom bindings. This must be done in a hook because eshell-mode
 redefines its keys every time `eshell-mode' is enabled."
   (map! :map eshell-mode-map
-        :localleader "l" #'eshell/clear))
+        :in "C-p"         #'eshell-previous-input
+        :in "C-n"         #'eshell-next-input
+
+        :in "C-k"         #'evil-window-up
+        :in "C-j"         #'evil-window-down
+        :in "C-h"         #'evil-window-left
+        :in "C-l"         #'evil-window-right
+
+        :localleader "l"  #'eshell/clear))
+
 (add-hook 'eshell-first-time-mode-hook #'floscr|+eshell|init-keymap)
 #+END_SRC
 
