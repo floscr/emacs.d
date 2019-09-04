@@ -558,7 +558,8 @@ plays a sound and prompts me to insert my count.
     (other-window 1)
     (insert amount)
     (org-cycle)
-    (forward-line -1)))
+    (forward-line -1)
+    (evil-normal-state)))
 
   ;; (let ((amount (read-string "Count: "))
   ;;       (timestamp (format-time-string "[%F %a %H:%M]" (current-time)))
@@ -629,7 +630,7 @@ plays a sound and prompts me to insert my count.
   (interactive)
   (+guitar/create-timer-buffer '(lambda () (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))
 
-(set-popup-rule! "^\\*Guitar" :quit t :height 2 :select nil :transient t)
+(set-popup-rule! "^\\*Guitar" :quit t :height 4 :select nil :transient t)
 
 ;; (defun promise-sequence (xs)
 ;;   (if-let ((current (car xs)))
