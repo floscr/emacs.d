@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: key
+# key: k
+# condition: t                              
+# --
+"$1": "$2"`(unless (+json/is-last-key?) ",")`

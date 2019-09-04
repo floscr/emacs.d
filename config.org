@@ -1368,9 +1368,49 @@ Remove the ~js~ extension for ~company-files~.
       (newline-and-indent)
       (insert (template "// eslint-disable-next-line <<error-id>>")))))
 #+END_SRC
-
 *** JSON
-**** Autofix JSON
+**** Utils
+***** Is Last JSON key at point
+
+#+BEGIN_SRC elisp
+(defun +json/is-last-key? ()
+  "Is the next line the last json key."
+  (save-excursion
+    (forward-line)
+    (buf-line-has "}")))
+#+END_SRC
+
+***** Insert JSON Key
+
+Insert JSON key in a json document
+This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# --][key]]
+
+#+BEGIN_SRC elisp
+(defun +json/insert-key (&optional above?)
+  "Adds a new JSON key pair."
+  (let ((last-line? (buf-line-has ",$")))
+    ;; Insert comma
+    (if (and (not last-line?) (not above?))
+        (replace-regexp "$" "," nil (point-at-bol) (point-at-eol)))
+    (end-of-line)
+    (if above?
+        (evil-insert-newline-above)
+      (evil-insert-newline-below))
+    (indent-according-to-mode)
+    (yas/insert-by-name "key")))
+
+(defun +json/insert-key-above ()
+  "Function docstring"
+  (interactive)
+  (+json/insert-key t))
+
+(defun +json/insert-key-below ()
+  "Function docstring"
+  (interactive)
+  (+json/insert-key nil))
+#+END_SRC
+
+***** Autofix JSON
 
 Uses [[https://www.npmjs.com/package/json-fix][json-fix]] to autofix JSON files.
 
@@ -1386,6 +1426,15 @@ npm i -g json-fix
         (e (if mark-active (max (point) (mark)) (point-max))))
     (shell-command-on-region b e
      (template "json-fix --no-sort --spaces <<tab-width>>") (current-buffer) t)))
+#+END_SRC
+
+**** Bindings
+#+BEGIN_SRC elisp
+(map!
+ :after json-mode
+ :map json-mode-map
+ :gni [M-return] #'+json/insert-key-below
+ :gni [M-S-return] #'+json/insert-key-above)
 #+END_SRC
 
 *** LSP
@@ -1883,6 +1932,23 @@ the projects cwd to find a file.
 #+END_SRC
 
 *** Yasnippet
+**** Expand snippet by name
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/questions/10211730/insert-yasnippet-by-name][emacs - Insert yasnippet by name - Stack Overflow]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun yas/insert-by-name (name)
+  (flet ((dummy-prompt
+          (prompt choices &optional display-fn)
+          (declare (ignore prompt))
+          (or (find name choices :key display-fn :test #'string=)
+              (throw 'notfound nil))))
+    (let ((yas/prompt-functions '(dummy-prompt)))
+      (catch 'notfound
+        (yas/insert-snippet t)))))
+#+END_SRC
+
 **** TODO Expand first company snippet
 
 #+BEGIN_SRC elisp
