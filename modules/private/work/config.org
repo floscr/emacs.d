@@ -157,11 +157,11 @@ Create a canvas action
   "Update the schema props with all types in the current schema function body."
   (interactive)
   (save-excursion
-    (goto-char (point-min))
     (let* ((point-schema-line
             (progn
-              (search-forward-regexp "schema({")
-              (backward-char 2)
+              (forward-line)
+              (search-backward-regexp "[sS]chema(")
+              (backward-char 1)
               (point)))
            (point-schema-body-start
             (progn
@@ -179,7 +179,10 @@ Create a canvas action
                  (template "{ <<it>> }"))))
       (goto-char point-schema-line)
       (goto-char (point-at-bol))
-      (while (re-search-forward "{.*}" (point-at-eol) t) (replace-match imports-string)))))
+      (while
+          (or (re-search-forward "\\(Schema(function(\\)\\(.*\\)\\() {\\)" (point-at-eol) t)
+              (re-search-forward "\\(schema(\\)\\(.*\\)\\() {\\)" (point-at-eol) t))
+        (replace-match (template "\\1<<imports-string>>\\3"))))))
 #+END_SRC
 
 ** Packages
