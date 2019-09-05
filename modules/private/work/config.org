@@ -167,7 +167,11 @@ Create a canvas action
             (progn
               (forward-line)
               (point)))
-           (point-schema-body-end (search-forward-regexp "^\s*},?$"))
+           (point-schema-body-end (progn
+                                    (goto-char point-schema-line)
+                                    (search-forward-regexp "{$")
+                                    (forward-sexp)
+                                    (point)))
            (imports-string
             (--> (buffer-substring-no-properties point-schema-body-start point-schema-body-end)
                  (s-match-strings-all
