@@ -178,6 +178,7 @@ Create a canvas action
                   "\\(Array\\|String\\|Object\\|Maybe\\|Any\\|Either\\|Number\\|Boolean\\|Null\\|Store\\|Style\\)" it)
                  -uniq
                  (-map #'-last-item it)
+                 (--reject (not (s-capitalized? it)) it)
                  (-sort 'string-lessp it)
                  (s-join ", " it)
                  (template "{ <<it>> }"))))
