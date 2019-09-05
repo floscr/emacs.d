@@ -182,7 +182,12 @@ Create a canvas action
       (while
           (or (re-search-forward "\\(Schema(function(\\)\\(.*\\)\\() {\\)" (point-at-eol) t)
               (re-search-forward "\\(schema(\\)\\(.*\\)\\() {\\)" (point-at-eol) t))
-        (replace-match (template "\\1<<imports-string>>\\3"))))))
+        ;; Fix for error "Match data clobbered by buffer modification hooks [5 times]"
+        ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Saving-Match-Data.html
+        (let ((data (match-data)))
+          (unwind-protect
+              (set-match-data data)
+              (replace-match (template "\\1<<imports-string>>\\3"))))))))
 #+END_SRC
 
 ** Packages
