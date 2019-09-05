@@ -2122,6 +2122,8 @@ Save the command history between sessions.
    :gniv "M-s" #'save-buffer
    :gniv "M-f" #'counsel-grep-or-swiper
 
+   :gniv "M-y" #'helm-show-kill-ring
+   :gniv "M-v" #'yank
    :gniv "M-x" #'execute-extended-command
    :gniv "M-A-h" #'+mac|hide-others
 
