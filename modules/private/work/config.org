@@ -526,7 +526,7 @@ Create a canvas action
          (extension (cond (is-zero-p "")
                           (extension (template "<<extension>>'"))
                           (t ""))))
-    (insert (template ".<<rule>>(<<prop>><<extension>>)\n"))))
+    (insert (template ".<<rule>>('<<prop>><<extension>>')\n"))))
 
 (defun +MM|write-rule-and-restart (rule &optional prop extension)
   (+MM|write-rule rule prop extension)
