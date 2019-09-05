@@ -281,7 +281,8 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
 Projectile search is not fast reliable enough."
   (interactive)
   (let ((counsel-file-jump-args (split-string ". -name *.org -type f -print")))
-    (counsel-file-jump nil org-directory)))
+    (counsel-file-jump nil org-directory)
+    (+workspaces|add-current-buffer)))
 #+END_SRC
 
 *** Find in files
