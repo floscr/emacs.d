@@ -175,7 +175,7 @@ Create a canvas action
            (imports-string
             (--> (buffer-substring-no-properties point-schema-body-start point-schema-body-end)
                  (s-match-strings-all
-                  "\\(Array\\|String\\|Object\\|Maybe\\|Any\\|Either\\|Number\\|Boolean\\|Null\\|Store\\)" it)
+                  "\\(Array\\|String\\|Object\\|Maybe\\|Any\\|Either\\|Number\\|Boolean\\|Null\\|Store\\|Style\\)" it)
                  -uniq
                  (-map #'-last-item it)
                  (-sort 'string-lessp it)
