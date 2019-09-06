@@ -1980,6 +1980,14 @@ the projects cwd to find a file.
 #+END_SRC
 
 ** General Config
+*** Garbage Collection
+
+Set it to ~32 MiB~.
+
+#+BEGIN_SRC elisp
+(setq doom-gc-cons-threshold 33554432)
+#+END_SRC
+
 *** Lookup Sources
 
 #+BEGIN_SRC elisp
