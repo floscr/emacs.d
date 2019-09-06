@@ -8,7 +8,7 @@
 
 (after! pdf-tools
   :config
-  (define-key pdf-view-mode-map (kbd "M-f") 'isearch-forward)
+  (define-key pdf-view-mode-map (kbd "s-f") 'isearch-forward)
   (map! :map pdf-view-mode-map
         :n "gj" (lambda ()
                   (interactive)
@@ -22,4 +22,4 @@
         :n "gK" #'pdf-history-forward
         :n "[n" #'org-noter-sync-prev-note
         :n "]n" #'org-noter-sync-next-note
-        :n "M-f" #'pdf-links-isearch-link))
+        :n "s-f" #'pdf-links-isearch-link))

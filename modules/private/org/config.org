@@ -1044,16 +1044,16 @@ To sync the calendars use ~org-caldav-sync~.
 **** Meta Mapping
 
 #+BEGIN_SRC elisp
-(map! :g "M-X" #'+org-capture/open-frame)
+(map! :g "s-X" #'+org-capture/open-frame)
 
 (after! org
   (map! :map org-mode-map
-          :gni [M-return]   #'+org/insert-item-below
-          :gni [M-S-return] #'+org/insert-item-above)
+          :gni [s-return]   #'+org/insert-item-below
+          :gni [s-S-return] #'+org/insert-item-above)
 
   (map! :map evil-org-mode-map
-        :n "M-k" #'org-metaup
-        :n "M-j" #'org-metadown))
+        :n "s-k" #'org-metaup
+        :n "s-j" #'org-metadown))
 #+END_SRC
 
 **** Agenda Mapping

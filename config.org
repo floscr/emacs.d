@@ -1455,8 +1455,8 @@ npm i -g json-fix
 (map!
  :after json-mode
  :map json-mode-map
- :gni [M-return] #'+json/insert-key-below
- :gni [M-S-return] #'+json/insert-key-above)
+ :gni [s-return] #'+json/insert-key-below
+ :gni [s-S-return] #'+json/insert-key-above)
 #+END_SRC
 
 *** LSP
@@ -2100,9 +2100,6 @@ Save the command history between sessions.
 *** General Bindings
 
 #+BEGIN_SRC elisp
-
-(setq mac-option-modifier 'alt)
-
 (map! :en "C-±" #'+popup/raise)
 #+END_SRC
 
@@ -2117,20 +2114,20 @@ Save the command history between sessions.
 #+BEGIN_SRC elisp
 (map!
  (:map override
-   :gniv "M-;" #'eval-expression
-   :gniv "M-A-h" #'+mac|hide-others
-   :gniv "M-a" #'mark-whole-buffer
-   :gniv "M-f" #'counsel-grep-or-swiper
-   :gniv "M-s" #'save-buffer
-   :gniv "M-v" #'yank
-   :gniv "M-w" #'+workspace/close-window-or-workspace
-   :gniv "M-x" #'execute-extended-command
-   :gniv "M-y" #'helm-show-kill-ring
+   :gniv "s-;" #'eval-expression
+   :gniv "s-A-h" #'+mac|hide-others
+   :gniv "s-a" #'mark-whole-buffer
+   :gniv "s-f" #'counsel-grep-or-swiper
+   :gniv "s-s" #'save-buffer
+   :gniv "s-v" #'yank
+   :gniv "s-w" #'+workspace/close-window-or-workspace
+   :gniv "s-x" #'execute-extended-command
+   :gniv "s-y" #'helm-show-kill-ring
 
    ;; Text scale
-   :gniv "M-="   #'doom/increase-font-size
-   :gniv "M--"   #'doom/decrease-font-size
-   :gniv "M-0"   #'doom/reset-font-size))
+   :gniv "s-="   #'doom/increase-font-size
+   :gniv "s--"   #'doom/decrease-font-size
+   :gniv "s-0"   #'doom/reset-font-size))
 #+END_SRC
 
 *** Function Key Bindings
@@ -2564,13 +2561,13 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map emacs-lisp-mode-map
       ;; Rearrange Sexps
-      :n "M-k"   (λ! (sp-transpose-sexp)
+      :n "s-k"   (λ! (sp-transpose-sexp)
                      (evil-previous-line))
-      :n "M-j"   (λ! (sp-push-hybrid-sexp)
+      :n "s-j"   (λ! (sp-push-hybrid-sexp)
                      (evil-next-line))
 
       ;; Eval Buffer
-      :n "M-r" #'eval-buffer
+      :n "s-r" #'eval-buffer
 
       ;; Slurp and barf
       :n "g]"  #'sp-slurp-hybrid-sexp
@@ -2624,8 +2621,8 @@ E.g.: ?* -> Clipboard Contents"
 
 (defun setup-minibuffer ()
   "Set up keybindings for the minibuffer"
-  (local-set-key (kbd "M-v") 'paste-evil-register-clipboard-pruned)
-  (local-set-key (kbd "M-c") 'copy-minibuffer-line))
+  (local-set-key (kbd "s-v") 'paste-evil-register-clipboard-pruned)
+  (local-set-key (kbd "s-c") 'copy-minibuffer-line))
 
 (add-hook 'minibuffer-setup-hook 'setup-minibuffer)
 #+END_SRC
