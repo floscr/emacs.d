@@ -713,6 +713,20 @@ ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline
   :hook (image-mode-hook . blimp-mode))
 #+END_SRC
 
+*** Calc
+**** Additional Units
+
+#+BEGIN_SRC elisp
+(setq math-additional-units '((GiB "1024 * MiB" "Giga Byte")
+                              (MiB "1024 * KiB" "Mega Byte")
+                              (KiB "1024 * B" "Kilo Byte")
+                              (B nil "Byte")
+                              (Gib "1024 * Mib" "Giga Bit")
+                              (Mib "1024 * Kib" "Mega Bit")
+                              (Kib "1024 * b" "Kilo Bit")
+                              (b "B / 8" "Bit")))
+#+END_SRC
+
 *** Comint
 **** Allow evil enter anywhere
 
