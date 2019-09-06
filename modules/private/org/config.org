@@ -689,9 +689,10 @@ Helper to reset the org agenda custom commands.
                             (org-agenda-start-day ".")
                             (org-agenda-skip-scheduled-if-done t)
                             (org-agenda-sorting-strategy '(timestamp-up time-up))
+                            (org-super-agenda-header-separator "")
                             (org-agenda-day-view)
                             (org-super-agenda-groups '((:name none :date today :time-grid t)
-                                                       (:name "Overdue" :deadline past :scheduled past)
+                                                       (:name "\nOverdue" :deadline past :scheduled past)
                                                        (:name "Future" :anything (:scheduled future)))))))))
 #+END_SRC
 
@@ -706,9 +707,10 @@ Helper to reset the org agenda custom commands.
                             (org-agenda-start-day ".")
                             (org-agenda-skip-scheduled-if-done t)
                             (org-agenda-sorting-strategy '(timestamp-up time-up))
+                            (org-super-agenda-header-separator "")
                             (org-agenda-day-view)
                             (org-super-agenda-groups '((:name none :date today :time-grid t)
-                                                       (:name "Overdue" :deadline past :scheduled past)
+                                                       (:name "\nOverdue" :deadline past :scheduled past)
                                                        (:name "Future" :anything (:scheduled future)))))))))
 #+END_SRC
 
