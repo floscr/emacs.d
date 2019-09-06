@@ -2117,15 +2117,15 @@ Save the command history between sessions.
 #+BEGIN_SRC elisp
 (map!
  (:map override
-   :gniv "M-w" #'+workspace/close-window-or-workspace
    :gniv "M-;" #'eval-expression
-   :gniv "M-s" #'save-buffer
-   :gniv "M-f" #'counsel-grep-or-swiper
-
-   :gniv "M-y" #'helm-show-kill-ring
-   :gniv "M-v" #'yank
-   :gniv "M-x" #'execute-extended-command
    :gniv "M-A-h" #'+mac|hide-others
+   :gniv "M-a" #'mark-whole-buffer
+   :gniv "M-f" #'counsel-grep-or-swiper
+   :gniv "M-s" #'save-buffer
+   :gniv "M-v" #'yank
+   :gniv "M-w" #'+workspace/close-window-or-workspace
+   :gniv "M-x" #'execute-extended-command
+   :gniv "M-y" #'helm-show-kill-ring
 
    ;; Text scale
    :gniv "M-="   #'doom/increase-font-size
@@ -2412,7 +2412,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 (map!
  :leader
  (:desc "insert" :prefix "i"
-   :desc "Killring"   :n  "y" #'counsel-yank-pop))
+   :desc "Killring"   :n  "y" #'helm-show-kill-ring))
 #+END_SRC
 
 **** Open
