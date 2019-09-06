@@ -12,7 +12,6 @@
 #+BEGIN_SRC elisp
 (require 'dash)
 (require 's)
-(load (concat doom-private-dir "utils.el"))
 #+END_SRC
 
 ** Additional files
@@ -457,7 +456,7 @@ Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (defun expand-org-file-names (xs)
-  (mapcar (λ (x) (expand-file-name x org-directory)) xs))
+  (mapcar (lambda (x) (expand-file-name x org-directory)) xs))
 
 (setq level-1-refile-targets
       (expand-org-file-names

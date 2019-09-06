@@ -16,7 +16,6 @@ Packages and utilities needed for this config.
 #+BEGIN_SRC elisp
 (require 'dash)
 (require 's)
-(load (concat doom-private-dir "utils.el"))
 #+END_SRC
 
 *** Secrets

@@ -5,4 +5,4 @@ tmp/
 /config.el
 /modules/private/work/config.el
 /modules/private/org/config.el
-/utils.el
+/autoload.el
