@@ -272,16 +272,30 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
     (if (eq cmp t) nil (signum cmp))))
 #+END_SRC
 
-*** Search in files
+*** Search in notes
 
 #+BEGIN_SRC elisp
 (defun +org|search-in-notes ()
   "Search in the org directory for a file.
 Projectile search is not fast reliable enough."
   (interactive)
-  (let ((counsel-file-jump-args (split-string ". -name *.org -type f -print")))
-    (counsel-file-jump nil org-directory)
-    (+workspaces|add-current-buffer)))
+  (counsel-notes-jump))
+
+(defun counsel-notes-jump ()
+  "Jump to a file in your notes and call org-goto right-away."
+  (interactive)
+  (counsel-require-program find-program)
+  (let ((default-directory org-directory))
+       (ivy-read "Find directory: "
+                 (cdr
+                  (counsel--find-return-list (split-string ". -name *.org -type f -print")))
+                 :matcher #'counsel--find-file-matcher
+                 :action (lambda (d)
+                           (find-file (expand-file-name d))
+                           (counsel-org-goto))
+                 :history 'file-name-history
+                 :keymap counsel-find-file-map
+                 :caller 'counsel-dired-jump)))
 #+END_SRC
 
 *** Find in files
