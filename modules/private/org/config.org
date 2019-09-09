@@ -785,7 +785,7 @@ Helper to reset the org agenda custom commands.
              ((org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down time-down))
               (org-agenda-tag-filter-preset '("+WORK" "-EVENT"))
               (org-super-agenda-groups '((:name "In Progress" :todo ("ACTIVE" "[!]"))
-                                         (:discard (:todo ("[ ]" "[|]") :scheduled today))
+                                         (:discard (:todo ("[ ]" "[|]")))
                                          (:name "Reviews" :tag "REVIEW" :order 4)
                                          (:name "DevTools" :tag "DEV_TOOLS" :order 5)
                                          (:name "Meta Work" :tag "META_WORK" :order 5)
