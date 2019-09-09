@@ -473,7 +473,7 @@ Needs ~dvisvgm~
          "diary"
          "games.org"
          "hardware.org"
-         "home.org"
+         "GTD.org"
          "inbox.org"
          "mealplan.org"
          "misc.org"
@@ -559,7 +559,7 @@ Needs ~dvisvgm~
            "* TODO %?\n%a\n")
 
           ("c" "Calendar Event" entry
-           (file+headline ,(concat org-directory "/home.org") "Calendar")
+           (file+headline ,(concat org-directory "/GTD.org") "Calendar")
            "* %?\n")
 
           ("e" "Emacs Todo" entry
@@ -614,7 +614,7 @@ Needs ~dvisvgm~
   :config
   (setq org-agenda-files
         (--map (f-join org-directory it)
-               '("home.org"
+               '("GTD.org"
                  "inbox.org"
                  "calendar-family.org"
                  "Work/work.org"))))
@@ -1100,7 +1100,7 @@ To sync the calendars use ~org-caldav-sync~.
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Search Pinboard"            "b" #'helm-org-pinboard
    :desc "Emacs"                      "e" (λ! (+org/find-in-files "Emacs.org"))
-   :desc "Home"                       "h" (λ! (+org/find-in-files "home.org"))
+   :desc "GTD (Home)"                 "h" (λ! (+org/find-in-files "GTD.org"))
    :desc "Inbox"                      "i" (λ! (+org/find-in-files "inbox.org"))
    :desc "Find in notes"              "n" #'+org|search-in-notes
    :desc "Reading List"               "r" #'+org-reading-list/org-open-reading-list-file
