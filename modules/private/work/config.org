@@ -356,6 +356,7 @@ Create a canvas action
 
 *** CSS Rules
 **** Requirements
+
 #+BEGIN_SRC elisp
 (require 'ht)
 #+END_SRC
@@ -369,35 +370,36 @@ Create a canvas action
 (defvar +MM-Rules-deg)
 
 (defvar +MM-Rules-flex-align
-  '("center", "flex-start", "flex-end", "space-between", "space-around", "stretch"))
+  '("center" "flex-start" "flex-end" "space-between" "space-around" "stretch"))
 
 (defvar +MM-Rules-colors
   '("colors.red"
-    "colors.grey900",
-    "colors.grey700",
-    "colors.grey500",
-    "colors.grey300",
-    "colors.grey200",
-    "colors.grey100",
-    "colors.white",
-    "colors.blue",
-    "colors.sky",
-    "colors.navy",
-    "colors.turquoise",
-    "colors.green",
-    "colors.grass",
-    "colors.yellow",
-    "colors.banana",
-    "colors.orange",
-    "colors.red",
-    "colors.pink",
+    "colors.grey900"
+    "colors.grey700"
+    "colors.grey500"
+    "colors.grey300"
+    "colors.grey200"
+    "colors.grey100"
+    "colors.white"
+    "colors.blue"
+    "colors.sky"
+    "colors.navy"
+    "colors.turquoise"
+    "colors.green"
+    "colors.grass"
+    "colors.yellow"
+    "colors.banana"
+    "colors.orange"
+    "colors.red"
+    "colors.pink"
     "colors.purple"))
 
 (setq +MM-Web-Rules
       (ht ("flexDirection"            '("column" "row" "row-reverse" "column-reverse"))
-          ("alignContent"             '+MM-Rules-flex-align)
-          ("alignItems"               '+MM-Rules-flex-align)
-          ("alignSelf"                '+MM-Rules-flex-align)
+          ("alignContent"             +MM-Rules-flex-align)
+          ("alignItems"               +MM-Rules-flex-align)
+          ("justifyContent"           +MM-Rules-flex-align)
+          ("alignSelf"                +MM-Rules-flex-align)
           ("flexGrow"                 '+MM-Rules-number)
           ("flexShrink"               '+MM-Rules-number)
           ("flexWrap"                 '+MM-Rules-number)
@@ -448,7 +450,7 @@ Create a canvas action
           ("scaleY"                   '+MM-Rules-number)
           ("rotate"                   '+MM-Rules-deg)
 
-          ("color"                    '+MM-Rules-colors)
+          ("color"                    +MM-Rules-colors)
           ("fontWeight"               '("heavy" "bold" "black" "light" "normal" "regular"))
           ("fontFamily"               '+MM-Rules-number)
           ("fontSize"                 '+MM-Rules-number)
@@ -466,7 +468,7 @@ Create a canvas action
           ("cursor"                   '("pointer"))
 
           ("backfaceVisibility" "hidden")
-          ("backgroundColor"          '+MM-Rules-colors)
+          ("backgroundColor"          +MM-Rules-colors)
           ("backgroundImage" "")
           ("backgroundPosition"       '("center"))
           ("backgroundRepeat"         '("repeat" "no-repeat" "repeat-x" "repeat-y"))
@@ -475,7 +477,7 @@ Create a canvas action
           ("borderBottomLeftRadius"   '+MM-Rules-number)
           ("borderBottomRightRadius"  '+MM-Rules-number)
           ("borderBottomWidth"        '+MM-Rules-number)
-          ("borderColor"              '+MM-Rules-colors)
+          ("borderColor"              +MM-Rules-colors)
           ("borderHorizontalWidth"    '+MM-Rules-number)
           ("borderLeftWidth"          '+MM-Rules-number)
           ("borderRadius"             '+MM-Rules-number)
@@ -493,13 +495,13 @@ Create a canvas action
           ("overflowX"                '+MM-Rules-number)
           ("overflowY"                '+MM-Rules-number)
 
-          ("fill"                     '+MM-Rules-colors)
+          ("fill"                     +MM-Rules-colors)
 
           ("opacity"                  '+MM-Rules-number)
           ("visibility"               '("visible" "hidden"))
 
-          ("pointerEvents"                 "none")
-          ("userSelect"                    "none")
+          ("pointerEvents"                 '("none" "auto"))
+          ("userSelect"                    '("none" "auto"))
 
           ("zIndex"                   '+MM-Rules-number)))
 #+END_SRC
@@ -507,50 +509,58 @@ Create a canvas action
 **** Add rule
 
 #+BEGIN_SRC elisp
-(defvar +MM|add-prop-for-rule-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-<return>") (lambda (rule prop)
-                                         (ivy-quit-and-run
-                                           (progn
-                                            (+MM|write-rule rule prop)
-                                            (+MM|add-rule)))))
-    map))
+(defun +MM|write-rule (rule &optional prop)
+  (let* ((maybe-prop-int (condition-case nil
+                             (cl-parse-integer prop)
+                           (error nil)))
+         (prop (cond (maybe-prop-int maybe-prop-int)
+                     ;; No argument
+                     ((eq prop nil) nil)
+                     ;; Color variable
+                     ((-contains? +MM-Rules-colors prop) prop)
+                     ;; String
+                     (t (template "'<<prop>>'"))))
+         (has-trailing-semi (buf-line-has ",$")))
 
+    (if has-trailing-semi
+        (while
+            (re-search-forward ",$" (point-at-eol) t)
+          (let ((data (match-data)))
+            (unwind-protect
+                (set-match-data data)
+              (replace-match "")))))
 
-(defun +MM|write-rule (rule &optional prop extension)
-  (let* ((is-zero-p (string= prop "0"))
-         (prop (cond (is-zero-p prop)
-                     (extension (template "'<<prop>>"))
-                     (prop prop)
-                     (t "")))
-         (extension (cond (is-zero-p "")
-                          (extension (template "<<extension>>'"))
-                          (t ""))))
-    (insert (template ".<<rule>>('<<prop>><<extension>>')\n"))))
+    (evil-insert-newline-below)
+    (indent-according-to-mode)
+    (insert (template "    .<<rule>>(<<prop>>)"))
+    (if has-trailing-semi (insert ","))))
 
-(defun +MM|write-rule-and-restart (rule &optional prop extension)
-  (+MM|write-rule rule prop extension)
+(defun +MM|write-rule-and-restart (rule &optional prop)
+  (+MM|write-rule rule prop)
   (+MM|add-rule))
 
-(defun +MM|rule-numbers ()
-  (-map #'number-to-string (number-sequence 0 100 10)))
-
-(defun +MM|add-prop-for-rule (rule)
-  (let* ((prop-value (ht-get +MM-Web-Rules rule))
-         (prop (cond
-                ((eq prop-value #'noop) nil)
-                ((-contains? (list '+MM-Rules-number '+MM-Rules-pixel '+MM-Rules-percent '+MM-Rules-deg) prop-value)
-                 (+MM|rule-numbers))
-                (t prop-value))))
-    (if prop
-        (ivy-read "Add prop: " prop
+(defun +MM|add-prop-for-rule (rule-string)
+  (let* ((rule-value (ht-get +MM-Web-Rules rule-string))
+         (further-input (cond
+                          ;; Rules without an attribute
+                          ;; .absoluteHorizontalCenter()
+                          ((eq rule-value #'noop) nil)
+                          ;; Rules with numbers
+                          ;; .top(10)
+                          ((-contains? (list '+MM-Rules-number '+MM-Rules-pixel '+MM-Rules-percent '+MM-Rules-deg) rule-value)
+                           (-map #'number-to-string (number-sequence 0 100 10)))
+                          ;; Value given by the rule-string
+                          ;; position('absolute')
+                          (t rule-value))))
+    (if further-input
+        (ivy-read "Add prop: " further-input
                   :action (lambda (x)
-                            (let ((extension (cond
-                                              ((eq prop-value '+MM-Rules-pixel) "px")
-                                              ((eq prop-value '+MM-Rules-percent) "%")
-                                              (t nil))))
-                              (+MM|write-rule-and-restart rule x extension))))
-      (+MM|write-rule-and-restart rule))))
+                            (--> x
+                                 (cond ((eq rule-value '+MM-Rules-pixel) (concat x "px"))
+                                       ((eq rule-value '+MM-Rules-percent) (concat x "%"))
+                                       (t x))
+                                 (+MM|write-rule-and-restart rule-string it))))
+      (+MM|write-rule-and-restart rule-string))))
 
 (defun +MM|add-rule ()
   (interactive)
