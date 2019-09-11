@@ -886,7 +886,9 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 (defun +org/org-set-active-state (&optional args)
   "Set the active state for the current item."
-  (org-todo "ACTIVE"))
+  (cond ((buf-line-has "PROJECT") nil)
+        ((buf-line-has "\\[.\\]") (org-todo "[!]"))
+        (t (org-todo "ACTIVE"))))
 
 (advice-add #'org-clock-in :after #'+org/org-set-active-state)
 #+END_SRC
