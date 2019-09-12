@@ -7,7 +7,8 @@
 #+END_SRC
 
 * Configuration
-** Required Packages
+** External Files
+*** Required Packages
 
 Packages and utilities needed for this config.
 - [[https://github.com/magnars/dash.el][magnars/dash.el: List Manipulation]]
@@ -16,6 +17,14 @@ Packages and utilities needed for this config.
 #+BEGIN_SRC elisp
 (require 'dash)
 (require 's)
+#+END_SRC
+
+*** Additional packages (EmacsWiki)
+
+straight.el doesnt accept these as packages, so I have to manage them manually.
+
+#+BEGIN_SRC elisp
+(add-to-list 'load-path "~/.config/doom/packages")
 #+END_SRC
 
 *** Secrets
