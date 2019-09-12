@@ -1410,6 +1410,33 @@ Remove the ~js~ extension for ~company-files~.
     (ivy-read "Import file " imports :action (or action '+js/import-file))))
  #+END_SRC
 
+***** Switch Ternary
+
+#+BEGIN_SRC elisp
+(defun js2r-ternary-switch-statements ()
+  "Switch expressions in a ternary."
+  (interactive)
+  (js2r--guard)
+  (js2r--wait-for-parse
+   (save-excursion
+     (let* ((ternary (js2r--closest 'js2-cond-node-p))
+            (test-expr (js2-node-string (js2-cond-node-test-expr ternary)))
+            (true-expr (js2-node-string (js2-cond-node-true-expr ternary)))
+            (false-expr (js2-node-string (js2-cond-node-false-expr ternary)))
+            (stmt (js2-node-parent-stmt ternary))
+            (stmt-pre (buffer-substring (js2-node-abs-pos stmt) (js2-node-abs-pos ternary)))
+            (stmt-post (s-trim (buffer-substring (js2-node-abs-end ternary) (js2-node-abs-end stmt))))
+            (beg (js2-node-abs-pos stmt)))
+       (goto-char beg)
+       (delete-char (js2-node-len stmt))
+       (insert "return " test-expr)
+       (newline)
+       (insert "? " false-expr)
+       (newline)
+       (insert ": " true-expr ";")
+       (indent-region beg (point))))))
+#+END_SRC
+
 ***** Ignore Flycheck error on line
 
 #+BEGIN_SRC elisp
