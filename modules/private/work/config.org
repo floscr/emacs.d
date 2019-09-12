@@ -491,9 +491,9 @@ Create a canvas action
 
           ("boxShadow"                '+MM-Rules-number)
 
-          ("overflow"                 '+MM-Rules-number)
-          ("overflowX"                '+MM-Rules-number)
-          ("overflowY"                '+MM-Rules-number)
+          ("overflow"                 '("hidden"))
+          ("overflowX"                '("hidden"))
+          ("overflowY"                '("hidden"))
 
           ("fill"                     +MM-Rules-colors)
 
