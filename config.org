@@ -1614,8 +1614,8 @@ For now only works on branches that were directly forked from master.
 (defun +git|ivy-changed-files (&optional branch)
   (interactive)
   (let ((enable-recursive-minibuffers t))
-    (ivy-read (template "Changed files for <<branch>>:")
               (git-get-changed-files (or branch "master"))
+    (ivy-read (template "Changed files for <<(or branch (magit-get-current-branch))>>:")
               :require-match t
               :history 'file-name-history
               :action counsel-projectile-find-file-action
