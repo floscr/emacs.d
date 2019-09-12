@@ -2556,13 +2556,13 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (defun load-evil-camel-case-motion ()
   (require 'evil-little-word)
-  (define-key evil-normal-state-map (kbd "A-w") 'evil-forward-little-word-begin)
-  (define-key evil-normal-state-map (kbd "A-b") 'evil-backward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "A-w") 'evil-forward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "A-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "A-w") 'evil-forward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "A-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "i A-w") 'evil-inner-little-word))
+  (define-key evil-normal-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-normal-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "i M-w") 'evil-inner-little-word))
 
 (after! rjsx-mode
   (load-evil-camel-case-motion))
