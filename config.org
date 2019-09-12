@@ -1121,6 +1121,21 @@ To enable the checker press ~SPC u C-c ! x~
   :commands impatient-mode)
 #+END_SRC
 
+*** Narrow To Defun Indirect
+
+When narrowing to region or defun, make it in an indirect other window.
+
+Source:
+- [[./packages/narrow-indirect.el]]
+- [[https://www.emacswiki.org/emacs/NarrowIndirect][EmacsWiki: Narrow Indirect]]
+
+#+BEGIN_SRC elisp
+(def-package! narrow-indirect
+  :init
+  (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
+  (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
+#+END_SRC
+
 *** Ivy / Swiper
 **** Posframe
 ***** Override the size function
