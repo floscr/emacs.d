@@ -2694,4 +2694,7 @@ E.g.: ?* -> Clipboard Contents"
   (local-set-key (kbd "s-c") 'copy-minibuffer-line))
 
 (add-hook 'minibuffer-setup-hook 'setup-minibuffer)
+
+(define-key! :keymaps +default-minibuffer-maps
+  "C-w" 'sp-backward-delete-word)
 #+END_SRC
