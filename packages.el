@@ -41,7 +41,7 @@
 ;; (package! frame-fns :recipe (:host wiki))
 ;; (package! frame-cmds :recipe (:host wiki))
 
-(package! narrow-indirect :recipe (:host emacswiki :files ("narrow-indirect.el")))
+;; (package! narrow-indirect :recipe (:host emacswiki :files ("narrow-indirect.el")))
 
 (package! dired-recent)
 (package! dired-narrow)
