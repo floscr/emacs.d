@@ -89,7 +89,6 @@
 
 ;; * Config
 (setq
- insert-directory-program "gls"
  user-mail-address "flo.schroedl@gmail.com"
  user-full-name "Florian Schrödl"
  max-specpdl-size 10000)
