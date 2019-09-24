@@ -393,7 +393,7 @@ Moves a todo item from the agenda to the shopping list as a list item.
 
 #+BEGIN_SRC elisp
 (setq
- org-directory (expand-file-name "~/Dropbox/org")
+ org-directory (expand-file-name "~/Documents/org")
  org-pinboard-dir org-directory
  org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
  org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
@@ -431,12 +431,15 @@ All todo keywords are for general items.
           (sequence "[ ]([)" "[!](!)" "[-](-)" "|" "[X](])" "[|](|)")
           (sequence "PROJECT(p)" "|" "DONE")
           (sequence "NOTE(N)")
-          (sequence "WAITING(w)" "LATER(l)" "SOMEDAY(s)" "|" "DONE" "CANCELLED(c)"))
+          (sequence "WAITING(w)" "LATER(l)" "SOMEDAY(s)" "|" "DONE" "CANCELLED(c)")
+          (sequence "CHECK_BACK_FOR_REVIEW" "TO_BE_MERGED"))
    org-todo-keyword-faces
    '(("ACTIVE" :inherit warning :weight bold)
      ("NEXT" :inherit warning :weight bold)
      ("NOTE" :inherit warning :weight bold)
      ("WAITING" :inherit default :weight bold)
+     ("CHECK_BACK_FOR_REVIEW" :inherit default :weight bold)
+     ("TO_BE_MERGED" :inherit default :weight bold)
      ("SOMEDAY" :inherit default :weight bold)
      ("LATER" :inherit default :weight bold)
      ("PROJECT" :inherit 'org-todo :weight bold))))
@@ -735,24 +738,25 @@ Helper to reset the org agenda custom commands.
    ((agenda
      "a"
      ((org-agenda-span 3)
-      (org-agenda-show-all-dates nil)
-      (org-agenda-use-time-grid nil)
+      (org-agenda-use-time-grid 'require-timed)
       (org-agenda-start-day ".")
+      (org-agenda-show-all-dates nil)
       (org-agenda-prefix-format '((agenda . "  ")))
       (org-super-agenda-header-separator "")
-      (org-agenda-sorting-strategy '(scheduled-down ts-down todo-state-down))
-      (org-super-agenda-groups '((:name nil :discard (:tag "REPEATING" :todo "CANCELLED" :scheduled past
-                                                           :and (:tag "WORK" :not (:tag "EVENT"))))))))
+      (org-agenda-sorting-strategy '(priority-down scheduled-down ts-down todo-state-down))
+      (org-super-agenda-groups '((:name none :date today :time-grid t)
+                                 (:name "\nOverdue" :deadline past :scheduled past)
+                                 (:name "Future" :anything (:scheduled future))))))
     (tags-todo
      "-WORK"
      ((org-agenda-prefix-format "  %?-12t% s")
       (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
       (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
-                                 (:name "Overdue" :scheduled past)
                                  (:name nil :discard (:scheduled t))
                                  (:name "Inbox" :file-path ".*inbox.org$" :order 2)
                                  (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
-                                 (:name "Backlog" :tag "BACKLOG" :order 3))))))))
+                                 (:name "Backlog" :tag "BACKLOG" :order 3)
+                                 (:name "Overdue" :scheduled past))))))))
 #+END_SRC
 
 ***** Emacs
