@@ -393,7 +393,7 @@ Moves a todo item from the agenda to the shopping list as a list item.
 
 #+BEGIN_SRC elisp
 (setq
- org-directory (expand-file-name "~/Dropbox/org")
+ org-directory (expand-file-name "~/Documents/org")
  org-pinboard-dir org-directory
  org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
  org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
