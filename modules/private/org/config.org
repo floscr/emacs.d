@@ -386,6 +386,27 @@ Moves a todo item from the agenda to the shopping list as a list item.
           (save-buffer)))))
   (+org|agenda-archive-and-done))
 #+END_SRC
+*** Export named table
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/16640/can-i-export-a-specific-table-in-an-org-file-to-csv-from-the-command-line][org mode - Can I export a specific table in an org file to csv from the command line? - Emacs Stack Exchange]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun +org|export-named-table (name &optional dir)
+  "Export table in org document with NAME property to a DIR.
+Return the path of the file."
+  (interactive)
+  (show-all)
+  (let ((case-fold-search t))
+    (save-excursion
+      (goto-char (point-min))
+      (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+          (progn
+            (next-line)
+            (let ((filename (file-truename (f-join (or dir "./") (format "%s.csv" name)))))
+              (org-table-export filename "orgtbl-to-csv")
+              filename))))))
+#+END_SRC
 
 ** Config
 *** General Config
@@ -784,7 +805,7 @@ Helper to reset the org agenda custom commands.
                  (org-agenda-start-on-weekday t)
                  (org-agenda-show-all-dates nil)
                  (org-agenda-use-time-grid 'require-timed)
-                 (org-agenda-start-day ".")))
+                 (org-agenda-start-day "-1d")))
     (alltodo "+WORK-EVENT"
              ((org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down time-down))
               (org-agenda-tag-filter-preset '("+WORK" "-EVENT"))
