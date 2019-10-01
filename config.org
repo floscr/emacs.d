@@ -2699,6 +2699,6 @@ E.g.: ?* -> Clipboard Contents"
 
 (add-hook 'minibuffer-setup-hook 'setup-minibuffer)
 
-(define-key! :keymaps +default-minibuffer-maps
-  "C-w" 'sp-backward-delete-word)
+;; (define-key! :keymaps +default-minibuffer-maps
+;;   "C-w" 'sp-backward-delete-word)
 #+END_SRC
