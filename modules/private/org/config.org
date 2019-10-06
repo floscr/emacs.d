@@ -407,6 +407,26 @@ Return the path of the file."
               (org-table-export filename "orgtbl-to-csv")
               filename))))))
 #+END_SRC
+*** Refile Helpers
+:PROPERTIES:
+:SOURCE:   [[https://mollermara.com/blog/Fast-refiling-in-org-mode-with-hydras/][Fast refiling in org-mode with hydras | Josh Moller-Mara]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun +org/refile (file headline &optional arg)
+  (let ((pos (save-excursion
+               (find-file (f-join org-directory file))
+               (org-find-exact-headline-in-buffer headline))))
+    (org-refile arg nil (list headline file nil pos)))
+  (switch-to-buffer (current-buffer)))
+
+(defun +org/agenda-refile (file headline &optional arg)
+  (save-window-excursion
+    (let ((pos (save-excursion
+                (find-file (f-join org-directory file))
+                (org-find-exact-headline-in-buffer headline))))
+      (org-agenda-refile arg (list headline file nil pos) t))))
+#+END_SRC
 
 ** Config
 *** General Config
