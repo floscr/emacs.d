@@ -1067,7 +1067,6 @@ To sync the calendars use ~org-caldav-sync~.
       :desc  "Set source key to tab"     :m    "k"  #'+org|source-properties-key-from-browser
       :desc  "Create/Edit Todo"          :nve  "o"  #'org-todo
       :desc  "Paste Chrome Link"         :m    "p"  #'+org|paste-chrome-link
-      :desc  "Refile"                    :nve  "r"  #'org-refile
       :desc  "Schedule"                  :nve  "s"  #'org-schedule
       :desc  "Tag heading"               :nve  "t"  #'+org-tags|set-tags
       :desc  "Copy Buffer To Markdown"   :m    "y"  #'+org|copy-buffer-as-markdown
@@ -1092,16 +1091,25 @@ To sync the calendars use ~org-caldav-sync~.
         :desc "Subtree"              :m "s" #'org-narrow-to-subtree
         :desc "Block"                :m "b" #'org-narrow-to-block
         :desc "Element"              :m "e" #'org-narrow-to-element
-        :desc "widen"                :m "w" #'widen))
+        :desc "widen"                :m "w" #'widen)
+
+      (:desc "Refile" :prefix "w"
+        :desc "Dynamic" :m "w" 'org-refile
+        :desc "To GTD" :m "g" (λ! (+org/refile "GTD.org" "GTD"))
+        :desc "To GTD Backlog" :m "b" (λ! (+org/refile "GTD.org" "GTD Backlog"))))
 #+END_SRC
 
-***** Agenda
+***** COMMENT Agenda
 
 #+BEGIN_SRC elisp
-(map! :map org-agenda-localleader-mode-map
-      :localleader
-      (:desc "Move" :prefix "m"
-        :desc "To shoppping list" :m "s" #'+org|agenda-move-to-shopping-list))
+(map!
+ :map org-agenda-localleader-mode-map
+ :localleader
+ (:prefix ("w" . "Refile")
+   :desc "Dynamic" "w" 'org-agenda-refile
+   :desc "To GTD" :m "g" (λ! (+org/agenda-refile "GTD.org" "GTD"))
+   :desc "To GTD Backlog" :m "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
+   :desc "To shoppping list" :m "s" #'+org|agenda-move-to-shopping-list))
 #+END_SRC
 
 **** Meta Mapping
