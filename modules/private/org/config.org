@@ -28,8 +28,14 @@
 
 #+BEGIN_SRC elisp
 (defun +org*setup-org-mode-hook ()
-  "Function docstring"
-  (hl-line-mode -1))
+  "Setup org mode buffers"
+  (display-line-numbers-mode -1)
+  (hl-line-mode -1)
+  (line-number-mode -1)
+  (visual-line-mode)
+  (let ((visual-fill-column-center-text nil)
+        (visual-fill-column-width 100))
+    (visual-fill-column-mode)))
 #+END_SRC
 
 *** Get Frontmost chrome url
