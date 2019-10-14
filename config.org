@@ -654,21 +654,22 @@ plays a sound and prompts me to insert my count.
 ;;     (+guitar/create-timer-buffer '(lambda () (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))
 ;;   ())
 
-(defun +guitar|start-progressions ()
+(defun +guitar|start-progressions (&optional from to)
   "Start progression timers"
   (interactive)
-  (org-ql-search (f-join org-directory "music.org") '(heading "Timer"))
-  (with-current-buffer "*Org QL Search*"
-    (org-agenda-switch-to t))
-  (kill-buffer "*Org QL Search*")
-  (with-current-buffer "music.org"
-    (search-forward-regexp "Date")
-    (forward-line 2)
-    (call-interactively #'evil-org-open-above)
-    (let ((date (format-time-string "[%Y-%m-%d %a %H:%M]" (current-time))))
-      (insert date)
-      (org-cycle)
-      (+guitar|start-timer))))
+  (let ((buffer-name (concat org-ql-view-buffer-name-prefix " (heading Timer)*")))
+    (org-ql-search (f-join org-directory "music.org") '(heading "Timer"))
+    (with-current-buffer buffer-name
+      (org-agenda-switch-to t))
+    (kill-buffer buffer-name)
+    (with-current-buffer "music.org"
+      (search-forward-regexp "Date")
+      (forward-line 2)
+      (call-interactively #'evil-org-open-above)
+      (let ((date (format-time-string "[%Y-%m-%d %a %H:%M]" (current-time))))
+        (insert date)
+        (org-cycle)
+        (+guitar|start-timer from to)))))
 #+END_SRC
 
 ** Package Config
