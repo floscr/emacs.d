@@ -572,36 +572,39 @@ Create a canvas action
 #+BEGIN_SRC elisp
 (defun +MM/setup-keybindings ()
   "Setup Keybindings"
-  (map! :map js2-mode-map
 
+  (map! :map +MM-Web-mode-map
+        :localleader
+        :desc  "Repl"                 "R"  #'+MM|nodejs-repl
+
+        (:prefix ("f" . "file")
+          :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
+          :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
+          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function))
+
+  (map! :map js2-mode-map
         :n "[1" #'+MM|alternate-file
         :n "]1" #'+MM|alternate-file
 
         :localleader
         :desc  "Import File"          "i"  #'+MM|import-file
         :desc  "Generate Index"       "I"  #'+js|generate-index
-        :desc  "Repl"                 "R"  #'+MM|nodejs-repl
         :desc  "Update props header"  "u"  #'+MM|update-schema-props
 
-        (:prefix ("f" . "file")
-          :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
-          :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
-          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
-
-        (:prefix ("r" . "Refactor")
-          :desc  "Style function into object"   "rs" #'+MM|turn-style-object-into-function
-          :desc  "Extract Props"                "x"  #'+js|extract-props
-          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
+        (:prefix ("c" . "Create")
+          :desc  "action"                       "r"  #'+MM|add-rule
+          :desc  "action"                       "a"  #'+MM|create-action
+          :desc  "action"                       "A"  #'+MM|canvas-create-action)
 
         (:prefix ("d" . "Debug")
           :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
           :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state
           :desc  "Debugger"                     "d"  #'+js|insert-debugger)
 
-        (:prefix ("c" . "Create")
-          :desc  "action"                       "r"  #'+MM|add-rule
-          :desc  "action"                       "a"  #'+MM|create-action
-          :desc  "action"                       "A"  #'+MM|canvas-create-action)))
+        (:prefix ("r" . "Refactor")
+          :desc  "Style function into object"   "rs" #'+MM|turn-style-object-into-function
+          :desc  "Extract Props"                "x"  #'+js|extract-props
+          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)))
 #+END_SRC
 
 ** Minor Mode
@@ -612,7 +615,6 @@ this mode is enabled.
 
 #+BEGIN_SRC elisp
 (def-project-mode! +MM-Web-mode
-  :match "\\/Code\\/Meisterlabs\\/"
   :add-hooks (+MM/setup-keybindings)
   :on-enter (setq sgml-basic-offset 4)
   :on-load)
