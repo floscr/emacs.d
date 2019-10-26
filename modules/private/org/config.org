@@ -11,6 +11,7 @@
 
 #+BEGIN_SRC elisp
 (require 'dash)
+(require 'f)
 (require 's)
 #+END_SRC
 
@@ -440,7 +441,7 @@ Return the path of the file."
 
 #+BEGIN_SRC elisp
 (setq
- org-directory (expand-file-name "~/Documents/org")
+ org-directory (-first #'f-exists? '("~/Documents/org" "~/Documents/Org"))
  org-pinboard-dir org-directory
  org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
  org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
