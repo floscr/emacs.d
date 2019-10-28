@@ -146,7 +146,9 @@ Create a canvas action
   (if (not (get-buffer "*nodejs*"))
       (progn
         (nodejs-repl)
-        (insert "const M = require('@meisterlabs/common/node');")
+        (insert (concat
+                 "const __T = require('@meisterlabs/common/node');"
+                 "Object.keys(__T).forEach(x => { global[x] = __T[x]; });"))
         (comint-send-input nil t))
     (nodejs-repl)))
 #+END_SRC
