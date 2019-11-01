@@ -8,7 +8,7 @@
 (package! symex)
 
 ;;; Javascript Packages
-(package! indium)
+;;; (package! indium)
 (package! impatient-mode)
 
 ;;; Org-Mode Packages

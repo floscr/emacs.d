@@ -2444,7 +2444,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :leader
  (:desc "code" :prefix "c"
    :desc "Compile" "c" #'compile
-   :desc "Compile" "Compile last command" (λ! (compile (car compile-history)))))
+   :desc "Compile" "C" (λ! (compile (car compile-history)))))
 #+END_SRC
 
 **** Dir
