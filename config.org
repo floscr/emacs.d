@@ -613,17 +613,17 @@ plays a sound and prompts me to insert my count.
         '() +guitar-chords))
 
 (define-minor-mode +guitar-timer-mode
-  "A little timer."
-  nil
-  "Guitar Timer"
-  +guitar-timer-mode-map)
+  "A little timer.")
+  ;; nil
+  ;; "Guitar Timer"
+  ;; +guitar-timer-mode-map)
 
 
-(defvar +guitar-timer-mode-map (make-keymap) "Timer Key Map")
+;; (defvar +guitar-timer-mode-map (make-keymap) "Timer Key Map")
 
-(map! :map +guitar-timer-mode-map
-      :mgnvi "q" '+guitar|quit
-      :mgnvi [escape] '+guitar|quit)
+;; (map! :map +guitar-timer-mode-map
+;;       :mgnvi "q" '+guitar|quit
+;;       :mgnvi [escape] '+guitar|quit)
 
 (defun +guitar/read-timer ()
   (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>"))
