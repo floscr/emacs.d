@@ -613,7 +613,17 @@ plays a sound and prompts me to insert my count.
         '() +guitar-chords))
 
 (define-minor-mode +guitar-timer-mode
-  "A little timer.")
+  "A little timer."
+  nil
+  "Guitar Timer"
+  +guitar-timer-mode-map)
+
+
+(defvar +guitar-timer-mode-map (make-keymap) "Timer Key Map")
+
+(map! :map +guitar-timer-mode-map
+      :mgnvi "q" '+guitar|quit
+      :mgnvi [escape] '+guitar|quit)
 
 (defun +guitar/read-timer ()
   (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>"))
@@ -693,7 +703,7 @@ plays a sound and prompts me to insert my count.
   (interactive)
   (+guitar/create-timer-buffer '(lambda () (start-process-shell-command "Guitar Timer Done" nil (template "afplay <<+guitar-beep>>")))))
 
-(set-popup-rule! "^\\*Guitar" :quit t :height 4 :select nil :transient t)
+(set-popup-rule! "^\\*Guitar" :quit nil :height 4 :select nil :transient t)
 
 ;; (defun promise-sequence (xs)
 ;;   (if-let ((current (car xs)))
