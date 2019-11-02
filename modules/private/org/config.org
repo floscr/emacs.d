@@ -1124,14 +1124,11 @@ To sync the calendars use ~org-caldav-sync~.
 #+BEGIN_SRC elisp
 (map! :g "s-X" #'+org-capture/open-frame)
 
-(after! org
-  (map! :map org-mode-map
-          :gni [s-return]   #'+org/insert-item-below
-          :gni [s-S-return] #'+org/insert-item-above)
-
-  (map! :map evil-org-mode-map
-        :n "s-k" #'org-metaup
-        :n "s-j" #'org-metadown))
+(map! :map org-mode-map
+      :gni [s-return]    #'+org/insert-item-below
+      :gni [s-S-return]  #'+org/insert-item-above
+      :n "s-k"           #'org-metaup
+      :n "s-j"           #'org-metadown)
 #+END_SRC
 
 **** Agenda Mapping
