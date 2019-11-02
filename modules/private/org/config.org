@@ -1136,21 +1136,14 @@ To sync the calendars use ~org-caldav-sync~.
 ***** Evil Customization
 
 #+BEGIN_SRC elisp
-(defun +org/set-evil-org-agenda-keys ()
-  (evil-set-initial-state 'org-agenda-mode 'motion)
-  (evil-define-key 'motion evil-org-agenda-mode-map
-    ;; open
-    (kbd "RET") '+org|agenda-visit-entry
-    ;; GUI
-    [return]    '+org|agenda-visit-entry
-
-    "K"         '+org-agenda|prev-super-agenda-group
-    "J"         '+org-agenda|next-super-agenda-group
-
-    "da"        'org-agenda-archive
-    "dA"        '+org|agenda-archive-and-done))
-
-(advice-add #'evil-org-agenda-set-keys :after #'+org/set-evil-org-agenda-keys)
+(map! :after evil-org-agenda
+      :map evil-org-agenda-mode-map
+      :m "RET"    #'+org|agenda-visit-entry
+      :m [return] #'+org|agenda-visit-entry
+      :m "K"      #'+org-agenda|prev-super-agenda-group
+      :m "J"      #'+org-agenda|next-super-agenda-group
+      :m "da"     #'org-agenda-archive
+      :m "dA"     #'+org|agenda-archive-and-done)
 #+END_SRC
 
 ***** Org Agenda Keybindings
