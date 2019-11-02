@@ -1110,7 +1110,7 @@ To sync the calendars use ~org-caldav-sync~.
 ***** Agenda
 
 #+BEGIN_SRC elisp
-(map! :after org-agenda
+(map! :after evil-org-agenda
       :map org-agenda-mode-map
       :localleader
       :desc  "Set tags" "q"  #'counsel-org-tag-agenda
