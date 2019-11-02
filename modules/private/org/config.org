@@ -1111,11 +1111,12 @@ To sync the calendars use ~org-caldav-sync~.
 #+BEGIN_SRC elisp
 (map! :after org-agenda
       :map org-agenda-mode-map
-      (:prefix ("w" . "Refile")
-        :desc "Dynamic"               "w" 'org-agenda-refile
-        :desc "To GTD"             :m "g" (λ! (+org/agenda-refile "GTD.org" "GTD"))
-        :desc "To GTD Backlog"     :m "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
-        :desc "To shoppping list"  :m "s" #'+org|agenda-move-to-shopping-list))
+      :localleader
+      (:prefix-map ("w" . "Refile")
+        :desc "Dynamic"            "w" 'org-agenda-refile
+        :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
+        :desc "To GTD"             "g" (λ! (+org/agenda-refile "GTD.org" "GTD"))
+        :desc "To shoppping list"  "s" #'+org|agenda-move-to-shopping-list))
 #+END_SRC
 
 **** Meta Mapping
