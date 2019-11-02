@@ -784,7 +784,7 @@ ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline
 *** Blimp
 
 #+BEGIN_SRC elisp
-(def-package! blimp
+(use-package! blimp
   :hook (image-mode-hook . blimp-mode))
 #+END_SRC
 
@@ -885,7 +885,7 @@ Bindings
 **** Config
 
 #+BEGIN_SRC elisp
-(def-package! dired
+(use-package! dired
   :init
   (setq
     dired-recursive-copies 'always
@@ -922,7 +922,7 @@ When there are two visual splits with dired buffers.
 ***** Ignore .bs.js
 
 #+BEGIN_SRC elisp
-(def-package! dired-x
+(use-package! dired-x
   :after dired
   :config
   (setq dired-omit-files
@@ -1010,7 +1010,7 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
 ***** Dired Recent
 
 #+BEGIN_SRC elisp
-(def-package! dired-recent
+(use-package! dired-recent
   :after dired
   :config
   (setq dired-recent-directories-file (concat doom-cache-dir "recentdir")
@@ -1024,7 +1024,7 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
 Widen can be restored with ~g~.
 
 #+BEGIN_SRC elisp
-(def-package! dired-narrow
+(use-package! dired-narrow
   :after dired
   :config
   (bind-key "C-c C-n" #'dired-narrow))
@@ -1033,7 +1033,7 @@ Widen can be restored with ~g~.
 ***** Dired Subtree
 
 #+BEGIN_SRC elisp
-(def-package! dired-subtree
+(use-package! dired-subtree
   :after dired
   :init
   (evil-define-key 'normal dired-mode-map
@@ -1048,7 +1048,7 @@ Widen can be restored with ~g~.
 ***** Dired Filter
 
 #+BEGIN_SRC elisp
-(def-package! dired-filter
+(use-package! dired-filter
   :after dired
   :init
   (setq dired-filter-saved-filters
@@ -1169,21 +1169,21 @@ To enable the checker press ~SPC u C-c ! x~
 *** git-lens
 
 #+BEGIN_SRC elisp
-(def-package! git-lens
+(use-package! git-lens
   :commands (git-lens))
 #+END_SRC
 
 *** Symex
 
 #+BEGIN_SRC elisp
-(def-package! symex
+(use-package! symex
   :commands (symex-mode symex-mode-interface))
 #+END_SRC
 
 *** Indium
 
 #+BEGIN_SRC elisp
-(def-package! indium
+(use-package! indium
   :commands indium-connect
   :config
   (setq indium-chrome-executable "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"))
@@ -1192,7 +1192,7 @@ To enable the checker press ~SPC u C-c ! x~
 *** Impatient-Mode
 
 #+BEGIN_SRC elisp
-(def-package! impatient-mode
+(use-package! impatient-mode
   :commands impatient-mode)
 #+END_SRC
 
@@ -1205,7 +1205,7 @@ Source:
 - [[https://www.emacswiki.org/emacs/NarrowIndirect][EmacsWiki: Narrow Indirect]]
 
 #+BEGIN_SRC elisp
-(def-package! narrow-indirect
+(use-package! narrow-indirect
   :init
   (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
   (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
@@ -1589,7 +1589,7 @@ npm i -g json-fix
 **** Disable LSP hover
 
 #+BEGIN_SRC elisp
-(def-package! lsp-mode
+(use-package! lsp-mode
   :config
   (setq lsp-eldoc-render-all nil
         lsp-eldoc-enable-hover nil
@@ -1852,7 +1852,7 @@ Fixes evil window navigation for magit special buffers
 Always keep markdown centered, without line numbers.
 
 #+BEGIN_SRC elisp
-(def-package! markdown-mode
+(use-package! markdown-mode
   :init
   (setq markdown-fontify-code-blocks-natively t)
   :config
@@ -1887,7 +1887,7 @@ since this is much nicer then ~visual-line-mode~.
   (setq visual-fill-column-width (+ nov-text-width 25))
   (visual-fill-column-mode t))
 
-(def-package! nov
+(use-package! nov
   :defer t
   :init
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
@@ -1927,7 +1927,7 @@ brew cask install font-liberation-sans
 *** rainbow-mode
 
 #+BEGIN_SRC elisp
-(def-package! rainbow-mode
+(use-package! rainbow-mode
   :commands (rainbow-mode))
 #+END_SRC
 
@@ -2289,7 +2289,7 @@ Replace the current selection with a register.
 Works with motions
 
 #+BEGIN_SRC elisp
-(def-package! evil-replace-with-register
+(use-package! evil-replace-with-register
   :config
   (setq evil-replace-with-register-key (kbd "gr"))
   (define-key evil-normal-state-map

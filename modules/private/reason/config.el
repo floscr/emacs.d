@@ -23,7 +23,7 @@
              (to (org-element-property :end new-block)))
         (delete-region from to)))))
 
-;; (def-package! flycheck-ocaml
+;; (use-package! flycheck-ocaml
 ;;  :after (flycheck merlin)
 ;;  :commands
 ;;  (flycheck-ocaml-setup)
@@ -52,7 +52,7 @@
     ;; Enable flycheck checker
     (flycheck-ocaml-setup)))
 
-(def-package! reason-mode
+(use-package! reason-mode
   :mode "\\.rei?$"
   :commands (reason-mode)
 

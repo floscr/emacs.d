@@ -1,9 +1,9 @@
 ;;; completion/lsp/config.el -*- lexical-binding: t; -*-
 
-(def-package! lsp-mode
+(use-package! lsp-mode
   :commands (lsp-mode lsp-define-stdio-client))
 
-(def-package! lsp-ui
+(use-package! lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :config
   (set-lookup-handlers! 'lsp-ui-mode
@@ -13,31 +13,31 @@
         lsp-ui-doc-max-width 35
         lsp-ui-sideline-ignore-duplicate t))
 
-(def-package! lsp-typescript
+(use-package! lsp-typescript
   :when (featurep! +javascript)
   :hook ((js2-mode typescript-mode) . lsp-typescript-enable))
 
-(def-package! company-lsp
+(use-package! company-lsp
   :after lsp-mode
   :config
   (set-company-backend! 'lsp-mode 'company-lsp)
   (setq company-lsp-enable-recompletion t))
 
-(def-package! lsp-go
+(use-package! lsp-go
   :when (featurep! +go)
   :hook (go-mode . lsp-go-enable))
 
-(def-package! lsp-css
+(use-package! lsp-css
   :when (featurep! +css)
   :hook ((css-mode less-mode scss-mode) . lsp-css-enable))
 
-(def-package! lsp-rust
+(use-package! lsp-rust
   :when (featurep! +rust)
   :hook (rust-mode . lsp-rust-enable)
   :init
   (setq lsp-rust-rls-command '("rustup" "run" "nightly" "rls")))
 
-(def-package! cquery
+(use-package! cquery
   :when (featurep! +cpp)
   :hook ((c-mode c++-mode objc-mode) . +setup-cquery)
   :init
@@ -52,11 +52,11 @@
         (lsp-cquery-enable)
       (user-error nil))))
 
-(def-package! lsp-ocaml
+(use-package! lsp-ocaml
   :when (featurep! +ocaml)
   :hook ((tuareg-mode reason-mode) . lsp-ocaml-enable))
 
-(def-package! lsp-intellij
+(use-package! lsp-intellij
   :when (featurep! +java)
   :hook (java-mode . lsp-intellij-enable))
 

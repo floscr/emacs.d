@@ -34,6 +34,6 @@
   (visual-fill-column-mode)
   (setq display-line-numbers nil))
 
-(def-package! org-web-tools
+(use-package! org-web-tools
   :after org
   :commands (+org-web-tools/read-url-at-point))

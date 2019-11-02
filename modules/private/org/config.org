@@ -968,7 +968,7 @@ Calendar management using org mode and [[https://github.com/dengste/org-caldav][
 To sync the calendars use ~org-caldav-sync~.
 
 #+BEGIN_SRC elisp
-(def-package! org-caldav
+(use-package! org-caldav
   :after org
   :commands (org-caldav-sync)
   :config
@@ -983,7 +983,7 @@ To sync the calendars use ~org-caldav-sync~.
 *** Org QL
 
 #+BEGIN_SRC elisp
-(def-package! org-ql
+(use-package! org-ql
   :commands (org-ql-search))
 #+END_SRC
 
@@ -991,7 +991,7 @@ To sync the calendars use ~org-caldav-sync~.
 **** Config
 
 #+BEGIN_SRC elisp
-(def-package! org-super-agenda
+(use-package! org-super-agenda
   :after org
   :config
   (org-super-agenda-mode 1)
@@ -1048,7 +1048,7 @@ To sync the calendars use ~org-caldav-sync~.
 *** Org Media Info
 
 #+BEGIN_SRC elisp
-(def-package! org-media-info
+(use-package! org-media-info
   :commands (org-media-insert-book org-media-insert-book-german))
 #+END_SRC
 
