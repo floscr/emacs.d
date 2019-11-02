@@ -1058,7 +1058,8 @@ To sync the calendars use ~org-caldav-sync~.
 ***** Org Mode
 
 #+BEGIN_SRC elisp
-(map! :map org-mode-map
+(map! :after org
+      :map org-mode-map
       :localleader
       :desc  "Align Tags"                "%"  #'+org|align-all-tags
       :desc  "Archive Subtree and Done"  "A"  #'+org|archive-and-done
