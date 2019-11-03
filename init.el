@@ -53,6 +53,7 @@
 
  :lang
  nix
+ rest
  data
  emacs-lisp
  (javascript +lsp)
