@@ -731,7 +731,11 @@ Helper to reset the org agenda custom commands.
 (setq org-agenda-custom-commands '())
 #+END_SRC
 
-***** Helper
+***** Helpers
+****** Set agenda command or replace on reload
+
+When configuring agenda commands I often eval them for testing.
+This helper replaces items with the same key, so you don't end up with a bunch of duplicates in ~agenda-custom-commands~.
 
 #+BEGIN_SRC elisp
 (defun +org/add-to-agenda-custom-commands (x)
@@ -739,6 +743,28 @@ Helper to reset the org agenda custom commands.
   (if-let ((item (alist-get (car x) nil nil #'equal)))
       (setf item x)
     (add-to-list 'org-agenda-custom-commands x)))
+#+END_SRC
+
+****** Get Parent Project
+
+#+BEGIN_SRC elisp
+(defun +org/get-parent-project ()
+  "Search upwards for either parent tree for item with either PROJECT or ACTIVE todo state."
+  (while (and (org-up-heading-safe) (not (--find (string= (org-get-todo-state) it) '("PROJECT" "ACTIVE")))))
+  (--find (string= (org-get-todo-state) it) '("PROJECT" "ACTIVE")))
+#+END_SRC
+****** Super Agenda ~TODO~ autogroup
+
+Adds super agenda auto group for headings defined in [[*Get Parent Project][Get Parent Project]] function.
+This way I can create super agenda groups for items with ~PROJECT~ heading, that have their own subtasks.
+
+#+BEGIN_SRC elisp
+(after! org-super-agenda
+  :init
+  (org-super-agenda--def-auto-group parent-todo "their parent todo heading"
+    :key-form (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
+                (when (and (org-up-heading-safe) (+org/get-parent-project))
+                  (org-get-heading 'notags 'notodo)))))
 #+END_SRC
 
 ***** Opening Tag
@@ -763,6 +789,19 @@ Helper to reset the org agenda custom commands.
                             (org-super-agenda-groups '((:name none :date today :time-grid t)
                                                        (:name "\nOverdue" :deadline past :scheduled past)
                                                        (:name "Future" :anything (:scheduled future)))))))))
+#+END_SRC
+
+***** Personal Project Agenda
+
+#+BEGIN_SRC elisp
+(+org/add-to-agenda-custom-commands
+ '("P" "Personal Project Agenda"
+   ((alltodo ""
+             ((org-agenda-sorting-strategy '(priority-down todo-state-down user-defined-down timestamp-down time-down))
+              (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
+                                         (:discard (:anything t)))))))
+   ((org-agenda-files (--> '("projects.org" "GTD.org")
+                            (--map (f-join org-directory it) it))))))
 #+END_SRC
 
 ***** Week View
@@ -860,20 +899,8 @@ Helper to reset the org agenda custom commands.
 ****** Project Agenda
 
 #+BEGIN_SRC elisp
-(defun +org/get-parent-project ()
-  (while (and (org-up-heading-safe) (not (--find (string= (org-get-todo-state) it) '("PROJECT" "ACTIVE")))))
-  (--find (string= (org-get-todo-state) it) '("PROJECT" "ACTIVE")))
-
-
-(after! org-super-agenda
-  :init
-  (org-super-agenda--def-auto-group parent-todo "their parent todo heading"
-    :key-form (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
-                (when (and (org-up-heading-safe) (+org/get-parent-project))
-                  (org-get-heading 'notags 'notodo)))))
-
 (+org/add-to-agenda-custom-commands
- '("p" "Project Agenda"
+ '("p" "Work Project Agenda"
    ((alltodo "+WORK-EVENT"
              ((org-agenda-sorting-strategy '(todo-state-down user-defined-down timestamp-down time-down))
               (org-agenda-tag-filter-preset '("-EVENT"))
