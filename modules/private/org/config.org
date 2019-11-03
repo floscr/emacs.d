@@ -527,7 +527,6 @@ Needs ~dvisvgm~
       (expand-org-file-names
        '("reading-list.org"
          "cooking.org"
-         ;; "books.org"
          "programming.org"
          "shoppinglist.org")))
 
@@ -547,20 +546,26 @@ Needs ~dvisvgm~
          "osx.org"
          "personal.org"
          "podcasts.org"
-         "projects.org"
          "sleep.org"
          "sports.org"
          "travel.org"
          "Work/work.org")))
 
+(setq max-level-3-refile-targets
+      (expand-org-file-names
+       '("projects.org")))
+
 (defun level-1-refile-targets () level-1-refile-targets)
 
 (defun max-level-2-refile-targets () max-level-2-refile-targets)
+
+(defun max-level-3-refile-targets () max-level-3-refile-targets)
 
 (after! org
   :config
   (setq org-refile-targets (quote ((nil :maxlevel . 5)
                                    (max-level-2-refile-targets :maxlevel . 2)
+                                   (max-level-3-refile-targets :maxlevel . 3)
                                    (level-1-refile-targets :level . 1)))
         org-agenda-refile org-agenda-files))
 #+END_SRC
