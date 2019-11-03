@@ -1061,23 +1061,24 @@ To sync the calendars use ~org-caldav-sync~.
 (map! :after org
       :map org-mode-map
       :localleader
+      :desc  "Goto Archive"              "$"  #'+org|visit-archive-file
       :desc  "Align Tags"                "%"  #'+org|align-all-tags
+      :desc  "Schedule Tomorrow"         "+"  #'+org|schedule-tomorrow
       :desc  "Archive Subtree and Done"  "A"  #'+org|archive-and-done
-      :desc  "Archive Subtree"           "a"  #'org-archive-subtree
-      :desc  "Copy Buffer To Markdown"   "y"  #'+org|copy-buffer-as-markdown
-      :desc  "Create/Edit Todo"          "o"  #'org-todo
       :desc  "Cut Subtree"               "C"  #'org-cut-subtree
+      :desc  "Grab tabs"                 "P"  #'+org|grab-chrome-tabs
+      :desc  "Paste Subtree"             "P"  #'org-paste-subtree
+      :desc  "Sort Entries"              "S"  #'+org|sort-entries
+      :desc  "Archive Subtree"           "a"  #'org-archive-subtree
       :desc  "Deadline"                  "d"  #'org-deadline
       :desc  "Filter"                    "f"  #'org-match-sparse-tree
-      :desc  "Goto Archive"              "$"  #'+org|visit-archive-file
-      :desc  "Grab tabs"                 "P"  #'+org|grab-chrome-tabs
-      :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
-      :desc  "Paste Subtree"             "P"  #'org-paste-subtree
-      :desc  "Schedule Tomorrow"         "+"  #'+org|schedule-tomorrow
-      :desc  "Schedule"                  "s"  #'org-schedule
       :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
-      :desc  "Sort Entries"              "S"  #'+org|sort-entries
-      :desc  "Tag heading"               "t"  #'+org-tags|set-tags
+      :desc  "Create/Edit Todo"          "o"  #'org-todo
+      :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
+      :desc  "Tag heading"               "q"  #'counsel-org-tag
+      :desc  "Schedule"                  "s"  #'org-schedule
+      :desc  "Tag heading"               "t"  #'counsel-org-tag
+      :desc  "Copy Buffer To Markdown"   "y"  #'+org|copy-buffer-as-markdown
 
       (:prefix-map ("i" . "Insert")
         :desc "Inavtive Timestamp" "i" 'org-time-stamp-inactive
