@@ -1838,8 +1838,12 @@ Fixes evil window navigation for magit special buffers
 
 **** Transient
 
+You can add flags or commands to the magit interface transient here.
+To append something, just state the flag that you see in the transient popup as the 2nd argument.
+
 #+BEGIN_SRC elisp
 (after! magit
+  (transient-append-suffix 'magit-log "-f" '("-0" "No merges" "--no-merges"))
   (transient-append-suffix 'magit-push "p" '("d" "dated" +git|push-dated))
   (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" +magit|diff-range-from-current-branch))
   (transient-append-suffix 'magit-commit
