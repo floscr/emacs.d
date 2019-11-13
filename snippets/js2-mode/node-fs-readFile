@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: node.fs.readFile
+# key: fs.readFile       
+# --
+fs.readFile('$0', 'utf8', (err, data) => {
+  if (err) throw err;
+  console.log(data);
+});
