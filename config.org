@@ -267,6 +267,12 @@ application."
 #+END_SRC
 
 ** UI
+*** Frame padding
+
+#+BEGIN_SRC elisp
+(set-frame-parameter nil 'internal-border-width 15)
+#+END_SRC
+
 *** System specific window modifications
 
 Resize the window font size etc according to the system.
