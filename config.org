@@ -1232,17 +1232,17 @@ Source:
 Ivy posframe will jump around when the candidate size changes.
 This will fix it to a width.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun +ivy-posframe-get-size ()
   "The default functon used by `ivy-posframe-size-function'."
-  (let ((width 0.75)
-        (height 20))
+  (let ((width 20)
+        (height 300))
     (list
      :height height
      :width (round (* (frame-width) width)))))
 #+END_SRC
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
 (setq ivy-posframe-size-function #'+ivy-posframe-get-size)
 #+END_SRC
