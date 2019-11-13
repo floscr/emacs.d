@@ -384,6 +384,14 @@ Bound to ~SPC t t~.
   (custom-set-faces!
 #+END_SRC
 
+**** Fringe
+
+#+BEGIN_SRC elisp
+'(fringe
+  :foreground (face-background 'default)
+  :background (face-background 'default))
+#+END_SRC
+
 **** Dired Output
 
 Remove the rainbow colors from dired.
