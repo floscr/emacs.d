@@ -37,6 +37,8 @@
 
 (package! define-word)
 
+(package! atomic-chrome)
+
 ;; Install frame cmds
 ;; (package! frame-fns :recipe (:host wiki))
 ;; (package! frame-cmds :recipe (:host wiki))
