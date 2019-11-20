@@ -30,6 +30,7 @@
 #+BEGIN_SRC elisp
 (defun +org*setup-org-mode-hook ()
   "Setup org mode buffers"
+  (setq-local word-wrap nil)
   (display-line-numbers-mode -1)
   (hl-line-mode -1)
   (line-number-mode -1)
@@ -452,6 +453,8 @@ Return the path of the file."
 (after! org
   :config
   (add-hook! org-mode #'+org*setup-org-mode-hook)
+  ;; Disable automatic line wrapping in org mode
+  (remove-hook 'org-mode-hook #'auto-fill-mode)
   (setq
    org-src-window-setup 'current-window
    org-tags-column (- fill-column)
