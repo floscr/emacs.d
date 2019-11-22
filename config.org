@@ -2096,6 +2096,15 @@ the projects cwd to find a file.
   (let ((name (read-string "New workspace name: ")))
     (if name (+workspace/new name))))
 #+END_SRC
+*** Wgrep Mode
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :map wgrep-mode-map
+ :g [return] #'compile-goto-error)
+#+END_SRC
 
 *** Yasnippet
 **** Expand snippet by name
