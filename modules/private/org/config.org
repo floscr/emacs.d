@@ -1091,11 +1091,14 @@ To sync the calendars use ~org-caldav-sync~.
 ** Bindings
 *** Local Leader Bindings
 **** Local Leader Mapping
+
 ***** Org Mode
 
 #+BEGIN_SRC elisp
 (map! :after org
       :map org-mode-map
+
+
       :localleader
       :desc  "Goto Archive"              "$"  #'+org|visit-archive-file
       :desc  "Align Tags"                "%"  #'+org|align-all-tags
@@ -1226,4 +1229,17 @@ To sync the calendars use ~org-caldav-sync~.
      :desc "Resolve"                  "r" #'org-resolve-clocks
      :desc "Clock In Last"            "l" #'org-clock-in-last
      :desc "Cancel"                   "x" #'org-clock-cancel)))
+#+END_SRC
+*** Fixes
+**** Evil replace with register fixes
+
+I've mapped ~gr~ with ~evil-replace-with-register~ and doom tries to override this.
+Unset the mapping here.
+
+#+BEGIN_SRC elisp
+(use-package! evil-org
+  :config
+  (map! :map evil-org-mode-map
+        :n "gr" nil
+        :n "gR" nil))
 #+END_SRC
