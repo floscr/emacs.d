@@ -104,10 +104,11 @@
 #+BEGIN_SRC elisp
 (defun +org/copy-as-markdown (&optional subtree-p)
   "Copy the current subtree as markdown to clipboard."
-    (let* ((org-export-with-toc nil)
-           (md (org-md-export-as-markdown nil subtree-p)))
-      (kill-ring-save (point-min) (point-max))
-      (kill-buffer md)))
+  (let* ((org-export-with-toc nil)
+         (org-export-with-special-strings nil)
+         (org-export-with-smart-quotes nil)
+         (md (org-export-as 'md nil subtree-p)))
+    (kill-new md)))
 
 (defun +org|copy-buffer-as-markdown ()
   "Copy the entire buffer as markdown to clipboard."
