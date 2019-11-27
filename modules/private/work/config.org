@@ -590,7 +590,7 @@ Create a canvas action
 
         :localleader
         :desc  "Import File"          "i"  #'+MM|import-file
-        :desc  "Generate Index"       "I"  #'+js|generate-index
+        :desc  "Generate Index"       "I"  (λ! (+js|generate-index nil '("helpers")))
         :desc  "Update props header"  "u"  #'+MM|update-schema-props
 
         (:prefix ("c" . "Create")

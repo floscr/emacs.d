@@ -1349,17 +1349,25 @@ Extract the ~const~ under the cursor into a new file.
 Generate a file index in the current file for every other file in the current directory.
 
 #+BEGIN_SRC elisp
-(defun +js/index-file-names (&optional actions-dir)
-  "Get filenames from current buffers directory"
-  (let ((fs (directory-files (or actions-dir default-directory) nil ".*\\.js")))
+(defun +js/index-file-names (&optional dir)
+  "Get filenames from current buffers directory."
+  (let ((fs (directory-files (or dir default-directory) nil ".*\\.js")))
     (mapcar '+js/remove-js-ext
             (remove "index.js" fs))))
 
-(defun +js|generate-index (&optional actions-dir)
-  "Generate an index import file for files in directory"
+(defun +js|generate-index (&optional dir ignore-list)
+  "Generate an index import file for files in directory.
+Pass DIR for directory, falls back to default-directory
+Pass IGNORE-LIST for a list of files "
   (interactive)
   (erase-buffer)
-  (let* ((fs (+js/index-file-names actions-dir)))
+  (let* ((dir (or dir default-directory))
+         (fs (-->
+              (+js/index-file-names dir)
+              (if ignore-list
+                  (--remove (-contains? ignore-list it) it)
+                it))))
+    (message "%s" fs)
     (mapc (lambda (f) (insert "import " f " from './" f "';\n")) fs)
     (insert "\n")
     (insert "export default {\n")
