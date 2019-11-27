@@ -507,9 +507,7 @@ Macro Expansion
 (setq visual-fill-column-width fill-column)
 
 (setq visual-fill-column-center-text t
-      visual-fill-column-width
-      ;; take Emacs 26 line numbers into account
-      (+ (if EMACS26+ 6 0) fill-column))
+      visual-fill-column-width fill-column)
 #+END_SRC
 
 *** Disable trailng whitespace warning
