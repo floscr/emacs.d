@@ -2747,6 +2747,15 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Barf Sexp"   ">" #'barf-sexp)
 #+END_SRC
 
+**** Bash
+
+#+BEGIN_SRC elisp
+(map! :map sh-mode-map
+      :localleader
+      :desc "Eval Region"  "e" #'sh-execute-region
+      :desc "Eval Region"  "E" #'executable-interpret)
+#+END_SRC
+
 **** Mail
 
 #+BEGIN_SRC elisp
