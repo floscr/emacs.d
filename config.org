@@ -1756,8 +1756,9 @@ When no BRANCH is given, take the current one."
   (let* ((branch (or branch (magit-get-current-branch)))
          (date (format-time-string "%y-%m"))
          (remote (template "origin/<<date>>-<<branch>>")))
-    (magit-git-push branch remote nil)))
+    (magit-git-push branch remote "--set-upstream")))
 #+END_SRC
+
 ***** Diff Range from current branch to ~magit-thing-at-point~
 
 When I'm on the log view, I want to quickliy diff it against the currently checked out branch.
@@ -1769,6 +1770,7 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
   (interactive)
   (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
 #+END_SRC
+
 ***** Create review branch
 
 #+BEGIN_SRC elisp
