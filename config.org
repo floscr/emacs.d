@@ -175,7 +175,6 @@ If the file is emacs lisp, run the byte compiled version if exist."
         (message "No recognized program file suffix for this file.")))))
 #+END_SRC
 
-
 *** Toggle Window Dedicated
 :PROPERTIES:
 :SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
@@ -283,66 +282,26 @@ This will be disabled in terminal mode.
 #+END_SRC
 
 #+BEGIN_SRC elisp
-(defcustom my-default-frame-size nil
-  "A cons cell of screen dimensions (width . height)"
-  :type 'cons)
-
-(defcustom osx-screen-reserved-y-space 48
-  "How much of the screen is available when subtracting the
-1. app title bar
-2. menu bar"
-  :type 'integer)
-
-(defcustom osx-screen-reserved-x-space 12
-  "How much of the screen is available when subtracting the
-1. Window Border"
-  :type 'integer)
-
-(defun my-set-initial-frame-size (size)
-  "Set the initial frame"
-  (let* ((width (car size))
-         (height (cdr size))
-         (left (- (x-display-pixel-width) width)))
-    (setq initial-frame-alist
-          (append (list `(left . ,left)
-                        `(width . ,width)
-                        '(fullscreen . fullheight))
-                  initial-frame-alist)))
-  (setq my-default-frame-size size))
-
-(defun my-frame-resize-width (width)
-  "Set the frame WIDTH. Maximize the frame vertically (minus the osx reserver space)"
-  (set-frame-width (selected-frame) width nil t)
-  (set-frame-height (selected-frame) (- (x-display-pixel-height) osx-screen-reserved-y-space) nil t)
-  (set-frame-position (selected-frame) (- (x-display-pixel-width) width osx-screen-reserved-x-space) 0))
-
-(defun my-frame-resize-work-external ()
-  "External Monitor at work"
+(defun my-set-font (size line-space &optional font-family)
   (interactive)
-  (my-frame-resize-width 1410))
+  (let* ((font-family (or font-family)))
+    (setq-default line-spacing line-space)
+    (setq-default doom-font (font-spec :family font-family :size size))
+    (message "reload frame")
+    (doom/reload-font)))
 
 (cond
- ((--first (s-contains? it system-name) '("Florians-MBP" "Florians-MacBook-Pro"))
-  (my-frame-resize-work-external)
-  (setq-default line-spacing 0.3))
  ((string= system-name "Florians-iMac.local")
-  (setq-default line-spacing 10)
-  (setq default-line-spacing 10)
-  (setq doom-font (font-spec :family "Menlo" :size 14)))
+  (my-set-font-size 14 10 "Menlo"))
  ((string= system-name "thinknix")
-  (setq-default line-spacing 9)
-  (setq default-line-spacing 9)
-  (setq doom-font (font-spec :family "Fira Code" :size 18)))
+  (if (eq (round (my-dpi)) 158)
+      ;; Internal Screen
+      (my-set-font 15 7)
+    ;; HiDPI External
+    (my-set-font 18 9)))
  ((string= system-name "Florians-MacBook-Air.local")
-  (setq-default line-spacing 0.4)
-  (setq initial-frame-alist
-        (append (list '(left . 272)
-                      '(width . 165)
-                      '(fullscreen . fullheight))
-                initial-frame-alist)))
- (t (setq-default line-spacing 0.15)))
+  (my-set-font-size 14 10 "Menlo")))
 #+END_SRC
-
 
 #+BEGIN_SRC elisp
 )
@@ -381,15 +340,10 @@ Bound to ~SPC t t~.
 
 #+BEGIN_SRC elisp
 (defun *doom-themes-custom-set-faces ()
+  (set-face-attribute 'fringe nil
+                      :foreground (face-background 'default)
+                      :background (face-background 'default))
   (custom-set-faces!
-#+END_SRC
-
-**** Fringe
-
-#+BEGIN_SRC elisp
-'(fringe
-  :foreground (face-background 'default)
-  :background (face-background 'default))
 #+END_SRC
 
 **** Dired Output
@@ -2277,6 +2231,20 @@ Save the command history between sessions.
 #+BEGIN_SRC elisp
 (map! :nm "C-z" nil)
 #+END_SRC
+
+**** Evil Multi-Edit Match All
+
+Other Bindings for multi-edit:
+
+| Bindings | Description                       |
+| M+d      | Match next                        |
+| M+D      | Match previous                    |
+| M+c+d    | Restore previous matching session |
+
+#+BEGIN_SRC elisp
+(map! :nm "C-z" nil)
+#+END_SRC
+
 
 *** Osx / Mac Modifier Bindings
 
