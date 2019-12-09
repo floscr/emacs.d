@@ -2058,6 +2058,16 @@ the projects cwd to find a file.
   (let ((name (read-string "New workspace name: ")))
     (if name (+workspace/new name))))
 #+END_SRC
+**** Add buffer to workspace hooks
+
+Fix buffers not being added to the current workspace.
+
+***** Bookmarks
+
+#+BEGIN_SRC elisp
+(add-hook! 'bookmark-after-jump-hook #'+workspaces-add-current-buffer-h)
+#+END_SRC
+
 *** Wgrep Mode
 
 **** Bindings
@@ -2153,7 +2163,6 @@ Call FUNC with ARGS."
 (advice-add 'bookmark-delete :after #'+bookmark/set)
 (advice-add 'bookmark-rename :after #'+bookmark/set)
 #+END_SRC
-
 *** Open OTF fonts in image mode
 
 #+BEGIN_SRC elisp
