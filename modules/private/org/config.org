@@ -291,6 +291,18 @@ Projectile search is not fast reliable enough."
   (interactive)
   (counsel-notes-jump))
 
+(defun counsel-notes-find-file (x)
+  "Function docstring"
+  (interactive)
+  (with-ivy-window
+    (let ((default-directory (ivy-state-directory ivy-last)))
+      (find-file (expand-file-name x))
+      (+workspaces-add-current-buffer-h))))
+
+(defun counsel-notes-find-file-other-window (x)
+  (split-window nil nil 'right)
+  (counsel-notes-find-file x))
+
 (defun counsel-notes-jump ()
   "Jump to a file in your notes and call org-goto right-away."
   (interactive)
@@ -300,9 +312,7 @@ Projectile search is not fast reliable enough."
                  (cdr
                   (counsel--find-return-list (split-string ". -name *.org -type f -print")))
                  :matcher #'counsel--find-file-matcher
-                 :action (lambda (d)
-                           (find-file (expand-file-name d))
-                           (counsel-org-goto))
+                 :action #'counsel-notes-find-file
                  :history 'file-name-history
                  :keymap counsel-find-file-map
                  :caller 'counsel-dired-jump)))
