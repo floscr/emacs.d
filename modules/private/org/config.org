@@ -285,9 +285,10 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
 *** Search in notes
 
 #+BEGIN_SRC elisp
-(ivy-set-actions
- '+org|search-in-notes
- '(("j" counsel-notes-find-file-other-window "open in other window")))
+(after! ivy
+  (ivy-set-actions
+   '+org|search-in-notes
+   '(("j" counsel-notes-find-file-other-window "open in other window"))))
 
 (defun +org|search-in-notes ()
   "Search in the org directory for a file.
