@@ -88,6 +88,35 @@ Create a canvas action
     (find-file action-file)))
 #+END_SRC
 
+*** Create container
+
+#+BEGIN_SRC elisp
+(defun +MM|create-container ()
+  "Create a container from the snippets directory."
+  (interactive)
+  (let* ((root-path (projectile-project-root))
+         (container-snippet-path (f-join root-path "snippets/Core/Container"))
+         (containers-path (f-join root-path "src/containers"))
+         (container-names (->> (f-directories containers-path)
+                               (-map 'file-name-nondirectory)))
+         (new-container-name (ivy-read "Container Name: " container-names))
+         (new-container-path (f-join containers-path new-container-name)))
+    (if (f-exists? new-container-path)
+        (progn
+          (message "The given directory already exists")
+          (+MM|create-container))
+      (progn
+        (f-copy container-snippet-path new-container-path)
+        (find-file (f-join root-path "src/apps/Main/App.js"))
+        ;; Copy require stament to be inserted to app to the clipboard
+        (--> (f-join root-path "src/")
+             (s-chop-prefix it new-container-path)
+             (template "'<<new-container-name>>': require('<<it>>/controller'),\n")
+             (progn
+               (kill-new it)
+               (message (template "Created container and copied <<(s-chomp it)>> to the clipboard!"))))))))
+#+END_SRC
+
 *** Search MapEditor Only
 
 **** Canvas Files
