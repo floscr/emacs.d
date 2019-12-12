@@ -626,9 +626,10 @@ Create a canvas action
         :desc  "Update props header"  "u"  #'+MM|update-schema-props
 
         (:prefix ("c" . "Create")
-          :desc  "action"                       "r"  #'+MM|add-rule
-          :desc  "action"                       "a"  #'+MM|create-action
-          :desc  "action"                       "A"  #'+MM|canvas-create-action)
+          :desc  "Rule"                         "r"  #'+MM|add-rule
+          :desc  "Container Action"             "a"  #'+MM|create-action
+          :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
+          :desc  "Container"                    "c"  #'+MM|canvas-create-action)
 
         (:prefix ("d" . "Debug")
           :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
