@@ -53,6 +53,7 @@
 
  :lang
  nix
+ rust
  rest
  data
  emacs-lisp
