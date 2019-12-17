@@ -872,6 +872,28 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "Overdue" :scheduled past))))))))
 #+END_SRC
 
+***** Backlog
+
+#+BEGIN_SRC elisp
+(+org/add-to-agenda-custom-commands
+ '("b" "Backlog Items"
+   ((tags-todo
+     "-WORK"
+     ((org-agenda-prefix-format "  %?-12t% s")
+      (org-agenda-todo-ignore-scheduled t)
+      (org-agenda-tag-filter-preset '("+BACKLOG"))
+      (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
+      (org-super-agenda-groups '((:discard (:scheduled t))
+                                 (:name "Emacs Low Effort" :and (:tag ("EMACS") :tag("LOW_EFFORT")))
+                                 (:name "Emacs" :tag ("EMACS"))
+                                 (:name "Digital" :tag ("DIGITAL"))
+                                 (:name "Low Effort" :tag ("LOW_EFFORT") :order -2)
+                                 (:name "Home" :tag ("HOME") :order -1)
+                                 (:name "Untagged" :order -3 :anything))))))
+   ((org-agenda-hide-tags-regexp "BACKLOG")
+    (org-agenda-files (--map (f-join org-directory it) '("GTD.org"))))))
+#+END_SRC
+
 ***** Emacs
 
 #+BEGIN_SRC elisp
