@@ -1221,6 +1221,18 @@ Adds general bindings to ivy.
   (interactive)
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
 #+END_SRC
+**** Hacks
+***** Fix case-insensitive wgrep
+
+#+BEGIN_SRC elisp
+(after! ivy
+  (defadvice! respect-case-fold-search (args)
+    :filter-return #'counsel--ag-extra-switches
+    (concat args (pcase ivy-case-fold-search
+                   (`auto " -S ")
+                   (`t " -i ")
+                   (`nil " -s ")))))
+#+END_SRC
 
 *** Javascript
 **** Config
