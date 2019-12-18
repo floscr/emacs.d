@@ -4,7 +4,6 @@
  (company
   +childframe)
  (ivy
-  +fuzzy
   +childframe)
 
  :ui
