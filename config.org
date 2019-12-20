@@ -747,6 +747,18 @@ ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline
 
 (add-hook 'set-language-environment-hook 'flyspell-set-language-environment)
 #+END_SRC
+*** Irc
+
+#+BEGIN_SRC elisp
+(set-irc-server! "chat.freenode.net"
+  `(:tls t
+    :port 6697
+    :nick "floscr"
+    :sasl-username ,(+pass-get-user "Irc/freenode.net")
+    :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
+    :channels ("#emacs" "#nixos")))
+#+END_SRC
+
 *** Blimp
 
 #+BEGIN_SRC elisp
