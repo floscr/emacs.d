@@ -747,7 +747,7 @@ ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline
 
 (add-hook 'set-language-environment-hook 'flyspell-set-language-environment)
 #+END_SRC
-*** Irc
+*** IRC
 
 #+BEGIN_SRC elisp
 (set-irc-server! "chat.freenode.net"
@@ -2757,6 +2757,14 @@ redefines its keys every time `eshell-mode' is enabled."
       :localleader
       :desc "Eval Region"  "e" #'sh-execute-region
       :desc "Eval Region"  "E" #'executable-interpret)
+#+END_SRC
+
+**** Reasonml
+
+#+BEGIN_SRC elisp
+(map! :map reason-mode-map
+      :localleader
+      :desc "Eval Region"  "r" #'refmt)
 #+END_SRC
 
 **** Mail
