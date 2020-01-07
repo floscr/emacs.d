@@ -159,7 +159,7 @@ to tide."
   :defer t
   :config
   (setq tide-completion-detailed t
-        tide-always-show-documentation t)
+        tide-always-show-documentation nil)
   ;; code completion
   (after! company
     ;; tide affects the global `company-backends', undo this so doom can handle
