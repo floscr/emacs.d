@@ -914,7 +914,8 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
  '("w" "Work Agenda"
-   ((agenda "a" ((org-agenda-sorting-strategy '(deadline-up user-defined-down timestamp-down time-down))
+   ((agenda "a" ((org-agenda-skip-scheduled-if-done t)
+                 (org-agenda-sorting-strategy '(todo-state-up deadline-up user-defined-down timestamp-down time-down))
                  (org-agenda-span 3)
                  (org-agenda-start-on-weekday t)
                  (org-agenda-show-all-dates nil)
