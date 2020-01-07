@@ -47,6 +47,7 @@
  rgb
  pdf
  flyspell
+ pass
  (flycheck +childframe)
  lsp
 
