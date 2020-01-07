@@ -60,7 +60,7 @@
  purescript
  markdown
  ocaml
- haskell
+ ;; haskell
  (org
   +dragndrop
   +present)
