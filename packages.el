@@ -53,3 +53,4 @@
 
 ;; Disabled packages
 (package! lsp-ui :disable t)         ;; Annoying LSP Interface
+(package! merlin-eldoc :disable t)         ;; Annoying LSP Interface
