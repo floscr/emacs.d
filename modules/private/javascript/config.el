@@ -186,8 +186,6 @@ to tide."
 
   (map! :localleader
         :map tide-mode-map
-        "R"   #'tide-restart-server
-        "f"   #'tide-format
         "rrs" #'tide-rename-symbol
         "roi" #'tide-organize-imports))
 
