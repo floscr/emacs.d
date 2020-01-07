@@ -23,14 +23,14 @@
              (to (org-element-property :end new-block)))
         (delete-region from to)))))
 
-;; (use-package! flycheck-ocaml
-;;  :after (flycheck merlin)
-;;  :commands
-;;  (flycheck-ocaml-setup)
-;;  :config
-;;  (with-eval-after-load 'merlin
-;;    ;; Enable flycheck checker
-;;    (flycheck-ocaml-setup)))
+(use-package! flycheck-ocaml
+ :after (flycheck merlin)
+ :commands
+ (flycheck-ocaml-setup)
+ :config
+ (with-eval-after-load 'merlin
+   ;; Enable flycheck checker
+   (flycheck-ocaml-setup)))
 
 (use-package merlin
   :after (reason-mode)
@@ -82,6 +82,7 @@
   (add-hook
    'reason-mode-hook
    (lambda ()
+     (merlin-eldoc-disable)
      (setq utop-command "opam config exec -- rtop -emacs")
      (add-hook 'before-save-hook 'refmt-before-save)
      (add-hook 'reason-mode-hook 'merlin-mode)
