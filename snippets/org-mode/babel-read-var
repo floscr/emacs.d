@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Input Variable for Babel Block
+# key: :i
+# --
+:var ${1:$(s-snake-case yas-text)}=(read-string "${1:Input}: ")
