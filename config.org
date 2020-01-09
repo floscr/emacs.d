@@ -2384,6 +2384,22 @@ Works with motions
 (map! :n "gb" #'evil-switch-to-windows-last-buffer)
 #+END_SRC
 
+**** Select last paste
+:PROPERTIES:
+:SOURCE:   https://emacs.stackexchange.com/a/21093
+:END:
+
+#+BEGIN_SRC elisp
+(defun +evil|select-pasted ()
+  (interactive)
+  (let ((start-marker (evil-get-marker ?\[))
+        (end-marker (evil-get-marker ?\])))
+    (evil-visual-select start-marker end-marker)))
+
+(map! :n "gp" #'+evil|select-pasted)
+#+END_SRC
+
+
 *** Evil Text Objects
 
 Custom evil text objects mostly stolen from [[https://github.com/jerryxgh/lambda-x/blob/master/lambda-evil.el#L236][Spacemacs|define-text-object-regexp]].
