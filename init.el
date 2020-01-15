@@ -48,7 +48,6 @@
  (lookup +devdocs +docsets +dictionary)
  eval
  editorconfig
- macos
  magit
  rgb
  pdf
