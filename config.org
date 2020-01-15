@@ -88,22 +88,6 @@ Used for getting the last screenshot to attach to an [[file:modules/private/org/
 (defun file-timestamp (f) (let ((attrs (file-attributes f))) (nth 5 attrs)))
 #+END_SRC
 
-**** Reveal in Finder
-
-Open and select the current file/dired-selection in finder.
-
-#+BEGIN_SRC elisp
-(defun +macos|reveal-in-finder ()
-  "Reveal the current file in finder and select it."
-  (interactive)
-  (let ((file-name (or buffer-file-name (dired-get-filename))))
-    (do-applescript (concat
-                     "tell application \"Finder\"\n"
-                     "    activate\n"
-                     "    reveal POSIX file \"" file-name "\"\n"
-                     "end tell"))))
-#+END_SRC
-
 *** Hydras
 **** Hydra Expand Region
 :PROPERTIES:
@@ -122,24 +106,6 @@ Double press ~v~ to enable.
 
 (evil-define-key 'visual 'global (kbd "v") #'hydra-expand-region/body)
 #+END_SRC
-*** Mac Helpers
-**** Hide Others
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/12998/how-to-bind-hide-others-to-a-key-m-s-h-in-railwaycat-emacs-mac-port][key bindings - How to bind \"Hide Others\" to a key \"M-s-h\" in railwaycat/emacs-mac-port? - Emacs Stack Exchange]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun +mac|hide-others ()
-  "On a Mac, hide all applications other than Emacs and the frontmost
-application."
-  (interactive)
-  (do-applescript (concat "tell application \"System Events\" to "
-                          "set visible of every process whose visible is true "
-                          "and name is not \"Emacs\" "
-                          "and frontmost is false to "
-                          "false")))
-#+END_SRC
-
 ** UI
 *** Frame padding
 
@@ -2221,7 +2187,6 @@ Other Bindings for multi-edit:
 (map!
  (:map override
    :gniv "s-;" #'eval-expression
-   :gniv "s-A-h" #'+mac|hide-others
    :gniv "s-a" #'mark-whole-buffer
    :gniv "s-f" #'counsel-grep-or-swiper
    :gniv "s-s" #'save-buffer
