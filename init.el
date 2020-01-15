@@ -16,6 +16,7 @@
  vi-tilde-fringe
  window-select
  workspaces
+ zen
 
  :email
  (mu4e +gmail)
@@ -38,17 +39,20 @@
  electric
  vc
 
+ :checkers
+ (syntax +childframe)
+ spell
+ grammar
+
  :tools
- (lookup +devdocs +docsets)
+ (lookup +devdocs +docsets +dictionary)
  eval
  editorconfig
  macos
  magit
  rgb
  pdf
- flyspell
  pass
- (flycheck +childframe)
  ;; lsp
 
  :lang
@@ -68,7 +72,6 @@
 
  :app
  irc
- writeme
  calendar
 
  :config
