@@ -11,6 +11,7 @@
 *** Required Packages
 
 Packages and utilities needed for this config.
+
 - [[https://github.com/magnars/dash.el][magnars/dash.el: List Manipulation]]
 - [[https://github.com/magnars/s.el][magnars/s.el: String Manipulation]]
 
@@ -19,9 +20,9 @@ Packages and utilities needed for this config.
 (require 's)
 #+END_SRC
 
-*** Additional packages (EmacsWiki)
+*** Load additional packages
 
-straight.el doesnt accept these as packages, so I have to manage them manually.
+~straight.el~ doesn't accept EmacsWiki as a source, so I'm loading them manually.
 
 #+BEGIN_SRC elisp
 (add-to-list 'load-path "~/.config/doom/packages")
@@ -1586,7 +1587,7 @@ npm i -g json-fix
 *** LSP
 **** Disable LSP hover
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (use-package! lsp-mode
   :config
   (setq lsp-eldoc-render-all nil
@@ -2277,7 +2278,6 @@ Other Bindings for multi-edit:
 #+BEGIN_SRC elisp
 (map! :nm "C-z" nil)
 #+END_SRC
-
 
 *** Osx / Mac Modifier Bindings
 
