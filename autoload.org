@@ -60,6 +60,104 @@ Packages and utilities needed for this config.
 (defun noop (&optional args) nil)
 #+END_SRC
 
+** Kill and Message
+
+#+BEGIN_SRC elisp
+(defun copy-message (x)
+  "Executes kill-new but with a message log side effect."
+  (kill-new x)
+  (message "Copied to clipboard: %s" x))
+#+END_SRC
+
+** Run current file
+:PROPERTIES:
+:SOURCE:   http://ergoemacs.org/emacs/emacs.html
+:END:
+
+#+BEGIN_SRC elisp
+(defun run-current-file ()
+  "Execute or compile the current file.
+For example, if the current buffer is the file x.pl,
+then it'll call “perl x.pl” in a shell.
+The file can be php, perl, python, ruby, javascript, bash, ocaml, vb, elisp.
+File suffix is used to determine what program to run.
+
+If the file is modified, ask if you want to save first. (This command always run the saved version.)
+
+If the file is emacs lisp, run the byte compiled version if exist."
+  (interactive)
+  (let (suffixMap fName fSuffix progName cmdStr)
+
+    ;; a keyed list of file suffix to comand-line program path/name
+    (setq suffixMap
+          '(("php" . "php")
+            ;; ("coffee" . "coffee -p")
+            ("pl" . "perl")
+            ("py" . "python")
+            ("rb" . "ruby")
+            ("js" . "node")             ; node.js
+            ("sh" . "bash")
+            ("ml" . "ocaml")
+            ("vbs" . "cscript")))
+    (setq fName (buffer-file-name))
+    (setq fSuffix (file-name-extension fName))
+    (setq progName (cdr (assoc fSuffix suffixMap)))
+    (setq cmdStr (concat progName " \""   fName "\""))
+
+    (when (buffer-modified-p)
+      (progn
+        (when (y-or-n-p "Buffer modified. Do you want to save first?")
+          (save-buffer))))
+
+    (if (string-equal fSuffix "el") ; special case for emacs lisp
+        (progn
+          (load (file-name-sans-extension fName)))
+      (if progName
+          (progn
+            (message "Running…")
+            ;; (message progName)
+            (shell-command cmdStr "*run-current-file output*"))
+        (message "No recognized program file suffix for this file.")))))
+#+END_SRC
+
+** Shuffle List
+:PROPERTIES:
+:SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun swap-list-items (LIST el1 el2)
+  "in LIST swap indices EL1 and EL2 in place"
+  (let ((tmp (elt LIST el1)))
+    (setf (elt LIST el1) (elt LIST el2))
+    (setf (elt LIST el2) tmp)))
+
+(defun -shuffle (LIST)
+  "Shuffle the elements in LIST.
+shuffling is done in place."
+  (loop for i in (reverse (number-sequence 1 (1- (length LIST))))
+        do (let ((j (random (+ i 1))))
+             (swap-list-items LIST i j)))
+  LIST)
+#+END_SRC
+** Eval and Replace sexp
+:PROPERTIES:
+:SOURCE:   https://emacsredux.com/blog/2013/06/21/eval-and-replace/
+:END:
+
+#+BEGIN_SRC elisp
+(defun eval-and-replace-sexp ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (right-char) ;; Fix for normal mode
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+#+END_SRC
+
 ** Display
 *** DPI
 #+BEGIN_SRC elisp
