@@ -51,15 +51,6 @@ And I will load them on system start:
 
 ** Utilities
 *** General Helpers
-**** Run JXA scripts
-
-#+BEGIN_SRC elisp
-(defun do-jxa-script (cmd)
-  "Run a osx javascript automation script via bash."
-  (shell-command-to-string
-   (concat "osascript -l 'JavaScript' -e '" cmd "'")))
-#+END_SRC
-
 **** Eval and Replace sexp
 :PROPERTIES:
 :SOURCE:   https://emacsredux.com/blog/2013/06/21/eval-and-replace/

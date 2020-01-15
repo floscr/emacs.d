@@ -122,23 +122,6 @@
   (+org/copy-as-markdown t))
 #+END_SRC
 
-*** Grab Tablist from Chrome
-
-#+BEGIN_SRC elisp
-(defun +org|grab-chrome-tabs ()
-  "Grab all the chrome tabs as an org list."
-  (interactive)
-  (let ((tabs
-         (do-jxa-script
-          (concat
-           "Application(\"Chrome\").windows[0].tabs()"
-           ".map(tab => `"
-           "- [[${tab.url()}][${tab.title()}]]"
-           "`)"
-           ".join(\"\\n\")"))))
-    (insert tabs)))
-#+END_SRC
-
 *** Org Attach
 **** Download
 
