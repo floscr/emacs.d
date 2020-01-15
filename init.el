@@ -73,6 +73,7 @@
  calendar
 
  :config
+ literate
  (default +bindings +snippets +evil-commands)
 
  :private
