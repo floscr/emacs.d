@@ -8,18 +8,6 @@
 
 * Configuration
 ** External Files
-*** Required Packages
-
-Packages and utilities needed for this config.
-
-- [[https://github.com/magnars/dash.el][magnars/dash.el: List Manipulation]]
-- [[https://github.com/magnars/s.el][magnars/s.el: String Manipulation]]
-
-#+BEGIN_SRC elisp
-(require 'dash)
-(require 's)
-#+END_SRC
-
 *** Load additional packages
 
 ~straight.el~ doesn't accept EmacsWiki as a source, so I'm loading them manually.
@@ -30,22 +18,22 @@ Packages and utilities needed for this config.
 
 *** Secrets
 
-Config that I don't want to share with the world.
+Config files that I don't want to share with the world.
 
 They will be stored in here:
 
 #+BEGIN_SRC elisp
-(setq secrets-file "~/.config/secrets.el")
+(setq my-secrets-config-file "~/.config/secrets.el")
 #+END_SRC
 
 And I will load them on system start:
 
 #+BEGIN_SRC elisp
-(defun floscr/load-secrets-file ()
-  (if-let ((file (if (file-exists-p secrets-file) secrets-file)))
-      (load-library file)))
+(defun my-load-secrets-config ()
+  (if-let ((file (if (file-exists-p my-secrets-config-file) my-secrets-config-file)))
+      (load-library my-secrets-config-file)))
 
-(floscr/load-secrets-file)
+(my-load-secrets-config)
 #+END_SRC
 
 ** Essentials
@@ -63,12 +51,6 @@ And I will load them on system start:
 
 ** Utilities
 *** General Helpers
-**** Noop
-
-#+BEGIN_SRC elisp
-(defun noop (&optional args) nil)
-#+END_SRC
-
 **** Run JXA scripts
 
 #+BEGIN_SRC elisp
@@ -459,6 +441,7 @@ Macro Expansion
 
 #+BEGIN_SRC elisp
 (setq-default fill-column 110)
+(setq fill-column 110)
 (setq visual-fill-column-width fill-column)
 
 (setq visual-fill-column-center-text t
@@ -758,7 +741,7 @@ ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline
     :sasl-username ,(+pass-get-user "Irc/freenode.net")
     :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
     :channels ("#emacs" "#nixos")))
-#+END_SRC
+#+End_SRC
 
 *** Blimp
 
@@ -1234,6 +1217,51 @@ Adds general bindings to ivy.
   (interactive)
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
 #+END_SRC
+**** Counsel Files
+
+#+BEGIN_SRC elisp
+(defun +ivy|search-buffers ()
+  "Grep workspace buffers."
+  (interactive)
+  (-->
+   (+workspace-buffer-list)
+   (cl-remove-if-not #'buffer-file-name it)
+   (-map #'buffer-file-name it)
+   (-map #'shell-quote-argument it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun counsel-grep-files (buffer-file-names)
+  "Grep for a string in the file visited by the current buffer."
+  (interactive)
+  (counsel-require-program counsel-grep-base-command
+   (setq counsel-grep-command
+         (format counsel-grep-base-command "%s" buffer-file-names))
+   (message "%s" counsel-grep-command)
+   (let ((init-point (point))
+         res)
+     (unwind-protect
+         (setq res (ivy-read "grep: " #'counsel-grep-function
+                             :dynamic-collection t
+                             :require-match t
+                             :preselect
+                             (when (< (- (line-end-position) (line-beginning-position)) 300)
+                               (format "%d:%s"
+                                       (line-number-at-pos)
+                                       (regexp-quote
+                                        (buffer-substring-no-properties
+                                         (line-beginning-position)
+                                         (line-end-position)))))
+                             :keymap counsel-grep-map
+                             :history 'counsel-grep-history
+                             :re-builder #'ivy--regex
+                             :action #'counsel-grep-action
+                             :caller 'counsel-grep))
+       (unless res
+         (goto-char init-point))))))
+#+END_SRC
+
+
 **** Hacks
 ***** Fix case-insensitive wgrep
 
@@ -1836,6 +1864,15 @@ Fixes evil window navigation for magit special buffers
    :n "C-h" #'evil-window-left
    :n "C-l" #'evil-window-right))
 #+END_SRC
+***** Time Machine Navigation
+
+#+BEGIN_SRC elisp
+(map!
+ :map git-timemachine-mode-map
+ :n "[[" #'git-timemachine-show-previous-revision
+ :n "]]" #'git-timemachine-show-previous-revision)
+#+END_SRC
+
 
 **** Transient
 
@@ -1995,6 +2032,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                                      (unpackaged/smerge-hydra/body)))))
 #+END_SRC
 
+*** TagEdit
 *** Workspaces
 **** Config
 ***** Always create workspace when switching to project
@@ -2128,6 +2166,12 @@ Fix buffers not being added to the current workspace.
   (interactive)
   (call-interactively #'company-yasnippet)
   (company-complete-selection))
+#+END_SRC
+*** Babel Async
+
+#+BEGIN_SRC elisp
+(use-package! ob-async
+  :after org-babel)
 #+END_SRC
 
 ** General Config

@@ -6,6 +6,18 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
+* Required Packages
+
+Packages and utilities needed for this config.
+
+- [[https://github.com/magnars/dash.el][magnars/dash.el: List Manipulation]]
+- [[https://github.com/magnars/s.el][magnars/s.el: String Manipulation]]
+
+#+BEGIN_SRC elisp
+(require 'dash)
+(require 's)
+#+END_SRC
+
 * Macros
 ** Aliases
 
@@ -41,7 +53,13 @@
         `(format ,(buffer-string) ,@(reverse (mapcar 'read matches)))))))
 #+END_SRC
 
-* Utilities
+* General Utils
+** Noop
+
+#+BEGIN_SRC elisp
+(defun noop (&optional args) nil)
+#+END_SRC
+
 ** Display
 *** DPI
 #+BEGIN_SRC elisp
