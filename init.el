@@ -42,7 +42,6 @@
  :checkers
  (syntax +childframe)
  spell
- grammar
 
  :tools
  (lookup +devdocs +docsets +dictionary)
