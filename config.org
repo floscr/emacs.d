@@ -1942,9 +1942,9 @@ Set it to ~32 MiB~.
 *** Bookmarks
 
 #+BEGIN_SRC elisp
-(setq bookmark-default-file "~/Documents/Temp/bookmarks")
-(setq bookmark-file bookmark-default-file)
-(setq bookmark-old-default-file bookmark-default-file)
+(setq bookmark-default-file "~/Documents/Temp/bookmarks"
+      bookmark-file bookmark-default-file
+      bookmark-old-default-file bookmark-default-file)
 #+END_SRC
 
 **** Automatically Save Bookmarks
