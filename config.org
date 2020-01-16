@@ -2310,10 +2310,10 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- :n "'"  #'+popup/toggle
- :n "au" #'undo-tree-visualize
- :n "//" #'+default/search-project
- :n "-"  #'quick-calc)
+ "'"  #'+popup/toggle
+ "au" #'undo-tree-visualize
+ "//" #'+default/search-project
+ "-"  #'quick-calc)
 #+END_SRC
 
 **** Buffer
@@ -2321,8 +2321,8 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "buffer" :prefix "b"
-   :desc "Rename Buffer" :n "r" #'rename-buffer))
+ (:prefix-map ("b" . "buffer")
+   :desc "Rename Buffer"  "r" #'rename-buffer))
 #+END_SRC
 
 **** File
@@ -2330,7 +2330,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "file" :prefix "f"
+ (:prefix-map ("f" . "file")
    :desc "Open Private Config" "P" (λ! (find-file (f-join doom-private-dir "config.org")))))
 #+END_SRC
 
@@ -2339,19 +2339,19 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "git" :prefix "g"
-   :desc "Worktree Popup"              :n "%" #'magit-worktree
-   :desc "Amend Commit (No Message)"   :n "A" (λ! (magit-commit-amend "--no-edit"))
-   :desc "Blame"                       :n "B" #'magit-blame
-   :desc "Changed Files"               :n "F" #'+git|ivy-changed-files
-   :desc "New Branch"                  :n "N" #'magit-branch-spinoff
-   :desc "Show revision original File" :n "O" #'magit-revision-show-original-file
-   :desc "Map-editor Changed Files"    :n "T" (λ! (+git|ivy-changed-files "map-editor"))
-   :desc "Amend Commit"                :n "a" #'magit-commit-amend
-   :desc "Checkout"                    :n "b" #'magit-checkout
-   :desc "Diff"                        :n "d" #'magit-diff
-   :desc "Push"                        :n "p" #'magit-push
-   :desc "Undo"                        :n "u" #'+git|undo))
+ (:prefix-map ("g" . "git")
+   :desc "Worktree Popup"              "%" #'magit-worktree
+   :desc "Amend Commit (No Message)"   "A" (λ! (magit-commit-amend "--no-edit"))
+   :desc "Blame"                       "B" #'magit-blame
+   :desc "Changed Files"               "F" #'+git|ivy-changed-files
+   :desc "New Branch"                  "N" #'magit-branch-spinoff
+   :desc "Show revision original File" "O" #'magit-revision-show-original-file
+   :desc "Map-editor Changed Files"    "T" (λ! (+git|ivy-changed-files "map-editor"))
+   :desc "Amend Commit"                "a" #'magit-commit-amend
+   :desc "Checkout"                    "b" #'magit-checkout
+   :desc "Diff"                        "d" #'magit-diff
+   :desc "Push"                        "p" #'magit-push
+   :desc "Undo"                        "u" #'+git|undo))
 #+END_SRC
 
 **** Insert
@@ -2359,8 +2359,8 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "insert" :prefix "i"
-   :desc "Killring"   :n  "y" #'helm-show-kill-ring))
+ (:prefix-map ("i" . "insert")
+   :desc "Killring"       "y" #'helm-show-kill-ring))
 #+END_SRC
 
 **** Open
@@ -2369,12 +2369,9 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 (map!
  :leader
  (:desc "open" :prefix "o"
-   :desc "Eshell in Current Dir"        :n "." (λ! (+eshell/open t))
-   :desc "Eshell Popup in Current Dir"  :n ">" (λ! (+eshell/open t))
    :desc "Mail"                         :g "m" #'=mu4e
    :desc "Calendar"                     :g "c" #'=calendar
-   :desc "Calc"                         :g "C" #'calc
-   :desc "Org Web Chrome"               :g "p" #'+org-web-tools|read-url-from-chrome))
+   :desc "Calc"                         :g "C" #'calc))
 #+END_SRC
 
 **** Projects
@@ -2382,9 +2379,8 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "project" :prefix "p"
-   :desc "services" :n  "s" #'prodigy
-   :desc "Workspace Project Files" :n  "P" #'+workspace|find-workspace-project-file))
+ (:prefix-map ("p" . "project")
+   :desc "Workspace Project Files"     "P" #'+workspace|find-workspace-project-file))
 #+END_SRC
 
 **** Toggle
@@ -2392,8 +2388,8 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "toggle" :prefix "t"
-   :desc "Theme Dark/Light" :n  "t" #'+doom|toggle-theme))
+ (:prefix-map ("t" . "toggle")
+   :desc "Theme Dark/Light"     "t" #'+doom|toggle-theme))
 #+END_SRC
 
 **** Window
@@ -2401,14 +2397,15 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "window" :prefix "w"
-  :desc  "Split Vertical"   :n  "|"    #'evil-window-vsplit
-  :desc  "Split Horizontal" :n  "_"    #'evil-window-split
-  :desc  "Split Horizontal" :n  "_"    #'evil-window-split
-  :desc  "Set Height"       :n  "C-_"    #'evil-window-set-height
-  :desc  "Set Height"       :n  "C-|"    #'evil-window-set-width
-  :desc  "Swap"             :n  "SPC"  #'ace-swap-window
-  :desc "Toggle Locked" :n "#" #'toggle-window-dedicated))
+ :desc  "Split Vertical"        "|"    #'evil-window-vsplit
+ :desc  "Split Horizontal"      "-"    #'evil-window-split
+ (:prefix-map ("w" . "window")
+  :desc  "Split Vertical"       "|"    #'evil-window-vsplit
+  :desc  "Split Horizontal"     "_"    #'evil-window-split
+  :desc  "Set Height"           "C-_"  #'evil-window-set-height
+  :desc  "Set Height"           "C-|"  #'evil-window-set-width
+  :desc  "Swap"                 "SPC"  #'ace-swap-window
+  :desc "Toggle Locked"         "#"    #'toggle-window-dedicated))
 #+END_SRC
 
 **** Workspace
@@ -2431,12 +2428,12 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 #+BEGIN_SRC elisp
 (map!
   :leader
-  (:desc "Yank" :prefix "y"
-    :desc "filename"                     :n "f" (λ! (copy-message (file-name-nondirectory buffer-file-name)))
-    :desc "base"                         :n "b" (λ! (copy-message (file-name-base (or buffer-file-name dired-directory))))
-    :desc "directory"                    :n "d" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
-    :desc "path"                         :n "p" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
-    :desc "relative to propject project" :n "r" (λ! (copy-message (s-replace (projectile-project-root) "" (or buffer-file-name dired-directory))))))
+  (:prefix-map ("y" . "Yank")
+    :desc "filename"                        "f" (λ! (copy-message (file-name-nondirectory buffer-file-name)))
+    :desc "base"                            "b" (λ! (copy-message (file-name-base (or buffer-file-name dired-directory))))
+    :desc "directory"                       "d" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
+    :desc "path"                            "p" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
+    :desc "relative to propject project"    "r" (λ! (copy-message (s-replace (projectile-project-root) "" (or buffer-file-name dired-directory))))))
 #+END_SRC
 
 *** Little Word Motion
