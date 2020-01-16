@@ -2116,7 +2116,8 @@ Works with motions
 
   (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
   (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
-  (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket))
+  (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket)
+  (define-key evil-inner-text-objects-map "B" 'evil-inner-curly))
 #+END_SRC
 
 **** Go up one directory from the current buffer
