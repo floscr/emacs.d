@@ -2325,16 +2325,6 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Rename Buffer" :n "r" #'rename-buffer))
 #+END_SRC
 
-**** Code
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:desc "code" :prefix "c"
-   :desc "Compile" "c" #'compile
-   :desc "Compile (with last command)" "C" (λ! (compile (car compile-history)))))
-#+END_SRC
-
 **** File
 
 #+BEGIN_SRC elisp
