@@ -616,10 +616,13 @@ error in process filter: End of buffer
 #+END_EXAMPLE
 
 #+BEGIN_SRC elisp
-(map! :map comint-mode-map
-      :ni "RET" (λ! (comint-send-input nil t))
-      :n "<C-backspace>" #'comint-clear-buffer)
+(map!
+ :after comint
+ :map comint-mode-map
+ :ni "RET" (λ! (comint-send-input nil t))
+ :n "<C-backspace>" #'comint-clear-buffer)
 #+END_SRC
+
 *** Company
 **** Config
 ***** Sort company by occurance
