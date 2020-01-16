@@ -96,28 +96,3 @@
  user-mail-address "flo.schroedl@gmail.com"
  user-full-name "Florian Schrödl"
  max-specpdl-size 10000)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   (quote
-    ("/home/floscr/Documents/Org/inbox.org" "/home/floscr/Documents/Org/GTD.org" "/home/floscr/Documents/Org/calendar-family.org" "/home/floscr/Documents/Org/Work/work.org")))
- '(safe-local-variable-values (quote ((+MM-Web-mode 1)))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(all-the-icons-dired-dir-face ((t (:foreground "#80899E"))))
- '(diredfl-date-time ((t (:foreground "#49505F"))))
- '(diredfl-dir-name ((t (:foreground "#2DADF2"))))
- '(diredfl-dir-priv ((t (:foreground "#282C34"))))
- '(diredfl-exec-priv ((t (:foreground "#80899E"))))
- '(diredfl-k-modified ((t (:foreground "#FF8E90"))))
- '(diredfl-number ((t (:foreground "#80899E"))))
- '(diredfl-other-priv ((t (:foreground "#80899E"))))
- '(diredfl-read-priv ((t (:foreground "#80899E"))))
- '(diredfl-write-priv ((t (:foreground "#80899E"))))
- '(mu4e-highlight-face ((t (:inherit mu4e-unread-face)))))
