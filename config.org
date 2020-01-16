@@ -759,6 +759,7 @@ But at some time I want to purge those buffers"
 
 (map! :after dired
       :map dired-mode-map
+      :n "q" (λ! (kill-buffer))
       :n "Q" #'+dired|kill-dired-buffers)
 #+END_SRC
 
