@@ -2011,14 +2011,6 @@ Automatically set mode for specific filenames.
 (add-to-list 'auto-mode-alist '("Brewfile" . shell-script-mode))
 #+END_SRC
 
-*** Save Hist Mode
-
-Save the command history between sessions.
-
-#+BEGIN_SRC elisp
-(savehist-mode 1)
-#+END_SRC
-
 *** Automatically reload tags files
 
 #+BEGIN_SRC elisp
