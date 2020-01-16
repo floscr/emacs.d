@@ -2480,7 +2480,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Switch to 7th workspace"  "7"   (λ! (+workspace/switch-to 6))
    :desc "Switch to 8th workspace"  "8"   (λ! (+workspace/switch-to 7))
    :desc "Switch to 9th workspace"  "9"   (λ! (+workspace/switch-to 8))
-   :desc "Switch to last workspace" "0"   #'+workspace/switch-to-last))
+   :desc "Switch to last workspace" "0"   #'+workspace/other))
 #+END_SRC
 
 **** Yank
