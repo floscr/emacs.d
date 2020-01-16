@@ -123,25 +123,47 @@ This will be disabled in terminal mode.
 #+END_SRC
 
 #+BEGIN_SRC elisp
-(defun my-set-font (size line-space &optional font-family)
-  (interactive)
+(defun +ui/get-display-dpi (&optional display)
+  "Get the DPI of DISPLAY.
+DISPLAY is a display name, frame or terminal, as in
+`display-monitor-attributes-list'."
+  (cl-flet ((pyth (lambda (w h)
+                    (sqrt (+ (* w w)
+                             (* h h)))))
+            (mm2in (lambda (mm)
+                     (/ mm 25.4))))
+    (let* ((atts (frame-monitor-attributes))
+           (pix-w (cl-fourth (assoc 'geometry atts)))
+           (pix-h (cl-fifth (assoc 'geometry atts)))
+           (pix-d (pyth pix-w pix-h))
+           (mm-w (cl-second (assoc 'mm-size atts)))
+           (mm-h (cl-third (assoc 'mm-size atts)))
+           (mm-d (pyth mm-w mm-h)))
+      (/ pix-d (mm2in mm-d)))))
+
+(defun +ui/adjust-font (size line-space &optional font-family)
   (let* ((font-family (or font-family)))
     (setq-default line-spacing line-space)
     (setq-default doom-font (font-spec :family font-family :size size))
     (message "reload frame")
     (doom/reload-font)))
 
-(cond
- ((string= system-name "Florians-iMac.local")
-  (my-set-font-size 14 10 "Menlo"))
- ((string= system-name "thinknix")
-  (if (eq (round (my-dpi)) 158)
-      ;; Internal Screen
-      (my-set-font 15 7)
-    ;; HiDPI External
-    (my-set-font 18 9)))
- ((string= system-name "Florians-MacBook-Air.local")
-  (my-set-font-size 14 10 "Menlo")))
+(defun +ui|adjust-ui-to-display ()
+  "Adjust the UI to the current attached display."
+  (interactive)
+  (cond
+   ((string= system-name "Florians-iMac.local")
+    (+ui/adjust-font 14 10 "Menlo"))
+   ((string= system-name "thinknix")
+    (if (eq (round (+ui/get-display-dpi)) 158)
+        ;; Internal Screen
+        (+ui/adjust-font 15 7)
+      ;; HiDPI External
+      (+ui/adjust-font 18 9)))
+   ((string= system-name "Florians-MacBook-Air.local")
+    (+ui/adjust-font 14 10 "Menlo"))))
+
+(+ui|adjust-ui-to-display)
 #+END_SRC
 
 #+BEGIN_SRC elisp

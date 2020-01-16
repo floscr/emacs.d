@@ -158,28 +158,6 @@ shuffling is done in place."
            (insert (current-kill 0)))))
 #+END_SRC
 
-** Display
-*** DPI
-#+BEGIN_SRC elisp
-(defun my-dpi (&optional display)
-  "Get the DPI of DISPLAY.
-DISPLAY is a display name, frame or terminal, as in
-`display-monitor-attributes-list'."
-  (cl-flet ((pyth (lambda (w h)
-                    (sqrt (+ (* w w)
-                             (* h h)))))
-            (mm2in (lambda (mm)
-                     (/ mm 25.4))))
-    (let* ((atts (frame-monitor-attributes))
-           (pix-w (cl-fourth (assoc 'geometry atts)))
-           (pix-h (cl-fifth (assoc 'geometry atts)))
-           (pix-d (pyth pix-w pix-h))
-           (mm-w (cl-second (assoc 'mm-size atts)))
-           (mm-h (cl-third (assoc 'mm-size atts)))
-           (mm-d (pyth mm-w mm-h)))
-      (/ pix-d (mm2in mm-d)))))
-#+END_SRC
-
 ** Buffer
 *** Check current line for regex
 
