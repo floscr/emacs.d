@@ -785,17 +785,6 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
 #+END_SRC
 
 **** Extensions
-***** Dired Recent
-
-#+BEGIN_SRC elisp
-(use-package! dired-recent
-  :after dired
-  :config
-  (setq dired-recent-directories-file (concat doom-cache-dir "recentdir")
-        dired-recent-max-directories 300)
-  (dired-recent-mode 1))
-#+END_SRC
-
 ***** Dired Narrow
 
 [[https://github.com/Fuco1/dired-hacks#dired-narrow][Dired Narrow]] allows narrowing a dired buffer to a subselection.
@@ -2440,16 +2429,6 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  (:desc "code" :prefix "c"
    :desc "Compile" "c" #'compile
    :desc "Compile" "C" (λ! (compile (car compile-history)))))
-#+END_SRC
-
-**** Dir
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:desc "dir" :prefix "d"
-   :desc "find in literate config file" :n  "r" #'dired-recent-open
-   :desc "Project Root"                 :n  "p" #'projectile-dired))
 #+END_SRC
 
 **** File

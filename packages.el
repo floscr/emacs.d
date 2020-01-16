@@ -44,7 +44,6 @@
 
 ;; (package! narrow-indirect :recipe (:host emacswiki :files ("narrow-indirect.el")))
 
-(package! dired-recent)
 (package! dired-narrow)
 (package! dired-subtree)
 (package! dired-filter)
