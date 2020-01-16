@@ -1567,11 +1567,10 @@ Browse the current thing at point for git
 **** Config
 
 #+BEGIN_SRC elisp
-(setq-default magit-save-repository-buffers 'dontask)
-
 (after! magit
   :config
   (setq
+   magit-save-repository-buffers 'dontask
    magithub-clone-default-directory "~/Code/Repositories"
    git-commit-summary-max-length 120))
 #+END_SRC
