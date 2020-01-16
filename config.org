@@ -584,53 +584,6 @@ plays a sound and prompts me to insert my count.
 #+END_SRC
 
 ** Package Config
-*** TODO Spelling
-
-Flycheck with ~hunspell~ (which supports other languages better than the default ~ispell~)
-
-With the latest brew update hunspell might be broken, here is how you fix it:
-
-#+BEGIN_SRC bash :tangle no
-ln -fs /usr/local/opt/readline/lib/libreadline.8.0.dylib /usr/local/opt/readline/lib/libreadline.7.dylib
-#+END_SRC
-
-#+RESULTS:
-
-#+BEGIN_SRC elisp :tangle no
-(defun +flyspell|save-word ()
-  "Save the current word to dictionary"
-  (interactive)
-  (let* ((current-location (point))
-         (word (flyspell-get-word)))
-    (when (consp word)
-      (flyspell-do-correct 'save nil (car word) current-location (cadr word) (caddr word) current-location))))
-
-(after! flyspell
-  (cond
-   ((executable-find "hunspell")
-
-    ;; For the switching, "german" has to be also in this alist
-    (add-to-list 'ispell-hunspell-dict-paths-alist (list "german" (expand-file-name "~/Library/Spelling/de_AT.aff")))
-
-    (setq ispell-program-name "hunspell"
-          ispell-local-dictionary "en_US"
-          ispell-really-hunspell t
-          ispell-local-dictionary-alist
-                  ;; Please note the list `("-d" "en_US")` contains ACTUAL parameters passed to hunspell
-                  ;; You could use `("-d" "en_US,en_US-med")` to check with multiple dictionaries
-                  '(("english" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "personal,en_US") nil utf-8)
-                    ("german"  "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "personal,de_AT") nil utf-8))))))
-
-(defun flyspell-set-language-environment ()
-  "Change flyspell language based on the language environment"
-  (cond
-   ((string= "English" current-language-environment)
-    (setq ispell-local-dictionary "english"))
-   ((string= "German" current-language-environment)
-    (setq ispell-local-dictionary "german"))))
-
-(add-hook 'set-language-environment-hook 'flyspell-set-language-environment)
-#+END_SRC
 *** IRC
 
 #+BEGIN_SRC elisp
