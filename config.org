@@ -2011,13 +2011,6 @@ Automatically set mode for specific filenames.
 (add-to-list 'auto-mode-alist '("Brewfile" . shell-script-mode))
 #+END_SRC
 
-*** Default Terminal Shell
-
-#+BEGIN_SRC elisp
-;; Set the default multi-term to zsh
-(setq multi-term-program "/bin/zsh")
-#+END_SRC
-
 *** Save Hist Mode
 
 Save the command history between sessions.
