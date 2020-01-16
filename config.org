@@ -1031,27 +1031,12 @@ Adds general bindings to ivy.
 **** Config
 
 #+BEGIN_SRC elisp
-(setq
- flycheck-javascript-eslint-executable (executable-find "eslint_d")
- flycheck-disabled-checkers '(javascript-jshint javascript))
-
-(after! rjsx-mode
-  (add-hook 'js2-mode-hook #'eslintd-fix-mode)
-  (map! :map rjsx-mode-map
-        :localleader
-        (:desc "Open Self-Closing Tag" :n ">" #'+rjsx|expand-insert-self-closing-tag)
-        (:desc "Open Self-Closing Tag" :n "<" #'rjsx-rename-tag-at-point)))
-
 (after! js2-mode
-  (add-hook 'js2-mode-hook #'eslintd-fix-mode)
   :config
-  (map! :map js2-mode-map
-        :desc "Goto parent function" :n "gh" (λ! (js2-beginning-of-defun))
-        :localleader
-        (:desc "import" :n "i" #'+js|ivy-import-file)))
-        ;; (:desc "Indium" :prefix "I"
-        ;;   :desc "Reload" :n  "r" #'indium-reload
-        ;;   :desc "Start" :n  "s" #'indium-connect)))
+  (setq
+   flycheck-javascript-eslint-executable (executable-find "eslint_d")
+   flycheck-disabled-checkers '(javascript-jshint javascript))
+  (add-hook 'js2-mode-hook #'eslintd-fix-mode))
 #+END_SRC
 
 **** Helpers
@@ -1152,17 +1137,6 @@ console.log(`${foo}`)
   (pop kill-ring))
 #+END_SRC
 
-***** Evil Function Text Object Motion
-
-Adds text objects for functions in javascript.
-So you can press ~daf~ to delete a function.
-
-#+BEGIN_SRC elisp
-(add-hook! js-mode
-  (require 'evil-text-objects-javascript)
-  (evil-text-objects-javascript/install))
-#+END_SRC
-
 ***** Expand self closing tag
 
 Converts self closing JSX tags to closing tags.
@@ -1204,7 +1178,7 @@ Converts self closing JSX tags to closing tags.
 
 Remove the ~js~ extension for ~company-files~.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun company-js-files (command &optional arg &rest ignored)
   "Company complete path. Remove extension after completion"
   (interactive (list 'interactive))
@@ -1225,7 +1199,7 @@ Remove the ~js~ extension for ~company-files~.
 
 ***** Import JS File
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun +js/import-file (file)
   (let ((cursor-postion (point))
         (filename (f-no-ext file)))
@@ -1291,6 +1265,36 @@ Remove the ~js~ extension for ~company-files~.
       (newline-and-indent)
       (insert (template "// eslint-disable-next-line <<error-id>>")))))
 #+END_SRC
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after js2-mode
+ :map js2-mode-map
+ :desc "Goto parent function" :n "gh" (λ! (js2-beginning-of-defun))
+ :localleader
+ (:desc "import" :n "i" #'+js|ivy-import-file))
+
+(map!
+ :after rjsx-mode
+ :map rjsx-mode-map
+ :localleader
+ (:desc "Open Self-Closing Tag" :n ">" #'+rjsx|expand-insert-self-closing-tag)
+ (:desc "Open Self-Closing Tag" :n "<" #'rjsx-rename-tag-at-point))
+#+END_SRC
+
+***** Evil Function Text Object Motion
+
+Adds text objects for functions in javascript.
+So you can press ~daf~ to delete a function.
+
+#+BEGIN_SRC elisp
+(add-hook! js-mode
+  (require 'evil-text-objects-javascript)
+  (evil-text-objects-javascript/install))
+#+END_SRC
+
 *** JSON
 **** Utils
 ***** Is Last JSON key at point
