@@ -1057,10 +1057,6 @@ Adds general bindings to ivy.
 **** Helpers
 
 #+BEGIN_SRC elisp
-(defun +js/remove-js-ext (f)
-  "Remove js extension from string"
-  (replace-regexp-in-string "\.js$" "" f))
-
 (defun +js/match-const-function-name (line)
   "Matches a line to the word after the declaration"
   (nth 2 (s-match
@@ -1111,7 +1107,7 @@ Generate a file index in the current file for every other file in the current di
 (defun +js/index-file-names (&optional dir)
   "Get filenames from current buffers directory."
   (let ((fs (directory-files (or dir default-directory) nil ".*\\.js")))
-    (mapcar '+js/remove-js-ext
+    (mapcar 'f-no-ext
             (remove "index.js" fs))))
 
 (defun +js|generate-index (&optional dir ignore-list)
@@ -1232,7 +1228,7 @@ Remove the ~js~ extension for ~company-files~.
 #+BEGIN_SRC elisp
 (defun +js/import-file (file)
   (let ((cursor-postion (point))
-        (filename (+js/remove-js-ext file)))
+        (filename (f-no-ext file)))
     (insert (template "import  from '<<filename>>';"))
     (goto-char cursor-postion)
     (forward-char 7)
