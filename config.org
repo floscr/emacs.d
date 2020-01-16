@@ -2313,9 +2313,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :n "'"  #'+popup/toggle
  :n "au" #'undo-tree-visualize
  :n "//" #'+default/search-project
- :n "-"  #'quick-calc
-
- (:desc "Toggle last iBuffer" :n "=" #'+popup/toggle))
+ :n "-"  #'quick-calc)
 #+END_SRC
 
 **** Buffer
@@ -2334,7 +2332,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :leader
  (:desc "code" :prefix "c"
    :desc "Compile" "c" #'compile
-   :desc "Compile" "C" (λ! (compile (car compile-history)))))
+   :desc "Compile (with last command)" "C" (λ! (compile (car compile-history)))))
 #+END_SRC
 
 **** File
