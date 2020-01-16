@@ -85,7 +85,6 @@
   +org-tags))
 
 (provide 'init)
-;;; init.el ends here
 
 (setq
  user-mail-address "flo.schroedl@gmail.com"
