@@ -2077,7 +2077,6 @@ Other Bindings for multi-edit:
 **** Replace With Register Motion
 
 Replace the current selection with a register.
-Works with motions
 
 #+BEGIN_SRC elisp
 (use-package! evil-replace-with-register
