@@ -924,6 +924,8 @@ Custom eshell aliases.
 
 *** Impatient-Mode
 
+Serves the current buffer live over http.
+
 #+BEGIN_SRC elisp
 (use-package! impatient-mode
   :commands impatient-mode)
