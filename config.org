@@ -625,7 +625,7 @@ error in process filter: End of buffer
 
 *** Company
 **** Config
-***** Sort company by occurance
+***** Sort company by occurrence
 :PROPERTIES:
 :SOURCE:   [[https://github.com/company-mode/company-mode/issues/52][{Proposal} Improve company-dabbrev candidate ordering · Issue #52 · company-mode/company-mode]]
 :END:
