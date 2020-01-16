@@ -757,8 +757,7 @@ But at some time I want to purge those buffers"
             (kill-buffer buffer)))
         (buffer-list)))
 
-(map! :when (featurep! :editor evil +everywhere)
-      :after dired
+(map! :after dired
       :map dired-mode-map
       :n "Q" #'+dired|kill-dired-buffers)
 #+END_SRC
