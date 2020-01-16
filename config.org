@@ -1867,7 +1867,6 @@ Fix buffers not being added to the current workspace.
 #+END_SRC
 
 *** Wgrep Mode
-
 **** Bindings
 
 #+BEGIN_SRC elisp
@@ -1877,7 +1876,8 @@ Fix buffers not being added to the current workspace.
 #+END_SRC
 
 *** Yasnippet
-**** Expand snippet by name
+**** Utils
+***** Expand snippet by name
 :PROPERTIES:
 :SOURCE:   [[https://stackoverflow.com/questions/10211730/insert-yasnippet-by-name][emacs - Insert yasnippet by name - Stack Overflow]]
 :END:
