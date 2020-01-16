@@ -1801,6 +1801,7 @@ I want buffers added whenever I visit a buffer.
 ***** Switch to workspace
 
 Enhancement of the default ~+workspace/switch-to~.
+This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
 
 #+BEGIN_SRC elisp
 (defvar counsel-workspace-map
