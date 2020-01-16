@@ -23,8 +23,6 @@
 ;;; Utils
 ;; Show changes in current branch
 (package! git-lens)
-;; Image editing utility
-(package! blimp)
 ;; Colorized Hex Strings
 (package! rainbow-mode)
 ; (package! beancount :recipe

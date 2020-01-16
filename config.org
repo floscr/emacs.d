@@ -596,13 +596,6 @@ plays a sound and prompts me to insert my count.
     :channels ("#emacs" "#nixos")))
 #+End_SRC
 
-*** Blimp
-
-#+BEGIN_SRC elisp
-(use-package! blimp
-  :hook (image-mode-hook . blimp-mode))
-#+END_SRC
-
 *** Calc
 **** Additional Units
 
