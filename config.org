@@ -328,7 +328,6 @@ Macro Expansion
   (set-popup-rule! "^\\*image-dired" :size 0.38 :select t))
 
 (set-popup-rule! "^\\*helm" :vslot -100 :size 0.32 :ttl nil)
-(set-popup-rule! "^\\*doom:scratch" :ignore t)
 
 (set-popup-rule! "^\\*nodejs" :side 'right :size 0.55 :select t :modeline t :ttl nil :quit nil)
 
