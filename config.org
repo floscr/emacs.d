@@ -346,9 +346,9 @@ Macro Expansion
       visual-fill-column-width fill-column)
 #+END_SRC
 
-*** Disable trailng whitespace warning
+*** Disable trailing whitespace warning
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (setq-hook! 'prog-mode-hook show-trailing-whitespace nil)
 #+END_SRC
 
