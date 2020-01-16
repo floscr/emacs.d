@@ -2026,12 +2026,6 @@ Automatically set mode for specific filenames.
 
 **** Disable emacs-state-toggle
 
-#+BEGIN_SRC elisp
-(map! :nm "C-z" nil)
-#+END_SRC
-
-**** Evil Multi-Edit Match All
-
 Other Bindings for multi-edit:
 
 | Bindings | Description                       |
