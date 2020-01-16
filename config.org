@@ -2074,6 +2074,35 @@ Other Bindings for multi-edit:
  :en "C-l"   #'evil-window-right)
 #+END_SRC
 
+**** History navigation in minibuffer
+
+#+BEGIN_SRC elisp
+(define-key minibuffer-local-map "\C-p" 'previous-history-element)
+(define-key minibuffer-local-map "\C-n" 'next-history-element)
+#+END_SRC
+
+**** Jump to last buffer
+
+#+BEGIN_SRC elisp
+(map! :n "gb" #'evil-switch-to-windows-last-buffer)
+#+END_SRC
+
+**** Select last paste
+:PROPERTIES:
+:SOURCE:   https://emacs.stackexchange.com/a/21093
+:END:
+
+#+BEGIN_SRC elisp
+(defun +evil|select-pasted ()
+  (interactive)
+  (let ((start-marker (evil-get-marker ?\[))
+        (end-marker (evil-get-marker ?\])))
+    (evil-visual-select start-marker end-marker)))
+
+(map! :n "gp" #'+evil|select-pasted)
+#+END_SRC
+
+*** Evil Motions
 **** Replace With Register Motion
 
 Replace the current selection with a register.
@@ -2088,7 +2117,7 @@ Replace the current selection with a register.
     evil-replace-with-register-key 'evil-replace-with-register))
 #+END_SRC
 
-**** Org Mode Text Objects
+**** Additional text objects
 
 #+BEGIN_SRC elisp
 (after! evil
@@ -2122,39 +2151,10 @@ Replace the current selection with a register.
 **** Go up one directory from the current buffer
 
 #+BEGIN_SRC elisp
-(after! evil
-  (map! :m  "-"  #'dired-jump))
+(map! :m "-"  #'dired-jump)
 #+END_SRC
 
-**** Fix history navigation for the minibuffer
-
-#+BEGIN_SRC elisp
-(define-key minibuffer-local-map "\C-p" 'previous-history-element)
-(define-key minibuffer-local-map "\C-n" 'next-history-element)
-#+END_SRC
-
-**** Jump to last buffer
-
-#+BEGIN_SRC elisp
-(map! :n "gb" #'evil-switch-to-windows-last-buffer)
-#+END_SRC
-
-**** Select last paste
-:PROPERTIES:
-:SOURCE:   https://emacs.stackexchange.com/a/21093
-:END:
-
-#+BEGIN_SRC elisp
-(defun +evil|select-pasted ()
-  (interactive)
-  (let ((start-marker (evil-get-marker ?\[))
-        (end-marker (evil-get-marker ?\])))
-    (evil-visual-select start-marker end-marker)))
-
-(map! :n "gp" #'+evil|select-pasted)
-#+END_SRC
-
-**** Select to next indent
+**** Up to next/previous indent
 
 Text objects for lines after or before the current line, that have the same or deeper indent.
 
