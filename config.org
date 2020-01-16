@@ -1382,7 +1382,7 @@ npm i -g json-fix
 
 **** Disable LSP hover face
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (add-hook! 'doom-load-theme-hook
   (after! lsp
     (dolist (face '(lsp-face-highlight-read
