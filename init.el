@@ -51,7 +51,6 @@
  rgb
  pdf
  pass
- ;; lsp
 
  :lang
  nix
