@@ -969,6 +969,7 @@ Adds general bindings to ivy.
   (interactive)
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
 #+END_SRC
+
 **** Counsel Files
 
 #+BEGIN_SRC elisp
