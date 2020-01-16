@@ -262,42 +262,60 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 Change and reset line-spacing for all buffers.
 
 #+BEGIN_SRC elisp
-(defvar default-line-spacing 0.2)
+(defvar +ui-default-line-spacing line-spacing)
+(defvar +ui-default-line-spacing-increment 1)
+(defvar +ui-big-line-spacing-increment 10)
 
-(defun set-line-spacing (&optional spacing)
+(defun +ui/set-line-spacing (&optional increment)
   "Set the line spacing
 When no line spacing is given is the default-line-spacing"
-  (if line-spacing
-      (setq-default line-spacing (+ (or spacing default-line-spacing) line-spacing))
-    (setq-default line-spacing (+ 0 default-line-spacing))))
+  (setq-default line-spacing (+ (or increment +ui-default-line-spacing-increment) line-spacing)))
 
 (defun +ui|reset-line-spacing ()
   (interactive)
-  (setq-default line-spacing nil))
+  (setq-default line-spacing +ui-default-line-spacing))
 
 (defun +ui|increase-line-spacing ()
   (interactive)
-  (set-line-spacing))
+  (+ui/set-line-spacing))
 
 (defun +ui|decrease-line-spacing ()
   (interactive)
-  (set-line-spacing (- default-line-spacing)))
+  (+ui/set-line-spacing (- +ui-default-line-spacing-increment)))
+
+(defun +ui|increase-line-spacing-big ()
+  (interactive)
+  (+ui/set-line-spacing +ui-big-line-spacing-increment))
+
+(defun +ui|decrease-line-spacing-big ()
+  (interactive)
+  (+ui/set-line-spacing (- +ui-big-line-spacing-increment)))
 
 (evil-define-key 'normal 'global (kbd "]z") #'+line-spacing/step/body)
 
 ;;;###autoload (autoload '+common-lisp/macrostep/body "lang/common-lisp/autoload/hydras" nil nil)
-(defhydra +line-spacing/step (:exit nil :hint nil :foreign-keys run)
+(defhydra +line-spacing/step (:exit nil :hint nil :foreign-keys run :color pink)
   "
 Macro Expansion
 ^^Definitions                           ^^Compiler Notes             ^^Stickers
 ^^^^^^─────────────────────────────────────────────────────────────────────────────────────
-[_z_] Expand
-[_Z_] Collapse
+[_r_] Reset
+[_]_] Expand
+[_[_] Collapse
+[_}_] Expand Big
+[_{_] Collapse Big
 "
-  ("z" +ui|increase-line-spacing)
-  ("Z" +ui|decrease-line-spacing)
-  ("q" noop :exit t))
+  ("r" +ui|reset-line-spacing)
+  ("]" +ui|increase-line-spacing)
+  ("[" +ui|decrease-line-spacing)
+  ("}" +ui|increase-line-spacing-big)
+  ("{" +ui|decrease-line-spacing-big)
+  ("q" nil "cancel" :color blue))
 #+END_SRC
+
+#+RESULTS:
+: +line-spacing/step/body
+
 *** Popups
 
 #+BEGIN_SRC elisp
