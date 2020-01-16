@@ -641,23 +641,23 @@ error in process filter: End of buffer
 Complete a whole line with all lines from buffers matching the current major-mode.
 
 #+BEGIN_SRC elisp
-(defun floscr:buffer-list-with-modes (modes)
+(defun +company:buffer-list-with-modes (modes)
   "Get all buffers that match MODES"
   (--filter
    (with-current-buffer it (-contains? (doom-enlist modes) major-mode))
    (buffer-list)))
 
-(defun floscr:buffer-list-with-major-mode ()
+(defun +company:buffer-list-with-major-mode ()
   "Get all buffers matching the current major-mode
 Has built in aliases"
   (let ((javascript-modes (list 'rjsx-mode 'js2-mode)))
     (pcase major-mode
       ('rjsx-mode
-       (floscr:buffer-list-with-modes javascript-modes))
+       (+company:buffer-list-with-modes javascript-modes))
       ('js2-mode
-       (floscr:buffer-list-with-modes javascript-modes))
+       (+company:buffer-list-with-modes javascript-modes))
       (_
-       (floscr:buffer-list-with-modes major-mode)))))
+       (+company:buffer-list-with-modes major-mode)))))
 
 (defun +company/whole-lines-all-buffers (command &optional arg &rest ignored)
   "`company-mode' completion backend that completes whole-lines, akin to vim's
@@ -680,7 +680,7 @@ C-x C-l."
                              "^[\t\s]+" ""
                              (buffer-substring-no-properties (point-min) (point-max)))
                             "\\(\r\n\\|[\n\r]\\)" t)) xs)))
-               (floscr:buffer-list-with-major-mode))))))
+               (+company:buffer-list-with-major-mode))))))
 #+END_SRC
 
 Bindings
