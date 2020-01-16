@@ -94,5 +94,4 @@
 ;; * Config
 (setq
  user-mail-address "flo.schroedl@gmail.com"
- user-full-name "Florian Schrödl"
- max-specpdl-size 10000)
+ user-full-name "Florian Schrödl")
