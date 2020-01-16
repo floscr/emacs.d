@@ -950,7 +950,7 @@ Source:
 **** Bindings
 
 Adds general bindings to ivy.
-~⌘ + ↩~ will insert the current item and continue with a new instance of the same ivy buffer.
+~MOD + ↩~ will insert the current item and continue with a new instance of the same ivy buffer.
 ~CTRL + ↩~ will abort completion and insert the inserted text.
 
 #+BEGIN_SRC elisp
