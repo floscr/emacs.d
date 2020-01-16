@@ -354,6 +354,8 @@ Macro Expansion
 
 *** Fix underline
 
+Draw the underline at the bottom of the text, not at the end of line-spacing.
+
 #+BEGIN_SRC elisp
 (setq x-underline-at-descent-line nil)
 #+END_SRC
