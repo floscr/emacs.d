@@ -702,15 +702,6 @@ Bindings
     dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$"))
 #+END_SRC
 
-***** Window targeting
-
-When there are two visual splits with dired buffers.
-~C~ will take the other window as the copy target.
-
-#+BEGIN_SRC elisp
-(setq dired-dwim-target t)
-#+END_SRC
-
 ***** Ignore .bs.js
 
 #+BEGIN_SRC elisp
