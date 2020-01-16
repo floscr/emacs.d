@@ -2287,23 +2287,22 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 
 **** Unicode Symbols and German Umlaut
 
-
 #+BEGIN_SRC elisp
 (map!
- :i "A-;"   (λ! (insert "ö"))
- :i "A-:"   (λ! (insert "Ö"))
- :i "A-'"   (λ! (insert "ä"))
- :i "A-\""  (λ! (insert "Ä"))
- :i "A-["   (λ! (insert "ü"))
- :i "A-{"   (λ! (insert "Ü"))
- :i "A-s"   (λ! (insert "ß"))
- :i "A-e"   (λ! (insert "€"))
- :i "A-`"   (λ! (insert "°"))
- :i "A-."   (λ! (insert "…"))
- :i "A-^"   (λ! (insert "°"))
- :i "A-l"   (λ! (insert "λ"))
- :i "A-w"   (λ! (insert "⚠"))
- :i "A-i"   (λ! (insert "ℹ")))
+ :i "M-;"   (λ! (insert "ö"))
+ :i "M-:"   (λ! (insert "Ö"))
+ :i "M-'"   (λ! (insert "ä"))
+ :i "M-\""  (λ! (insert "Ä"))
+ :i "M-["   (λ! (insert "ü"))
+ :i "M-{"   (λ! (insert "Ü"))
+ :i "M-s"   (λ! (insert "ß"))
+ :i "M-e"   (λ! (insert "€"))
+ :i "M-`"   (λ! (insert "°"))
+ :i "M-."   (λ! (insert "…"))
+ :i "M-^"   (λ! (insert "°"))
+ :i "M-l"   (λ! (insert "λ"))
+ :i "M-w"   (λ! (insert "⚠"))
+ :i "M-i"   (λ! (insert "ℹ")))
 #+END_SRC
 
 *** Leader Bindings
