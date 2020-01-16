@@ -1828,15 +1828,6 @@ Enhancement of the default ~+workspace/switch-to~.
             :keymap counsel-workspace-map
             :action #'+workspace/switch-to))
 #+END_SRC
-***** Switch to last visited workspace
-
-#+BEGIN_SRC elisp
-(defun +workspace/switch-to-last-visited ()
-  "Switch to the last visited workspace."
-  (interactive)
-  (+workspace/switch-to +workspace--last))
-#+END_SRC
-
 ***** Find file for workspace
 
 Most of the time you create workspaces from a project.
@@ -2464,7 +2455,6 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
    :desc "Switch to"    :n "." #'+workspace/my-switch-to
    :desc "Create"       :n "c" #'+workspace/new-named
    :desc "Rename"       :n "," #'+workspace/rename
-   :desc "Last visited" :n "0" #'+workspace/switch-to-last-visited
    :desc "Clone"        :n "C" (λ!
                                 (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
                                 (message "Cloned current workspace %s" (+workspace-current-name)))
