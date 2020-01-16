@@ -88,10 +88,6 @@
 (provide 'init)
 ;;; init.el ends here
 
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . dark))
-
-;; * Config
 (setq
  user-mail-address "flo.schroedl@gmail.com"
  user-full-name "Florian Schrödl")
