@@ -59,7 +59,6 @@
  rest
  data
  emacs-lisp
- purescript
  markdown
  ocaml
  ;; haskell
