@@ -919,9 +919,7 @@ Custom eshell aliases.
 
 #+BEGIN_SRC elisp
 (use-package! indium
-  :commands indium-connect
-  :config
-  (setq indium-chrome-executable "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"))
+  :commands indium-connect)
 #+END_SRC
 
 *** Impatient-Mode
