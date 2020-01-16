@@ -947,27 +947,6 @@ Source:
 #+END_SRC
 
 *** Ivy / Swiper
-**** Posframe
-***** Override the size function
-
-Ivy posframe will jump around when the candidate size changes.
-This will fix it to a width.
-
-#+BEGIN_SRC elisp :tangle no
-(defun +ivy-posframe-get-size ()
-  "The default functon used by `ivy-posframe-size-function'."
-  (let ((width 20)
-        (height 300))
-    (list
-     :height height
-     :width (round (* (frame-width) width)))))
-#+END_SRC
-
-#+BEGIN_SRC elisp :tangle no
-(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
-(setq ivy-posframe-size-function #'+ivy-posframe-get-size)
-#+END_SRC
-
 **** Bindings
 
 Adds general bindings to ivy.
@@ -1033,7 +1012,6 @@ Adds general bindings to ivy.
        (unless res
          (goto-char init-point))))))
 #+END_SRC
-
 
 **** Hacks
 ***** Fix case-insensitive wgrep
