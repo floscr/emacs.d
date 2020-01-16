@@ -25,8 +25,6 @@
 (package! git-lens)
 ;; Colorized Hex Strings
 (package! rainbow-mode)
-; (package! beancount :recipe
-;    (:host bitbucket :repo "blais/beancount" :files ("editors/emacs/*.el")))
 
 (package! visual-fill-column)
 
@@ -37,12 +35,6 @@
 (package! define-word)
 
 (package! atomic-chrome)
-
-;; Install frame cmds
-;; (package! frame-fns :recipe (:host wiki))
-;; (package! frame-cmds :recipe (:host wiki))
-
-;; (package! narrow-indirect :recipe (:host emacswiki :files ("narrow-indirect.el")))
 
 (package! dired-narrow)
 (package! dired-subtree)
