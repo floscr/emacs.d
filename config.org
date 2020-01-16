@@ -2037,17 +2037,15 @@ Other Bindings for multi-edit:
 (map! :nm "C-z" nil)
 #+END_SRC
 
-*** Osx / Mac Modifier Bindings
+*** Super bindings
 
 #+BEGIN_SRC elisp
 (map!
  (:map override
    :gniv "s-;" #'eval-expression
    :gniv "s-a" #'mark-whole-buffer
-   :gniv "s-f" #'counsel-grep-or-swiper
    :gniv "s-s" #'save-buffer
    :gniv "s-v" #'yank
-   :gniv "s-w" #'+workspace/close-window-or-workspace
    :gniv "s-x" #'execute-extended-command
    :gniv "s-y" #'helm-show-kill-ring
 
