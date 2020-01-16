@@ -1039,7 +1039,7 @@ Adds general bindings to ivy.
   (add-hook 'js2-mode-hook #'eslintd-fix-mode))
 #+END_SRC
 
-**** Helpers
+**** Utils
 
 #+BEGIN_SRC elisp
 (defun +js/match-const-function-name (line)
@@ -1326,12 +1326,12 @@ This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# -
     (indent-according-to-mode)
     (yas/insert-by-name "key")))
 
-(defun +json/insert-key-above ()
+(defun +json|insert-key-above ()
   "Function docstring"
   (interactive)
   (+json/insert-key t))
 
-(defun +json/insert-key-below ()
+(defun +json|insert-key-below ()
   "Function docstring"
   (interactive)
   (+json/insert-key nil))
@@ -1346,7 +1346,7 @@ npm i -g json-fix
 #+END_SRC
 
 #+BEGIN_SRC elisp
-(defun json-fix ()
+(defun +json|autofix-buffer ()
   "Autofix json buffer"
   (interactive)
   (let ((b (if mark-active (min (point) (mark)) (point-min)))
