@@ -2300,6 +2300,39 @@ Works with motions
 (map! :n "gp" #'+evil|select-pasted)
 #+END_SRC
 
+**** Select to next indent
+
+Text objects for lines after or before the current line, that have the same or deeper indent.
+
+#+BEGIN_SRC elisp
+(defun evil-indent-plus--line-down-indent-range (&optional point)
+  (let* ((range (evil-indent-plus--same-indent-range point))
+         (base (point))
+         (begin (point)))
+    (list begin (cl-second range) base)))
+
+(evil-define-text-object evil-indent-plus-i-indent-line-down (&optional count beg end type)
+  "Text object describing the block with the same (or greater) indentation as the current line,
+and the line above, skipping empty lines."
+  :type line
+  (evil-indent-plus--linify (evil-indent-plus--line-down-indent-range)))
+
+(define-key evil-inner-text-objects-map "}" 'evil-indent-plus-i-indent-line-down)
+
+(defun evil-indent-plus--line-up-indent-range (&optional point)
+  (let* ((range (evil-indent-plus--same-indent-range point))
+         (base (point))
+         (begin (point)))
+    (list begin (cl-first range) base)))
+
+(evil-define-text-object evil-indent-plus-i-indent-line-up (&optional count beg end type)
+  "Text object describing the block with the same (or greater) indentation as the current line,
+and the line above, skipping empty lines."
+  :type line
+  (evil-indent-plus--linify (evil-indent-plus--line-up-indent-range)))
+
+(define-key evil-inner-text-objects-map "{" 'evil-indent-plus-i-indent-line-up)
+#+END_SRC
 
 *** Evil Text Objects
 
