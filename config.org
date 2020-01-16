@@ -1711,9 +1711,6 @@ brew cask install font-liberation-sans
 *** PDF Tools
 
 #+BEGIN_SRC elisp
-;; Enable Retina pdfs
-(setq pdf-view-use-scaling t)
-
 ;; Fix midnight colors for doom-one theme
 (setq pdf-view-midnight-colors '("#BBC2CD" . "#282C34"))
 #+END_SRC
