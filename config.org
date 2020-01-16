@@ -702,21 +702,6 @@ Bindings
     dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$"))
 #+END_SRC
 
-***** Use gls
-
-Use ~gls~ with dired which is way faster than osx ~ls~
-Must enable =dired-k-human-readable= when =-h= flag is given.
-Otherwise dired comes to a grinding halt on some sizes.
-
-#+BEGIN_SRC elisp
-(after! dired
-  :config
-  (when (and IS-MAC (locate-file "gls" exec-path))
-    (setq dired-listing-switches "-la -h --group-directories-first"
-          dired-k-human-readable t
-          insert-directory-program "gls" dired-use-ls-dired t)))
-#+END_SRC
-
 ***** Window targeting
 
 When there are two visual splits with dired buffers.
