@@ -171,16 +171,6 @@ Create a canvas action
         (comint-send-input nil t))
     (nodejs-repl)))
 #+END_SRC
-*** Turn Style Object into Function
-
-#+BEGIN_SRC elisp
-(fset '+MM|turn-style-object-into-function
-      (lambda (&optional arg)
-        "Convert a style object into a Style function, needs to be focused on the starting {"
-        (interactive "p")
-        (kmacro-exec-ring-item (quote ([?y ?s ?a ?B ?b ?i ?S ?t ?y ?l ?e escape ?l ?a ?f ?u ?n ?c ?t ?i ?o ?n ?  S-backspace ?  ?\( ?o ?p ?t ?i ?o ?n ?s ?, ?  ?R ?u ?l ?e ?s escape ?l ?l ?y ?s ?a ?B ?B ?i ?  escape ?l ?a return ?r ?e ?t ?u ?r ?n ?  escape ?l ?j ?> ?i ?\{ ?k ?$ ?% ?a return escape ?k ?a ?\; escape ?= ?= ?j ?b ?l ?%] 0 "%d")) arg)))
-#+END_SRC
-
 *** Update Schema Props
 
 #+BEGIN_SRC elisp
