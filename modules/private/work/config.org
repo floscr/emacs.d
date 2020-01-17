@@ -606,13 +606,20 @@ Create a canvas action
              (app-file-contents (-some--> src-dir
                                    (f-join it "apps/Main/App.js")
                                    (f-read it))))
-      (cond ((s-matches? action-parent-id app-file-contents)
-             (-->
-              (s-match (template "<<action-parent-id>>.*require('\\(.*\\)')") app-file-contents)
-              (nth 1 it)
-              (s-replace "/controller" "" it)
-              (f-join src-dir it "actions" (template "<<action-function-name>>.js"))
-              (find-file it))))
+      (cond
+       ((s-starts-with? "Canvas" action-parent-id)
+        (--> (concat action-parent-id "." action-function-name)
+             (s-replace "Canvas." "" it)
+             (s-replace "." "/" it)
+             (f-join src-dir "containers/MapEditor/actions" (template "<<it>>.js"))
+             (find-file it)))
+       ((s-contains? action-parent-id app-file-contents)
+        (-->
+         (s-match (template "<<action-parent-id>>.*require('\\(.*\\)')") app-file-contents)
+         (nth 1 it)
+         (s-replace "/controller" "" it)
+         (f-join src-dir it "actions" (template "<<action-function-name>>.js"))
+         (find-file it))))
     (message "No action found!")))
 #+END_SRC
 
