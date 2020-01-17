@@ -1788,13 +1788,14 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 Doom per default adds buffers to the current workspace on ~find-file~.
 I want buffers added whenever I visit a buffer.
 
-#+BEGIN_SRC elisp :tangle no
+#+BEGIN_SRC elisp
 (after! persp-mode
-  (setq persp-add-buffer-on-find-file nil
-        persp-add-buffer-on-after-change-major-mode nil)
-  (defun +workspaces|add-current-buffer ()
-    (persp-add-buffer (current-buffer) (get-current-persp)))
-  (add-hook 'doom-switch-buffer-hook #'+workspaces|add-current-buffer))
+  (defun +workspace*add-special-buffer ()
+    (if-let* ((name (buffer-name))
+              (add-buffer? (or (s-matches? "\\*Org Src.*" name))))
+      (persp-add-buffer (current-buffer) (get-current-persp))))
+
+  (add-hook 'doom-switch-buffer-hook #'+workspace*add-special-buffer))
 #+END_SRC
 
 **** Functions
