@@ -7,14 +7,6 @@
 #+END_SRC
 
 * Configuration
-** Required Packages
-
-#+BEGIN_SRC elisp
-(require 'dash)
-(require 'f)
-(require 's)
-#+END_SRC
-
 ** Additional files
 
 #+BEGIN_SRC elisp

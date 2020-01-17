@@ -16,6 +16,7 @@ Packages and utilities needed for this config.
 #+BEGIN_SRC elisp
 (require 'dash)
 (require 's)
+(require 'f)
 #+END_SRC
 
 * Macros
