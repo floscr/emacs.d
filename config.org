@@ -1296,6 +1296,64 @@ So you can press ~daf~ to delete a function.
   (evil-text-objects-javascript/install))
 #+END_SRC
 
+***** Evil Method Text Object Motion
+
+Overwrite ~evil-text-objects-javascript~ to also accepts methods.
+
+I mainly changed the function marking helper.
+
+#+BEGIN_SRC diff :tangle no
+- (call-interactively #'mark-defun)
++ (call-interactively #'js2-mark-defun)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(after! evil-text-objects-javascript
+  (evil-define-text-object
+    evil-inner-javascript-function (count &optional beg end type)
+    "inner text object for all javascript functions."
+    (call-interactively #'js2-mark-defun)
+    (narrow-to-region (region-beginning) (region-end))
+    (goto-char (point-min))
+    (let* ((beg (save-excursion
+                  (search-forward "(")
+                  (backward-char)
+                  (evil-jump-item)
+                  (search-forward-regexp "[({]")
+                  (point)))
+           (end (save-excursion
+                  (goto-char beg)
+                  (evil-jump-item)
+                  (point))))
+      (evil-range beg end type)))
+
+  (evil-define-text-object
+    evil-outer-javascript-function (count &optional beg end type)
+    "Outer text object for all Javascript functions."
+    (call-interactively #'js2-mark-defun)
+    (narrow-to-region (region-beginning) (region-end))
+    (goto-char (point-min))
+    (let* ((beg (save-excursion
+                  (when (looking-at "[[:space:]]")
+                    (evil-forward-word-begin))
+                  (point)))
+           (end (save-excursion
+                  (goto-char beg)
+                  (search-forward "(")
+                  (backward-char)
+                  (evil-jump-item)
+                  (search-forward-regexp "[({]")
+                  (evil-jump-item)
+                  (forward-char)
+                  (if (save-excursion
+                        (progn
+                          (forward-char)
+                          (when (looking-at ",") (point))))
+                    (point)))))
+      (evil-range beg end type))))
+#+END_SRC
+
+
 *** JSON
 **** Utils
 ***** Is Last JSON key at point
@@ -2078,6 +2136,13 @@ Other Bindings for multi-edit:
  :en "C-j"   #'evil-window-down
  :en "C-k"   #'evil-window-up
  :en "C-l"   #'evil-window-right)
+
+(map!
+ :map evil-org-mode-map
+ :en "C-h"   #'evil-window-left
+ :en "C-j"   #'evil-window-down
+ :en "C-k"   #'evil-window-up
+ :en "C-l"   #'evil-window-right)
 #+END_SRC
 
 **** History navigation in minibuffer
@@ -2166,6 +2231,7 @@ Text objects for lines after or before the current line, that have the same or d
 
 #+BEGIN_SRC elisp
 (defun evil-indent-plus--line-down-indent-range (&optional point)
+  (require 'evil-indent-plus)
   (let* ((range (evil-indent-plus--same-indent-range point))
          (base (point))
          (begin (point)))
@@ -2180,6 +2246,7 @@ and the line above, skipping empty lines."
 (define-key evil-inner-text-objects-map "}" 'evil-indent-plus-i-indent-line-down)
 
 (defun evil-indent-plus--line-up-indent-range (&optional point)
+  (require 'evil-indent-plus)
   (let* ((range (evil-indent-plus--same-indent-range point))
          (base (point))
          (begin (point)))
