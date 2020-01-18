@@ -38,6 +38,14 @@ And I will load them on system start:
 #+END_SRC
 
 ** Essentials
+*** Safe Local Variables
+
+Variables that I want to safely set from ~.dir-locals~ files.
+
+#+BEGIN_SRC elisp
+(put '+file-templates-dir 'safe-local-variable #'stringp)
+#+END_SRC
+
 *** Directories
 
 #+BEGIN_SRC elisp
