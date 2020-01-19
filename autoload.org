@@ -55,12 +55,6 @@ Packages and utilities needed for this config.
 #+END_SRC
 
 * General Utils
-** Noop
-
-#+BEGIN_SRC elisp
-(defun noop (&optional args) nil)
-#+END_SRC
-
 ** Kill and Message
 
 #+BEGIN_SRC elisp
@@ -169,4 +163,34 @@ shuffling is done in place."
   (save-excursion
     (goto-char (point-at-bol))
     (search-forward-regexp regexp (point-at-eol) t)))
+#+END_SRC
+* Functional Utils
+** Noop
+
+#+BEGIN_SRC elisp
+(defun noop (&optional args) nil)
+#+END_SRC
+** Tap
+
+Run a side effect ~fn~ on the initial input ~x~.
+But Return the original input ~x~.
+
+#+BEGIN_SRC elisp
+(defun -tap (fn x)
+  "Function docstring"
+  (funcall fn x)
+  x)
+
+(defmacro --tap (fn it)
+  "Anaphoric form of `-tap'."
+  `(-tap (lambda (it) ,fn) ,it))
+#+END_SRC
+** Log
+
+Log the current input without breaking the pipe.
+
+#+BEGIN_SRC elisp
+(defun -log (x)
+  "Function docstring"
+  (--tap (message "%s" it) x))
 #+END_SRC
