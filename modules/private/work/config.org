@@ -598,28 +598,37 @@ Create a canvas action
 (defun +MM|goto-action ()
   "Go to an action from the app key."
   (interactive)
-  (-if-let* ((action-str (--> (thing-at-point 'line t)
-                              (s-match ".*: '\\(.*\\)\\.\\(.*\\)'.*" it)))
-             (action-parent-id (nth 1 action-str))
-             (action-function-name (nth 2 action-str))
+  (-if-let* ((action-str (-some--> (thing-at-point 'line t)
+                                   (s-match ".*: '\\(.*\\)'.*" it)
+                                   (nth 1 it)))
+             (action-parts (s-split "\\." action-str))
+             (action-parent-str (--> action-parts
+                                     (-drop-last 1 it)
+                                     (s-join "." it)))
              (src-dir (f-join (projectile-project-root) "src"))
              (app-file-contents (-some--> src-dir
-                                   (f-join it "apps/Main/App.js")
-                                   (f-read it))))
+                                  (f-join it "apps/Main/App.js")
+                                  (f-read it))))
       (-->
        (cond
-        ((s-starts-with? "Canvas" action-parent-id)
-         (--> (concat action-parent-id "." action-function-name)
-              (s-replace "Canvas." "" it)
-              (s-replace "." "/" it)
-              (f-join src-dir "containers/MapEditor/actions" (template "<<it>>.js"))))
+        ((s-equals? "Canvas" (-first-item action-parts))
+         (--> (-remove-item "Canvas" action-parts)
+              (s-join "/" it)
+              (s-append ".js")
+              (f-join src-dir "containers/MapEditor/actions" it)))
 
-        ((s-contains? action-parent-id app-file-contents)
-         (-->
-          (s-match (template "<<action-parent-id>>.*require('\\(.*\\)')") app-file-contents)
-          (nth 1 it)
-          (s-replace "/controller" "" it)
-          (f-join src-dir it "actions" (template "<<action-function-name>>.js")))))
+        (t (-some-->
+            (if (> (length action-parts) 1)
+                (-drop-last 1 action-parts)
+              action-parts)
+            (s-join "." it)
+            (s-match (template "<<it>>.*require('\\(.*\\)')") app-file-contents)
+            (nth 1 it)
+            (s-replace "/controller" "" it)
+            (if (> (length action-parts) 1)
+                (f-join src-dir it "actions" (template "<<(-last-item action-parts)>>.js"))
+              (f-join src-dir "actions" "MapListing" (template "<<(-last-item action-parts)>>.js"))))))
+
 
        (if (f-exists? it)
            (find-file it)
