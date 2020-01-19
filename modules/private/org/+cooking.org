@@ -1,0 +1,182 @@
+#+TITLE: cooking
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle no
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+
+* Constants
+
+** Cooking Words
+
+Items sorted by where they are grouped in the super market.
+
+#+BEGIN_SRC elisp
+(setq
+ +cooking-words
+ (ht
+  ("Beverages"
+   '("Beer"
+     "Kombucha"))
+
+  ("Spices"
+   '("Black Pepper"
+     "Cayenne"
+     "Chilli"
+     "Cinnamon"
+     "Cinnamon Stick"
+     "Allspice (Piment)"
+     "Cardamom Pods"
+     "Dill Seed"
+     "Fenugreek (Bockshorn)"
+     "Garlic Powder"
+     "Sichuan Peppercorn"
+     "Turmeric"))
+
+  ("Meat"
+   '("Chicken Breast"
+     "Minced Meat"))
+
+  ("Dairy"
+   '("Butter"
+     "Cheese"
+     "Parmesan"
+     "Ricotta"
+     "Feta"
+     "Milk"
+     "Cream"
+     "Milk"
+     "Yogurt"
+     "Eggs"))
+
+  ("Flour"
+   '("Flour"
+     "Vanilla Extract"
+     "Bread Flour"))
+
+  ("Bread"
+   '("Wraps"
+     "Bread"))
+
+  ("Beans, Rice, Pasta"
+   '("Beans"
+     "Pasta"
+     "Black sesame seeds"
+     "White sesame seeds"
+     "Soy Milk"
+     "Pasta"
+     "Red Lentils"
+     "Rice"
+     "Peanuts"
+     "San Marzano Tomaten"))
+
+  ("Fresh Vegetables"
+   '("Carrots"
+     "Onions"
+     "Cucumber"
+     "Pickle Cucumber"
+     "Grillpaprika"
+     "Paprika"
+     "Zucchini"
+     "Tomatoes"
+     "Potato"
+     "Pumpkin"
+     "Radishes"
+     "Spring Onions"
+     "Shallots"
+     "Shiittake Mushrooms"
+     "Salad"
+     "Garlic"
+     "Ginger"
+     "Mushrooms"
+     "Cabbage"
+     "Red Cabbage"
+     "Lemon"
+     "Lime"
+     "Spinach"))
+
+  ("Frozen Vegetables"
+   '("Peas"
+     "Spinach"))
+
+  ("Herbs"
+   '("Coriander"
+     "Dill"
+     "Parsley"
+     "Mint"))
+
+  ("Special"
+   '("Coconut Milk"
+     "Ramen"
+     "Coffee"
+     "Fallafel"
+     "Tahini"
+     "Tempeh"
+     "Tofu"
+     "Salt"))
+
+  ("Snacks"
+   '("Popcorn"))
+
+  ("Sweets"
+   '("Dark Chocolate"))
+
+  ("Sauces"
+   '("Rice Vinegar"
+     "Soy Sauce"
+     "Tomatopaste"))
+
+  ("Oils"
+   '("Olive Oil"
+     "Vinegar"
+     "Sunseed Oil"))
+
+  ("Hygene"
+   '("Toothbrushes"
+     "Washing powder"
+     "Toilet Paper"
+     "Vinegar Cleaner"
+     "Kitchen Roll"))))
+#+END_SRC
+
+
+* Utils
+
+** Add to shopping list
+
+#+BEGIN_SRC elisp
+(defun +cooking/get-items-list ()
+  (-> +cooking-words
+      (ht-values)
+      (-flatten)
+      (reverse)))
+
+(defun +cooking/add-to-shopping-list-org (item)
+  (interactive)
+  (message))
+
+(require 'om)
+
+(->>
+     (om-to-trimmed-string))
+
+(om-build-headline :title "really impressive title" :post-blank)
+(om-build-headline! :title-text "really impressive title")
+
+(om-build-headline! :title-text "new0" :level 2)
+
+(om-build-bold "dummy")
+
+(->> (om-parse-subtree-at 1)
+     (om-update (lambda (x)
+                  (om-set-children (-snoc (om-get-children x) (-first-item (om-get-children x))) x))))
+
+(om-build-headline :title "foo")
+
+(defun +cooking|ivy-add-to-shopping-list ()
+  (interactive)
+  (ivy-read "Add Item: " (+cooking/get-items-list)
+            :action #'+cooking/add-to-shopping-list-org))
+#+END_SRC
