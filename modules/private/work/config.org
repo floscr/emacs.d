@@ -611,12 +611,19 @@ Create a canvas action
                                   (f-read it))))
       (-->
        (cond
+        ;; Canvas Actions
         ((s-equals? "Canvas" (-first-item action-parts))
          (--> (-remove-item "Canvas" action-parts)
               (s-join "/" it)
               (s-append ".js")
               (f-join src-dir "containers/MapEditor/actions" it)))
 
+        ;; Server Actions
+        ((s-equals? "Server" (-first-item action-parts))
+         (-some--> (-last-item action-parts)
+                   (f-join src-dir "containers/Server/Default" it "onSuccess.js")))
+
+        ;; All other Actions
         (t (-some-->
             (if (> (length action-parts) 1)
                 (-drop-last 1 action-parts)
