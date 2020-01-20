@@ -793,6 +793,32 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
  :n "\\" #'+dired|change-to-wdired-mode)
 #+END_SRC
 
+***** Use same window for copying/renaming with prefix
+
+I've set ~dired-dwim-target~ to ~t~, so it uses the other window as the target destination.
+I undo this option with the interactive prefix argument, which can be accessed via ~SPC u R/U~.
+
+#+BEGIN_SRC elisp
+(defun +dired/dired-target-from-prefix (fn)
+  (let ((dired-dwim-target (if (eq (prefix-numeric-value current-prefix-arg) 4) ;; Single C-u
+                              nil
+                            dired-dwim-target)))
+      (call-interactively fn)))
+
+(defun +dired|dired-do-copy (&optional arg)
+  (interactive "P")
+  (+dired/dired-target-from-prefix #'dired-do-copy))
+
+(defun +dired|dired-do-rename (&optional arg)
+  (interactive "P")
+  (+dired/dired-target-from-prefix #'dired-do-rename))
+
+(map! :after dired
+      :map dired-mode-map
+      :n "R" #'+dired|dired-do-rename
+      :n "C" #'+dired|dired-do-copy)
+#+END_SRC
+
 **** Extensions
 ***** Dired Narrow
 
