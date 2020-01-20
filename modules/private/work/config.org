@@ -18,13 +18,18 @@
 *** Alternate File
 
 #+BEGIN_SRC elisp
+(setq +MM-alternate-file-rules '(("component.js" "controller.js")))
+
 (defun +MM|alternate-file ()
   "Find the alternate file for the current buffer."
   (interactive)
-  (let* ((file-path (file-name-nondirectory buffer-file-name))
-         (dir-path (file-name-directory buffer-file-name))
-         (alternate-file (if (string= file-path "component.js") "controller.js" "component.js")))
-    (find-file (f-join dir-path alternate-file))))
+  (let* ((file-name (file-name-nondirectory buffer-file-name))
+         (file-dir-path (file-name-directory buffer-file-name))
+         (alternate-file
+          (-some--> +MM-alternate-file-rules
+            (--first (-contains? it file-name) it)
+            (--first (not (string= file-name it)) it)
+            (find-file (f-join file-dir-path it)))))))
 #+END_SRC
 
 *** Convert to new Redux style
