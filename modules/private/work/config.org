@@ -33,15 +33,17 @@
                  (--first (-contains? it file-name) it)
                  (--first (not (string= file-name it)) it))
 
-               ;; Canvas defaultProps file
-               (-some--> (s-contains? "defaultProps" file-name)
-                 (s-split "\\." file-name)
+               (-some--> (s-split "\\." file-name)
                  (car it)
-                 (concat it ".js"))
-               ;; Canvas defaultProps alternate file
-               (-some--> (f-no-ext file-name)
-                 (concat it ".defaultProps.js")
-                 (when (f-exists? (f-join file-dir-path it)) it)))
+                 (f-entries file-dir-path (lambda (file)
+                                            (let ((entry-file-name (f-filename file)))
+                                              (and
+                                               (not (string= entry-file-name file-name))
+                                               (s-contains? it entry-file-name)))))
+                 (-map 'f-filename it)
+                 (if (eq (length it) 1)
+                     (car it)
+                   (ivy-read "File: " it))))
 
             (find-file (f-join file-dir-path it)))))))
 #+END_SRC
