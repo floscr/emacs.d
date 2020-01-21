@@ -159,21 +159,15 @@ Items sorted by where they are grouped in the super market.
 
 (require 'om)
 
-(->>
-     (om-to-trimmed-string))
+(defun +cooking|add-to-shopping-list (item)
+  (interactive)
+  (with-temp-buffer (insert-file-contents org-shopping-list-file)))
 
-(om-build-headline :title "really impressive title" :post-blank)
-(om-build-headline! :title-text "really impressive title")
-
-(om-build-headline! :title-text "new0" :level 2)
-
-(om-build-bold "dummy")
-
-(->> (om-parse-subtree-at 1)
-     (om-update (lambda (x)
-                  (om-set-children (-snoc (om-get-children x) (-first-item (om-get-children x))) x))))
-
-(om-build-headline :title "foo")
+    ;; (->> (om-parse-subtree-at 1)
+    ;;      (om-update (lambda (tree)
+    ;;                   (let ((child-tree (om-get-children tree))
+    ;;                         (item (om-build-headline! :title-text "New Item" :todo-keyword "TODO" :level 2)))
+    ;;                     (om-set-children (-snoc child-tree item) tree)))))))
 
 (defun +cooking|ivy-add-to-shopping-list ()
   (interactive)
