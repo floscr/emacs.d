@@ -51,6 +51,7 @@
  rgb
  pdf
  pass
+ docker
 
  :lang
  nix
