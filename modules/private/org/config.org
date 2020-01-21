@@ -1110,66 +1110,66 @@ To sync the calendars use ~org-caldav-sync~.
 ***** Org Mode
 
 #+BEGIN_SRC elisp
-(map! :after org
-      :map org-mode-map
+(defun +org-my-init-keybinds-h ()
+  (map! :map org-mode-map
+        :localleader
+        :desc  "Goto Archive"              "$"  #'+org|visit-archive-file
+        :desc  "Align Tags"                "%"  #'+org|align-all-tags
+        :desc  "Schedule Tomorrow"         "+"  #'+org|schedule-tomorrow
+        :desc  "Archive Subtree and Done"  "A"  #'+org|archive-and-done
+        :desc  "Cut Subtree"               "C"  #'org-cut-subtree
+        :desc  "Grab tabs"                 "P"  #'+org|grab-chrome-tabs
+        :desc  "Paste Subtree"             "P"  #'org-paste-subtree
+        :desc  "Sort Entries"              "S"  #'+org|sort-entries
+        :desc  "Archive Subtree"           "a"  #'org-archive-subtree
+        :desc  "Deadline"                  "d"  #'org-deadline
+        :desc  "Filter"                    "f"  #'org-match-sparse-tree
+        :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
+        :desc  "Create/Edit Todo"          "o"  #'org-todo
+        :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
+        :desc  "Tag heading"               "q"  #'counsel-org-tag
+        :desc  "Schedule"                  "s"  #'org-schedule
+        :desc  "Tag heading"               "t"  #'counsel-org-tag
+        :desc  "Copy Buffer To Markdown"   "y"  #'+org|copy-buffer-as-markdown
 
+        (:prefix-map ("i" . "Insert")
+          :desc "Inavtive Timestamp" "i" 'org-time-stamp-inactive
+          :desc "Subheadeing"        "s" (λ!
+                                          (call-interactively 'org-insert-subheading)
+                                          (evil-insert-state)))
 
-      :localleader
-      :desc  "Goto Archive"              "$"  #'+org|visit-archive-file
-      :desc  "Align Tags"                "%"  #'+org|align-all-tags
-      :desc  "Schedule Tomorrow"         "+"  #'+org|schedule-tomorrow
-      :desc  "Archive Subtree and Done"  "A"  #'+org|archive-and-done
-      :desc  "Cut Subtree"               "C"  #'org-cut-subtree
-      :desc  "Grab tabs"                 "P"  #'+org|grab-chrome-tabs
-      :desc  "Paste Subtree"             "P"  #'org-paste-subtree
-      :desc  "Sort Entries"              "S"  #'+org|sort-entries
-      :desc  "Archive Subtree"           "a"  #'org-archive-subtree
-      :desc  "Deadline"                  "d"  #'org-deadline
-      :desc  "Filter"                    "f"  #'org-match-sparse-tree
-      :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
-      :desc  "Create/Edit Todo"          "o"  #'org-todo
-      :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
-      :desc  "Tag heading"               "q"  #'counsel-org-tag
-      :desc  "Schedule"                  "s"  #'org-schedule
-      :desc  "Tag heading"               "t"  #'counsel-org-tag
-      :desc  "Copy Buffer To Markdown"   "y"  #'+org|copy-buffer-as-markdown
+        (:prefix-map ("f" . "Attach File")
+          :desc "Downloads File"  "d" '+org-attach/downloads-file
+          :desc "File"            "f" '+org-attach/file
+          :desc "Screenshot"      "s" '+org-attach/last-screenshot
+          :desc "URI"             "u" '+org-attach/uri)
 
-      (:prefix-map ("i" . "Insert")
-        :desc "Inavtive Timestamp" "i" 'org-time-stamp-inactive
-        :desc "Subheadeing"        "s" (λ!
-                                        (call-interactively 'org-insert-subheading)
-                                        (evil-insert-state)))
+        (:prefix-map ("g" . "Goto")
+          :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
 
-      (:prefix-map ("f" . "Attach File")
-        :desc "Downloads File"  "d" '+org-attach/downloads-file
-        :desc "File"            "f" '+org-attach/file
-        :desc "Screenshot"      "s" '+org-attach/last-screenshot
-        :desc "URI"             "u" '+org-attach/uri)
+        (:prefix-map ("n" . "Narrow")
+          :desc "Block"                "b" #'org-narrow-to-block
+          :desc "Element"              "e" #'org-narrow-to-element
+          :desc "Indirect Buffer Tree" "i" #'org-tree-to-indirect-buffer
+          :desc "Subtree"              "s" #'org-narrow-to-subtree
+          :desc "widen"                "w" #'widen)
 
-      (:prefix-map ("g" . "Goto")
-        :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
+        (:prefix-map ("w" . "Refile")
+          :desc "Dynamic"            "w" 'org-refile
+          :desc "To GTD Backlog"     "b" (λ! (+org/refile "GTD.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/refile "GTD.org" "GTD")))))
 
-      (:prefix-map ("n" . "Narrow")
-        :desc "Block"                "b" #'org-narrow-to-block
-        :desc "Element"              "e" #'org-narrow-to-element
-        :desc "Indirect Buffer Tree" "i" #'org-tree-to-indirect-buffer
-        :desc "Subtree"              "s" #'org-narrow-to-subtree
-        :desc "widen"                "w" #'widen)
-
-      (:prefix-map ("w" . "Refile")
-        :desc "Dynamic"            "w" 'org-refile
-        :desc "To GTD Backlog"     "b" (λ! (+org/refile "GTD.org" "GTD Backlog"))
-        :desc "To GTD"             "g" (λ! (+org/refile "GTD.org" "GTD"))))
+(advice-add '+org-init-keybinds-h :after '+org-my-init-keybinds-h)
 #+END_SRC
 
 ***** Agenda
 
 #+BEGIN_SRC elisp
-(map! :after evil-org-agenda
+(map! :after org-agenda
       :map org-agenda-mode-map
       :localleader
       :desc  "Set tags" "q"  #'counsel-org-tag-agenda
-      (:prefix-map ("w" . "Refile")
+      (:prefix ("w" . "Refile")
         :desc "Dynamic"            "w" 'org-agenda-refile
         :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
         :desc "To GTD"             "g" (λ! (+org/agenda-refile "GTD.org" "GTD"))
@@ -1186,8 +1186,8 @@ To sync the calendars use ~org-caldav-sync~.
 (map! :map org-mode-map
       :gni [s-return]    #'+org/insert-item-below
       :gni [s-S-return]  #'+org/insert-item-above
-      :n "s-k"           #'org-metaup
-      :n "s-j"           #'org-metadown)
+      :n "M-k"           #'org-metaup
+      :n "M-j"           #'org-metadown)
 #+END_SRC
 
 **** Agenda Mapping
@@ -1217,13 +1217,14 @@ To sync the calendars use ~org-caldav-sync~.
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:desc "Toggle" :prefix "t"
+ (:prefix-map ("t" . "Toggle")
    :desc "Visal Fill Column"          "o" #'+org|toggle-visual-wrap
    :desc "Visal Fill Column (Center)" "O" (λ! (+org|toggle-visual-wrap)))
 
- (:desc "Notes" :prefix "n"
+ (:prefix-map ("n" . "Notes")
    :desc "Pinboard File"              "B" (λ! (find-file org-pinboard-file))
    :desc "Save All Org Buffers"       "S" #'org-save-all-org-buffers
+   :desc "Save All Org Buffers"       "s" #'+default/org-notes-search
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Search Pinboard"            "b" #'helm-org-pinboard
    :desc "Emacs"                      "e" (λ! (+org/find-in-files "Emacs.org"))
@@ -1251,7 +1252,6 @@ To sync the calendars use ~org-caldav-sync~.
 **** Evil replace with register fixes
 
 I've mapped ~gr~ with ~evil-replace-with-register~ and doom tries to override this.
-Unset the mapping here.
 
 #+BEGIN_SRC elisp
 (use-package! evil-org
