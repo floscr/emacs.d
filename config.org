@@ -796,7 +796,7 @@ Map ~\~ to change to wdired mode, like text mode in maggit buffers.
 ***** Use same window for copying/renaming with prefix
 
 I've set ~dired-dwim-target~ to ~t~, so it uses the other window as the target destination.
-I undo this option with the interactive prefix argument, which can be accessed via ~SPC u R/U~.
+I undo this option with the interactive prefix argument, which can be accessed via ~SPC ucopy R/U~.
 
 #+BEGIN_SRC elisp
 (defun +dired/dired-target-from-prefix (fn)
