@@ -262,8 +262,9 @@ Create a canvas action
 *** Import File
 
 #+BEGIN_SRC elisp
-(defvar +MM-header-start-regex "^/\\*\\* ")
-(defvar +MM-header-end-regex " \\*\\*/")
+(defconst +MM-header-start-regex "^/\\*\\* ")
+(defconst +MM-header-end-regex " \\*\\*/")
+(defconst +MM-comment-headers '("EXTERNALS" "LOCALS" "HELPERS" "MAIN"))
 #+END_SRC
 
 **** Utils
