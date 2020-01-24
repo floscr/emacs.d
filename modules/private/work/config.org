@@ -267,13 +267,34 @@ Create a canvas action
 (defconst +MM-comment-headers '("EXTERNALS" "LOCALS" "HELPERS" "MAIN"))
 #+END_SRC
 
-**** Utils
-
 **** Main
 
 #+BEGIN_SRC elisp
-(setq +MM-comment-headers '("EXTERNALS" "LOCALS" "HELPERS" "MAIN"))
 
+
+(defun +MM:import/get-local-imports ()
+  "Get possible importable files in the current directory."
+  (let ((dir default-directory))
+    (-some->> (f-files dir (lambda (x)
+                             (not (string= x buffer-file-name)))
+                         t)
+      (--map (s-replace dir "" it)))))
+
+(defun +MM:import/get-package-imports ()
+  "Get possible importable files in the current directory."
+  (let ((dir projectile-project-root))
+    (--> (concat "jq -r '.dependencies | keys | .[]' " (concat (projectile-project-root) "package.json"))
+         shell-command-to-string
+         split-string)))
+
+(defun +MM:import/get-all-imports ()
+  "Get all possible imports for the current buffer."
+  (list (+MM:import/get-local-imports) (+MM:import/get-package-imports)))
+#+END_SRC
+
+**** Old Main
+
+#+BEGIN_SRC elisp :tangle no
 (defun +MM:get-remaining-headers-list (header)
   "Returns a reversed list of headers to search through"
   (->> +MM-comment-headers
@@ -329,9 +350,6 @@ Create a canvas action
                (previous-line 1)
                (evil-insert-newline-below)
                (previous-line 1)))))))
-
-(last '(1 2
-        (-map 'identityl)))
 
 
 (->> (list (list "{ default as typeOf }" "typeOf"))
