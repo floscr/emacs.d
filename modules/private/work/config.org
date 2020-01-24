@@ -319,7 +319,6 @@ Create a canvas action
                                  (-concat it (list header))
                                  (reverse it)))
          (found-header (--first (search-backward-regexp (+MM:import/make-header-regexp it) nil t) remaining-headers)))
-    (message "%s" found-header)
 
     ;; Main headers are the last ones
     (if (and found-header (not (string= found-header "MAIN")))
@@ -351,7 +350,6 @@ Create a canvas action
     (delete-forward-char 3)
     (evil-insert-state)))
 
-
 (defun +MM:import|update-import (import)
   (goto-char (point-at-eol))
   (if (search-backward-regexp "[A-Za-z] }" (point-at-bol) t)
@@ -368,15 +366,33 @@ Create a canvas action
       (backward-char)
       (evil-insert-state))))
 
+(defun +MM:import/fix-empty-lines ()
+  (save-excursion
+    (goto-char (point-at-eol))
+    (-if-let* ((start (point))
+               (end (search-forward-regexp +MM-header-start-regex nil t)))
+        (progn
+          (goto-char start)
+          (goto-char (point-at-eol))
+          (-->
+           (buffer-substring-no-properties start end)
+           (s-split "\n" it)
+           (--count (string= "" it) it)
+           (- 3 it)
+           (max it 0)
+           (s-repeat it "\n")
+           (insert it))))))
+
 (defun +MM:import|import (import is-local?)
   (goto-char (point-min))
   (if (search-forward-regexp (template "from '.*<<import>>.*';") nil t)
       (+MM:import|update-import import)
     (progn
-      (+MM:import/buffer-goto-or-create-header (if is-local? "LOCALS" "EXTERNAL"))
+      (+MM:import/buffer-goto-or-create-header (if is-local? "LOCALS" "EXTERNALS"))
       (if is-local?
           (+MM:import|insert-local-import import)
-        (+MM:import|insert-package-import import)))))
+        (+MM:import|insert-package-import import))
+      (+MM:import/fix-empty-lines))))
 
 (defun +MM:import|ivy-import ()
   (interactive)
