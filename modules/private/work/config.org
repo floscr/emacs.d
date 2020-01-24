@@ -270,8 +270,6 @@ Create a canvas action
 **** Main
 
 #+BEGIN_SRC elisp
-
-
 (defun +MM:import/get-local-imports ()
   "Get possible importable files in the current directory."
   (let ((dir default-directory))
@@ -287,9 +285,44 @@ Create a canvas action
          shell-command-to-string
          split-string)))
 
-(defun +MM:import/get-all-imports ()
+(defun +MM:import/get-common-exports ()
   "Get all possible imports for the current buffer."
-  (list (+MM:import/get-local-imports) (+MM:import/get-package-imports)))
+  (let ((default-directory (f-join (projectile-project-root) "node_modules/@meisterlabs/common/node")))
+    (message "%s" default-directory)
+    (--> "node -e \"console.log(Object.keys(require('./index.js')).join('\\n'))\""
+         shell-command-to-string
+         (s-split "\n" it)
+         ;; Remove trailing newline
+         (-drop-last 1 it))))
+
+(defun +MM:import/buffer-goto-next-header-or-end-of-header ()
+  ;; Prevent matching the current line
+  (goto-char (point-at-eol))
+  (if (search-forward-regexp +MM-header-start-regex nil t)
+      (progn
+        (goto-char (point-at-bol))
+        ;; Go to first non-whitespace line
+        (search-backward-regexp "^[^\\/\s\n]" nil t)
+        (goto-char (point-at-eol)))
+    (goto-char (point-max))))
+
+(defun +MM:import/make-header-regexp (header)
+  (concat +MM-header-start-regex header +MM-header-end-regex))
+
+(defun +MM:import/buffer-goto-or-create-header (header)
+  (goto-char (point-max))
+  (let* ((remaining-headers (--> (--split-when (string= header it) +MM-comment-headers)
+                                 car
+                                 (-concat it (list header))
+                                 (reverse it)))
+         (found-header (--first (search-backward-regexp (+MM:import/make-header-regexp it) nil t) remaining-headers)))
+    (+MM:import/buffer-goto-next-header-or-end-of-header)
+    (if (string= header found-header)
+        (insert "\n")
+      (progn
+        (insert "\n\n\n")
+        (insert (concat "/** " header " **/"))
+        (insert "\n\n\n")))))
 #+END_SRC
 
 **** Old Main
