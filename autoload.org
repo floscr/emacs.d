@@ -170,6 +170,7 @@ shuffling is done in place."
 #+BEGIN_SRC elisp
 (defun noop (&optional args) nil)
 #+END_SRC
+
 ** Tap
 
 Run a side effect ~fn~ on the initial input ~x~.
@@ -185,6 +186,7 @@ But Return the original input ~x~.
   "Anaphoric form of `-tap'."
   `(-tap (lambda (it) ,fn) ,it))
 #+END_SRC
+
 ** Log
 
 Log the current input without breaking the pipe.
@@ -193,4 +195,13 @@ Log the current input without breaking the pipe.
 (defun -log (x)
   "Function docstring"
   (--tap (message "%s" it) x))
+#+END_SRC
+
+** When Forward
+
+#+BEGIN_SRC elisp
+(defun -when-id (when? x)
+  "When a condition is t return the identity, otherwise return nil."
+  (interactive)
+  (if when? x nil))
 #+END_SRC
