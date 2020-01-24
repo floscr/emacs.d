@@ -303,7 +303,9 @@ Create a canvas action
       (progn
         (goto-char (point-at-bol))
         ;; Go to first non-whitespace line
-        (search-backward-regexp "^[^\\/\s\n]" nil t)
+        (or
+            (search-backward-regexp "^[^\\/\s\n]" nil t)
+            (search-backward-regexp +MM-header-start-regex nil t))
         (goto-char (point-at-eol)))
     (goto-char (point-max))))
 
@@ -317,28 +319,54 @@ Create a canvas action
                                  (-concat it (list header))
                                  (reverse it)))
          (found-header (--first (search-backward-regexp (+MM:import/make-header-regexp it) nil t) remaining-headers)))
-    (+MM:import/buffer-goto-next-header-or-end-of-header)
+    (message "%s" found-header)
+    (if (and found-header (not (string= found-header "MAIN")))
+        (+MM:import/buffer-goto-next-header-or-end-of-header)
+      (goto-char (point-min)))
     (if (string= header found-header)
         (insert "\n")
       (progn
-        (insert "\n\n\n")
+        (if found-header
+            (insert "\n\n\n"))
         (insert (concat "/** " header " **/"))
         (insert "\n\n\n")))))
 
 (defun +MM:import|insert-local-import (import)
   (let ((replacement-char "$$0")
         (import-file-or-dir (s-replace "/index\.js$" "" import)))
-    (insert (template "import { <<replacement-char>> } from './<<import-file-or-dir>>';"))
+    (insert (template "import { <<replacement-char>> } from './<<import-file-or-dir>>';\n"))
     (search-backward "$$0")
     (delete-forward-char 3)
     (evil-insert-state)))
 
+(defun +MM:import|insert-package-import (import)
+  (let ((replacement-char "$$0"))
+    (insert (template "import { <<replacement-char>> } from '<<import>>';\n"))
+    (search-backward "$$0")
+    (delete-forward-char 3)
+    (evil-insert-state)))
+
+(defun +MM:import|update-import (import)
+  (goto-char (point-at-eol))
+  (if (search-backward-regexp "[A-Za-z] }" (point-at-bol) t)
+      (progn
+        (insert ", ")
+        (evil-insert-state))
+    (progn
+      (previous-line)
+      (goto-char (point-at-eol))
+      (insert "\n")
+      (evil-insert-state))))
+
 (defun +MM:import|import (import is-local?)
   (goto-char (point-min))
-  (if (search-forward-regexp (template "from '<<import>>';"))
-      nil
-    (+MM:import/buffer-goto-or-create-header (if is-local? "LOCAL" "EXTERNAL"))
-    (insert (template "import { $$0 } from './<<import>>';"))))
+  (if (search-forward-regexp (template "from '<<import>>';") nil t)
+      (+MM:import|update-import import)
+    (progn
+      (+MM:import/buffer-goto-or-create-header (if is-local? "LOCALS" "EXTERNAL"))
+      (if is-local?
+          (+MM:import|insert-local-import import)
+        (+MM:import|insert-package-import import)))))
 
 (defun +MM:import|ivy-import ()
   (interactive)
