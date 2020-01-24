@@ -286,7 +286,7 @@ Create a canvas action
          split-string)))
 
 (defun +MM:import/get-common-exports ()
-  "Get all possible imports for the current buffer."
+  "Get all possible common package imports."
   (let ((default-directory (f-join (projectile-project-root) "node_modules/@meisterlabs/common/node")))
     (message "%s" default-directory)
     (--> "node -e \"console.log(Object.keys(require('./index.js')).join('\\n'))\""
@@ -296,6 +296,7 @@ Create a canvas action
          (-drop-last 1 it))))
 
 (defun +MM:import/buffer-goto-next-header-or-end-of-header ()
+  "Go to the "
   ;; Prevent matching the current line
   (goto-char (point-at-eol))
   (if (search-forward-regexp +MM-header-start-regex nil t)
@@ -332,6 +333,19 @@ Create a canvas action
     (delete-forward-char 3)
     (evil-insert-state)))
 
+(defun +MM:import|import (import is-local?)
+  (goto-char (point-min))
+  (if (search-forward-regexp (template "from '<<import>>';"))
+      nil
+    (+MM:import/buffer-goto-or-create-header (if is-local? "LOCAL" "EXTERNAL"))
+    (insert (template "import { $$0 } from './<<import>>';"))))
+
+(defun +MM:import|ivy-import ()
+  (interactive)
+  (let ((local-imports (+MM:import/get-local-imports))
+        (package-imports (+MM:import/get-package-imports)))
+    (ivy-read "Import: " (-concat local-imports package-imports)
+              :action (lambda (x) (+MM:import|import x (-contains? local-imports x))))))
 #+END_SRC
 
 **** Old Main
