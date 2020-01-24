@@ -323,6 +323,15 @@ Create a canvas action
         (insert "\n\n\n")
         (insert (concat "/** " header " **/"))
         (insert "\n\n\n")))))
+
+(defun +MM:import|insert-local-import (import)
+  (let ((replacement-char "$$0")
+        (import-file-or-dir (s-replace "/index\.js$" "" import)))
+    (insert (template "import { <<replacement-char>> } from './<<import-file-or-dir>>';"))
+    (search-backward "$$0")
+    (delete-forward-char 3)
+    (evil-insert-state)))
+
 #+END_SRC
 
 **** Old Main
