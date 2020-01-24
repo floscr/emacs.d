@@ -320,13 +320,18 @@ Create a canvas action
                                  (reverse it)))
          (found-header (--first (search-backward-regexp (+MM:import/make-header-regexp it) nil t) remaining-headers)))
     (message "%s" found-header)
+
+    ;; Main headers are the last ones
     (if (and found-header (not (string= found-header "MAIN")))
         (+MM:import/buffer-goto-next-header-or-end-of-header)
       (goto-char (point-min)))
+
     (if (string= header found-header)
         (insert "\n")
       (progn
-        (if found-header
+        ;; Unless we're at the beginning of the file or no header was found
+        ;; Add missing empty lines
+        (when (and found-header (not (eq 1 (line-number-at-pos))))
             (insert "\n\n\n"))
         (insert (concat "/** " header " **/"))
         (insert "\n\n\n")))))
