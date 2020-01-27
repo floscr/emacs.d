@@ -800,8 +800,14 @@ Create a canvas action
 #+BEGIN_SRC elisp
 (defun +MM/setup-keybindings ()
   "Setup Keybindings"
-
   (map! :map +MM-Web-mode-map
+        :leader
+        (:prefix-map ("y" . "Yank")
+          (:desc "+MM relative" "m" (λ! (--> (or buffer-file-name dired-directory)
+                                             (s-replace (f-join (projectile-project-root) "src/") "" it)
+                                             (f-no-ext it)
+                                             (copy-message it)))))
+
         :localleader
         :desc  "Repl"                 "R"  #'+MM|nodejs-repl
 
