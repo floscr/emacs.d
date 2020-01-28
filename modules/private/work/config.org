@@ -821,7 +821,7 @@ Create a canvas action
         :n "]1" #'+MM|alternate-file
 
         :localleader
-        :desc  "Import File"          "i"  #'+MM|import-file
+        :desc  "Import File"          "i"  #'+MM:import|ivy-import
         :desc  "Generate Index"       "I"  (λ! (+js|generate-index nil '("helpers")))
         :desc  "Update props header"  "u"  #'+MM|update-schema-props
 
