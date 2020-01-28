@@ -1166,7 +1166,7 @@ To sync the calendars use ~org-caldav-sync~.
 (map! :after org-agenda
       :map org-agenda-mode-map
       :localleader
-      :desc  "Set tags" "q"  #'counsel-org-tag-agenda
+      "q" #'counsel-org-tag-agenda
       (:prefix ("w" . "Refile")
         :desc "Dynamic"            "w" 'org-agenda-refile
         :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
