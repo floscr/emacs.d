@@ -857,7 +857,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
      ((org-agenda-prefix-format "  %?-12t% s")
       (org-agenda-todo-ignore-scheduled t)
       (org-agenda-tag-filter-preset '("+BACKLOG"))
-      (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
+      (org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down))
       (org-super-agenda-groups '((:discard (:scheduled t))
                                  (:name "Emacs Low Effort" :and (:tag ("EMACS") :tag("LOW_EFFORT")))
                                  (:name "Emacs" :tag ("EMACS"))
