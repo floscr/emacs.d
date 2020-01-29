@@ -72,10 +72,10 @@
  calendar
 
  :config
- literate
  (default +bindings +snippets +evil-commands)
 
  :private
+ literate
  reason
  work
  javascript
