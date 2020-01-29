@@ -862,6 +862,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "Emacs" :tag ("EMACS"))
                                  (:name "Nixos" :tag ("NIXOS"))
                                  (:name "Digital" :tag ("DIGITAL"))
+                                 (:name "Personal" :tag ("PERSONAL") :order -2)
                                  (:name "Home" :tag ("HOME") :order -1)
                                  (:name "To Buy" :tag ("TO_BUY"))
                                  (:name "Untagged" :order -3 :anything))))))
