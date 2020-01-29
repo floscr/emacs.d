@@ -1163,17 +1163,20 @@ To sync the calendars use ~org-caldav-sync~.
 ***** Agenda
 
 #+BEGIN_SRC elisp
-(map! :after org-agenda
-      :map org-agenda-mode-map
-      :localleader
-      "q" #'counsel-org-tag-agenda
-      (:prefix ("w" . "Refile")
-        :desc "Dynamic"            "w" 'org-agenda-refile
-        :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
-        :desc "To GTD"             "g" (λ! (+org/agenda-refile "GTD.org" "GTD"))
-        :desc "To Reading List"    "r" (λ! (+org/agenda-refile "reading-list.org" "Reading List"))
-        :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "shoppinglist.org" "Supermarket"))
-        :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos"))))
+(defun +org-my-init-agenda-keybinds-h ()
+  (map! :after org-agenda
+        :map org-agenda-mode-map
+        :localleader
+        "q" #'counsel-org-tag-agenda
+        (:prefix ("w" . "Refile")
+          :desc "Dynamic"            "w" 'org-agenda-refile
+          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/agenda-refile "GTD.org" "GTD"))
+          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "reading-list.org" "Reading List"))
+          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "shoppinglist.org" "Supermarket"))
+          :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos")))))
+
+(advice-add '+org-init-keybinds-h :after '+org-my-init-agenda-keybinds-h)
 #+END_SRC
 
 **** Meta Mapping
