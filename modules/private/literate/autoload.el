@@ -12,8 +12,3 @@ config, and should trigger a recompile if changed."
   (when (and (eq major-mode 'org-mode)
              (file-in-directory-p buffer-file-name doom-private-dir))
     (+literate-tangle 'force)))
-
-(defun +literate|tangle ()
-  "Tangle the current org buffer."
-  (interactive)
-  (+literate-tangle t))
