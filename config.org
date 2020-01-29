@@ -818,6 +818,26 @@ I undo this option with the interactive prefix argument, which can be accessed v
       :n "R" #'+dired|dired-do-rename
       :n "C" #'+dired|dired-do-copy)
 #+END_SRC
+***** Open file externally
+:PROPERTIES:
+:SOURCE:   https://www.reddit.com/r/emacs/comments/cgbpvl/opening_media_files_straight_from_gnu_emacs_dired/eufxc9j/
+:END:
+
+#+BEGIN_SRC elisp
+(defun +dired|open-externally ()
+  "Open marked dired file(s) at point with an external application."
+  (interactive)
+  (let ((file-list (dired-get-marked-files))
+        (process-connection-type nil))
+    (mapc
+     (lambda (file-path)
+       (start-process
+          "" nil shell-file-name
+          shell-command-switch
+          (format "nohup 1>/dev/null 2>/dev/null xdg-open \"%s\""
+                  (expand-file-name file-path))))
+     file-list)))
+#+END_SRC
 
 **** Extensions
 ***** Dired Narrow
@@ -863,6 +883,14 @@ Widen can be restored with ~g~.
                 ("documents"
                  (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub"))))))
 
+#+END_SRC
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map! :after dired
+      :map dired-mode-map
+      :ng "<C-return>" '+dired|open-externally)
 #+END_SRC
 
 *** Eldoc
