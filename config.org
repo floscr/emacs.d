@@ -591,7 +591,6 @@ plays a sound and prompts me to insert my count.
         (org-cycle)
         (+guitar|start-timer from to)))))
 #+END_SRC
-
 ** Package Config
 *** IRC
 
@@ -604,6 +603,72 @@ plays a sound and prompts me to insert my count.
     :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
     :channels ("#emacs" "#nixos")))
 #+End_SRC
+
+*** Calendar
+
+**** Conf
+***** Calendars
+
+Emacs comes with a lot of custom calendars that I don't want.
+This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar.html][How to set up a german emacs calendar]].
+
+****** General Holidays
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq general-holidays
+        '((holiday-fixed 1 1 "New Years")
+          (holiday-fixed 5 1 "1st Mai"))))
+#+END_SRC
+
+****** Austrian Holidays
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq austrian-holidays
+        `((holiday-fixed 1 6 "Heilige drei Könige")
+          (holiday-fixed 5 1 "Staatsfeiertag")
+          (holiday-fixed 8 15 "Mariä Himmelfahrt")
+          (holiday-fixed 10 26 "Nationalfeiertag")
+          (holiday-fixed 11 1 "Allerheiligen")
+          (holiday-fixed 12 8 "Mariä Empfängnis")
+          (holiday-fixed 12 24 "Weihnachten")
+          (holiday-fixed 12 25 "Christtag")
+          (holiday-fixed 12 26 "Stefanitag")
+          ;; variable
+          (holiday-easter-etc -2 "Karfreitag")
+          (holiday-easter-etc 0 "Ostersonntag")
+          (holiday-easter-etc 1 "Ostermontag")
+          (holiday-easter-etc 39 "Christi Himmelfahrt")
+          (holiday-easter-etc 49 "Pfingstsonntag")
+          (holiday-easter-etc 50 "Pfingstmontag")
+          (holiday-easter-etc 60 "Fronleichnam"))))
+#+END_SRC
+
+****** Set calendars
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq calendar-holidays
+        (append
+          general-holidays
+          austrian-holidays
+          holiday-solar-holidays)))
+#+END_SRC
+
+***** General
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq calendar-week-start-day 1)
+  (setq calendar-time-display-form
+        '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
+  (setq calendar-abbrev-length 2))
+#+END_SRC
 
 *** Calc
 **** Additional Units
@@ -1412,7 +1477,6 @@ I mainly changed the function marking helper.
                     (point)))))
       (evil-range beg end type))))
 #+END_SRC
-
 
 *** JSON
 **** Utils
