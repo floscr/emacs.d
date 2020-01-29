@@ -19,7 +19,7 @@
 ** Utils
 *** Setup Org Mode Hook
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun +org*setup-org-mode-hook ()
   "Setup org mode buffers"
   (setq-local word-wrap nil)
@@ -444,7 +444,7 @@ Return the path of the file."
 
 (after! org
   :config
-  (add-hook! org-mode #'+org*setup-org-mode-hook)
+  ;; (add-hook! org-mode #'+org*setup-org-mode-hook)
   ;; Disable automatic line wrapping in org mode
   (remove-hook 'org-mode-hook #'auto-fill-mode)
   (setq
@@ -944,7 +944,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 #+BEGIN_SRC elisp
 )
 #+END_SRC
-
 *** Clocking
 **** Automatically set clocking or todo state
 :PROPERTIES:
