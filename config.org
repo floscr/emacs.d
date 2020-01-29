@@ -1307,9 +1307,7 @@ Remove the ~js~ extension for ~company-files~.
 (map!
  :after js2-mode
  :map js2-mode-map
- :desc "Goto parent function" :n "gh" (λ! (js2-beginning-of-defun))
- :localleader
- (:desc "import" :n "i" #'+js|ivy-import-file))
+ :desc "Goto parent function" :n "gh" (λ! (js2-beginning-of-defun)))
 
 (map!
  :after rjsx-mode
