@@ -341,7 +341,7 @@ Macro Expansion
 
 (set-popup-rule! "^\\*nodejs" :side 'right :size 0.55 :select t :modeline t :ttl nil :quit nil)
 
-(set-popup-rule! "^\\*compilation" :side 'right :size 0.5 :select t :modeline t :ttl nil)
+(set-popup-rule! "^\\*helpful command" :side 'right :size 0.5 :select t :modeline t :ttl nil :quit nil)
 #+END_SRC
 
 *** (Visual) Fill Column
