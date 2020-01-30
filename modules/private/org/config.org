@@ -829,7 +829,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
       (org-agenda-use-time-grid 'require-timed)
       (org-agenda-start-day ".")
       (org-agenda-show-all-dates nil)
-      (org-agenda-prefix-format '((agenda . "  ")))
+      (org-agenda-prefix-format '((agenda . "%11s%?-t")))
       (org-super-agenda-header-separator "")
       (org-agenda-sorting-strategy '(priority-down scheduled-down ts-down todo-state-down))
       (org-super-agenda-groups '((:name none :date today :time-grid t)
