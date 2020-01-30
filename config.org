@@ -899,7 +899,7 @@ I undo this option with the interactive prefix argument, which can be accessed v
        (start-process
           "" nil shell-file-name
           shell-command-switch
-          (format "nohup 1>/dev/null 2>/dev/null xdg-open \"%s\""
+          (format "nohup 1>/dev/null 2>/dev/null xdg-open \"%s\" &"
                   (expand-file-name file-path))))
      file-list)))
 #+END_SRC
