@@ -2044,6 +2044,7 @@ the projects cwd to find a file.
   (let ((name (read-string "New workspace name: ")))
     (if name (+workspace/new name))))
 #+END_SRC
+
 ***** Cleanup Workspace
 
 #+BEGIN_SRC elisp
@@ -2065,6 +2066,17 @@ the projects cwd to find a file.
   "Kill all interactive buffers from the current workspace."
   (interactive)
   (+workspace/remove-other-buffers))
+
+(defun +workspace|hide-non-project-buffers ()
+  "Hide all file buffers that don't belong to the project workspace."
+  (interactive)
+  (let ((project-path (or (expand-file-name (+workspace/workspace-project-root))
+                          (projectile-project-root))))
+    (-some--> (+workspace-buffer-list)
+         ;; Dont remove non-remove buffers
+         (--filter (buffer-file-name it) it)
+         (--reject (s-contains? project-path (buffer-file-name it)) it)
+         (--each (persp-remove-buffer it) it))))
 #+END_SRC
 
 **** Add buffer to workspace hooks
