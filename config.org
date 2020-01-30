@@ -2044,6 +2044,29 @@ the projects cwd to find a file.
   (let ((name (read-string "New workspace name: ")))
     (if name (+workspace/new name))))
 #+END_SRC
+***** Cleanup Workspace
+
+#+BEGIN_SRC elisp
+(defun +workspace/remove-other-buffers (&optional keep-alive?)
+  "Kill or remove all other buffers from current workspace."
+  (interactive)
+  (--> (+workspace-buffer-list)
+       (--reject (eq (current-buffer) it) it)
+       (if keep-alive?
+           (persp-remove-buffer it)
+         (kill-buffer it))))
+
+(defun +workspace|hide-other-buffers ()
+  "Hide all inactive buffers from the current workspace."
+  (interactive)
+  (+workspace/remove-other-buffers t))
+
+(defun +workspace|kill-other-buffers ()
+  "Kill all interactive buffers from the current workspace."
+  (interactive)
+  (+workspace/remove-other-buffers))
+#+END_SRC
+
 **** Add buffer to workspace hooks
 
 Fix buffers not being added to the current workspace.
