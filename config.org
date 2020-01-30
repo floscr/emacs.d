@@ -2554,6 +2554,15 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
    :desc "Rename Buffer"  "r" #'rename-buffer))
 #+END_SRC
 
+**** Directory
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("d" . "directory")
+   :desc "Project Root"  "p" (λ! (find-file (projectile-project-root)))))
+#+END_SRC
+
 **** File
 
 #+BEGIN_SRC elisp
