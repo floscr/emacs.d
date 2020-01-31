@@ -1,10 +1,26 @@
+#+TITLE: Reading List
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle yes
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+
+* Variables
+
+#+BEGIN_SRC elisp
 (defvar +org-reading-list-todo-state "[ ]")
 (defvar +org-reading-list-file-name "reading-list.org")
 (defvar +org-reading-list-file (concat org-directory "/" +org-reading-list-file-name))
 (defvar +org-reading-list-headline "Reading List")
 (defvar +org-watching-list-headline "Watching List")
 (defvar +org-listening-list-headline "Listening List")
+#+END_SRC
 
+* Utils
+
+#+BEGIN_SRC elisp
 (defun +org-reading-list/save (file headline &optional todo-state set-tags-p)
   "Refile the item under the cursor to a FILE HEADLINE with a todo-state"
   (org-mark-ring-push)
@@ -48,6 +64,11 @@
   (interactive)
   (find-file +org-reading-list-file))
 
+#+END_SRC
+
+* Agenda Command
+
+#+BEGIN_SRC elisp
 (after! org-agenda
   (+org/add-to-agenda-custom-commands
    '("r" "Reading List" alltodo ""
@@ -61,5 +82,4 @@
                                  (:name "Someday" :todo "SOMEDAY" :order 3)
                                  (:name "Articles" :tag "TEXT" :order 1)
                                  (:name "Videos" :regexp "\\(youtube\\|vimeo\\).com" :tag "VIDEO" :order 2)))))))
-
-;; -*- lexical-binding: t -*-
+#+END_SRC
