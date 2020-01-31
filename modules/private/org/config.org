@@ -343,6 +343,18 @@ Projectile search is not fast reliable enough."
         (visual-line-mode)
         (visual-fill-column-mode)))))
 #+END_SRC
+*** Agenda Cut Entry
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-cut-entry ()
+  "Cut entry straight from agenda."
+  (interactive)
+  (save-window-excursion
+    (org-agenda-switch-to)
+    (org-cut-subtree))
+  (org-agenda-redo))
+#+END_SRC
+
 *** Agenda Visit Enty in Narrow Mode
 
 #+BEGIN_SRC elisp
