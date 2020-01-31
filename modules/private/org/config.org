@@ -241,7 +241,7 @@ shorten it a bit for the org capture templates.
 Sort my agenda entries by a ~DATE_CREATED~ property.
 
 #+BEGIN_SRC elisp
-(setq-default +org-created-property "DATE_CREATED")
+(setq-default +org-created-property "CREATED")
 #+END_SRC
 
 #+BEGIN_SRC elisp
