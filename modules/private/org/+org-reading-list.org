@@ -10,12 +10,17 @@
 * Variables
 
 #+BEGIN_SRC elisp
-(defvar +org-reading-list-todo-state "[ ]")
-(defvar +org-reading-list-file-name "reading-list.org")
-(defvar +org-reading-list-file (concat org-directory "/" +org-reading-list-file-name))
-(defvar +org-reading-list-headline "Reading List")
-(defvar +org-watching-list-headline "Watching List")
-(defvar +org-listening-list-headline "Listening List")
+(defvar +org-reading-list:todo-state "[ ]")
+(defvar +org-reading-list:file-name "reading-list.org")
+(defvar +org-reading-list:file "")
+(defvar +org-reading-list:headline "Reading List")
+(defvar +org-watching-list:headline "Watching List")
+(defvar +org-listening-list:headline "Listening List")
+(defvar +org-reading-list:agenda-buffer-name "*Org Agenda: Reading List*")
+
+(after! org-agenda
+  :config
+  (setq +org-reading-list:file (f-join org-directory +org-reading-list:file-name)))
 #+END_SRC
 
 * Utils
@@ -36,35 +41,45 @@
   "Refile an item to the reading list"
   (interactive)
   (+org-reading-list/save
-   +org-reading-list-file
-   +org-reading-list-headline
-   +org-reading-list-todo-state
+   +org-reading-list:file
+   +org-reading-list:headline
+   +org-reading-list:todo-state
    t))
 
 (defun +org-reading-list/refile-to-watching-list ()
   "Refile an item to the reading list"
   (interactive)
   (+org-reading-list/save
-   +org-reading-list-file
-   +org-watching-list-headline
-   +org-reading-list-todo-state
+   +org-reading-list:file
+   +org-watching-list:headline
+   +org-reading-list:todo-state
    t))
 
 (defun +org-reading-list/refile-to-listening-list ()
   "Refile an item to the reading list"
   (interactive)
   (+org-reading-list/save
-   +org-reading-list-file
-   +org-listening-list-headline
-   +org-reading-list-todo-state
+   +org-reading-list:file
+   +org-listening-list:headline
+   +org-reading-list:todo-state
    t))
 
-(defun +org-reading-list/org-open-reading-list-file ()
+(defun +org-reading-list/org-open-reading-list:file ()
   "Open the reading list org file"
   (interactive)
-  (find-file +org-reading-list-file))
-
+  (find-file +org-reading-list:file))
 #+END_SRC
+
+* UI
+
+#+BEGIN_SRC elisp
+(defun +org-reading-list/customize-agenda ()
+  (when (string= (buffer-name) +org-reading-list:agenda-buffer-name)
+    (face-remap-add-relative 'org-link '(:underline nil :foreground white))))
+
+(add-hook! 'org-agenda-finalize-hook :after '+org-reading-list/customize-agenda)
+#+END_SRC
+
 
 * Agenda Command
 
@@ -72,8 +87,8 @@
 (after! org-agenda
   (+org/add-to-agenda-custom-commands
    '("r" "Reading List" alltodo ""
-     ((org-agenda-files (list +org-reading-list-file))
-      ;; Remove the file prefix
+     ((org-agenda-files (list +org-reading-list:file))
+      (org-agenda-buffer-name +org-reading-list:agenda-buffer-name)
       (org-agenda-prefix-format "  %?-12t% s")
       (org-agenda-hide-tags-regexp "TEXT\\|VIDEO\\|RESEARCH")
       (org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down))

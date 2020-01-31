@@ -439,8 +439,7 @@ Return the path of the file."
  org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
  org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
  org-default-notes-file (concat org-directory "/inbox.org")
- org-shopping-list-file (concat org-directory "/shoppinglist.org")
- +org-reading-list-file (concat org-directory "/reading-list.org"))
+ org-shopping-list-file (concat org-directory "/shoppinglist.org"))
 
 (after! org
   :config
@@ -1234,7 +1233,6 @@ To sync the calendars use ~org-caldav-sync~.
    :desc "GTD (Home)"                 "h" (λ! (+org/find-in-files "GTD.org"))
    :desc "Inbox"                      "i" (λ! (+org/find-in-files "inbox.org"))
    :desc "Find in notes"              "n" #'+org|search-in-notes
-   :desc "Reading List"               "r" #'+org-reading-list/org-open-reading-list-file
    :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
    :desc "Store Link"                 "y" #'org-store-link
 
