@@ -20,7 +20,7 @@
 
 (after! org-agenda
   :config
-  (setq +org-reading-list:file (f-join org-directory +org-reading-list:file-name)))
+  (setq +org-reading-list:file (f-join org-directory "Main" +org-reading-list:file-name)))
 #+END_SRC
 
 * Utils

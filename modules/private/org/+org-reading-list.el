@@ -8,7 +8,7 @@
 
 (after! org-agenda
   :config
-  (setq +org-reading-list:file (f-join org-directory +org-reading-list:file-name)))
+  (setq +org-reading-list:file (f-join org-directory "Main" +org-reading-list:file-name)))
 
 (defun +org-reading-list/save (file headline &optional todo-state set-tags-p)
   "Refile the item under the cursor to a FILE HEADLINE with a todo-state"

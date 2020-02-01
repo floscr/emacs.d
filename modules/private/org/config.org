@@ -450,8 +450,8 @@ Return the path of the file."
  org-pinboard-dir org-directory
  org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org")
  org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org")
- org-default-notes-file (concat org-directory "/inbox.org")
- org-shopping-list-file (concat org-directory "/shoppinglist.org"))
+ org-default-notes-file (concat org-directory "/Main/inbox.org")
+ org-shopping-list-file (concat org-directory "/Main/shoppinglist.org"))
 
 (after! org
   :config
@@ -462,7 +462,7 @@ Return the path of the file."
    org-src-window-setup 'current-window
    org-tags-column (- fill-column)
    org-image-actual-width 600
-   org-default-notes-file (concat org-directory "/inbox.org")))
+   org-default-notes-file (concat org-directory "/Main/inbox.org")))
 #+END_SRC
 
 **** Todo State Keywords
@@ -531,36 +531,36 @@ Needs ~dvisvgm~
 
 (setq level-1-refile-targets
       (expand-org-file-names
-       '("reading-list.org"
-         "cooking.org"
-         "books.org"
-         "programming.org"
-         "shoppinglist.org")))
+       '("Main/reading-list.org"
+         "Main/cooking.org"
+         "Main/books.org"
+         "Main/programming.org"
+         "Main/shoppinglist.org")))
 
 (setq max-level-2-refile-targets
       (expand-org-file-names
-       '("Emacs.org"
-         "art.org"
-         "diary"
-         "games.org"
-         "hardware.org"
-         "GTD.org"
-         "inbox.org"
-         "mealplan.org"
-         "misc.org"
-         "movies.org"
-         "music.org"
-         "osx.org"
-         "personal.org"
-         "podcasts.org"
-         "sleep.org"
-         "sports.org"
-         "travel.org"
+       '("Main/Emacs.org"
+         "Main/art.org"
+         "Main/diary"
+         "Main/games.org"
+         "Main/hardware.org"
+         "Main/GTD.org"
+         "Main/inbox.org"
+         "Main/mealplan.org"
+         "Main/misc.org"
+         "Main/movies.org"
+         "Main/music.org"
+         "Main/osx.org"
+         "Main/personal.org"
+         "Main/podcasts.org"
+         "Main/sleep.org"
+         "Main/sports.org"
+         "Main/travel.org"
          "Work/work.org")))
 
 (setq max-level-3-refile-targets
       (expand-org-file-names
-       '("projects.org")))
+       '("Main/projects.org")))
 
 (defun level-1-refile-targets () level-1-refile-targets)
 
@@ -636,11 +636,11 @@ Needs ~dvisvgm~
            "* TODO %?\n%a\n")
 
           ("c" "Calendar Event" entry
-           (file+headline ,(concat org-directory "/GTD.org") "Calendar")
+           (file+headline ,(concat org-directory "/Main/GTD.org") "Calendar")
            "* %?\n")
 
           ("e" "Emacs Todo" entry
-           (file+headline ,(concat org-directory "/emacs.org") "Emacs Todos")
+           (file+headline ,(concat org-directory "/Main/emacs.org") "Emacs Todos")
            "* TODO %?\n")
 
           ("p" "Pin Bookmark" entry (file+headline org-pinboard-file "Pinboard")
@@ -691,9 +691,9 @@ Needs ~dvisvgm~
   :config
   (setq org-agenda-files
         (--map (f-join org-directory it)
-               '("GTD.org"
-                 "inbox.org"
-                 "calendar-family.org"
+               '("Main/GTD.org"
+                 "Main/inbox.org"
+                 "Main/calendar-family.org"
                  "Work/work.org"))))
 #+END_SRC
 
@@ -807,7 +807,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
              ((org-agenda-sorting-strategy '(priority-down todo-state-down user-defined-down timestamp-down time-down))
               (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
                                          (:discard (:anything t)))))))
-   ((org-agenda-files (--> '("projects.org" "GTD.org")
+   ((org-agenda-files (--> '("Main/projects.org" "Main/GTD.org")
                             (--map (f-join org-directory it) it))))))
 #+END_SRC
 
@@ -879,7 +879,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "To Buy" :tag ("TO_BUY"))
                                  (:name "Untagged" :order -3 :anything))))))
    ((org-agenda-hide-tags-regexp "BACKLOG")
-    (org-agenda-files (--map (f-join org-directory it) '("GTD.org"))))))
+    (org-agenda-files (--map (f-join org-directory it) '("Main/GTD.org"))))))
 #+END_SRC
 
 ***** Emacs
@@ -889,7 +889,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
  '("e" "Emacs Items" alltodo ""
    ((org-agenda-prefix-format "  %?-12t% s")
     (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
-    (org-agenda-files (list (f-join org-directory "Emacs.org")))
+    (org-agenda-files (list (f-join org-directory "Main/Emacs.org")))
     (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
                                (:auto-priority t)
                                (:name "Next" :todo "NEXT")
@@ -924,7 +924,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                          (:name "Reading List" :tag "TEXT" :order 10))))))
    ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
     (org-agenda-tag-filter-preset "+WORK")
-    (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "inbox.org"))))))
+    (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org"))))))
 #+END_SRC
 
 ****** Project Agenda
@@ -1036,7 +1036,7 @@ To sync the calendars use ~org-caldav-sync~.
   :config
   ;; org-caldav-url is set in secrets.el
   (setq org-caldav-calendar-id "family"
-        org-caldav-inbox (f-join org-directory "calendar-family.org")
+        org-caldav-inbox (f-join org-directory "Main/calendar-family.org")
         org-caldav-save-directory doom-cache-dir
         org-icalendar-timezone "Europe/Berlin")
   (setq org-caldav-files (list org-caldav-inbox)))
@@ -1167,8 +1167,8 @@ To sync the calendars use ~org-caldav-sync~.
 
         (:prefix-map ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-refile
-          :desc "To GTD Backlog"     "b" (λ! (+org/refile "GTD.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/refile "GTD.org" "GTD")))))
+          :desc "To GTD Backlog"     "b" (λ! (+org/refile "Main/GTD.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/refile "Main/GTD.org" "GTD")))))
 
 (advice-add '+org-init-keybinds-h :after '+org-my-init-keybinds-h)
 #+END_SRC
@@ -1183,10 +1183,10 @@ To sync the calendars use ~org-caldav-sync~.
         "q" #'counsel-org-tag-agenda
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
-          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "GTD.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/agenda-refile "GTD.org" "GTD"))
-          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "reading-list.org" "Reading List"))
-          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "shoppinglist.org" "Supermarket"))
+          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "Main/GTD.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/agenda-refile "Main/GTD.org" "GTD"))
+          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
+          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
           :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos")))))
 
 (advice-add '+org-init-keybinds-h :after '+org-my-init-agenda-keybinds-h)
@@ -1241,9 +1241,9 @@ To sync the calendars use ~org-caldav-sync~.
    :desc "Save All Org Buffers"       "s" #'+default/org-notes-search
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Search Pinboard"            "b" #'helm-org-pinboard
-   :desc "Emacs"                      "e" (λ! (+org/find-in-files "Emacs.org"))
-   :desc "GTD (Home)"                 "h" (λ! (+org/find-in-files "GTD.org"))
-   :desc "Inbox"                      "i" (λ! (+org/find-in-files "inbox.org"))
+   :desc "Emacs"                      "e" (λ! (+org/find-in-files "Main/Emacs.org"))
+   :desc "GTD (Home)"                 "h" (λ! (+org/find-in-files "Main/GTD.org"))
+   :desc "Inbox"                      "i" (λ! (+org/find-in-files "Main/inbox.org"))
    :desc "Find in notes"              "n" #'+org|search-in-notes
    :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
    :desc "Store Link"                 "y" #'org-store-link

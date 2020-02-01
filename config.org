@@ -578,7 +578,7 @@ plays a sound and prompts me to insert my count.
   "Start progression timers"
   (interactive)
   (let ((buffer-name (concat org-ql-view-buffer-name-prefix " (heading Timer)*")))
-    (org-ql-search (f-join org-directory "music.org") '(heading "Timer"))
+    (org-ql-search (f-join org-directory "Main/music.org") '(heading "Timer"))
     (with-current-buffer buffer-name
       (org-agenda-switch-to t))
     (kill-buffer buffer-name)
