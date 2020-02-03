@@ -6,17 +6,14 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
-* Utils
-
+* Main
 
 ** Refile to pinboard
 
 #+BEGIN_SRC elisp :tangle no
-(require 'om)
-
-(defun +pinboar|refile ()
-  "Foo"
+(defun +pinboard|refile ()
   (interactive)
+  (require 'om)
   (let* ((item (om-parse-this-headline))
          (headline (om-get-property :raw-value item))
          (headline-match (s-match "^\\[\\[\\(.+\\)\\]\\[\\(.*\\)\\]\\]" headline))
@@ -33,4 +30,9 @@
     (insert "\n")
     (insert new-item)
     (call-interactively #'counsel-org-tag)))
+
+(defun +pinboard|refile-agenda ()
+  (interactive)
+  (org-agenda-switch-to)
+  (+pinboard|refile))
 #+END_SRC
