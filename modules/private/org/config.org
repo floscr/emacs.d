@@ -121,7 +121,7 @@
 (defun +org-attach/downloads-file (file)
   "Attach a file in your downloads-directory."
   (interactive (list (read-file-name "Attach File: " downloads-dir)))
-  (+org-attach/uri file))
+  (+org/attach-file-and-insert-link file))
 #+END_SRC
 
 **** Screenshot
