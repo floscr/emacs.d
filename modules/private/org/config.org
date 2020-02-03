@@ -427,6 +427,7 @@ Return the path of the file."
               (org-table-export filename "orgtbl-to-csv")
               filename))))))
 #+END_SRC
+
 *** Refile Helpers
 :PROPERTIES:
 :SOURCE:   [[https://mollermara.com/blog/Fast-refiling-in-org-mode-with-hydras/][Fast refiling in org-mode with hydras | Josh Moller-Mara]]
@@ -547,12 +548,12 @@ Needs ~dvisvgm~
 
 (setq max-level-2-refile-targets
       (expand-org-file-names
-       '("Main/Emacs.org"
+       '("Main/emacs.org"
          "Main/art.org"
          "Main/diary"
          "Main/games.org"
          "Main/hardware.org"
-         "Main/GTD.org"
+         "Main/gtd.org"
          "Main/inbox.org"
          "Main/mealplan.org"
          "Main/misc.org"
@@ -644,7 +645,7 @@ Needs ~dvisvgm~
            "* TODO %?\n%a\n")
 
           ("c" "Calendar Event" entry
-           (file+headline ,(concat org-directory "/Main/GTD.org") "Calendar")
+           (file+headline ,(concat org-directory "/Main/gtd.org") "Calendar")
            "* %?\n")
 
           ("e" "Emacs Todo" entry
@@ -699,7 +700,7 @@ Needs ~dvisvgm~
   :config
   (setq org-agenda-files
         (--map (f-join org-directory it)
-               '("Main/GTD.org"
+               '("Main/gtd.org"
                  "Main/inbox.org"
                  "Main/calendar-family.org"
                  "Work/work.org"))))
@@ -815,7 +816,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
              ((org-agenda-sorting-strategy '(priority-down todo-state-down user-defined-down timestamp-down time-down))
               (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
                                          (:discard (:anything t)))))))
-   ((org-agenda-files (--> '("Main/projects.org" "Main/GTD.org")
+   ((org-agenda-files (--> '("Main/projects.org" "Main/gtd.org")
                             (--map (f-join org-directory it) it))))))
 #+END_SRC
 
@@ -887,7 +888,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "To Buy" :tag ("TO_BUY"))
                                  (:name "Untagged" :order -3 :anything))))))
    ((org-agenda-hide-tags-regexp "BACKLOG")
-    (org-agenda-files (--map (f-join org-directory it) '("Main/GTD.org"))))))
+    (org-agenda-files (--map (f-join org-directory it) '("Main/gtd.org"))))))
 #+END_SRC
 
 ***** Emacs
@@ -1161,7 +1162,7 @@ To sync the calendars use ~org-caldav-sync~.
           :desc "Downloads File"  "d" '+org-attach/downloads-file
           :desc "File"            "f" '+org-attach/file
           :desc "Screenshot"      "s" '+org-attach/last-screenshot
-          :desc "URI"             "u" '+org-attach/uri)
+          :desc "URI"             "u" '+org/attach-file-and-insert-link)
 
         (:prefix-map ("g" . "Goto")
           :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
@@ -1175,8 +1176,8 @@ To sync the calendars use ~org-caldav-sync~.
 
         (:prefix-map ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-refile
-          :desc "To GTD Backlog"     "b" (λ! (+org/refile "Main/GTD.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/refile "Main/GTD.org" "GTD")))))
+          :desc "To GTD Backlog"     "b" (λ! (+org/refile "gtd.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/refile "gtd.org" "GTD")))))
 
 (advice-add '+org-init-keybinds-h :after '+org-my-init-keybinds-h)
 #+END_SRC
@@ -1191,14 +1192,16 @@ To sync the calendars use ~org-caldav-sync~.
         "q" #'counsel-org-tag-agenda
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
-          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "Main/GTD.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/agenda-refile "Main/GTD.org" "GTD"))
-          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
-          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
-          :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos")))))
+          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "gtd.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/agenda-refile "gtd.org" "GTD"))
+          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "reading-list.org" "Reading List"))
+          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "shoppinglist.org" "Supermarket"))
+          :desc "To Work"            "W" (λ! (+org/agenda-refile "work.org" "Work Todos")))))
 
 (advice-add '+org-init-keybinds-h :after '+org-my-init-agenda-keybinds-h)
 #+END_SRC
+
+#+RESULTS:
 
 **** Meta Mapping
 
@@ -1249,8 +1252,8 @@ To sync the calendars use ~org-caldav-sync~.
    :desc "Save All Org Buffers"       "s" #'+default/org-notes-search
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Search Pinboard"            "b" #'helm-org-pinboard
-   :desc "Emacs"                      "e" (λ! (+org/find-in-files "Main/Emacs.org"))
-   :desc "GTD (Home)"                 "h" (λ! (+org/find-in-files "Main/GTD.org"))
+   :desc "Emacs"                      "e" (λ! (+org/find-in-files "Main/emacs.org"))
+   :desc "GTD (Home)"                 "h" (λ! (+org/find-in-files "Main/gtd.org"))
    :desc "Inbox"                      "i" (λ! (+org/find-in-files "Main/inbox.org"))
    :desc "Find in notes"              "n" #'+org|search-in-notes
    :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
