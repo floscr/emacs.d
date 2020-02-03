@@ -10,7 +10,7 @@
 
 ** Refile to pinboard
 
-#+BEGIN_SRC elisp :tangle no
+#+BEGIN_SRC elisp
 (defun +pinboard|refile ()
   (interactive)
   (require 'om)
