@@ -1,0 +1,36 @@
+#+TITLE: Pinboard
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle yes
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+* Utils
+
+
+** Refile to pinboard
+
+#+BEGIN_SRC elisp :tangle no
+(require 'om)
+
+(defun +pinboar|refile ()
+  "Foo"
+  (interactive)
+  (let* ((item (om-parse-this-headline))
+         (headline (om-get-property :raw-value item))
+         (headline-match (s-match "^\\[\\[\\(.+\\)\\]\\[\\(.*\\)\\]\\]" headline))
+         (new-item
+          (--> item
+               (om-set-property :level 2 it)
+               (om-headline-set-title! (nth 2 headline-match) nil it)
+               (om-set-property :todo-keyword nil it)
+               (om-headline-set-node-property "URL" (nth 1 headline-match) it)
+               (om-to-string it))))
+    (call-interactively #'org-cut-subtree)
+    (find-file org-pinboard-file)
+    (goto-char (point-max))
+    (insert "\n")
+    (insert new-item)
+    (call-interactively #'counsel-org-tag)))
+#+END_SRC
