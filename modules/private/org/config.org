@@ -14,6 +14,7 @@
 (if (featurep! +org-reading-list) (load! "+org-reading-list"))
 (if (featurep! +org-web-tools)    (load! "+org-web-tools"))
 (if (featurep! +org-tags)         (load! "+org-tags"))
+(if (featurep! +org-pinboard)     (load! "+org-pinboard"))
 #+END_SRC
 
 ** Utils
@@ -1176,6 +1177,7 @@ To sync the calendars use ~org-caldav-sync~.
 
         (:prefix-map ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-refile
+          :desc "Pinboard"           "p" '+pinboard|refile
           :desc "To GTD Backlog"     "b" (λ! (+org/refile "gtd.org" "GTD Backlog"))
           :desc "To GTD"             "g" (λ! (+org/refile "gtd.org" "GTD")))))
 
@@ -1192,6 +1194,7 @@ To sync the calendars use ~org-caldav-sync~.
         "q" #'counsel-org-tag-agenda
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
+          :desc "Pinboard"           "p" '+pinboard|refile-agenda
           :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "gtd.org" "GTD Backlog"))
           :desc "To GTD"             "g" (λ! (+org/agenda-refile "gtd.org" "GTD"))
           :desc "To Reading List"    "r" (λ! (+org/agenda-refile "reading-list.org" "Reading List"))

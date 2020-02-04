@@ -82,7 +82,8 @@
  (org
   +org-web-tools
   +org-reading-list
-  +org-tags))
+  +org-tags
+  +org-pinboard))
 
 (provide 'init)
 
