@@ -1716,6 +1716,15 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
 ***** Create review branch
 
 #+BEGIN_SRC elisp
+(defun +magit|delete-review-branches ()
+  "Delete all review branches that no longer have an upstream."
+  (interactive)
+  (--> (magit-list-branches)
+       (--filter (s-starts-with? "refs/heads/REVIEW" it) it)
+       (--map (magit-name-local-branch it) it)
+       (--reject (magit-get-upstream-branch it) it)
+       (--each (magit-branch-delete it t) it)))
+
 (defun +magit|checkout-review-branch (&optional branch start-point)
   "Create a branch with review prefix for easy cleanup afterwards."
   (interactive)
