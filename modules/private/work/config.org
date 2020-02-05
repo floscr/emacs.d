@@ -237,6 +237,23 @@ Create a canvas action
               (set-match-data data)
               (replace-match (template "\\1<<imports-string>>\\3"))))))))
 #+END_SRC
+*** Make PR
+
+#+BEGIN_SRC elisp
+(defun +MM|new-pr-from-branch ()
+  (interactive)
+  (let* ((remote-branch-name (--> (magit-get-current-branch)
+                                  (magit-name-remote-branch it)
+                                  (magit-split-branch-name it)
+                                  (cdr it)))
+         (file (f-join org-directory "Work/.pull-requests" (concat remote-branch-name ".org")))
+         ;; Prevent file template being applied for file
+         (+file-templates-alist nil))
+    (find-file-other-window file)
+    (when (eq (buffer-size) 0)
+      (yas/insert-by-name "Pull Request Template")
+      (goto-char (point-min)))))
+#+END_SRC
 
 ** Packages
 *** New Worktree
