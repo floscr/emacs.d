@@ -154,6 +154,7 @@ DISPLAY is a display name, frame or terminal, as in
   (let* ((font-family (or font-family)))
     (setq-default line-spacing line-space)
     (setq-default doom-font (font-spec :family font-family :size size))
+    (set-frame-font doom-font 'keep-size t)
     (message "reload frame")
     (doom/reload-font)))
 
