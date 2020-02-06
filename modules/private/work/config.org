@@ -254,6 +254,20 @@ Create a canvas action
       (yas/insert-by-name "Pull Request Template")
       (goto-char (point-min)))))
 #+END_SRC
+*** Go to node modules package
+
+#+BEGIN_SRC elisp
+(defun +MM|goto-npm-package ()
+  (interactive)
+  (let ((node-packages
+          (-->
+           (concat "jq -r '.dependencies | keys | .[]' " (f-join (projectile-project-root) "package.json"))
+           shell-command-to-string
+           split-string)))
+    (ivy-read "Go to package directory: " node-packages
+              :action (lambda (x) (find-file (f-join (projectile-project-root) "node_modules" x))))))
+#+END_SRC
+
 
 ** Packages
 *** New Worktree
