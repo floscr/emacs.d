@@ -825,7 +825,6 @@ Create a canvas action
     (message "No action found!")))
 #+END_SRC
 
-
 ** Bindings
 
 #+BEGIN_SRC elisp
