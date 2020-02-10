@@ -364,6 +364,20 @@ Projectile search is not fast reliable enough."
   (org-agenda-redo))
 #+END_SRC
 
+*** Agenda Change Link
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-change-link ()
+  "Change a link in the title from the org agenda."
+  (interactive)
+  (save-window-excursion
+    (org-agenda-switch-to)
+    (when (search-forward-regexp "\\[\\[" (point-at-eol) t)
+      (call-interactively #'org-insert-link))
+    (org-agenda-redo)))
+#+END_SRC
+
+
 *** Agenda Visit Enty in Narrow Mode
 
 #+BEGIN_SRC elisp
@@ -771,6 +785,7 @@ This helper replaces items with the same key, so you don't end up with a bunch o
   (while (and (org-up-heading-safe) (not (--find (string= (org-get-todo-state) it) '("PROJECT" "ACTIVE")))))
   (--find (string= (org-get-todo-state) it) '("PROJECT" "ACTIVE")))
 #+END_SRC
+
 ****** Super Agenda ~TODO~ autogroup
 
 Adds super agenda auto group for headings defined in [[*Get Parent Project][Get Parent Project]] function.
@@ -1237,6 +1252,7 @@ To sync the calendars use ~org-caldav-sync~.
 
 #+BEGIN_SRC elisp
 (map! :map org-agenda-mode-map
+      :m "C-c C-l" #'+org|agenda-change-link
       :desc "Org Window Left" "C-h" #'evil-window-left
       :desc "Org Window Left" "C-l" #'evil-window-right)
 #+END_SRC
