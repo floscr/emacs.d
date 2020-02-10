@@ -2584,7 +2584,13 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 (map!
  :leader
  (:prefix-map ("d" . "directory")
-   :desc "Project Root"  "p" (λ! (find-file (projectile-project-root)))))
+   :desc "Project Root"  "p" (λ! (find-file (projectile-project-root)))
+  (:prefix-map ("g" . "goto")
+    :desc "Downloads" "d" (λ! (find-file "~/Downloads"))
+    :desc "Desktop" "D" (λ! (find-file "~/Desktop"))
+    :desc "Code" "c" (λ! (find-file "~/Code"))
+    :desc "Tmp" "t" (λ! (find-file "/tmp"))
+    :desc "Home" "h" (λ! (find-file "~")))))
 #+END_SRC
 
 **** File
