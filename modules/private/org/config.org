@@ -436,17 +436,18 @@ Return the path of the file."
 
 #+BEGIN_SRC elisp
 (defun +org/refile (file headline &optional arg)
-  (let ((pos (save-excursion
-               (find-file (f-join org-directory file))
+  (let ((file (f-join org-directory file))
+        (pos (save-excursion
+               (find-file file)
                (org-find-exact-headline-in-buffer headline))))
-    (org-refile arg nil (list headline file nil pos)))
-  (switch-to-buffer (current-buffer)))
+    (org-refile arg nil (list headline file nil pos))))
 
 (defun +org/agenda-refile (file headline &optional arg)
   (save-window-excursion
-    (let ((pos (save-excursion
-                (find-file (f-join org-directory file))
-                (org-find-exact-headline-in-buffer headline))))
+    (let* ((file (f-join org-directory file))
+           (pos (save-excursion
+                  (find-file file)
+                  (org-find-exact-headline-in-buffer headline))))
       (org-agenda-refile arg (list headline file nil pos) t))))
 #+END_SRC
 
