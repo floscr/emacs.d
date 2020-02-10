@@ -1841,6 +1841,7 @@ Always keep markdown centered, without line numbers.
 #+BEGIN_SRC elisp
 (use-package! markdown-mode
   :init
+  (add-to-list 'auto-mode-alist '("\\.mdx\\'" . markdown-mode))
   (setq markdown-fontify-code-blocks-natively t)
   :config
   (add-hook! markdown-mode
