@@ -267,7 +267,20 @@ Create a canvas action
     (ivy-read "Go to package directory: " node-packages
               :action (lambda (x) (find-file (f-join (projectile-project-root) "node_modules" x))))))
 #+END_SRC
+*** Run package
 
+#+BEGIN_SRC elisp
+(defun +MM|npm-start-kits-app ()
+  (interactive)
+  (npm-mode)
+  (let* ((dir (f-join (projectile-project-root) "src/apps/"))
+         (apps (--> dir
+                    (f-entries it)
+                    (--map (s-replace dir "" it) it))))
+    (ivy-read "Start App: " apps
+              :action (lambda (x)
+                        (npm-mode-npm-run (template "start <<x>> -- --port 3008"))))))
+#+END_SRC
 
 ** Packages
 *** New Worktree
