@@ -287,7 +287,7 @@ Create a canvas action
 
 #+BEGIN_SRC elisp
 (defun +MM|new-worktree ()
-  "New worktree with the devpanel files and an npm install"
+  "New worktree with the devpanel files and an node modules."
   (interactive)
   (let* ((origin-path (projectile-project-root))
          (path (call-interactively 'magit-worktree-branch-project-worktree))
@@ -295,14 +295,14 @@ Create a canvas action
          (worktree-devutil-file (f-join path "src/apps/Main/DevPlugin.local.js")))
     (when (file-exists-p local-devutil-file)
       (copy-file local-devutil-file worktree-devutil-file))
-    (npm-mode)
-    (npm-mode-npm-ci)))
+    (async-shell-command (template "cp <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
 #+END_SRC
 
 #+BEGIN_SRC elisp
 (after! magit
   (transient-append-suffix 'magit-worktree "b" '("M" "+MM|Worktree" +MM|new-worktree)))
 #+END_SRC
+
 *** Import File
 
 #+BEGIN_SRC elisp
