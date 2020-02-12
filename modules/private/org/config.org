@@ -1194,8 +1194,8 @@ To sync the calendars use ~org-caldav-sync~.
         (:prefix-map ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-refile
           :desc "Pinboard"           "p" '+pinboard|refile
-          :desc "To GTD Backlog"     "b" (λ! (+org/refile "gtd.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/refile "gtd.org" "GTD")))))
+          :desc "To GTD Backlog"     "b" (λ! (+org/refile "Main/gtd.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/refile "Main/gtd.org" "GTD")))))
 
 (advice-add '+org-init-keybinds-h :after '+org-my-init-keybinds-h)
 #+END_SRC
@@ -1211,11 +1211,11 @@ To sync the calendars use ~org-caldav-sync~.
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
           :desc "Pinboard"           "p" '+pinboard|refile-agenda
-          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "gtd.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/agenda-refile "gtd.org" "GTD"))
-          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "reading-list.org" "Reading List"))
-          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "shoppinglist.org" "Supermarket"))
-          :desc "To Work"            "W" (λ! (+org/agenda-refile "work.org" "Work Todos")))))
+          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "Main/gtd.org" "GTD Backlog"))
+          :desc "To GTD"             "g" (λ! (+org/agenda-refile "Main/gtd.org" "GTD"))
+          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
+          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
+          :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos")))))
 
 (advice-add '+org-init-keybinds-h :after '+org-my-init-agenda-keybinds-h)
 #+END_SRC
