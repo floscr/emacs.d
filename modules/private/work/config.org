@@ -122,7 +122,7 @@ Create a canvas action
         ;; Copy require stament to be inserted to app to the clipboard
         (--> (f-join root-path "src/")
              (s-chop-prefix it new-container-path)
-             (template "'<<new-container-name>>': require('<<it>>/controller'),\n")
+             (template "'<<new-container-name>>': require('<<it>>/Default/controller'),\n")
              (progn
                (kill-new it)
                (message (template "Created container and copied <<(s-chomp it)>> to the clipboard!"))))))))
