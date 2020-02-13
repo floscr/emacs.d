@@ -381,7 +381,9 @@ Create a canvas action
 
 (defun +MM:import|insert-local-import (import)
   (let ((replacement-char "$$0")
-        (import-file-or-dir (replace-regexp-in-string "/index\.js$" "" import)))
+        (import-file-or-dir (--> import
+                                 (replace-regexp-in-string "/index\.js$" "" it)
+                                 (f-no-ext it))))
     (insert (template "import { <<replacement-char>> } from './<<import-file-or-dir>>';\n"))
     (search-backward "$$0")
     (delete-forward-char 3)
