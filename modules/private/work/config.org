@@ -389,12 +389,16 @@ Create a canvas action
     (delete-forward-char 3)
     (evil-insert-state)))
 
-(defun +MM:import|insert-package-import (import)
-  (let ((replacement-char "$$0"))
-    (insert (template "import { <<replacement-char>> } from '<<import>>';\n"))
-    (search-backward "$$0")
-    (delete-forward-char 3)
-    (evil-insert-state)))
+(defun +MM:import|insert-package-import (package &optional import)
+  (let* ((replacement-char "$$0")
+         (line (template "import { <<replacement-char>> } from '<<package>>';\n")))
+    (if import
+        (insert (s-replace "\$\$0" import line))
+      (progn
+        (insert (template "import { <<replacement-char>> } from '<<package>>';\n"))
+        (search-backward replacement-char)
+        (delete-forward-char 3)
+        (evil-insert-state)))))
 
 (defun +MM:import|update-import (import)
   (goto-char (point-at-eol))
