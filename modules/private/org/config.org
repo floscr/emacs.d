@@ -714,6 +714,7 @@ Needs ~dvisvgm~
 #+BEGIN_SRC elisp
 (after! org-agenda
   :config
+  (setq org-agenda-block-separator ?—)
   (setq org-agenda-files
         (--map (f-join org-directory it)
                '("Main/gtd.org"
