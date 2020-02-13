@@ -429,15 +429,15 @@ Create a canvas action
            (s-repeat it "\n")
            (insert it))))))
 
-(defun +MM:import|import (import is-local?)
+(defun +MM:import|import (package is-local?)
   (goto-char (point-min))
-  (if (search-forward-regexp (template "from '.*<<import>>.*';") nil t)
-      (+MM:import|update-import import)
+  (if (search-forward-regexp (template "from '.*<<package>>.*';") nil t)
+      (+MM:import|update-import package)
     (progn
       (+MM:import/buffer-goto-or-create-header (if is-local? "LOCALS" "EXTERNALS"))
       (if is-local?
-          (+MM:import|insert-local-import import)
-        (+MM:import|insert-package-import import))
+          (+MM:import|insert-local-import package)
+        (+MM:import|insert-package-import package))
       (+MM:import/fix-empty-lines))))
 
 (defun +MM:import|ivy-import ()
