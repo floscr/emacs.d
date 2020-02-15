@@ -966,7 +966,6 @@ Widen can be restored with ~g~.
                  (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub"))))))
 
 #+END_SRC
-
 **** Bindings
 
 #+BEGIN_SRC elisp
