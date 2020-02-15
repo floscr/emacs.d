@@ -2804,6 +2804,14 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Eval Region"  "E" #'executable-interpret)
 #+END_SRC
 
+**** Git
+
+#+BEGIN_SRC elisp
+(map! :map magit-mode-map
+      :localleader
+      :desc "Toggle Magit Buffer Lock" "#" #'magit-toggle-buffer-lock)
+#+END_SRC
+
 **** Reasonml
 
 #+BEGIN_SRC elisp
