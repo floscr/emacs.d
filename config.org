@@ -2685,13 +2685,27 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
  :leader
  :desc  "Split Vertical"        "|"    #'evil-window-vsplit
  :desc  "Split Horizontal"      "-"    #'evil-window-split
+
  (:prefix-map ("w" . "window")
   :desc  "Delete"               "d"    #'delete-window
+  :desc  "Ace Delete Windo"     "D"    #'ace-delete-window
   :desc  "New"                  "n"    #'evil-window-new
+
+  :desc  "Undo"                 "u"    #'winner-undo
+  :desc  "Redo"                 "r"    #'winner-redo
+  :desc  "Enlargen"             "o"    #'doom/window-enlargen
+
   :desc  "Split Vertical"       "|"    #'evil-window-vsplit
   :desc  "Split Horizontal"     "_"    #'evil-window-split
+
+  :desc  "Move Left"            "H"    #'+evil/window-move-left
+  :desc  "Move Down"            "U"    #'+evil/window-move-down
+  :desc  "Move Up"              "K"    #'+evil/window-move-up
+  :desc  "Move Right"           "L"    #'+evil/window-move-right
+
   :desc  "Set Height"           "C-_"  #'evil-window-set-height
   :desc  "Set Height"           "C-|"  #'evil-window-set-width
+
   :desc  "Swap"                 "SPC"  #'ace-swap-window
   :desc "Toggle Locked"         "#"    #'toggle-window-dedicated))
 #+END_SRC
