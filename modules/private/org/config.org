@@ -878,7 +878,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
      ((org-agenda-prefix-format "  %?-12t% s")
       (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
       (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
-                                 (:name nil :discard (:scheduled t))
+                                 (:name nil :discard (:scheduled t :deadline t))
                                  (:name "Inbox Links" :regexp "TODO \\(\\[\\[\\\|https?:\\)" :order 2)
                                  (:name "Inbox" :file-path ".*inbox.org$" :order 2)
                                  (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
