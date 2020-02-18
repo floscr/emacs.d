@@ -295,7 +295,7 @@ Create a canvas action
          (worktree-devutil-file (f-join path "src/apps/Main/DevPlugin.local.js")))
     (when (file-exists-p local-devutil-file)
       (copy-file local-devutil-file worktree-devutil-file))
-    (async-shell-command (template "cp <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
+    (async-shell-command (template "cp -r <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
 #+END_SRC
 
 #+BEGIN_SRC elisp
