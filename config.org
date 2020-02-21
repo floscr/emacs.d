@@ -2669,6 +2669,15 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
    :desc "Workspace Project Files"     "P" #'+workspace|find-workspace-project-file))
 #+END_SRC
 
+**** Projects
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("s" . "search")
+   :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point))
+#+END_SRC
+
 **** Toggle
 
 #+BEGIN_SRC elisp
