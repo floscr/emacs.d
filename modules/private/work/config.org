@@ -254,6 +254,7 @@ Create a canvas action
       (yas/insert-by-name "Pull Request Template")
       (goto-char (point-min)))))
 #+END_SRC
+
 *** Go to node modules package
 
 #+BEGIN_SRC elisp
@@ -291,11 +292,19 @@ bookmarks are not helpful since they're not relative.
       '((:file "src/containers/MapEditor/Components/Canvas.defaultProps.js"
                :relative t
                :name "Canvas Shortcuts: Edit Mode"
-               :match "const editableKeybindings = {")
+               :goto "const editableKeybindings = {")
         (:file "src/containers/MapEditor/Components/Canvas.defaultProps.js"
                :relative t
                :name "Canvas Shortcuts: All"
-               :match "const allModesKeybindings = {")))
+               :goto "const allModesKeybindings = {")
+        (:file "src/containers/MapEditor.Node.Editor/Default/actions/componentWillMount.js"
+               :relative t
+               :name "Node Editor: Tokenization"
+               :goto "const convertTextToTokens")
+        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Arr.js"
+               :relative t
+               :name "Common: Arr"
+               :action #'counsel-imenu)))
 
 (defun +MM/find-bookmark-buffer (name)
   "Jump to a FILE relative to the project root, go to character POS."
@@ -304,10 +313,12 @@ bookmarks are not helpful since they're not relative.
                           (when (plist-get item :relative)
                             (f-join (projectile-project-root) it)))))
     (find-file file)
-    (-some--> (plist-get item :match)
+    (-some--> (plist-get item :goto)
       (--tap (progn
                (goto-char (point-min))
-               (search-forward it)) it))))
+               (search-forward it)) it))
+    (-some--> (plist-get item :action)
+      (call-interactively it))))
 
 (defun +MM|bookmarks ()
   "Project root relative bookmarks."
