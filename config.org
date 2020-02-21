@@ -773,8 +773,7 @@ Bindings
 #+BEGIN_SRC elisp
 (use-package! dired
   :init
-  (setq
-    dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$"))
+  (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$"))
 #+END_SRC
 
 ***** Ignore .bs.js
@@ -1170,7 +1169,6 @@ Adds general bindings to ivy.
                    (`t " -i ")
                    (`nil " -s ")))))
 #+END_SRC
-
 *** Javascript
 **** Config
 
