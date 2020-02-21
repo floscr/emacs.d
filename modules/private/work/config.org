@@ -892,8 +892,9 @@ bookmarks are not helpful since they're not relative.
                                              (copy-message it)))))
 
         :localleader
-        :desc  "Repl"      "R"  #'+MM|nodejs-repl
-        :desc  "Bookmarks" "b" #'+MM|bookmarks
+        :desc  "Repl"             "R" #'+MM|nodejs-repl
+        :desc  "Goto NPM Package" "m" #'+MM|goto-npm-package
+        :desc  "Bookmarks"        "b" #'+MM|bookmarks
 
         (:prefix ("f" . "file")
           :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
