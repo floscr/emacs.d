@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: tap
-# key: tap
+# name: Console.log(\"|\", value)
+# key: logv        
 # --
-tap(console.log)
+console.log('$1', $1);
