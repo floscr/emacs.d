@@ -60,7 +60,7 @@
           (erase-buffer)
           (when (dired-preview-sidebar/is-image? file)
             (insert-image-file (dired-preview-sidebar/insert-thumb file))
-            (newline)
+            (goto-char (point-max))
             (newline))
           (insert (file-name-nondirectory file))))))
 
