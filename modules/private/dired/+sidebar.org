@@ -1,0 +1,36 @@
+#+TITLE: Dired Sidebar
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle no
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+* Main
+#+BEGIN_SRC elisp
+(defgroup dired-preview-sidebar nil
+  "A minimaap sidebar for Emacs."
+  :group 'convenience)
+
+(defcustom dired-preview-sidebar-buffer-name "*Dired Preview Sidebar*"
+  "Prefix for buffer names of minimap sidebar."
+  :type 'string
+  :group 'dired-preview-sidebar)
+
+(defcustom dired-preview-sidebar-window-width 0.8
+  "Fraction of width which should be used for sidebar."
+  :type 'number
+  :group 'minimap)
+
+(defun dired-preview-sidebar/open ()
+  "Open preview Sidebar."
+  (interactive)
+  (let ((buffer (--> dired-preview-sidebar-buffer-name
+                     (or (get-buffer it)
+                         (generate-new-buffer it))))
+        (last-window (selected-window))
+        (window (split-window-horizontally (round (* (window-width) dired-preview-sidebar-window-width)))))
+    (set-window-buffer window buffer)
+    (with-selected-window window
+      (read-only-mode 1))))
+#+END_SRC
