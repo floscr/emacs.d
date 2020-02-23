@@ -17,12 +17,57 @@
   :type 'string
   :group 'dired-preview-sidebar)
 
+(defcustom dired-preview-sidebar-thumb-directory "/tmp/dired-preview-thumbs"
+  "Prefix for buffer names of minimap sidebar."
+  :type 'string
+  :group 'dired-preview-sidebar)
+
 (defcustom dired-preview-sidebar-window-width 0.8
   "Fraction of width which should be used for sidebar."
   :type 'number
   :group 'minimap)
 
-(defun dired-preview-sidebar/open ()
+(defcustom dired-preview-sidebar-image-extensions '("jpg" "png" "bmp" "gif")
+  "Prefix for buffer names of minimap sidebar."
+  :type 'list
+  :group 'dired-preview-sidebar)
+
+(defun dired-preview-sidebar/is-image? (item)
+  (-->
+   (f-ext item)
+   (-contains? dired-preview-sidebar-image-extensions it)))
+
+(defun dired-preview-sidebar/sha (item)
+  (shell-command-to-string (concat "sha1sum " file " | cut -f -1 -d \" \"")))
+
+(defun dired-preview-sidebar/insert-thumb (item)
+  (let* ((sha1-sum (--> (dired-preview-sidebar/sha file)
+                        (s-trim it)))
+         (dir dired-preview-sidebar-thumb-directory)
+         (result (f-join dir (concat sha1-sum ".png"))))
+    (unless (f-exists? dir) (f-mkdir dir))
+    (unless (f-exists? result)
+      (shell-command-to-string (concat "convert " item " -resize 128x128 " result)))
+    result))
+
+(defun dired-preview-sidebar/update (&optional item)
+  (unless (derived-mode-p 'dired-mode)
+    (error "Not a Dired buffer"))
+  (if-let* ((file (dired-get-filename nil t))
+            (buffer (get-buffer dired-preview-sidebar-buffer-name)))
+      (with-current-buffer buffer
+        (let ((buffer-read-only nil))
+          (erase-buffer)
+          (when (dired-preview-sidebar/is-image? file)
+            (insert-image-file (dired-preview-sidebar/insert-thumb file))
+            (newline)
+            (newline))
+          (insert (file-name-nondirectory file))))))
+
+;; (advice-add 'dired-goto-file :after #'dired-preview-sidebar/update)
+;; (advice-add 'dired-next-line :after #'dired-preview-sidebar/update)
+
+(defun dired-preview-sidebar ()
   "Open preview Sidebar."
   (interactive)
   (let ((buffer (--> dired-preview-sidebar-buffer-name
@@ -30,7 +75,9 @@
                          (generate-new-buffer it))))
         (last-window (selected-window))
         (window (split-window-horizontally (round (* (window-width) dired-preview-sidebar-window-width)))))
-    (set-window-buffer window buffer)
     (with-selected-window window
-      (read-only-mode 1))))
+      (set-window-buffer window buffer))
+    (with-current-buffer buffer
+      (read-only-mode 1))
+    (dired-preview-sidebar/update)))
 #+END_SRC
