@@ -32,6 +32,31 @@
   :type 'list
   :group 'dired-preview-sidebar)
 
+;; From https://github.com/skangas/mentor/blob/a4e6fb1034a0cf86b9855e1be41109fdc2a02c4c/mentor.el#L1760
+(defun dired-preview-sidebar/bytes-to-human (bytes)
+  "Convert BYTES to human readable and try to keep it short."
+  (if bytes
+      (let* ((bytes (if (stringp bytes) (string-to-number bytes) bytes))
+             (kb 1024.0)
+             (mb (* kb 1024.0))
+             (gb (* mb 1024.0)))
+        (cond ((< bytes 0) "???") ;; workaround for old xmlrpc-c
+              ((= bytes 0.0) (format "%d" bytes))
+              ((< bytes 999.0) (format "%d Bytes" bytes))
+              ((< bytes (* kb 999.5)) (format "%.0f Kb" (/ bytes kb)))
+              ((< bytes (* mb 999.5))
+               (let ((fmt (if (< bytes (* 9.95 mb))
+                              "%.1 fMb"
+                            "%.0f Mb")))
+                 (format fmt (/ bytes mb))))
+              ((< bytes (* gb 1000))
+               (let ((fmt (if (< bytes (* 9.95 gb))
+                              "%.1f Gb"
+                            "%.0f Gb")))
+                 (format fmt (/ bytes gb))))
+              (t "1 TB+")))
+    ""))
+
 (defun dired-preview-sidebar/is-image? (item)
   (-->
    (f-ext item)
@@ -62,7 +87,9 @@
             (insert-image-file (dired-preview-sidebar/insert-thumb file))
             (goto-char (point-max))
             (newline))
-          (insert (file-name-nondirectory file))))))
+          (insert
+           (file-name-nondirectory file) ?\n
+           (dired-preview-sidebar/bytes-to-human (f-size file)))))))
 
 ;; (advice-add 'dired-goto-file :after #'dired-preview-sidebar/update)
 ;; (advice-add 'dired-next-line :after #'dired-preview-sidebar/update)
