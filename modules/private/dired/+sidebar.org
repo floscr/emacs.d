@@ -6,39 +6,8 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
-* Utils
+* Variables
 
-** Update Function
-
-#+BEGIN_SRC elisp
-(defun dired-preview-sidebar/update (&optional foo)
-  (unless (derived-mode-p 'dired-mode)
-    (error "Not a Dired buffer"))
-  (if-let* ((item (dired-get-filename nil t))
-            (buffer (get-buffer dired-preview-sidebar-buffer-name)))
-      (with-current-buffer buffer
-        (let ((buffer-read-only nil))
-          (erase-buffer)
-          (when (dired-preview-sidebar/is-image? item)
-            (insert-image-file (dired-preview-sidebar/insert-thumb item))
-            (goto-char (point-max))
-            (newline))
-          ;; Filename
-          (insert (file-name-nondirectory item) ?\n)
-          ;; Filesize
-          (insert (dired-preview-sidebar/bytes-to-human (f-size item)) ?\n)
-          (when (f-dir? item)
-            (-->
-             (f-entries item)
-             (length it)
-             (cond ((eq 0 it) "Empty directory")
-                   ((eq 1 it) "1 item")
-                   (t (template "<<it>> items")))
-             (insert it ?\n)))))))
-#+END_SRC
-
-
-* Main
 #+BEGIN_SRC elisp
 (defgroup dired-preview-sidebar nil
   "A minimaap sidebar for Emacs."
@@ -64,6 +33,16 @@
   :type 'list
   :group 'dired-preview-sidebar)
 
+(defcustom dired-preview-sidebar-video-extensions '("mkv" "mp4" "avi" "mpg" "mpeg" "flv" "mov")
+  "Prefix for buffer names of minimap sidebar."
+  :type 'list
+  :group 'dired-preview-sidebar)
+#+END_SRC
+
+* Utils
+** Convert to human readable format
+
+#+BEGIN_SRC elisp
 ;; From https://github.com/skangas/mentor/blob/a4e6fb1034a0cf86b9855e1be41109fdc2a02c4c/mentor.el#L1760
 (defun dired-preview-sidebar/bytes-to-human (bytes)
   "Convert BYTES to human readable and try to keep it short."
@@ -88,17 +67,26 @@
                  (format fmt (/ bytes gb))))
               (t "1 TB+")))
     ""))
+#+END_SRC
 
+** Thumb renderer
+
+#+BEGIN_SRC elisp
 (defun dired-preview-sidebar/is-image? (item)
   (-->
    (f-ext item)
    (-contains? dired-preview-sidebar-image-extensions it)))
 
+(defun dired-preview-sidebar/is-video? (item)
+  (-->
+   (f-ext item)
+   (-contains? dired-preview-sidebar-video-extensions it)))
+
 (defun dired-preview-sidebar/sha (item)
-  (shell-command-to-string (concat "sha1sum " file " | cut -f -1 -d \" \"")))
+  (shell-command-to-string (concat "sha1sum " item " | cut -f -1 -d \" \"")))
 
 (defun dired-preview-sidebar/insert-thumb (item)
-  (let* ((sha1-sum (--> (dired-preview-sidebar/sha file)
+  (let* ((sha1-sum (--> (dired-preview-sidebar/sha item)
                         (s-trim it)))
          (dir dired-preview-sidebar-thumb-directory)
          (result (f-join dir (concat sha1-sum ".png"))))
@@ -107,10 +95,51 @@
       (shell-command-to-string (concat "convert " item " -resize '350>' " result)))
     result))
 
+(defun dired-preview-sidebar/insert-video-thumb (item)
+  (let* ((dir dired-preview-sidebar-thumb-directory)
+         (result (f-join dir (concat (f-no-ext (file-name-nondirectory item)) ".png"))))
+    (unless (f-exists? dir) (f-mkdir dir))
+    (unless (f-exists? result)
+      (shell-command-to-string (template "ffmpeg -ss 120 -i \"<<item>>\" -t 1 -s 384x216 -f image2 \"<<result>>\"")))
+    result))
+#+END_SRC
 
-;; (advice-add 'dired-goto-file :after #'dired-preview-sidebar/update)
-;; (advice-add 'dired-next-line :after #'dired-preview-sidebar/update)
+** Update Function
 
+#+BEGIN_SRC elisp
+(defun dired-preview-sidebar/update (&optional foo)
+  (unless (derived-mode-p 'dired-mode)
+    (error "Not a Dired buffer"))
+  (if-let* ((item (dired-get-filename nil t))
+            (buffer (get-buffer dired-preview-sidebar-buffer-name)))
+      (with-current-buffer buffer
+        (let ((buffer-read-only nil))
+          (erase-buffer)
+          (when (dired-preview-sidebar/is-image? item)
+            (insert-image-file (dired-preview-sidebar/insert-thumb item))
+            (goto-char (point-max))
+            (newline))
+          (when (dired-preview-sidebar/is-video? item)
+            (insert-image-file (dired-preview-sidebar/insert-video-thumb item))
+            (goto-char (point-max))
+            (newline))
+          ;; Filename
+          (insert (file-name-nondirectory item) ?\n)
+          ;; Filesize
+          (insert (dired-preview-sidebar/bytes-to-human (f-size item)) ?\n)
+          (when (f-dir? item)
+            (-->
+              (f-entries item)
+              (length it)
+              (cond ((eq 0 it) "Empty directory")
+                    ((eq 1 it) "1 item")
+                    (t (template "<<it>> items")))
+              (insert it ?\n)))))))
+#+END_SRC
+
+* Main
+
+#+BEGIN_SRC elisp
 (defun dired-preview-sidebar ()
   "Open preview Sidebar."
   (interactive)
@@ -124,4 +153,11 @@
     (with-current-buffer buffer
       (read-only-mode 1))
     (dired-preview-sidebar/update)))
+#+END_SRC
+
+* Etc
+
+#+BEGIN_SRC elisp
+;; (advice-add 'dired-goto-file :after #'dired-preview-sidebar/update)
+;; (advice-add 'dired-next-line :after #'dired-preview-sidebar/update)
 #+END_SRC
