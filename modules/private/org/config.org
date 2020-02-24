@@ -909,6 +909,18 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
     (org-agenda-files (--map (f-join org-directory it) '("Main/gtd.org"))))))
 #+END_SRC
 
+***** Cooking Backlog
+
+#+BEGIN_SRC elisp
+(+org/add-to-agenda-custom-commands
+ '("C" "Cooking Backlog"
+   ((tags-todo "+BACKLOG"
+     ((org-agenda-prefix-format "  %?-12t% s")
+      (org-agenda-todo-ignore-scheduled t)
+      (org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-up))
+      (org-agenda-files (list (f-join org-directory "Main/cooking.org"))))))))
+#+END_SRC
+
 ***** Emacs
 
 #+BEGIN_SRC elisp
