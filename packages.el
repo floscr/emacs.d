@@ -19,6 +19,7 @@
 (package! org-ql :recipe (:host github :repo "alphapapa/org-ql"))
 (package! org-super-agenda :recipe (:host github :repo "alphapapa/org-super-agenda"))
 (package! ob-async)
+(package! graphql)
 
 ;;; Utils
 ;; Show changes in current branch
