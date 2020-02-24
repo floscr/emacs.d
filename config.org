@@ -115,6 +115,15 @@ Double press ~v~ to enable.
 
 (evil-define-key 'visual 'global (kbd "v") #'hydra-expand-region/body)
 #+END_SRC
+*** Chmod this file
+
+#+BEGIN_SRC elisp
+(defun chmod-this-file ()
+  "Chmod +x the current file"
+  (interactive)
+  (shell-command (template "chmod +x \"<<(buffer-file-name)>>\"")))
+#+END_SRC
+
 ** UI
 *** Frame padding
 
