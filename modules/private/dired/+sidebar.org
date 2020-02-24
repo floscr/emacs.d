@@ -92,7 +92,7 @@
          (result (f-join dir (concat sha1-sum ".png"))))
     (unless (f-exists? dir) (f-mkdir dir))
     (unless (f-exists? result)
-      (shell-command-to-string (concat "convert " item " -resize '350>' " result)))
+      (shell-command-to-string (template "convert \"<<item>>\" -resize '350>' \"<<result>>\"")))
     result))
 
 (defun dired-preview-sidebar/insert-video-thumb (item)
