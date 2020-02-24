@@ -28,10 +28,7 @@
   :type 'number
   :group 'minimap)
 
-(defcustom dired-preview-sidebar-image-extensions '("jpg" "png" "bmp" "gif")
-  "Prefix for buffer names of minimap sidebar."
-  :type 'list
-  :group 'dired-preview-sidebar)
+(setq dired-preview-sidebar-image-extensions '("jpg" "jpeg" "png" "bmp" "gif" "ai" "eps"))
 
 (defcustom dired-preview-sidebar-video-extensions '("mkv" "mp4" "avi" "mpg" "mpeg" "flv" "mov")
   "Prefix for buffer names of minimap sidebar."
