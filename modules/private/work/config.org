@@ -258,6 +258,19 @@ Create a canvas action
 *** Go to node modules package
 
 #+BEGIN_SRC elisp
+(after! ivy
+  (ivy-set-actions
+   '+MM|goto-npm-package
+   '(("j" +MM|goto-npm-package/find-file-other-window "open in other window"))))
+
+(defun +MM|goto-npm-package/find-file (item &optional other-window?)
+  (let ((find-fn (if other-window? 'find-file-other-window 'find-file))
+        (dir (f-join (projectile-project-root) "node_modules" item)))
+    (funcall find-fn dir)))
+
+(defun +MM|goto-npm-package/find-file-other-window (item)
+  (+MM|goto-npm-package/find-file item t))
+
 (defun +MM|goto-npm-package ()
   (interactive)
   (let ((node-packages
@@ -266,7 +279,7 @@ Create a canvas action
            shell-command-to-string
            split-string)))
     (ivy-read "Go to package directory: " node-packages
-              :action (lambda (x) (find-file (f-join (projectile-project-root) "node_modules" x))))))
+              :action #'+MM|goto-npm-package/find-file)))
 #+END_SRC
 *** Run package
 
