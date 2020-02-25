@@ -344,21 +344,34 @@ bookmarks are not helpful since they're not relative.
 *** New Worktree
 
 #+BEGIN_SRC elisp
-(defun +MM|new-worktree ()
-  "New worktree with the devpanel files and an node modules."
-  (interactive)
+(defun +MM/magit-create-worktree (&optional same-branch?)
+  "New worktree with the devpanel files and an node modules.
+When SAME-BRANCH? is t use the current branch instead of creating a new one."
   (let* ((origin-path (projectile-project-root))
-         (path (call-interactively 'magit-worktree-branch-project-worktree))
+         (path (call-interactively (if same-branch?
+                                       'magit-worktree-branch-checkout
+                                     'magit-worktree-branch-project-worktree)))
          (local-devutil-file (f-join origin-path "src/apps/Main/DevPlugin.local.js"))
          (worktree-devutil-file (f-join path "src/apps/Main/DevPlugin.local.js")))
     (when (file-exists-p local-devutil-file)
       (copy-file local-devutil-file worktree-devutil-file))
     (async-shell-command (template "cp -r <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
+
+(defun +MM|magit-create-worktree ()
+  "Create a new branch worktree based on an existing branch."
+  (interactive)
+  (+MM/magit-create-worktree))
+
+(defun +MM|magit-create-existing-worktree ()
+  "Create a new worktree based on an existing branch."
+  (interactive)
+  (+MM/magit-create-worktree t))
 #+END_SRC
 
 #+BEGIN_SRC elisp
 (after! magit
-  (transient-append-suffix 'magit-worktree "b" '("M" "+MM|Worktree" +MM|new-worktree)))
+  (transient-append-suffix 'magit-worktree "b" '("w" "MM: Create Worktree" +MM|magit-create-worktree))
+  (transient-append-suffix 'magit-worktree "b" '("W" "MM: Checkout Worktree" +MM|magit-create-existing-worktree)))
 #+END_SRC
 
 *** Import File
