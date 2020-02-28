@@ -2705,6 +2705,7 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
  :leader
  (:prefix-map ("TAB" . "workspace")
    :desc "Switch to"     "." #'+workspace/my-switch-to
+   :desc "Close others"  "o" #'+workspace|close-others
    :desc "Create"        "c" #'+workspace/new-named
    :desc "Rename"        "," #'+workspace/rename
    :desc "Clone"         "C" (λ!
