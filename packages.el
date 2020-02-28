@@ -32,6 +32,7 @@
 (package! nov)
 
 (package! org-caldav)
+(package! org-noter)
 
 (package! define-word)
 

@@ -1153,6 +1153,58 @@ To sync the calendars use ~org-caldav-sync~.
   :commands (org-media-insert-book org-media-insert-book-german))
 #+END_SRC
 
+*** Org Noter & PDF
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! org-noter
+  :commands (org-noter))
+#+END_SRC
+
+**** Utils
+***** Go to org-noter location
+
+#+BEGIN_SRC elisp
+(defun +org-noter|goto ()
+  (interactive)
+  (select-window (org-noter--get-notes-window))
+  (counsel-org-goto)
+  (org-noter-sync-current-note))
+#+END_SRC
+
+***** Flip between pages
+
+#+BEGIN_SRC elisp
+;; (defcustom +pdf-flip-pages nil
+;;   "Pageset"
+;;   :type 'list)
+
+;; (defun +pdf|flip-between ()
+;;   (let ((current-page (pdf-view-current-page))))
+
+;;   (cond ((eq +pdf-flip-pages)))
+;;   (if +pdf-flip-pages)
+
+;;   (let (())
+;;     (pdf-history-backward)
+;;     (setq +pdf-flip-pages (list (pdf-view-current-page) current-page))))
+#+END_SRC
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map! :map pdf-view-mode-map
+      :n "C-o" #'pdf-history-backward)
+
+(map! :map (org-noter-doc-mode-map org-noter-doc-mode-map)
+      :localleader
+      :desc "Next Note" "g" #'+org-noter|goto
+      :desc "Next Note" "n" #'org-noter-sync-next-note
+      :desc "Next Note" "k" #'org-noter-sync-next-note
+      :desc "Next Note" "p" #'org-noter-sync-prev-note
+      :desc "Next Note" "j" #'org-noter-sync-prev-note)
+#+END_SRC
+
 ** Bindings
 *** Local Leader Bindings
 **** Local Leader Mapping
