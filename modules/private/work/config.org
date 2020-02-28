@@ -281,7 +281,7 @@ Create a canvas action
     (ivy-read "Go to package directory: " node-packages
               :action #'+MM|goto-npm-package/find-file)))
 #+END_SRC
-*** Run package
+*** Start kits app
 
 #+BEGIN_SRC elisp
 (defun +MM|npm-start-kits-app ()
