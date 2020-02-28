@@ -33,6 +33,8 @@
 
 (package! org-caldav)
 (package! org-noter)
+(package! calctex :recipe (:host github :repo "johnbcoughlin/calctex"
+                                 :files ("*.el")))
 
 (package! define-word)
 
