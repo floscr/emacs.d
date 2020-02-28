@@ -1174,7 +1174,7 @@ To sync the calendars use ~org-caldav-sync~.
 
 ***** Flip between pages
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 ;; (defcustom +pdf-flip-pages nil
 ;;   "Pageset"
 ;;   :type 'list)
