@@ -101,19 +101,6 @@ Call FUNC with ARGS."
 (add-to-list 'auto-mode-alist '("\\.otf\\'" . image-mode))
 #+END_SRC
 
-*** Shorten Yes/No prompts
-:PROPERTIES:
-:SOURCE:   https://github.com/wasamasa/dotemacs/blob/master/init.org#shorten-yesno-prompts
-:END:
-
-Per default you're required to type out a full "yes" or "no" whenever
-the function ~yes-or-no-p~ is invoked, let's substitute its function
-definition to allow a "y" or "n" without even requiring confirmation.
-
-#+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-
 *** Fine undo
 
 Whether actions like "cw" are undone in several steps.
