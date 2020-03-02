@@ -2152,21 +2152,21 @@ Set it to ~32 MiB~.
 
 #+BEGIN_SRC elisp
 (setq +lookup-provider-url-alist
-  '(("DuckDuckGo"        . "https://duckduckgo.com/?q=%s")
-    ("DuckDuckGo Lucky"  . "https://duckduckgo.com/?q=\\%s")
-    ("Github Code"       . "https://github.com/search?search&q=%s&type=Code")
-    ("Google"            . "https://google.com/search?q=%s")
-    ("Google images"     . "https://google.com/images?q=%s")
-    ("Google maps"       . "https://maps.google.com/maps?q=%s")
-    ("NPM"               . "https://npmjs.com/search?q=%s")
-    ("Hoogle"            . "https://www.haskell.org/hoogle/?hoogle=%s")
-    ("Project Gutenberg" . "http://www.gutenberg.org/ebooks/search/?query=%s")
-    ("Explain Shell"     . "https://explainshell.com/explain?cmd=%s")
-    ("StackOverflow"     . "https://stackoverflow.com/search?q=%s")
-    ("Github"            . "https://github.com/search?ref=simplesearch&q=%s")
-    ("Youtube"           . "https://youtube.com/results?aq=f&oq=&search_query=%s")
-    ("Wolfram alpha"     . "https://wolframalpha.com/input/?i=%s")
-    ("Wikipedia"         . "https://wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")))
+  '(("DuckDuckGo"         "https://duckduckgo.com/?q=%s")
+    ("DuckDuckGo Lucky"   "https://duckduckgo.com/?q=\\%s")
+    ("Github Code"        "https://github.com/search?search&q=%s&type=Code")
+    ("Google"             "https://google.com/search?q=%s")
+    ("Google images"      "https://google.com/images?q=%s")
+    ("Google maps"        "https://maps.google.com/maps?q=%s")
+    ("NPM"                "https://npmjs.com/search?q=%s")
+    ("Hoogle"             "https://www.haskell.org/hoogle/?hoogle=%s")
+    ("Project Gutenberg"  "http://www.gutenberg.org/ebooks/search/?query=%s")
+    ("Explain Shell"      "https://explainshell.com/explain?cmd=%s")
+    ("StackOverflow"      "https://stackoverflow.com/search?q=%s")
+    ("Github"             "https://github.com/search?ref=simplesearch&q=%s")
+    ("Youtube"            "https://youtube.com/results?aq=f&oq=&search_query=%s")
+    ("Wolfram alpha"      "https://wolframalpha.com/input/?i=%s")
+    ("Wikipedia"          "https://wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")))
 #+END_SRC
 
 *** Bookmarks
