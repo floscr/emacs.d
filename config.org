@@ -225,15 +225,7 @@ Resize the window font size etc according to the system.
 This will be disabled in terminal mode.
 
 #+BEGIN_SRC elisp
-(when (display-graphic-p)
-#+END_SRC
-
-#+BEGIN_SRC elisp
-(+ui|adjust-ui-to-display)
-#+END_SRC
-
-#+BEGIN_SRC elisp
-)
+(when (display-graphic-p) (+ui|adjust-ui-to-display))
 #+END_SRC
 
 *** Theme Toggle
