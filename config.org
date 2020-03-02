@@ -95,12 +95,6 @@ Call FUNC with ARGS."
 (advice-add 'bookmark-delete :after #'+bookmark/set)
 (advice-add 'bookmark-rename :after #'+bookmark/set)
 #+END_SRC
-*** Open OTF fonts in image mode
-
-#+BEGIN_SRC elisp
-(add-to-list 'auto-mode-alist '("\\.otf\\'" . image-mode))
-#+END_SRC
-
 *** Fine undo
 
 Whether actions like "cw" are undone in several steps.
@@ -122,8 +116,8 @@ Whether actions like "cw" are undone in several steps.
 Automatically set mode for specific filenames.
 
 #+BEGIN_SRC elisp
-;; auto-mode-alist
 (add-to-list 'auto-mode-alist '("Brewfile" . shell-script-mode))
+(add-to-list 'auto-mode-alist '("\\.otf\\'" . image-mode))
 #+END_SRC
 
 *** Automatically reload tags files
