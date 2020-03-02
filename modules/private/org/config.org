@@ -1077,6 +1077,7 @@ To sync the calendars use ~org-caldav-sync~.
   (setq org-caldav-calendar-id "family"
         org-caldav-inbox (f-join org-directory "Main/calendar-family.org")
         org-caldav-save-directory doom-cache-dir
+        org-caldav-sync-direction 'cal->org
         org-icalendar-timezone "Europe/Berlin")
   (setq org-caldav-files (list org-caldav-inbox)))
 #+END_SRC

@@ -1058,6 +1058,7 @@ Source:
 #+END_SRC
 
 *** Ivy / Swiper
+
 **** Bindings
 
 Adds general bindings to ivy.
