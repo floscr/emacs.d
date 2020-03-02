@@ -37,7 +37,114 @@ And I will load them on system start:
 (my-load-secrets-config)
 #+END_SRC
 
-** Essentials
+** Defaults
+*** Garbage Collection
+
+Set it to ~32 MiB~.
+
+#+BEGIN_SRC elisp
+(setq doom-gc-cons-threshold 33554432)
+#+END_SRC
+
+*** Lookup Sources
+
+#+BEGIN_SRC elisp
+(setq +lookup-provider-url-alist
+  '(("DuckDuckGo"         "https://duckduckgo.com/?q=%s")
+    ("DuckDuckGo Lucky"   "https://duckduckgo.com/?q=\\%s")
+    ("Github Code"        "https://github.com/search?search&q=%s&type=Code")
+    ("Google"             "https://google.com/search?q=%s")
+    ("Google images"      "https://google.com/images?q=%s")
+    ("Google maps"        "https://maps.google.com/maps?q=%s")
+    ("NPM"                "https://npmjs.com/search?q=%s")
+    ("Hoogle"             "https://www.haskell.org/hoogle/?hoogle=%s")
+    ("Project Gutenberg"  "http://www.gutenberg.org/ebooks/search/?query=%s")
+    ("Explain Shell"      "https://explainshell.com/explain?cmd=%s")
+    ("StackOverflow"      "https://stackoverflow.com/search?q=%s")
+    ("Github"             "https://github.com/search?ref=simplesearch&q=%s")
+    ("Youtube"            "https://youtube.com/results?aq=f&oq=&search_query=%s")
+    ("Wolfram alpha"      "https://wolframalpha.com/input/?i=%s")
+    ("Wikipedia"          "https://wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")))
+#+END_SRC
+
+*** Bookmarks
+
+#+BEGIN_SRC elisp
+(setq bookmark-default-file "~/Documents/Temp/bookmarks"
+      bookmark-file bookmark-default-file
+      bookmark-old-default-file bookmark-default-file)
+#+END_SRC
+
+**** Automatically Save Bookmarks
+:PROPERTIES:
+:SOURCE:   [[https://github.com/yangyingchao/tubo-env/blob/b5f61ed6a802af45e461927507de55ed7e527983/.emacs.d/rc/03-fundamental-mode.el#L193][tubo-env/03-fundamental-mode.el at b5f61ed6a802af45e461927507de55ed7e527983 · yangyingchao/tubo-env]]
+:END:
+
+Automatically save bookmarks file after changing bookmarks.
+Also prevent the ~bookmark-save~ function to display the "Saved" message.
+
+#+BEGIN_SRC elisp
+(defun +bookmark/set (func &rest args)
+  "Save bookmark after `bookmark-set'.
+Call FUNC with ARGS."
+  (and (bookmark-time-to-save-p t)
+       (let ((inhibit-message t))
+         (bookmark-save))))
+
+(advice-add 'bookmark-set :after #'+bookmark/set)
+(advice-add 'bookmark-delete :after #'+bookmark/set)
+(advice-add 'bookmark-rename :after #'+bookmark/set)
+#+END_SRC
+*** Open OTF fonts in image mode
+
+#+BEGIN_SRC elisp
+(add-to-list 'auto-mode-alist '("\\.otf\\'" . image-mode))
+#+END_SRC
+
+*** Shorten Yes/No prompts
+:PROPERTIES:
+:SOURCE:   https://github.com/wasamasa/dotemacs/blob/master/init.org#shorten-yesno-prompts
+:END:
+
+Per default you're required to type out a full "yes" or "no" whenever
+the function ~yes-or-no-p~ is invoked, let's substitute its function
+definition to allow a "y" or "n" without even requiring confirmation.
+
+#+BEGIN_SRC emacs-lisp
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+*** Fine undo
+
+Whether actions like "cw" are undone in several steps.
+
+#+BEGIN_SRC elisp
+(setq evil-want-fine-undo t)
+#+END_SRC
+
+*** Move items to trash on delete
+
+#+BEGIN_SRC elisp
+(setq
+ trash-directory "~/.Trash/"
+ delete-by-moving-to-trash t)
+#+END_SRC
+
+*** Filename Auto Modes
+
+Automatically set mode for specific filenames.
+
+#+BEGIN_SRC elisp
+;; auto-mode-alist
+(add-to-list 'auto-mode-alist '("Brewfile" . shell-script-mode))
+#+END_SRC
+
+*** Automatically reload tags files
+
+#+BEGIN_SRC elisp
+(setq tags-revert-without-query 1)
+#+END_SRC
+
 *** Safe Local Variables
 
 Variables that I want to safely set from ~.dir-locals~ files.
@@ -2137,114 +2244,6 @@ Fix buffers not being added to the current workspace.
 #+BEGIN_SRC elisp
 (use-package! ob-async
   :after org-babel)
-#+END_SRC
-
-** General Config
-*** Garbage Collection
-
-Set it to ~32 MiB~.
-
-#+BEGIN_SRC elisp
-(setq doom-gc-cons-threshold 33554432)
-#+END_SRC
-
-*** Lookup Sources
-
-#+BEGIN_SRC elisp
-(setq +lookup-provider-url-alist
-  '(("DuckDuckGo"         "https://duckduckgo.com/?q=%s")
-    ("DuckDuckGo Lucky"   "https://duckduckgo.com/?q=\\%s")
-    ("Github Code"        "https://github.com/search?search&q=%s&type=Code")
-    ("Google"             "https://google.com/search?q=%s")
-    ("Google images"      "https://google.com/images?q=%s")
-    ("Google maps"        "https://maps.google.com/maps?q=%s")
-    ("NPM"                "https://npmjs.com/search?q=%s")
-    ("Hoogle"             "https://www.haskell.org/hoogle/?hoogle=%s")
-    ("Project Gutenberg"  "http://www.gutenberg.org/ebooks/search/?query=%s")
-    ("Explain Shell"      "https://explainshell.com/explain?cmd=%s")
-    ("StackOverflow"      "https://stackoverflow.com/search?q=%s")
-    ("Github"             "https://github.com/search?ref=simplesearch&q=%s")
-    ("Youtube"            "https://youtube.com/results?aq=f&oq=&search_query=%s")
-    ("Wolfram alpha"      "https://wolframalpha.com/input/?i=%s")
-    ("Wikipedia"          "https://wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")))
-#+END_SRC
-
-*** Bookmarks
-
-#+BEGIN_SRC elisp
-(setq bookmark-default-file "~/Documents/Temp/bookmarks"
-      bookmark-file bookmark-default-file
-      bookmark-old-default-file bookmark-default-file)
-#+END_SRC
-
-**** Automatically Save Bookmarks
-:PROPERTIES:
-:SOURCE:   [[https://github.com/yangyingchao/tubo-env/blob/b5f61ed6a802af45e461927507de55ed7e527983/.emacs.d/rc/03-fundamental-mode.el#L193][tubo-env/03-fundamental-mode.el at b5f61ed6a802af45e461927507de55ed7e527983 · yangyingchao/tubo-env]]
-:END:
-
-Automatically save bookmarks file after changing bookmarks.
-Also prevent the ~bookmark-save~ function to display the "Saved" message.
-
-#+BEGIN_SRC elisp
-(defun +bookmark/set (func &rest args)
-  "Save bookmark after `bookmark-set'.
-Call FUNC with ARGS."
-  (and (bookmark-time-to-save-p t)
-       (let ((inhibit-message t))
-         (bookmark-save))))
-
-(advice-add 'bookmark-set :after #'+bookmark/set)
-(advice-add 'bookmark-delete :after #'+bookmark/set)
-(advice-add 'bookmark-rename :after #'+bookmark/set)
-#+END_SRC
-*** Open OTF fonts in image mode
-
-#+BEGIN_SRC elisp
-(add-to-list 'auto-mode-alist '("\\.otf\\'" . image-mode))
-#+END_SRC
-
-*** Shorten Yes/No prompts
-:PROPERTIES:
-:SOURCE:   https://github.com/wasamasa/dotemacs/blob/master/init.org#shorten-yesno-prompts
-:END:
-
-Per default you're required to type out a full "yes" or "no" whenever
-the function ~yes-or-no-p~ is invoked, let's substitute its function
-definition to allow a "y" or "n" without even requiring confirmation.
-
-#+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-
-*** Fine undo
-
-Whether actions like "cw" are undone in several steps.
-
-#+BEGIN_SRC elisp
-(setq evil-want-fine-undo t)
-#+END_SRC
-
-*** Move items to trash on delete
-
-#+BEGIN_SRC elisp
-(setq
- trash-directory "~/.Trash/"
- delete-by-moving-to-trash t)
-#+END_SRC
-
-*** Filename Auto Modes
-
-Automatically set mode for specific filenames.
-
-#+BEGIN_SRC elisp
-;; auto-mode-alist
-(add-to-list 'auto-mode-alist '("Brewfile" . shell-script-mode))
-#+END_SRC
-
-*** Automatically reload tags files
-
-#+BEGIN_SRC elisp
-(setq tags-revert-without-query 1)
 #+END_SRC
 
 ** Bindings
