@@ -213,6 +213,12 @@ Double press ~v~ to enable.
 #+END_SRC
 
 ** UI
+*** Zen Mode
+
+#+BEGIN_SRC elisp
+(setq doom-variable-pitch-font (font-spec :family "Overpass" :size 5))
+#+END_SRC
+
 *** Frame padding
 
 #+BEGIN_SRC elisp
