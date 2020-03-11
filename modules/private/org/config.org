@@ -383,7 +383,7 @@ Projectile search is not fast reliable enough."
 (defun +org/todo-state-subtask? ()
   "If the current taks item is a subtask (which is marked by [ ])."
   (if-let ((state (org-get-todo-state)))
-      (string-match-p "^\\[" state)))
+      (string-match-p (concat "^\\" "[") state)))
 
 (defun +org|agenda-visit-entry ()
   "Visit entry and narrow to section."
