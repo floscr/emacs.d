@@ -52,6 +52,7 @@
  pdf
  pass
  docker
+ lsp
 
  :lang
  nix
