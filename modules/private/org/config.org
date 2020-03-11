@@ -372,11 +372,10 @@ Projectile search is not fast reliable enough."
   (interactive)
   (save-window-excursion
     (org-agenda-switch-to)
-    (when (search-forward-regexp "\\[\\[" (point-at-eol) t)
+    (when (search-forward "[[" (point-at-eol) t)
       (call-interactively #'org-insert-link))
     (org-agenda-redo)))
 #+END_SRC
-
 
 *** Agenda Visit Enty in Narrow Mode
 
