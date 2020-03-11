@@ -8,6 +8,14 @@
 
 * Main
 
+** Config
+
+#+BEGIN_SRC elisp
+(setq org-pinboard-dir org-directory)
+(setq org-pinboard-file (concat org-pinboard-dir "/Bookmarks/bookmarks.org"))
+(setq org-pinboard-archive-file (concat org-pinboard-dir "/Bookmarks/.archive/pinboard.org"))
+#+END_SRC
+
 ** Refile to pinboard
 
 #+BEGIN_SRC elisp
