@@ -7,471 +7,22 @@
 #+END_SRC
 
 * Configuration
-** Additional files
-
-#+BEGIN_SRC elisp
-(if (featurep! +org-noter)        (load! "+org-noter"))
-(if (featurep! +org-reading-list) (load! "+org-reading-list"))
-(if (featurep! +org-web-tools)    (load! "+org-web-tools"))
-(if (featurep! +org-tags)         (load! "+org-tags"))
-(if (featurep! +org-pinboard)     (load! "+org-pinboard"))
-#+END_SRC
-
-** Utils
-*** Setup Org Mode Hook
-
-#+BEGIN_SRC elisp :tangle no
-(defun +org*setup-org-mode-hook ()
-  "Setup org mode buffers"
-  (setq-local word-wrap nil)
-  (display-line-numbers-mode -1)
-  (hl-line-mode -1)
-  (line-number-mode -1)
-  (visual-line-mode)
-  (let ((visual-fill-column-center-text nil)
-        (visual-fill-column-width 100))
-    (visual-fill-column-mode)))
-#+END_SRC
-
-*** Get Frontmost chrome url
-
-#+BEGIN_SRC elisp
-(defun +org/get-frontmost-chrome-url-raw ()
-  "Get just the url for the frontmost chrome instance."
-  (interactive)
-  (--> (org-mac-chrome-get-frontmost-url)
-       (s-match org-bracket-link-regexp it)
-       (nth 1 it)))
-#+END_SRC
-
-*** Add source property from chrome
-
-#+BEGIN_SRC elisp
-(defun +org|source-properties-key-from-browser ()
-  "Add the link from the frontmost chrome tab as a source property."
-  (interactive)
-  (org-set-property "SOURCE" (org-mac-chrome-get-frontmost-url)))
-#+END_SRC
-
-*** Archive all done tasks
-
-#+BEGIN_SRC elisp :tangle no
-(defun +org|archive-done-tasks ()
-  "Archive tasks with DONE or CANCELED todo state."
-  (interactive)
-  (org-map-entries
-   (lambda ()
-     (org-archive-subtree)
-     (setq org-map-continue-from (outline-previous-heading)))
-   "/+{|DONE|CANCELED}" 'tree))
-#+END_SRC
-
-*** Archive and Done
-
-#+BEGIN_SRC elisp
-(defun +org|archive-and-done ()
-  "Mark task as done and archive."
-  (interactive)
-  (org-todo "DONE")
-  (org-archive-subtree))
-
-(defun +org|agenda-archive-and-done ()
-  "Mark agenda task as done and archive."
-  (interactive)
-  (org-agenda-todo "DONE")
-  (org-agenda-archive))
-#+END_SRC
-
-*** Copy block to clipboard
-
-#+BEGIN_SRC elisp
-(defun +org|copy-block ()
-  "Copies the current block to clipboard."
-  (interactive)
-  (org-edit-src-code)
-  (clipboard-kill-ring-save (point-min) (point-max)))
-#+END_SRC
-
-*** Export As Markdown
-
-#+BEGIN_SRC elisp
-(defun +org/copy-as-markdown (&optional subtree-p)
-  "Copy the current subtree as markdown to clipboard."
-  (let* ((org-export-with-toc nil)
-         (org-export-with-special-strings nil)
-         (org-export-with-smart-quotes nil)
-         (md (org-export-as 'md nil subtree-p)))
-    (kill-new md)
-    (message "Copied buffer as markdown to clipboard.")))
-
-(defun +org|copy-buffer-as-markdown ()
-  "Copy the entire buffer as markdown to clipboard."
-  (interactive)
-  (+org/copy-as-markdown))
-
-(defun +org|copy-subtree-as-markdown ()
-  "Copy the subtree as markdown to clipboard."
-  (interactive)
-  (+org/copy-as-markdown t))
-#+END_SRC
-
-*** Org Attach
-**** Download
-
-#+BEGIN_SRC elisp
-(defun +org-attach/downloads-file (file)
-  "Attach a file in your downloads-directory."
-  (interactive (list (read-file-name "Attach File: " downloads-dir)))
-  (+org/attach-file-and-insert-link file))
-#+END_SRC
-
-**** Screenshot
-
-#+BEGIN_SRC elisp
-(defun +org-attach/last-screenshot ()
-  "Attaches the last screenshot"
-  (interactive)
-  (+org-attach/file (+file/latest-file-in-dir screenshot-dir)))
-#+END_SRC
-
-*** Paste Chrome Link Fix
-
-Fixes wrong paste behaviour where the link would be inserted directly on the character by adding a space
-
-E.g.: (Brackets signal the cursor position)
-
-: **[*]
-: ***[]"
-
-#+BEGIN_SRC elisp
-(defun +org|insert-chrome-url ()
-  "Insert a link around the current selection."
-  (interactive)
-  (org-insert-link nil (+org/get-frontmost-chrome-url-raw)))
-
-(defun +org|paste-chrome-link ()
-  "Paste the frontmost chrome link."
-  (interactive)
-  (cond
-   ;; Visual Selection
-   ((region-active-p) (+org|insert-chrome-url))
-   ;; Normal
-   (t (progn
-        (unless (looking-at-p "[\s\t\n\r]") (forward-char))
-        (insert " ")
-        (insert (org-mac-chrome-get-frontmost-url))))))
-#+END_SRC
-
-*** Paste Markdown as org
-
-#+BEGIN_SRC elisp
-(defun +org|paste-markdown-as-org ()
-  "Convert the current clipboard to markdown."
-  (interactive)
-  (insert (shell-command-to-string "pbpaste | pandoc -f markdown -t org")))
-#+END_SRC
-
-*** Schedule Tomorrow
-:PROPERTIES:
-:SOURCE:   [[https://github.com/xandeer/.doom/blob/master/modules/private/xandeer/+org.el][.doom/+org.el at master · xandeer/.doom]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun +org|schedule-tomorrow ()
-  "Return scheduled string on tomorrow."
-  (format-time-string "SCHEDULED: <%F %a>"
-                      (time-add (current-time) (* 24 3600))))
-#+END_SRC
-
-*** Sort org entries
-
-#+BEGIN_SRC elisp
-(defun +org|sort-entries ()
-  "Go to header and sort entries."
-  (interactive)
-  (org-up-element)
-  (org-sort)
-  (org-shifttab)
-  (org-cycle))
-#+END_SRC
-
-*** Visit archive file
-
-#+BEGIN_SRC elisp
-(defun +org|visit-archive-file ()
-  (interactive)
-  (let ((archive-filename (car (org-archive--compute-location org-archive-location))))
-    (find-file archive-filename)
-    (end-of-buffer)))
-#+END_SRC
-
-*** Algin all tags
-
-#+BEGIN_SRC elisp
-(defun +org|align-all-tags ()
-  "Interactive version of org-align-all-tags."
-  (interactive)
-  (org-align-all-tags))
-#+END_SRC
-
-*** Org get chrome tab formatted
-
-The Github Review Title is very long,
-shorten it a bit for the org capture templates.
-
-#+BEGIN_SRC elisp
-(defun +github/just-pr-title (title)
-  (car (s-split " · " title)))
-
-(defun +org/mac-chrome-get-frontmost-url-custom-format ()
-  "Adaption for org-as-mac-chrome-get-frontmost-url."
-    (--> (org-as-mac-chrome-get-frontmost-url)
-         (s-split "::split::" it)
-         (pcase it
-           ((pred (s-contains? "github.com" (-first-item it)))
-            (-update-at (- (length it) 1)
-                        #'+github/just-pr-title
-                        it))
-           (_ it))
-         (s-join "::split::" it)
-         (org-mac-paste-applescript-links it)))
-#+END_SRC
-
-*** Custom Agenda Compare
-
-Sort my agenda entries by a ~DATE_CREATED~ property.
-
-#+BEGIN_SRC elisp
-(setq-default +org-created-property "CREATED")
-#+END_SRC
-
-#+BEGIN_SRC elisp
-(defun +org|compare-created-date-property (a b)
-  "Compare two `org-mode' agenda entries, `A' and `B', by the \"CREATED\" property."
-  (let* ((a-pos (get-text-property 0 'org-marker a))
-         (b-pos (get-text-property 0 'org-marker b))
-         (a-date (or (org-entry-get a-pos +org-created-property)
-                     (format "<%s>" (org-read-date t nil "now"))))
-         (b-date (or (org-entry-get b-pos +org-created-property)
-                     (format "<%s>" (org-read-date t nil "now"))))
-         (cmp (compare-strings a-date nil nil b-date nil nil)))
-    (if (eq cmp t) nil (signum cmp))))
-#+END_SRC
-
-*** Search in notes
-
-#+BEGIN_SRC elisp
-(after! ivy
-  (ivy-set-actions
-   '+org|search-in-notes
-   '(("j" counsel-notes-find-file-other-window "open in other window"))))
-
-(defun +org|search-in-notes ()
-  "Search in the org directory for a file.
-Projectile search is not fast reliable enough."
-  (interactive)
-  (counsel-notes-jump))
-
-(defun counsel-notes-find-file (x)
-  "Function docstring"
-  (interactive)
-  (with-ivy-window
-    (let ((default-directory (ivy-state-directory ivy-last)))
-      (find-file (expand-file-name x))
-      (+workspaces-add-current-buffer-h))))
-
-(defun counsel-notes-find-file-other-window (x)
-  (split-window nil nil 'right)
-  (counsel-notes-find-file x))
-
-(defun +org/counsel-notes-jump:files ()
-  "Function docstring"
-  (interactive)
-  (--> '("Main" "Work")
-       (--map (f-join org-directory it) it)
-       (-map 'f-files it)
-       -flatten
-       (--map (s-replace (concat (expand-file-name org-directory) "/") "" it) it)))
-
-(defun counsel-notes-jump ()
-  "Jump to a file in your notes and call org-goto right-away."
-  (interactive)
-  (counsel-require-program find-program)
-  (let ((default-directory org-directory))
-    (ivy-read "Find directory: "
-              (+org/counsel-notes-jump:files)
-              :matcher #'counsel--find-file-matcher
-              :action #'counsel-notes-find-file
-              :history 'file-name-history
-              :keymap counsel-find-file-map
-              :caller 'counsel-dired-jump)))
-#+END_SRC
-
-*** Find in files
-
-#+BEGIN_SRC elisp
-(defun +org/find-in-files (file)
-  "Find file in org directory."
-  (find-file (f-join org-directory file)))
-#+END_SRC
-*** Rename Attachment
-
-#+BEGIN_SRC elisp
-(defun +org-attach|rename-attachment ()
-  "Rename the attachment under the cursor."
-  (interactive)
-  (save-excursion
-    (while (not (org-element-link-parser))
-      (backward-char))
-    (if-let* ((link (org-element-link-parser))
-              (filename (org-element-property :path link))
-              (begin (org-element-property :begin link))
-              (end (org-element-property :end link))
-
-              (path (f-join org-attach-directory filename))
-              (new-path (let ((ivy--directory org-attach-directory))
-                          (counsel-find-file-move path)))
-              (new-filename (s-replace org-attach-directory "" new-path))
-              (new-attach-link (template "[[attach:<<new-filename>>]]")))
-        (progn
-          (delete-region begin end)
-          (insert new-attach-link)))))
-#+END_SRC
-*** Visual Fill Column
-
-#+BEGIN_SRC elisp
-(defun +org|toggle-visual-wrap (&optional center?)
-  "Toggle text wrapping for org buffers."
-  (interactive)
-  (let ((visual-fill-column-center-text (or center? nil)))
-    (if (bound-and-true-p visual-line-mode)
-        (progn
-          (visual-line-mode -1)
-          (visual-fill-column-mode -1))
-      (progn
-        (visual-line-mode)
-        (visual-fill-column-mode)))))
-#+END_SRC
-*** Agenda Cut Entry
-
-#+BEGIN_SRC elisp
-(defun +org|agenda-cut-entry ()
-  "Cut entry straight from agenda."
-  (interactive)
-  (save-window-excursion
-    (org-agenda-switch-to)
-    (org-cut-subtree))
-  (org-agenda-redo))
-#+END_SRC
-
-*** Agenda Change Link
-
-#+BEGIN_SRC elisp
-(defun +org|agenda-change-link ()
-  "Change a link in the title from the org agenda."
-  (interactive)
-  (save-window-excursion
-    (org-agenda-switch-to)
-    (when (search-forward "[[" (point-at-eol) t)
-      (call-interactively #'org-insert-link))
-    (org-agenda-redo)))
-#+END_SRC
-
-*** Agenda Visit Enty in Narrow Mode
-
-#+BEGIN_SRC elisp
-(defun +org/todo-state-subtask? ()
-  "If the current taks item is a subtask (which is marked by [ ])."
-  (if-let ((state (org-get-todo-state)))
-      (string-match-p (concat "^\\" "[") state)))
-
-(defun +org|agenda-visit-entry ()
-  "Visit entry and narrow to section."
-  (interactive)
-  (org-agenda-switch-to)
-  ;; When narrowed on a subtask, narrow to the next parent task
-  (if (+org/todo-state-subtask?)
-      (save-excursion
-        (org-up-element)
-        (while (and (eq (org-get-todo-state) nil)
-                    (eq (+org/todo-state-subtask?) nil))
-          (org-up-element)
-          (org-narrow-to-subtree)))
-    (org-narrow-to-subtree)))
-#+END_SRC
-
-*** Move to shopping list
-
-Moves a todo item from the agenda to the shopping list as a list item.
-
-#+BEGIN_SRC elisp
-(defun +org|agenda-move-to-shopping-list ()
-  "Function docstring"
-  (interactive)
-  (save-window-excursion
-    (save-excursion
-      (let ((title (nth 1 (s-match "^.*TODO \\(.*\\)$" (thing-at-point 'line t))))
-            (buffer (find-file org-shopping-list-file)))
-        (with-current-buffer buffer
-          (org-narrow-to-subtree)
-          (goto-char (point-max))
-          (insert (template "\n- [ ] <<title>>"))
-          (org-update-checkbox-count t)
-          (save-buffer)))))
-  (+org|agenda-archive-and-done))
-#+END_SRC
-*** Export named table
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/16640/can-i-export-a-specific-table-in-an-org-file-to-csv-from-the-command-line][org mode - Can I export a specific table in an org file to csv from the command line? - Emacs Stack Exchange]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun +org|export-named-table (name &optional dir)
-  "Export table in org document with NAME property to a DIR.
-Return the path of the file."
-  (interactive)
-  (show-all)
-  (let ((case-fold-search t))
-    (save-excursion
-      (goto-char (point-min))
-      (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
-          (progn
-            (next-line)
-            (let ((filename (file-truename (f-join (or dir "./") (format "%s.csv" name)))))
-              (org-table-export filename "orgtbl-to-csv")
-              filename))))))
-#+END_SRC
-
-*** Refile Helpers
-:PROPERTIES:
-:SOURCE:   [[https://mollermara.com/blog/Fast-refiling-in-org-mode-with-hydras/][Fast refiling in org-mode with hydras | Josh Moller-Mara]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun +org/refile (file headline &optional arg)
-  (let ((file (f-join org-directory file))
-        (pos (save-excursion
-               (find-file file)
-               (org-find-exact-headline-in-buffer headline))))
-    (org-refile arg nil (list headline file nil pos))))
-
-(defun +org/agenda-refile (file headline &optional arg)
-  (save-window-excursion
-    (let* ((file (f-join org-directory file))
-           (pos (save-excursion
-                  (find-file file)
-                  (org-find-exact-headline-in-buffer headline))))
-      (org-agenda-refile arg (list headline file nil pos) t))))
-#+END_SRC
-
 ** Config
 *** General Config
-**** Org variables
+**** Default Org Directory
+
+Doom resets the default ~org-directory~, so this is a workaround.
 
 #+BEGIN_SRC elisp
 (setq org-directory "~/Documents/Org")
+(after! org (setq org-directory "~/Documents/Org"))
+#+END_SRC
+
+
+**** Org variables
+
+#+BEGIN_SRC elisp
 (setq org-shopping-list-file (f-join org-directory "/Main/shoppinglist.org"))
-(setq org-image-actual-width 600)
 
 (after! org
   :config
@@ -537,6 +88,27 @@ Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (setq org-latex-create-formula-image-program 'dvisvgm)
+#+END_SRC
+*** Org Mode Modifications
+
+#+BEGIN_SRC elisp
+(setq visual-fill-column-center-text t
+      visual-fill-column-width fill-column)
+
+(defun +org*setup-org-mode-hook ()
+  "Setup org mode buffers."
+  (auto-fill-mode -1)
+  (display-line-numbers-mode -1)
+  (line-number-mode -1)
+  (hl-line-mode -1)
+  (setq-local visual-fill-column-center-text t)
+  (setq-local visual-fill-column-width 120)
+  (visual-fill-column-mode)
+  (visual-line-mode)
+  (visual-fill-column-adjust))
+
+(after! org
+  (add-hook! org-mode #'+org*setup-org-mode-hook))
 #+END_SRC
 
 *** Refile Targets
@@ -1060,6 +632,447 @@ Set the active state when clocking in.
   (interactive)
   (save-excursion
     (kill-new (s-trim (org-table-get-field)))))
+#+END_SRC
+** Additional files
+
+#+BEGIN_SRC elisp
+(if (featurep! +org-noter)        (load! "+org-noter"))
+(if (featurep! +org-reading-list) (load! "+org-reading-list"))
+(if (featurep! +org-web-tools)    (load! "+org-web-tools"))
+(if (featurep! +org-tags)         (load! "+org-tags"))
+(if (featurep! +org-pinboard)     (load! "+org-pinboard"))
+#+END_SRC
+
+** Utils
+*** Get Frontmost chrome url
+
+#+BEGIN_SRC elisp
+(defun +org/get-frontmost-chrome-url-raw ()
+  "Get just the url for the frontmost chrome instance."
+  (interactive)
+  (--> (org-mac-chrome-get-frontmost-url)
+       (s-match org-bracket-link-regexp it)
+       (nth 1 it)))
+#+END_SRC
+
+*** Add source property from chrome
+
+#+BEGIN_SRC elisp
+(defun +org|source-properties-key-from-browser ()
+  "Add the link from the frontmost chrome tab as a source property."
+  (interactive)
+  (org-set-property "SOURCE" (org-mac-chrome-get-frontmost-url)))
+#+END_SRC
+
+*** Archive all done tasks
+
+#+BEGIN_SRC elisp :tangle no
+(defun +org|archive-done-tasks ()
+  "Archive tasks with DONE or CANCELED todo state."
+  (interactive)
+  (org-map-entries
+   (lambda ()
+     (org-archive-subtree)
+     (setq org-map-continue-from (outline-previous-heading)))
+   "/+{|DONE|CANCELED}" 'tree))
+#+END_SRC
+
+*** Archive and Done
+
+#+BEGIN_SRC elisp
+(defun +org|archive-and-done ()
+  "Mark task as done and archive."
+  (interactive)
+  (org-todo "DONE")
+  (org-archive-subtree))
+
+(defun +org|agenda-archive-and-done ()
+  "Mark agenda task as done and archive."
+  (interactive)
+  (org-agenda-todo "DONE")
+  (org-agenda-archive))
+#+END_SRC
+
+*** Copy block to clipboard
+
+#+BEGIN_SRC elisp
+(defun +org|copy-block ()
+  "Copies the current block to clipboard."
+  (interactive)
+  (org-edit-src-code)
+  (clipboard-kill-ring-save (point-min) (point-max)))
+#+END_SRC
+
+*** Export As Markdown
+
+#+BEGIN_SRC elisp
+(defun +org/copy-as-markdown (&optional subtree-p)
+  "Copy the current subtree as markdown to clipboard."
+  (let* ((org-export-with-toc nil)
+         (org-export-with-special-strings nil)
+         (org-export-with-smart-quotes nil)
+         (md (org-export-as 'md nil subtree-p)))
+    (kill-new md)
+    (message "Copied buffer as markdown to clipboard.")))
+
+(defun +org|copy-buffer-as-markdown ()
+  "Copy the entire buffer as markdown to clipboard."
+  (interactive)
+  (+org/copy-as-markdown))
+
+(defun +org|copy-subtree-as-markdown ()
+  "Copy the subtree as markdown to clipboard."
+  (interactive)
+  (+org/copy-as-markdown t))
+#+END_SRC
+
+*** Org Attach
+**** Download
+
+#+BEGIN_SRC elisp
+(defun +org-attach/downloads-file (file)
+  "Attach a file in your downloads-directory."
+  (interactive (list (read-file-name "Attach File: " downloads-dir)))
+  (+org/attach-file-and-insert-link file))
+#+END_SRC
+
+**** Screenshot
+
+#+BEGIN_SRC elisp
+(defun +org-attach/last-screenshot ()
+  "Attaches the last screenshot"
+  (interactive)
+  (+org-attach/file (+file/latest-file-in-dir screenshot-dir)))
+#+END_SRC
+
+*** Paste Chrome Link Fix
+
+Fixes wrong paste behaviour where the link would be inserted directly on the character by adding a space
+
+E.g.: (Brackets signal the cursor position)
+
+: **[*]
+: ***[]"
+
+#+BEGIN_SRC elisp
+(defun +org|insert-chrome-url ()
+  "Insert a link around the current selection."
+  (interactive)
+  (org-insert-link nil (+org/get-frontmost-chrome-url-raw)))
+
+(defun +org|paste-chrome-link ()
+  "Paste the frontmost chrome link."
+  (interactive)
+  (cond
+   ;; Visual Selection
+   ((region-active-p) (+org|insert-chrome-url))
+   ;; Normal
+   (t (progn
+        (unless (looking-at-p "[\s\t\n\r]") (forward-char))
+        (insert " ")
+        (insert (org-mac-chrome-get-frontmost-url))))))
+#+END_SRC
+
+*** Paste Markdown as org
+
+#+BEGIN_SRC elisp
+(defun +org|paste-markdown-as-org ()
+  "Convert the current clipboard to markdown."
+  (interactive)
+  (insert (shell-command-to-string "pbpaste | pandoc -f markdown -t org")))
+#+END_SRC
+
+*** Schedule Tomorrow
+:PROPERTIES:
+:SOURCE:   [[https://github.com/xandeer/.doom/blob/master/modules/private/xandeer/+org.el][.doom/+org.el at master · xandeer/.doom]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun +org|schedule-tomorrow ()
+  "Return scheduled string on tomorrow."
+  (format-time-string "SCHEDULED: <%F %a>"
+                      (time-add (current-time) (* 24 3600))))
+#+END_SRC
+
+*** Sort org entries
+
+#+BEGIN_SRC elisp
+(defun +org|sort-entries ()
+  "Go to header and sort entries."
+  (interactive)
+  (org-up-element)
+  (org-sort)
+  (org-shifttab)
+  (org-cycle))
+#+END_SRC
+
+*** Visit archive file
+
+#+BEGIN_SRC elisp
+(defun +org|visit-archive-file ()
+  (interactive)
+  (let ((archive-filename (car (org-archive--compute-location org-archive-location))))
+    (find-file archive-filename)
+    (end-of-buffer)))
+#+END_SRC
+
+*** Algin all tags
+
+#+BEGIN_SRC elisp
+(defun +org|align-all-tags ()
+  "Interactive version of org-align-all-tags."
+  (interactive)
+  (org-align-all-tags))
+#+END_SRC
+
+*** Org get chrome tab formatted
+
+The Github Review Title is very long,
+shorten it a bit for the org capture templates.
+
+#+BEGIN_SRC elisp
+(defun +github/just-pr-title (title)
+  (car (s-split " · " title)))
+
+(defun +org/mac-chrome-get-frontmost-url-custom-format ()
+  "Adaption for org-as-mac-chrome-get-frontmost-url."
+    (--> (org-as-mac-chrome-get-frontmost-url)
+         (s-split "::split::" it)
+         (pcase it
+           ((pred (s-contains? "github.com" (-first-item it)))
+            (-update-at (- (length it) 1)
+                        #'+github/just-pr-title
+                        it))
+           (_ it))
+         (s-join "::split::" it)
+         (org-mac-paste-applescript-links it)))
+#+END_SRC
+
+*** Custom Agenda Compare
+
+Sort my agenda entries by a ~DATE_CREATED~ property.
+
+#+BEGIN_SRC elisp
+(setq-default +org-created-property "CREATED")
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(defun +org|compare-created-date-property (a b)
+  "Compare two `org-mode' agenda entries, `A' and `B', by the \"CREATED\" property."
+  (let* ((a-pos (get-text-property 0 'org-marker a))
+         (b-pos (get-text-property 0 'org-marker b))
+         (a-date (or (org-entry-get a-pos +org-created-property)
+                     (format "<%s>" (org-read-date t nil "now"))))
+         (b-date (or (org-entry-get b-pos +org-created-property)
+                     (format "<%s>" (org-read-date t nil "now"))))
+         (cmp (compare-strings a-date nil nil b-date nil nil)))
+    (if (eq cmp t) nil (signum cmp))))
+#+END_SRC
+
+*** Search in notes
+
+#+BEGIN_SRC elisp
+(after! ivy
+  (ivy-set-actions
+   '+org|search-in-notes
+   '(("j" counsel-notes-find-file-other-window "open in other window"))))
+
+(defun +org|search-in-notes ()
+  "Search in the org directory for a file.
+Projectile search is not fast reliable enough."
+  (interactive)
+  (counsel-notes-jump))
+
+(defun counsel-notes-find-file (x)
+  "Function docstring"
+  (interactive)
+  (with-ivy-window
+    (let ((default-directory (ivy-state-directory ivy-last)))
+      (find-file (expand-file-name x))
+      (+workspaces-add-current-buffer-h))))
+
+(defun counsel-notes-find-file-other-window (x)
+  (split-window nil nil 'right)
+  (counsel-notes-find-file x))
+
+(defun +org/counsel-notes-jump:files ()
+  "Function docstring"
+  (interactive)
+  (--> '("Main" "Work")
+       (--map (f-join org-directory it) it)
+       (-map 'f-files it)
+       -flatten
+       (--map (s-replace (concat (expand-file-name org-directory) "/") "" it) it)))
+
+(defun counsel-notes-jump ()
+  "Jump to a file in your notes and call org-goto right-away."
+  (interactive)
+  (counsel-require-program find-program)
+  (let ((default-directory org-directory))
+    (ivy-read "Find directory: "
+              (+org/counsel-notes-jump:files)
+              :matcher #'counsel--find-file-matcher
+              :action #'counsel-notes-find-file
+              :history 'file-name-history
+              :keymap counsel-find-file-map
+              :caller 'counsel-dired-jump)))
+#+END_SRC
+
+*** Find in files
+
+#+BEGIN_SRC elisp
+(defun +org/find-in-files (file)
+  "Find file in org directory."
+  (find-file (f-join org-directory file)))
+#+END_SRC
+*** Rename Attachment
+
+#+BEGIN_SRC elisp
+(defun +org-attach|rename-attachment ()
+  "Rename the attachment under the cursor."
+  (interactive)
+  (save-excursion
+    (while (not (org-element-link-parser))
+      (backward-char))
+    (if-let* ((link (org-element-link-parser))
+              (filename (org-element-property :path link))
+              (begin (org-element-property :begin link))
+              (end (org-element-property :end link))
+
+              (path (f-join org-attach-directory filename))
+              (new-path (let ((ivy--directory org-attach-directory))
+                          (counsel-find-file-move path)))
+              (new-filename (s-replace org-attach-directory "" new-path))
+              (new-attach-link (template "[[attach:<<new-filename>>]]")))
+        (progn
+          (delete-region begin end)
+          (insert new-attach-link)))))
+#+END_SRC
+*** Visual Fill Column
+
+#+BEGIN_SRC elisp
+(defun +org|toggle-visual-wrap (&optional center?)
+  "Toggle text wrapping for org buffers."
+  (interactive)
+  (let ((visual-fill-column-center-text (or center? nil)))
+    (if (bound-and-true-p visual-line-mode)
+        (progn
+          (visual-line-mode -1)
+          (visual-fill-column-mode -1))
+      (progn
+        (visual-line-mode)
+        (visual-fill-column-mode)))))
+#+END_SRC
+*** Agenda Cut Entry
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-cut-entry ()
+  "Cut entry straight from agenda."
+  (interactive)
+  (save-window-excursion
+    (org-agenda-switch-to)
+    (org-cut-subtree))
+  (org-agenda-redo))
+#+END_SRC
+
+*** Agenda Change Link
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-change-link ()
+  "Change a link in the title from the org agenda."
+  (interactive)
+  (save-window-excursion
+    (org-agenda-switch-to)
+    (when (search-forward "[[" (point-at-eol) t)
+      (call-interactively #'org-insert-link))
+    (org-agenda-redo)))
+#+END_SRC
+
+*** Agenda Visit Enty in Narrow Mode
+
+#+BEGIN_SRC elisp
+(defun +org/todo-state-subtask? ()
+  "If the current taks item is a subtask (which is marked by [ ])."
+  (if-let ((state (org-get-todo-state)))
+      (string-match-p (concat "^\\" "[") state)))
+
+(defun +org|agenda-visit-entry ()
+  "Visit entry and narrow to section."
+  (interactive)
+  (org-agenda-switch-to)
+  ;; When narrowed on a subtask, narrow to the next parent task
+  (if (+org/todo-state-subtask?)
+      (save-excursion
+        (org-up-element)
+        (while (and (eq (org-get-todo-state) nil)
+                    (eq (+org/todo-state-subtask?) nil))
+          (org-up-element)
+          (org-narrow-to-subtree)))
+    (org-narrow-to-subtree)))
+#+END_SRC
+
+*** Move to shopping list
+
+Moves a todo item from the agenda to the shopping list as a list item.
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-move-to-shopping-list ()
+  "Function docstring"
+  (interactive)
+  (save-window-excursion
+    (save-excursion
+      (let ((title (nth 1 (s-match "^.*TODO \\(.*\\)$" (thing-at-point 'line t))))
+            (buffer (find-file org-shopping-list-file)))
+        (with-current-buffer buffer
+          (org-narrow-to-subtree)
+          (goto-char (point-max))
+          (insert (template "\n- [ ] <<title>>"))
+          (org-update-checkbox-count t)
+          (save-buffer)))))
+  (+org|agenda-archive-and-done))
+#+END_SRC
+*** Export named table
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/16640/can-i-export-a-specific-table-in-an-org-file-to-csv-from-the-command-line][org mode - Can I export a specific table in an org file to csv from the command line? - Emacs Stack Exchange]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun +org|export-named-table (name &optional dir)
+  "Export table in org document with NAME property to a DIR.
+Return the path of the file."
+  (interactive)
+  (show-all)
+  (let ((case-fold-search t))
+    (save-excursion
+      (goto-char (point-min))
+      (if (search-forward-regexp (concat "#\\+NAME: +" name) nil t)
+          (progn
+            (next-line)
+            (let ((filename (file-truename (f-join (or dir "./") (format "%s.csv" name)))))
+              (org-table-export filename "orgtbl-to-csv")
+              filename))))))
+#+END_SRC
+
+*** Refile Helpers
+:PROPERTIES:
+:SOURCE:   [[https://mollermara.com/blog/Fast-refiling-in-org-mode-with-hydras/][Fast refiling in org-mode with hydras | Josh Moller-Mara]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun +org/refile (file headline &optional arg)
+  (let ((file (f-join org-directory file))
+        (pos (save-excursion
+               (find-file file)
+               (org-find-exact-headline-in-buffer headline))))
+    (org-refile arg nil (list headline file nil pos))))
+
+(defun +org/agenda-refile (file headline &optional arg)
+  (save-window-excursion
+    (let* ((file (f-join org-directory file))
+           (pos (save-excursion
+                  (find-file file)
+                  (org-find-exact-headline-in-buffer headline))))
+      (org-agenda-refile arg (list headline file nil pos) t))))
 #+END_SRC
 
 ** Package Config
