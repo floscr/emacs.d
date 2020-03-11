@@ -6,3 +6,4 @@ tmp/
 /modules/private/work/config.el
 /modules/private/org/config.el
 /autoload.el
+*.elc
