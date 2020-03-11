@@ -469,21 +469,16 @@ Return the path of the file."
 **** Org variables
 
 #+BEGIN_SRC elisp
-(setq
- org-directory (-first #'f-exists? '("~/Documents/org" "~/Documents/Org"))
- org-default-notes-file (concat org-directory "/Main/inbox.org")
- org-shopping-list-file (concat org-directory "/Main/shoppinglist.org"))
+(setq org-directory "~/Documents/Org")
+(setq org-shopping-list-file (f-join org-directory "/Main/shoppinglist.org"))
+(setq org-image-actual-width 600)
 
 (after! org
   :config
-  ;; (add-hook! org-mode #'+org*setup-org-mode-hook)
-  ;; Disable automatic line wrapping in org mode
-  (remove-hook 'org-mode-hook #'auto-fill-mode)
-  (setq
-   org-src-window-setup 'current-window
-   org-tags-column (- fill-column)
-   org-image-actual-width 600
-   org-default-notes-file (concat org-directory "/Main/inbox.org")))
+  (setq org-src-window-setup 'current-window)
+  (setq org-tags-column -110)
+  (setq org-image-actual-width 600)
+  (setq org-default-notes-file (concat org-directory "/Main/inbox.org")))
 #+END_SRC
 
 **** Todo State Keywords
