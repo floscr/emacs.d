@@ -18,7 +18,6 @@ Doom resets the default ~org-directory~, so this is a workaround.
 (after! org (setq org-directory "~/Documents/Org"))
 #+END_SRC
 
-
 **** Org variables
 
 #+BEGIN_SRC elisp
@@ -30,6 +29,40 @@ Doom resets the default ~org-directory~, so this is a workaround.
   (setq org-tags-column -110)
   (setq org-image-actual-width 600)
   (setq org-default-notes-file (concat org-directory "/Main/inbox.org")))
+#+END_SRC
+
+**** Org Mode Load Hook
+
+Customize org mode to:
+- Always keep the buffer centered via ~viusal-fill-column-mode~.
+  This has to be installed extra, doom doesn't ship with it anymore.
+- Always reload buffers when the file changes via ~auto-revert-mode~
+  Automatically update on Syncthing changes.
+- Disable automatic line wrapping from ~auto-fill-mode~
+  Automatic line wrapping is great when you're working on one display,
+  but when you edit the same text on mobile it will break awkwardly.
+- Visually Wrap text with ~visual-line-mode~
+  Since text is not hard wrapped, I wrap it via Emacs visually.
+
+#+BEGIN_SRC elisp
+(setq visual-fill-column-center-text t
+      visual-fill-column-width fill-column)
+
+(defun +org*setup-org-mode-hook ()
+  "Setup org mode buffers."
+  (auto-fill-mode -1)
+  (display-line-numbers-mode -1)
+  (line-number-mode -1)
+  (hl-line-mode -1)
+  (auto-revert-mode 1)
+  (setq-local visual-fill-column-center-text t)
+  (setq-local visual-fill-column-width 120)
+  (visual-fill-column-mode)
+  (visual-line-mode)
+  (visual-fill-column-adjust))
+
+(after! org
+  (add-hook! org-mode #'+org*setup-org-mode-hook))
 #+END_SRC
 
 **** Todo State Keywords
@@ -88,29 +121,6 @@ Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (setq org-latex-create-formula-image-program 'dvisvgm)
-#+END_SRC
-
-*** Org Mode Load Hook
-
-#+BEGIN_SRC elisp
-(setq visual-fill-column-center-text t
-      visual-fill-column-width fill-column)
-
-(defun +org*setup-org-mode-hook ()
-  "Setup org mode buffers."
-  (auto-fill-mode -1)
-  (display-line-numbers-mode -1)
-  (line-number-mode -1)
-  (hl-line-mode -1)
-  (auto-revert-mode 1)
-  (setq-local visual-fill-column-center-text t)
-  (setq-local visual-fill-column-width 120)
-  (visual-fill-column-mode)
-  (visual-line-mode)
-  (visual-fill-column-adjust))
-
-(after! org
-  (add-hook! org-mode #'+org*setup-org-mode-hook))
 #+END_SRC
 
 *** Refile Targets
