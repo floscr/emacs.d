@@ -89,7 +89,8 @@ Needs ~dvisvgm~
 #+BEGIN_SRC elisp
 (setq org-latex-create-formula-image-program 'dvisvgm)
 #+END_SRC
-*** Org Mode Modifications
+
+*** Org Mode Load Hook
 
 #+BEGIN_SRC elisp
 (setq visual-fill-column-center-text t
@@ -101,6 +102,7 @@ Needs ~dvisvgm~
   (display-line-numbers-mode -1)
   (line-number-mode -1)
   (hl-line-mode -1)
+  (auto-revert-mode 1)
   (setq-local visual-fill-column-center-text t)
   (setq-local visual-fill-column-width 120)
   (visual-fill-column-mode)
