@@ -355,7 +355,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (worktree-devutil-file (f-join path "src/apps/Main/DevPlugin.local.js")))
     (when (file-exists-p local-devutil-file)
       (copy-file local-devutil-file worktree-devutil-file))
-    (async-shell-command (template "cp -r <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
+    (async-shell-command-no-window (template "cp -r <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
 
 (defun +MM|magit-create-worktree ()
   "Create a new branch worktree based on an existing branch."

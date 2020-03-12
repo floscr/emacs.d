@@ -164,6 +164,21 @@ shuffling is done in place."
     (goto-char (point-at-bol))
     (search-forward-regexp regexp (point-at-eol) t)))
 #+END_SRC
+** Async Command No Window
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/a/47910509/2298462][How to avoid pop-up of *Async Shell Command* buffer in Emacs?]]
+:END:
+
+Prevent ~async-shell-command~ displaying a popup or a buffer.
+
+#+BEGIN_SRC elisp
+(defun async-shell-command-no-window (command)
+  "Execute async command without showing the result buffer."
+  (interactive)
+  (let ((display-buffer-alist (list (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))))
+    (async-shell-command command)))
+#+END_SRC
+
 * Functional Utils
 ** Noop
 
