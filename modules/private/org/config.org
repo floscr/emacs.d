@@ -706,17 +706,17 @@ For example when archiving a task, there would be an empty window left over."
 (defun +org|agenda-visit-entry ()
   "Visit agenda entry in a narrowed indirect buffer."
   (interactive)
-  (+org|narrow-subtree-indirect #'org-agenda-switch-to)
+  (+org|narrow-subtree-indirect #'org-agenda-switch-to))
   ;; When narrowed on a subtask, narrow to the next parent task
-  (when (+org/todo-state-subtask?)
-    (save-excursion
-      (progn
-        (widen)
-        (org-up-element)
-        (while (and (eq (org-get-todo-state) nil)
-                    (eq (+org/todo-state-subtask?) nil))
-          (org-up-element)
-          (org-narrow-to-subtree))))))
+  ;; (when (+org/todo-state-subtask?)
+  ;;   (save-excursion
+  ;;     (progn
+  ;;       (widen)
+  ;;       (org-up-element)
+  ;;       (while (and (eq (org-get-todo-state) nil)
+  ;;                   (eq (+org/todo-state-subtask?) nil))
+  ;;         (org-up-element)
+  ;;         (org-narrow-to-subtree))))))
 #+END_SRC
 
 ** Utils
