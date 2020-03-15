@@ -1213,6 +1213,17 @@ Adds general bindings to ivy.
 #+END_SRC
 
 **** Hacks
+***** Banish mouse cursor
+
+The cursor will steal the focus from ivy-posframe, breaking ivy completely...
+
+This option moves the mouse cursor to 0x0,
+which is really unacceptable, but works for now.
+
+#+BEGIN_SRC elisp
+(setq posframe-mouse-banish t)
+#+END_SRC
+
 ***** Fix case-insensitive wgrep
 
 #+BEGIN_SRC elisp
