@@ -1144,7 +1144,7 @@ Source:
 #+END_SRC
 
 *** Ivy / Swiper
-
+**** Config
 **** Bindings
 
 Adds general bindings to ivy.
@@ -2624,9 +2624,10 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 (map!
  :leader
  (:desc "open" :prefix "o"
-   :desc "Mail"                         :g "m" #'=mu4e
-   :desc "Calendar"                     :g "c" #'=calendar
-   :desc "Calc"                         :g "C" #'calc))
+   :desc "Calendar"   :g "c" #'=calendar
+   :desc "Calc"       :g "C" #'calc
+   :desc "Mail"       :g "m" #'=mu4e
+   :desc "Snippet"    :g "s" #'+snippets/edit))
 #+END_SRC
 
 **** Projects
