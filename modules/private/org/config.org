@@ -717,7 +717,6 @@ For example when archiving a task, there would be an empty window left over."
                     (eq (+org/todo-state-subtask?) nil))
           (org-up-element)
           (org-narrow-to-subtree))))))
-
 #+END_SRC
 
 ** Utils
