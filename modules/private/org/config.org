@@ -686,6 +686,12 @@ Stuff that doesn't belong into modules, but is too big to put into a simple util
                       (int-to-string (point-max))
                       "*")))))
 
+(defun +org/kill-indirect-buffer-maybe ()
+  "Kill the window/buffer if it's indirect.
+For example when archiving a task, there would be an empty window left over."
+  (when (s-match "^\\*Org Indirect" (buffer-name))
+    (kill-buffer-and-window)))
+
 (defun +org/todo-state-subtask? ()
   "If the current taks item is a subtask (which is marked by [ ])."
   (if-let ((state (org-get-todo-state)))
@@ -695,7 +701,7 @@ Stuff that doesn't belong into modules, but is too big to put into a simple util
   "Visit currently clocked org entry in a narrowed indirect buffer."
   (interactive)
   (let ((org-agenda-follow-indirect t))
-    (+org|narrow-subtree-indirect org-clock-goto)))
+    (+org|narrow-subtree-indirect #'org-clock-goto)))
 
 (defun +org|agenda-visit-entry ()
   "Visit agenda entry in a narrowed indirect buffer."
@@ -755,13 +761,15 @@ Stuff that doesn't belong into modules, but is too big to put into a simple util
   "Mark task as done and archive."
   (interactive)
   (org-todo "DONE")
-  (org-archive-subtree))
+  (org-archive-subtree)
+  (+org/kill-indirect-buffer-maybe))
 
 (defun +org|agenda-archive-and-done ()
   "Mark agenda task as done and archive."
   (interactive)
   (org-agenda-todo "DONE")
-  (org-agenda-archive))
+  (org-agenda-archive)
+  (+org/kill-indirect-buffer-maybe))
 #+END_SRC
 
 *** Copy block to clipboard
