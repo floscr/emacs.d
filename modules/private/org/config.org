@@ -645,7 +645,7 @@ Set the active state when clocking in.
   (save-excursion
     (kill-new (s-trim (org-table-get-field)))))
 #+END_SRC
-** Additional files
+** Modules
 
 #+BEGIN_SRC elisp
 (if (featurep! +org-noter)        (load! "+org-noter"))
@@ -653,6 +653,65 @@ Set the active state when clocking in.
 (if (featurep! +org-web-tools)    (load! "+org-web-tools"))
 (if (featurep! +org-tags)         (load! "+org-tags"))
 (if (featurep! +org-pinboard)     (load! "+org-pinboard"))
+#+END_SRC
+
+** Features
+
+Stuff that doesn't belong into modules, but is too big to put into a simple util section.
+
+*** Indirect Narrow Buffers
+
+#+BEGIN_SRC elisp
+(set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :transient t :ttl t :select t)
+
+(defun +org|narrow-subtree-indirect (&optional visit-fn)
+  "Narrow to an indirect buffer in a popup."
+  (interactive)
+  ;; Cleanup old indirect buffers
+  (kill-matching-buffers "^\\*Org Indirect.*" nil t)
+  (let ((buffer
+         (save-window-excursion
+           (progn
+            (when visit-fn (call-interactively visit-fn))
+            (with-current-buffer
+                (clone-indirect-buffer
+                  (generate-new-buffer-name (template "*Org Indirect <<(buffer-name)>> "))
+                  nil))))))
+    (with-current-buffer buffer
+      (org-narrow-to-subtree)
+      (pop-to-buffer buffer)
+      (rename-buffer (concat
+                      (buffer-name)
+                      (int-to-string (point-min))
+                      (int-to-string (point-max))
+                      "*")))))
+
+(defun +org/todo-state-subtask? ()
+  "If the current taks item is a subtask (which is marked by [ ])."
+  (if-let ((state (org-get-todo-state)))
+      (string-match-p (concat "^\\" "[") state)))
+
+(defun +org|clock-visit-entry ()
+  "Visit currently clocked org entry in a narrowed indirect buffer."
+  (interactive)
+  (let ((org-agenda-follow-indirect t))
+    (+org|narrow-subtree-indirect org-clock-goto)))
+
+(defun +org|agenda-visit-entry ()
+  "Visit agenda entry in a narrowed indirect buffer."
+  (interactive)
+  (+org|narrow-subtree-indirect #'org-agenda-switch-to)
+  ;; When narrowed on a subtask, narrow to the next parent task
+  (when (+org/todo-state-subtask?)
+    (save-excursion
+      (progn
+        (widen)
+        (org-up-element)
+        (while (and (eq (org-get-todo-state) nil)
+                    (eq (+org/todo-state-subtask?) nil))
+          (org-up-element)
+          (org-narrow-to-subtree))))))
+
 #+END_SRC
 
 ** Utils
@@ -998,36 +1057,6 @@ Projectile search is not fast reliable enough."
     (when (search-forward "[[" (point-at-eol) t)
       (call-interactively #'org-insert-link))
     (org-agenda-redo)))
-#+END_SRC
-
-*** Visit Entry in Narrow Mode
-
-#+BEGIN_SRC elisp
-(defun +org/todo-state-subtask? ()
-  "If the current taks item is a subtask (which is marked by [ ])."
-  (if-let ((state (org-get-todo-state)))
-      (string-match-p (concat "^\\" "[") state)))
-
-(defun +org|clock-visit-entry ()
-  "Visit the currently clocked task as a narrowed popup."
-  (interactive)
-  (let ((org-agenda-follow-indirect t))
-    (org-clock-goto)
-    (org-narrow-to-subtree)))
-
-(defun +org|agenda-visit-entry ()
-  "Visit entry and narrow to section."
-  (interactive)
-  (org-agenda-switch-to)
-  ;; When narrowed on a subtask, narrow to the next parent task
-  (if (+org/todo-state-subtask?)
-      (save-excursion
-        (org-up-element)
-        (while (and (eq (org-get-todo-state) nil)
-                    (eq (+org/todo-state-subtask?) nil))
-          (org-up-element)
-          (org-narrow-to-subtree)))
-    (org-narrow-to-subtree)))
 #+END_SRC
 
 *** Move to shopping list
