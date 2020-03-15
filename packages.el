@@ -1,6 +1,6 @@
 ;;; Evil Packages
 ;; TODO Evil-Briefcase does not work
-(package! evil-briefcase :recipe (:host github :repo "floscr/evil-briefcase"))
+;; (package! evil-briefcase :recipe (:host github :repo "strickinato/evil-briefcase"))
 (package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
 (package! evil-replace-with-register)
 (package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
