@@ -1231,11 +1231,21 @@ To sync the calendars use ~org-caldav-sync~.
       :desc "Next Note" "p" #'org-noter-sync-prev-note
       :desc "Next Note" "j" #'org-noter-sync-prev-note)
 #+END_SRC
+*** Org Download
+
+Copy screenshots from the clipboard to an attachment.
+
+**** Config
+
+Set my preferred clipboard paste method to ~xclip~.
+
+#+BEGIN_SRC elisp
+(setq org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s")
+#+END_SRC
 
 ** Bindings
 *** Local Leader Bindings
 **** Local Leader Mapping
-
 ***** Org Mode
 
 #+BEGIN_SRC elisp
