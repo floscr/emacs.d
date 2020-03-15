@@ -1000,13 +1000,20 @@ Projectile search is not fast reliable enough."
     (org-agenda-redo)))
 #+END_SRC
 
-*** Agenda Visit Enty in Narrow Mode
+*** Visit Entry in Narrow Mode
 
 #+BEGIN_SRC elisp
 (defun +org/todo-state-subtask? ()
   "If the current taks item is a subtask (which is marked by [ ])."
   (if-let ((state (org-get-todo-state)))
       (string-match-p (concat "^\\" "[") state)))
+
+(defun +org|clock-visit-entry ()
+  "Visit the currently clocked task as a narrowed popup."
+  (interactive)
+  (let ((org-agenda-follow-indirect t))
+    (org-clock-goto)
+    (org-narrow-to-subtree)))
 
 (defun +org|agenda-visit-entry ()
   "Visit entry and narrow to section."
@@ -1388,8 +1395,8 @@ Set my preferred clipboard paste method to ~xclip~.
      :desc "Goto Select"              "G" (λ! (org-clock-goto 'select))
      :desc "Clock In"                 "c" #'org-clock-in
      :desc "Mark Default Task"        "d" #'org-clock-mark-default-task
-     :desc "Modify Effort Estimate    " "e" #'org-clock-modify-effort-estimate
-     :desc "Goto Current"             "g" #'org-clock-goto
+     :desc "Modify Effort Estimate"   "e" #'org-clock-modify-effort-estimate
+     :desc "Goto Current"             "g" #'+org|clock-visit-entry
      :desc "Resolve"                  "r" #'org-resolve-clocks
      :desc "Clock In Last"            "l" #'org-clock-in-last
      :desc "Cancel"                   "x" #'org-clock-cancel)))
