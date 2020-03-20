@@ -71,6 +71,7 @@ Set it to ~32 MiB~.
 
 #+BEGIN_SRC elisp
 (setq bookmark-default-file "~/Documents/Temp/bookmarks"
+      bookmark-watch-bookmark-file 'silent
       bookmark-file bookmark-default-file
       bookmark-old-default-file bookmark-default-file)
 #+END_SRC
