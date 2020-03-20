@@ -7,3 +7,4 @@ tmp/
 /modules/private/org/config.el
 /autoload.el
 *.elc
+/modules/private/dired/+sidebar.el
