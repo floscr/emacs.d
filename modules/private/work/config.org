@@ -314,6 +314,10 @@ bookmarks are not helpful since they're not relative.
                :relative t
                :name "Node Editor: Tokenization"
                :goto "const convertTextToTokens")
+        (:file "src/containers/MapEditor.Root/Editable/component.js"
+               :relative t
+               :name "renderEntities"
+               :goto "const renderEntities =")
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Arr.js"
                :relative t
                :name "Common: Arr"
