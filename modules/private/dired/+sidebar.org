@@ -1,6 +1,6 @@
 #+TITLE: Dired Sidebar
 #+AUTHOR: Florian Schrödl (floscr)
-#+PROPERTY: header-args :tangle no
+#+PROPERTY: header-args
 #+STARTUP: org-startup-folded: showall
 #+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t -*-
