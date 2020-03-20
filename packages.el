@@ -12,15 +12,6 @@
 (package! impatient-mode)
 
 ;;; Org-Mode Packages
-(package! helm-org-rifle)
-(package! org-pinboard :recipe (:host github :repo "floscr/org-pinboard"))
-(package! org-media-info :recipe (:host github :repo "floscr/org-media-info"))
-(package! poporg)
-(package! org-ql :recipe (:host github :repo "alphapapa/org-ql"))
-(package! org-super-agenda :recipe (:host github :repo "alphapapa/org-super-agenda"))
-(package! ob-async)
-(package! graphql)
-(package! org-download)
 
 ;;; Utils
 ;; Show changes in current branch
@@ -32,10 +23,6 @@
 
 (package! nov)
 
-(package! org-caldav)
-(package! org-noter)
-(package! calctex :recipe (:host github :repo "johnbcoughlin/calctex"
-                                 :files ("*.el")))
 
 (package! define-word)
 
