@@ -2194,13 +2194,13 @@ Fix buffers not being added to the current workspace.
 (add-hook! 'bookmark-after-jump-hook #'+workspaces-add-current-buffer-h)
 #+END_SRC
 
-*** Wgrep Mode
+*** Grep Modes
 **** Bindings
 
 #+BEGIN_SRC elisp
 (map!
- :map wgrep-mode-map
- :g [return] #'compile-goto-error)
+ :map (wgrep-mode-map ivy-occur-mode-map)
+ :n [return] #'compile-goto-error)
 #+END_SRC
 
 *** Yasnippet
