@@ -7,7 +7,7 @@
 (when (featurep! +org-noter)
   (package! +org-noter))
 
-(package! doct)
+(package! doct :recipe (:host github :repo "progfolio/doct" :branch "master"))
 
 (package! helm-org-rifle)
 (package! org-pinboard :recipe (:host github :repo "floscr/org-pinboard"))

@@ -205,7 +205,7 @@ Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (defun +org|add-created-date-property ()
-  "Add DATE_CAPTURED property to the current item."
+  "Add CREATED property to the current item."
   (interactive)
   (org-set-property +org-created-property (format-time-string  "[%Y-%m-%d %a %H:%M]")))
 
@@ -214,60 +214,28 @@ Needs ~dvisvgm~
 
 **** Org Capture Templates
 
+Configured with [[https://github.com/progfolio/doct][doct]].
+
 #+BEGIN_SRC elisp
-(defun org-capture-bookmark-pair ()
-  (split-string (org-as-mac-chrome-get-frontmost-url) "::split::"))
-
-(defun org-capture-bookmark-string-url ()
-  (car (org-capture-bookmark-pair)))
-
-(defun org-capture-bookmark-string-description ()
-  (cadr (org-capture-bookmark-pair)))
-
-(after! org
+(use-package! doct
+  :after org
+  :init (setq org-capture-templates '())
   :config
   (setq org-capture-templates
-        `(("t" "todo" entry
-           (file org-default-notes-file)
-           "* TODO %?\n")
-
-          ("f" "File Todo" entry
-           (file org-default-notes-file)
-           "* TODO %?\n%a\n")
-
-          ("c" "Calendar Event" entry
-           (file+headline ,(concat org-directory "/Main/gtd.org") "Calendar")
-           "* %?\n")
-
-          ("e" "Emacs Todo" entry
-           (file+headline ,(concat org-directory "/Main/emacs.org") "Emacs Todos")
-           "* TODO %?\n")
-
-          ("p" "Pin Bookmark" entry (file+headline org-pinboard-file "Pinboard")
-           "* %(org-capture-bookmark-string-description)%?\n:PROPERTIES:\n:URL:  %(org-capture-bookmark-string-url)\n:TIME: %U\n:END:\n")
-
-          ("rr" "Add to reading list" entry (file+headline +org-reading-list-file "Reading List")
-           "* TODO %(org-mac-chrome-get-frontmost-url)%?\n")
-
-          ("rw" "Add to watching list" entry (file+headline +org-reading-list-file "Watching List")
-           "* TODO %(org-mac-chrome-get-frontmost-url)%?\n")
-
-          ("C" "Browser" entry
-           (file org-default-notes-file)
-           "* TODO %(org-mac-chrome-get-frontmost-url)%?\n")
-
-          ("ww" "Work Task" entry
-           (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
-           "* TODO %?\n")
-
-          ("wc" "Work Task from Chrome" entry
-           (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
-           "* TODO %?\n:PROPERTIES:\n:MT_URL: %(org-mac-chrome-get-frontmost-url)\n:END:\n")
-
-          ("wr" "Work Review" entry
-           (file+headline ,(concat org-directory "/Work/work.org") "Work Todos")
-           "* TODO %(+org/mac-chrome-get-frontmost-url-custom-format)%? :REVIEW:\n"))))
+        (append org-capture-templates
+                (doct `(("Tasks"
+                         :keys "t"
+                         :todo "TODO"
+                         :file org-default-notes-file
+                         :template "* %doct(todo) %?")
+                        ("Work Task"
+                         :keys "w"
+                         :todo "TODO"
+                         :file ,(f-join org-directory "Work/work.org")
+                         :headline "GTD"
+                         :template "* %doct(todo) %?"))))))
 #+END_SRC
+
 *** Src Block Snippets
 
 #+BEGIN_SRC elisp :tangle no
@@ -716,6 +684,9 @@ For example when archiving a task, there would be an empty window left over."
 ;;         (org-up-element)
 ;;         (org-narrow-to-subtree))))))
 #+END_SRC
+*** Org Capture Frame
+
+Copy from [[file:~/.emacs.d/modules/lang/org/autoload/org-capture.el::defun +org-capture/open-frame (&optional initial-input key][org-capture.el]] adapted to my needs.
 
 ** Utils
 *** Get Frontmost chrome url
