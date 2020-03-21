@@ -30,6 +30,20 @@ Doom resets the default ~org-directory~, so this is a workaround.
   (setq org-image-actual-width 600)
   (setq org-default-notes-file (concat org-directory "/Main/inbox.org")))
 #+END_SRC
+**** Org Tags
+
+#+BEGIN_SRC elisp
+(after! org
+  (setq org-tag-persistent-alist '(("WORK")
+                                   ("HOME")
+                                   ("PERSONAL")
+                                   ("LOW_EFFORT")
+                                   ("MEDIUM_EFFORT")
+                                   ("PROJECT")
+                                   ("EMACS")
+                                   ("NIXOS")
+                                   ("TO_BUY"))))
+#+END_SRC
 
 **** Org Mode Load Hook
 
