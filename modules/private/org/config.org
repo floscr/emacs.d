@@ -638,6 +638,60 @@ Set the active state when clocking in.
 
 Stuff that doesn't belong into modules, but is too big to put into a simple util section.
 
+*** Counsel Tagging Enhancement
+
+Custom counsel tagging for org buffers and agenda buffers.
+
+Functions taken from:
+- [[file:~/.emacs.d/.local/straight/repos/swiper/counsel.el::defun counsel-org-tag-agenda (][swiper/counsel.el:counsel-org-tag-agenda]]
+- [[file:~/.emacs.d/.local/straight/repos/swiper/counsel.el::defun counsel-org-tag (][swiper/counsel.el:counsel-org-tag]]
+
+What I've changed:
+- Always display ~org-tag-persistent-alist~ tags
+- Always display all buffer tags
+
+#+BEGIN_SRC elisp
+(defun +org|counsel-org-tag ()
+  "Add or remove tags in `org-mode'."
+  (interactive)
+  (save-excursion
+    (if (eq major-mode 'org-agenda-mode)
+        (if org-agenda-bulk-marked-entries
+            (setq counsel-org-tags nil)
+          (let ((hdmarker (or (org-get-at-bol 'org-hd-marker)
+                              (org-agenda-error))))
+            (with-current-buffer (marker-buffer hdmarker)
+              (goto-char hdmarker)
+              (setq counsel-org-tags (counsel--org-get-tags)))))
+      (unless (org-at-heading-p)
+        (org-back-to-heading t))
+      (setq counsel-org-tags (counsel--org-get-tags)))
+    (let ((org-last-tags-completion-table
+           (append (and (eq major-mode 'org-agenda-mode)
+                        (org-global-tags-completion-table
+                         (org-agenda-files)))
+                   org-tag-persistent-alist
+                   (or (if (boundp 'org-current-tag-alist)
+                           org-current-tag-alist
+                         org-tag-alist)
+                       (org-get-buffer-tags)))))
+      (ivy-read (counsel-org-tag-prompt)
+                (lambda (str _pred _action)
+                  (delete-dups
+                   (all-completions str #'org-tags-completion-function)))
+                :history 'org-tags-history
+                :action #'counsel-org-tag-action
+                :caller 'counsel-org-tag))))
+
+(defun +org|counsel-org-tag-agenda ()
+  "Set tags for the current agenda item."
+  (interactive)
+  (cl-letf
+      (((symbol-function 'counsel-org-tag-action)
+        #'org-agenda-set-tags))
+      (+org|counsel-org-tag)))
+#+END_SRC
+
 *** Indirect Narrow Buffers
 
 #+BEGIN_SRC elisp
@@ -698,9 +752,6 @@ For example when archiving a task, there would be an empty window left over."
 ;;         (org-up-element)
 ;;         (org-narrow-to-subtree))))))
 #+END_SRC
-*** Org Capture Frame
-
-Copy from [[file:~/.emacs.d/modules/lang/org/autoload/org-capture.el::defun +org-capture/open-frame (&optional initial-input key][org-capture.el]] adapted to my needs.
 
 ** Utils
 *** Get Frontmost chrome url
@@ -1335,7 +1386,7 @@ Set my preferred clipboard paste method to ~xclip~.
   (map! :after org-agenda
         :map org-agenda-mode-map
         :localleader
-        "q" #'counsel-org-tag-agenda
+        "q" #'+org|counsel-org-tag-agenda
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
           :desc "Pinboard"           "p" '+pinboard|refile-agenda
@@ -1358,6 +1409,7 @@ Set my preferred clipboard paste method to ~xclip~.
 (map! :map org-mode-map
       :gni [s-return]    #'+org/insert-item-below
       :gni [s-S-return]  #'+org/insert-item-above
+      :n "q"             #'+org|counsel-org-tag
       :n "M-k"           #'org-metaup
       :n "M-j"           #'org-metadown)
 #+END_SRC
