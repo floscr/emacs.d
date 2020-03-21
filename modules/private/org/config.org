@@ -652,44 +652,18 @@ What I've changed:
 
 #+BEGIN_SRC elisp
 (defun +org|counsel-org-tag ()
-  "Add or remove tags in `org-mode'."
+  "Set tags for the current agenda item."
   (interactive)
-  (save-excursion
-    (if (eq major-mode 'org-agenda-mode)
-        (if org-agenda-bulk-marked-entries
-            (setq counsel-org-tags nil)
-          (let ((hdmarker (or (org-get-at-bol 'org-hd-marker)
-                              (org-agenda-error))))
-            (with-current-buffer (marker-buffer hdmarker)
-              (goto-char hdmarker)
-              (setq counsel-org-tags (counsel--org-get-tags)))))
-      (unless (org-at-heading-p)
-        (org-back-to-heading t))
-      (setq counsel-org-tags (counsel--org-get-tags)))
-    (let ((org-last-tags-completion-table
-           (append (and (eq major-mode 'org-agenda-mode)
-                        (org-global-tags-completion-table
-                         (org-agenda-files)))
-                   org-tag-persistent-alist
-                   (or (if (boundp 'org-current-tag-alist)
-                           org-current-tag-alist
-                         org-tag-alist)
-                       (org-get-buffer-tags)))))
-      (ivy-read (counsel-org-tag-prompt)
-                (lambda (str _pred _action)
-                  (delete-dups
-                   (all-completions str #'org-tags-completion-function)))
-                :history 'org-tags-history
-                :action #'counsel-org-tag-action
-                :caller 'counsel-org-tag))))
+  (let* ((org-current-tag-alist org-tag-persistent-alist)
+         (org-complete-tags-always-offer-all-agenda-tags t)
+         (org-current-tag-alist (append org-current-tag-alist (list (org-get-tags)))))
+    (counsel-org-tag)))
 
 (defun +org|counsel-org-tag-agenda ()
   "Set tags for the current agenda item."
   (interactive)
-  (cl-letf
-      (((symbol-function 'counsel-org-tag-action)
-        #'org-agenda-set-tags))
-      (+org|counsel-org-tag)))
+  (cl-letf (((symbol-function 'org-set-tags-command) #'+org|counsel-org-tag))
+      (org-agenda-set-tags)))
 #+END_SRC
 
 *** Indirect Narrow Buffers
