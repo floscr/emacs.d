@@ -249,6 +249,19 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                          :headline "GTD"
                          :template "* %doct(todo) %?"))))))
 #+END_SRC
+**** Command
+
+My command to call the capture with following attributes.
+I disable posframe, since it doesn't go beyond the X Window.
+
+#+BEGIN_SRC elisp
+(defun +org-capture|my-open-frame ()
+  "Open capture, adjust display, disable posframe."
+  (interactive)
+  (+ui|adjust-ui-to-display)
+  (+org-capture/open-frame)
+  (ivy-posframe-mode -1))
+#+END_SRC
 
 *** Src Block Snippets
 
