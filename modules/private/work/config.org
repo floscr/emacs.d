@@ -317,6 +317,10 @@ bookmarks are not helpful since they're not relative.
                :relative t
                :name "Node Editor: Tokenization"
                :goto "const convertTextToTokens")
+        (:file "src/containers/MapEditor.Node.Editor/Default/component.js"
+               :relative t
+               :name "Node Editor: Component"
+               :goto "const Component")
         (:file "src/containers/MapEditor.Root/Editable/component.js"
                :relative t
                :name "renderEntities"
