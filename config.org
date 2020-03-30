@@ -1819,11 +1819,15 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
                       (and atpoint
                            (car (member (and (string-match "[^/]+/" atpoint)
                                              (substring atpoint (match-end 0)))
-                                        remotes)))))))
+                                        remotes))))))
+         (review-branch-name (s-replace "origin/" "REVIEW-" branch)))
     (magit-checkout branch)
     (when (magit-anything-modified-p)
       (user-error "Cannot checkout when there are uncommitted changes"))
-    (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch)))
+    (if (magit-branch-))
+    (if (-contains? (magit-list-local-branch-names) review-branch-name)
+        (magit-branch-checkout review-branch-name)
+      (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch))))
 #+END_SRC
 
 ***** TODO Browse git link
