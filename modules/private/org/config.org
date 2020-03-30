@@ -34,15 +34,15 @@ Doom resets the default ~org-directory~, so this is a workaround.
 
 #+BEGIN_SRC elisp
 (after! org
-  (setq org-tag-persistent-alist '(("WORK")
-                                   ("HOME")
-                                   ("PERSONAL")
-                                   ("LOW_EFFORT")
-                                   ("MEDIUM_EFFORT")
-                                   ("PROJECT")
-                                   ("EMACS")
-                                   ("NIXOS")
-                                   ("TO_BUY"))))
+  (setq org-tag-alist '(("WORK")
+                        ("HOME")
+                        ("PERSONAL")
+                        ("LOW_EFFORT")
+                        ("MEDIUM_EFFORT")
+                        ("PROJECT")
+                        ("EMACS")
+                        ("NIXOS")
+                        ("TO_BUY"))))
 #+END_SRC
 
 **** Org Mode Load Hook
@@ -664,19 +664,36 @@ What I've changed:
 - Always display all buffer tags
 
 #+BEGIN_SRC elisp
-(defun +org|counsel-org-tag ()
-  "Set tags for the current agenda item."
+(defun +org|counsel-org-tag (&optional from-agenda)
+  "Add or remove tags in `org-mode'."
   (interactive)
-  (let* ((org-current-tag-alist org-tag-persistent-alist)
-         (org-complete-tags-always-offer-all-agenda-tags t)
-         (org-current-tag-alist (append org-current-tag-alist (list (org-get-tags)))))
-    (counsel-org-tag)))
-
-(defun +org|counsel-org-tag-agenda ()
-  "Set tags for the current agenda item."
-  (interactive)
-  (cl-letf (((symbol-function 'org-set-tags-command) #'+org|counsel-org-tag))
-      (org-agenda-set-tags)))
+  (save-excursion
+    (if (eq major-mode 'org-agenda-mode)
+        (if org-agenda-bulk-marked-entries
+            (setq counsel-org-tags nil)
+          (let ((hdmarker (or (org-get-at-bol 'org-hd-marker)
+                              (org-agenda-error))))
+            (with-current-buffer (marker-buffer hdmarker)
+              (goto-char hdmarker)
+              (setq counsel-org-tags (counsel--org-get-tags)))))
+      (unless (org-at-heading-p)
+        (org-back-to-heading t))
+      (setq counsel-org-tags (counsel--org-get-tags)))
+    (let ((org-last-tags-completion-table
+           (append (and (or org-complete-tags-always-offer-all-agenda-tags
+                            (eq major-mode 'org-agenda-mode))
+                        (org-global-tags-completion-table
+                         (org-agenda-files)))
+                   org-tag-persistent-alist
+                   org-tag-alist
+                   (org-get-buffer-tags))))
+      (ivy-read (counsel-org-tag-prompt)
+                (lambda (str _pred _action)
+                  (delete-dups
+                   (all-completions str #'org-tags-completion-function)))
+                :history 'org-tags-history
+                :action #'counsel-org-tag-action
+                :caller 'counsel-org-tag))))
 #+END_SRC
 
 *** Indirect Narrow Buffers
@@ -1330,9 +1347,9 @@ Set my preferred clipboard paste method to ~xclip~.
         :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
         :desc  "Create/Edit Todo"          "o"  #'org-todo
         :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
-        :desc  "Tag heading"               "q"  #'counsel-org-tag
+        :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
         :desc  "Schedule"                  "s"  #'org-schedule
-        :desc  "Tag heading"               "t"  #'counsel-org-tag
+        :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
         :desc  "Copy Buffer To Markdown"   "y"  #'+org|copy-buffer-as-markdown
 
         (:prefix-map ("i" . "Insert")
@@ -1373,7 +1390,7 @@ Set my preferred clipboard paste method to ~xclip~.
   (map! :after org-agenda
         :map org-agenda-mode-map
         :localleader
-        "q" #'+org|counsel-org-tag-agenda
+        "q" #'+org|counsel-org-tag
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
           :desc "Pinboard"           "p" '+pinboard|refile-agenda
