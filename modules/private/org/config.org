@@ -241,13 +241,13 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                          :keys "t"
                          :todo "TODO"
                          :file org-default-notes-file
-                         :template "* %doct(todo) %?")
+                         :template "* %{todo} %?")
                         ("Work Task"
                          :keys "w"
                          :todo "TODO"
                          :file ,(f-join org-directory "Work/work.org")
                          :headline "GTD"
-                         :template "* %doct(todo) %?"))))))
+                         :template "* %{todo} %?"))))))
 #+END_SRC
 **** Command
 
