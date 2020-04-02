@@ -14,6 +14,18 @@
 (require 's)
 #+END_SRC
 
+** Config
+
+*** Variables
+
+#+BEGIN_SRC elisp
+(setq +MM:base-dir (f-expand "~/Code/Meisterlabs"))
+(defun +MM/base-dir-join (x) (f-join +MM:base-dir x))
+(setq +MM:mm-dir (+MM/base-dir-join "mindmeister"))
+(setq +MM:mm-web-dir (+MM/base-dir-join "mindmeister-web"))
+(setq +MM:docker-dir (+MM/base-dir-join "docker-dev-environment"))
+#+END_SRC
+
 ** Utils
 *** Alternate File
 
