@@ -37,7 +37,7 @@
     (goto-char (point-max))
     (insert "\n")
     (insert new-item)
-    (call-interactively #'counsel-org-tag)))
+    (call-interactively #'+org|counsel-org-tag)))
 
 (defun +pinboard|refile-agenda ()
   (interactive)
