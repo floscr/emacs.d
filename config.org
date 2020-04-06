@@ -1821,10 +1821,11 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
                                              (substring atpoint (match-end 0)))
                                         remotes))))))
          (review-branch-name (s-replace "origin/" "REVIEW-" branch)))
+    ;; HACK Workaround where the buffer cant be read
+    (advice-remove 'magit-checkout #'+magit-revert-repo-buffers-deferred-a)
     (magit-checkout branch)
     (when (magit-anything-modified-p)
       (user-error "Cannot checkout when there are uncommitted changes"))
-    (if (magit-branch-))
     (if (-contains? (magit-list-local-branch-names) review-branch-name)
         (magit-branch-checkout review-branch-name)
       (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch))))
