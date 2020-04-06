@@ -12,6 +12,7 @@
 #+BEGIN_SRC elisp
 (require 'dash)
 (require 's)
+(require 'f)
 #+END_SRC
 
 ** Config
