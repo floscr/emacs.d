@@ -363,6 +363,31 @@ bookmarks are not helpful since they're not relative.
   (ivy-read "Jump to bookmark: " (--map (plist-get it :name) +MM-dynamic-bookmarks)
             :action #'+MM/find-bookmark-buffer))
 #+END_SRC
+*** Build Package
+
+#+BEGIN_SRC elisp
+(defun +MM/normalize-script-name (x)
+  (--> (s-replace "build-mindmeister-" "" it)
+       (s-replace "staging-" "" it)
+       s-upper-camel-case))
+
+(defun +MM|build-server ()
+  (interactive)
+  (require 'deferred)
+  (let* ((web-directory (or (projectile-project-root) +MM:mm-web-dir))
+         (scripts (--> (json-read-file (f-join web-directory "package.json"))
+                       (alist-get 'scripts it)
+                       (--map (symbol-name (car it)) it)
+                       (--filter (s-starts-with? "build-mindmeister-staging-" it) it)
+                       (--map (list (+MM/normalize-script-name it) :command it) it)))
+         (item (ivy-read "Build Package: " scripts :action))
+         (command (--> (--find (string= (car it) item) scripts)
+                       (plist-get (cdr it) :command))))
+    (let* ((default-directory web-directory))
+      (deferred:$
+        (deferred:nextc it `(lambda () (deferred:process "mm-build-bundle" ,command)))))))
+
+#+END_SRC
 *** Shared Packages Commit
 
 #+BEGIN_SRC elisp
