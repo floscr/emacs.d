@@ -178,6 +178,28 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
   (let ((display-buffer-alist (list (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))))
     (async-shell-command command)))
 #+END_SRC
+* Window Utils
+
+#+BEGIN_SRC elisp
+(defun +wm/list-windows ()
+  "List X windows"
+  (interactive)
+  (->> (shell-command-to-string "wmctrl -lx")
+       (s-split "\n")
+       (-drop-last 1)
+       (-map (lambda (x)
+               (let* ((item (s-split "   *" x))
+                      (pid (nth 0 item))
+                      (process-string (s-split " " (nth 1 item)))
+                      (monitor (nth 0 process-string))
+                      (process (nth 1 process-string))
+                      (title (nth 2 item)))
+                 (list
+                  :pid pid
+                  :monitor monitor
+                  :process process
+                  :title title))))))
+#+END_SRC
 
 * Functional Utils
 ** Noop
