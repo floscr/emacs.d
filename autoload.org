@@ -208,6 +208,16 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
   (let ((last-id (+wm/last-window-id))
         (windows (+wm/list-windows)))
     (--first (string= (plist-get it ':pid) last-id) windows)))
+
+(defun +wm/last-chrome-window-org-link ()
+  (-some--> (+wm/last-window)
+    (plist-get it ':title)
+    (s-split " :: " it)
+    (let ((url (-last-item it))
+          (title (-first-item it)))
+      (template "[[<<url>>][<<title>>]]"))))
+
+(+wm/last-chrome-window-org-link)
 #+END_SRC
 
 * Functional Utils
