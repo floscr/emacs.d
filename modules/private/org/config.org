@@ -215,17 +215,6 @@ Needs ~dvisvgm~
     (transient . t)))
 #+END_SRC
 
-**** Add created property after capture
-
-#+BEGIN_SRC elisp
-(defun +org|add-created-date-property ()
-  "Add CREATED property to the current item."
-  (interactive)
-  (org-set-property +org-created-property (format-time-string  "[%Y-%m-%d %a %H:%M]")))
-
-(add-hook 'org-capture-before-finalize-hook '+org|add-created-date-property)
-#+END_SRC
-
 **** Org Capture Templates
 
 Configured with [[https://github.com/progfolio/doct][doct]].
@@ -236,22 +225,25 @@ Configured with [[https://github.com/progfolio/doct][doct]].
   :init (setq org-capture-templates '())
   :config
   (setq org-capture-templates
-        (doct `(("Tasks"
-                 :keys "t"
+        (doct `(("Inbox"
+                 :keys ""
                  :todo "TODO"
+                 :title "%?"
                  :file org-default-notes-file
-                 :template "* %{todo} %?")
-                ("Work Task"
-                 :keys "w"
-                 :todo "TODO"
-                 :file ,(f-join org-directory "Work/work.org")
-                 :headline "GTD"
-                 :template "* %{todo} %?")
-                ("Chrome Window"
-                 :keys "c"
-                 :todo "TODO"
-                 :file org-default-notes-file
-                 :template "* %{todo} %(+wm/last-chrome-window-org-link)%?")))))
+                 :template ("* %{todo} %{title}"
+                            ":PROPERTIES:"
+                            ":CREATED: %U"
+                            ":END:")
+                 :children
+                 (("Task"
+                   :keys "t")
+                  ("Work Task"
+                    :keys "w"
+                    :file ,(f-join org-directory "Work/work.org")
+                    :headline "GTD")
+                  ("Chrome Window"
+                    :keys "c"
+                    :title "%(+wm/last-chrome-window-org-link)")))))))
 #+END_SRC
 **** Command
 
