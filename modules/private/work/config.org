@@ -368,13 +368,24 @@ bookmarks are not helpful since they're not relative.
 #+BEGIN_SRC elisp
 (defun +MM/normalize-script-name (x)
   (--> (s-replace "build-mindmeister-" "" it)
-       (s-replace "staging-" "" it)
-       s-upper-camel-case))
+       (s-replace "staging-" "Staging." (s-titleize it))))
 
-(defun +MM|build-server ()
+(defun +MM|commit-bundle (&optional branch)
+  (interactive)
+  (magit-stage-untracked)
+  (magit-call-git "commit" "-am" (template "Bundle"))
+  (unless (s-matches? "bundle-.*" (magit-get-current-branch))
+    (magit-branch-spinoff (template "<<bundle>>-branch")))
+  (if (magit-get-upstream-branch)
+      (magit-push-current-to-upstream nil)
+    (+git|push-dated))
+  (magit-get-upstream-branch))
+
+(defun +MM|build-test-package ()
   (interactive)
   (require 'deferred)
   (let* ((web-directory (or (projectile-project-root) +MM:mm-web-dir))
+         (web-branch-name (magit-get-current-branch))
          (scripts (--> (json-read-file (f-join web-directory "package.json"))
                        (alist-get 'scripts it)
                        (--map (symbol-name (car it)) it)
@@ -383,11 +394,19 @@ bookmarks are not helpful since they're not relative.
          (item (ivy-read "Build Package: " scripts :action))
          (command (--> (--find (string= (car it) item) scripts)
                        (plist-get (cdr it) :command))))
-    (let* ((default-directory web-directory))
-      (deferred:$
-        (deferred:nextc it `(lambda () (deferred:process "mm-build-bundle" ,command)))))))
+    (deferred:$
+        (deferred:process "mm-build-bundle" command item)
+        (deferred:nextc it `(lambda () (let ((default-directory +MM:mm-dir)
+                                             (deploy-url-directory (--> ,item
+                                                                        (s-replace "Staging." "" it)
+                                                                        (downcase it)))
+                                             (branch (+MM|commit-bundle ,web-branch-name)))
+                                         (if +MM:deploy-url
+                                             (browse-url (template "<<+MM:deploy-url>>/<<deploy-url-directory>>/deploys/new?reference=<<branch>>"))
+                                           (user-error "Please define \"+MM:deploy-url\""))))))))
 
 #+END_SRC
+
 *** Shared Packages Commit
 
 #+BEGIN_SRC elisp
