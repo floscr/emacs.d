@@ -236,18 +236,22 @@ Configured with [[https://github.com/progfolio/doct][doct]].
   :init (setq org-capture-templates '())
   :config
   (setq org-capture-templates
-        (append org-capture-templates
-                (doct `(("Tasks"
-                         :keys "t"
-                         :todo "TODO"
-                         :file org-default-notes-file
-                         :template "* %{todo} %?")
-                        ("Work Task"
-                         :keys "w"
-                         :todo "TODO"
-                         :file ,(f-join org-directory "Work/work.org")
-                         :headline "GTD"
-                         :template "* %{todo} %?"))))))
+        (doct `(("Tasks"
+                 :keys "t"
+                 :todo "TODO"
+                 :file org-default-notes-file
+                 :template "* %{todo} %?")
+                ("Work Task"
+                 :keys "w"
+                 :todo "TODO"
+                 :file ,(f-join org-directory "Work/work.org")
+                 :headline "GTD"
+                 :template "* %{todo} %?")
+                ("Chrome Window"
+                 :keys "c"
+                 :todo "TODO"
+                 :file org-default-notes-file
+                 :template "* %{todo} %(+wm/last-chrome-window-org-link)%?")))))
 #+END_SRC
 **** Command
 
