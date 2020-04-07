@@ -183,13 +183,12 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 #+BEGIN_SRC elisp
 (defun +wm/list-windows ()
   "List X windows"
-  (interactive)
   (->> (shell-command-to-string "wmctrl -lx")
        (s-split "\n")
        (-drop-last 1)
        (-map (lambda (x)
                (let* ((item (s-split "   *" x))
-                      (pid (nth 0 item))
+                      (pid (downcase (nth 0 item)))
                       (process-string (s-split " " (nth 1 item)))
                       (monitor (nth 0 process-string))
                       (process (nth 1 process-string))
@@ -199,6 +198,16 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
                   :monitor monitor
                   :process process
                   :title title))))))
+
+(defun +wm/last-window-id ()
+  (--> (shell-command-to-string "bspc query -N -n last")
+       s-trim
+       downcase))
+
+(defun +wm/last-window ()
+  (let ((last-id (+wm/last-window-id))
+        (windows (+wm/list-windows)))
+    (--first (string= (plist-get it ':pid) last-id) windows)))
 #+END_SRC
 
 * Functional Utils
