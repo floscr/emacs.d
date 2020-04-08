@@ -378,7 +378,7 @@ bookmarks are not helpful since they're not relative.
   (magit-stage-untracked)
   (magit-call-git "commit" "-am" (template "Bundle"))
   (unless (s-matches? "bundle-.*" (magit-get-current-branch))
-    (magit-branch-spinoff (template "<<bundle>>-branch")))
+    (magit-branch-spinoff (template "bundle-<<branch>>")))
   (if (magit-get-upstream-branch)
       (magit-push-current-to-upstream nil)
     (+git|push-dated))
@@ -394,7 +394,7 @@ bookmarks are not helpful since they're not relative.
                        (--map (symbol-name (car it)) it)
                        (--filter (s-starts-with? "build-mindmeister-staging-" it) it)
                        (--map (list (+MM/normalize-script-name it) :command it) it)))
-         (item (ivy-read "Build Package: " scripts :action))
+         (item (ivy-read "Build Package: " scripts))
          (command (--> (--find (string= (car it) item) scripts)
                        (plist-get (cdr it) :command))))
     (deferred:$
