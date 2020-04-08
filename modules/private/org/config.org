@@ -1169,6 +1169,18 @@ Return the path of the file."
                   (org-find-exact-headline-in-buffer headline))))
       (org-agenda-refile arg (list headline file nil pos) t))))
 #+END_SRC
+*** Cut Link
+
+#+BEGIN_SRC elisp
+(defun +org|cut-link ()
+  "Remove the item under the cursor but copy the link."
+  (interactive)
+  (require 'om)
+  (let ((link (->> (om-parse-this-headline)
+                   (om-get-property :raw-value))))
+    (org-cut-subtree)
+    (kill-new link)))
+#+END_SRC
 
 ** Package Config
 *** Org Caldav
@@ -1339,7 +1351,6 @@ Set my preferred clipboard paste method to ~xclip~.
         :desc  "Align Tags"                "%"  #'+org|align-all-tags
         :desc  "Schedule Tomorrow"         "+"  #'+org|schedule-tomorrow
         :desc  "Archive Subtree and Done"  "A"  #'+org|archive-and-done
-        :desc  "Cut Subtree"               "C"  #'org-cut-subtree
         :desc  "Grab tabs"                 "P"  #'+org|grab-chrome-tabs
         :desc  "Paste Subtree"             "P"  #'org-paste-subtree
         :desc  "Sort Entries"              "S"  #'+org|sort-entries
@@ -1353,6 +1364,10 @@ Set my preferred clipboard paste method to ~xclip~.
         :desc  "Schedule"                  "s"  #'org-schedule
         :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
         :desc  "Copy Buffer To Markdown"   "y"  #'+org|copy-buffer-as-markdown
+
+        (:prefix-map ("C" . "Cut")
+          :desc "Item" "C" 'org-cut-subtree
+          :desc "Link" "L" '+org|cut-link)
 
         (:prefix-map ("i" . "Insert")
           :desc "Inavtive Timestamp" "i" 'org-time-stamp-inactive
