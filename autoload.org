@@ -219,13 +219,33 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 
 (setq wmctrl:chrome-window-title-re "^\\(.*\\) :: \\(.*\\) - Chromium$")
 
-(defun +wm/last-chrome-window-org-link ()
+(defun +wm/last-chrome-window-url-title ()
   (-some--> (+wm/last-window)
     (plist-get it ':title)
     (s-match wmctrl:chrome-window-title-re it)
-    (let ((title (nth 1 it))
-          (url (nth 2 it)))
+    (-drop 1 it)))
+
+(defun +wm/last-chrome-window-org-link ()
+  (-some--> (+wm/last-chrome-window-url-title)
+    (let ((title (nth 0 it))
+          (url (nth 1 it)))
       (template "[[<<url>>][<<title>>]]"))))
+
+(defun +wm/last-chrome-window-org-link-formatted ()
+  (let* ((window (+wm/last-chrome-window-url-title))
+         (title (nth 0 window))
+         (url (nth 1 window))
+         (title-formatted
+            (cond
+             ;; Custom Pull request Formatting
+              ((s-matches? "^https://github.com.*/pull/[0-9]*$" url)
+               (let* ((match (s-match "\\(.+\\) by \\(.+\\) · Pull Request \\(#[0-9]+\\).*$" title))
+                      (pr-title (nth 1 match))
+                      (pr-user (nth 2 match))
+                      (pr-id (nth 3 match)))
+                 (template "PR <<pr-id>>: <<pr-title>> by @<<pr-user>>")))
+              (t title))))
+    (template "[[<<url>>][<<title-formatted>>]]")))
 #+END_SRC
 
 * Functional Utils
