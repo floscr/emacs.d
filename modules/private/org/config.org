@@ -237,13 +237,19 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                  :children
                  (("Task"
                    :keys "t")
-                  ("Work Task"
-                    :keys "w"
-                    :file ,(f-join org-directory "Work/work.org")
-                    :headline "GTD")
                   ("Chrome Window"
                     :keys "c"
-                    :title "%(+wm/last-chrome-window-org-link)")))))))
+                    :title "%(+wm/last-chrome-window-org-link)")
+                  ("Work:"
+                    :keys "w"
+                    :file ,(f-join org-directory "Work/work.org")
+                    :headline "GTD"
+                    :children
+                    (("Task"
+                      :keys "t")
+                     ("Task (Chrome)"
+                      :keys "c"
+                      :title "%(+wm/last-chrome-window-org-link-formatted)")))))))))
 #+END_SRC
 **** Command
 
