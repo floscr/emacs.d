@@ -222,7 +222,10 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 (defun +wm/last-chrome-window-org-link ()
   (-some--> (+wm/last-window)
     (plist-get it ':title)
-    (s-match wmctrl:chrome-window-title-re it)))
+    (s-match wmctrl:chrome-window-title-re it)
+    (let ((title (nth 1 it))
+          (url (nth 2 it)))
+      (template "[[<<url>>][<<title>>]]"))))
 #+END_SRC
 
 * Functional Utils
