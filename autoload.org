@@ -181,23 +181,31 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 * Window Utils
 
 #+BEGIN_SRC elisp
+ (setq wmctrl:window-list-re
+  "^\\(0x[0-9a-f]+\\)  \\([0-9]+\\) \\([^ ]+\\)\\.\\([^ ]+\\) +\\([a-z]*\\) \\(.*\\)$")
+
+(defun +wm/match-wm-string (x)
+  (-let* ((xs (-drop 1 (s-match wmctrl:window-list-re x)))
+          (pid (downcase (nth 0 xs)))
+          (monitor (nth 1 xs))
+          (process (nth 2 xs))
+          (process-title (nth 3 xs))
+          (user (nth 4 xs))
+          (title (nth 5 xs)))
+    (list
+     :pid pid
+     :monitor monitor
+     :process process
+     :process-title process-title
+     :user user
+     :title title)))
+
 (defun +wm/list-windows ()
   "List X windows"
   (->> (shell-command-to-string "wmctrl -lx")
        (s-split "\n")
        (-drop-last 1)
-       (-map (lambda (x)
-               (let* ((item (s-split "   *" x))
-                      (pid (downcase (nth 0 item)))
-                      (process-string (s-split " " (nth 1 item)))
-                      (monitor (nth 0 process-string))
-                      (process (nth 1 process-string))
-                      (title (nth 2 item)))
-                 (list
-                  :pid pid
-                  :monitor monitor
-                  :process process
-                  :title title))))))
+       (-map #'+wm/match-wm-string)))
 
 (defun +wm/last-window-id ()
   (--> (shell-command-to-string "bspc query -N -n last")
@@ -209,15 +217,12 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
         (windows (+wm/list-windows)))
     (--first (string= (plist-get it ':pid) last-id) windows)))
 
+(setq wmctrl:chrome-window-title-re "^\\(.*\\) :: \\(.*\\) - Chromium$")
+
 (defun +wm/last-chrome-window-org-link ()
   (-some--> (+wm/last-window)
     (plist-get it ':title)
-    (s-split " :: " it)
-    (let ((url (-last-item it))
-          (title (-first-item it)))
-      (template "[[<<url>>][<<title>>]]"))))
-
-(+wm/last-chrome-window-org-link)
+    (s-match wmctrl:chrome-window-title-re it)))
 #+END_SRC
 
 * Functional Utils
