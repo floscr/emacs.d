@@ -344,6 +344,10 @@ bookmarks are not helpful since they're not relative.
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Arr.js"
                :relative t
                :name "Common: Arr"
+               :action #'counsel-imenu)
+        (:file "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx"
+               :relative t
+               :name "Command Line Flags"
                :action #'counsel-imenu)))
 
 (defun +MM/find-bookmark-buffer (name)
