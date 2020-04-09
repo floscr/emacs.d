@@ -21,7 +21,7 @@ Doom resets the default ~org-directory~, so this is a workaround.
 **** Org variables
 
 #+BEGIN_SRC elisp
-(setq org-shopping-list-file (f-join org-directory "/Main/shoppinglist.org"))
+(setq org-shopping-list-file (f-join org-directory "Main/shoppinglist.org"))
 
 (after! org
   :config
