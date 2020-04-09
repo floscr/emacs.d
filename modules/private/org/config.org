@@ -240,6 +240,10 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                   ("Chrome Window"
                     :keys "c"
                     :title "%(+wm/last-chrome-window-org-link)")
+                  ("Shopping"
+                   :keys "s"
+                   :headline "Supermarket"
+                   :file org-shopping-list-file)
                   ("Work:"
                     :keys "w"
                     :file ,(f-join org-directory "Work/work.org")
