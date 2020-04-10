@@ -2243,6 +2243,29 @@ Fix buffers not being added to the current workspace.
 (use-package! ob-async
   :after org-babel)
 #+END_SRC
+*** Process List / Proced
+**** Config
+***** Shorten nixos path names in proced
+
+Nixos paths can be very long, which is distracting in proced.
+This shortens the nixos paths to ~{nix}~.
+
+#+BEGIN_SRC elisp
+(defun +proced/remove-nixos-path-name (oldformat &rest xs)
+  (let ((xs (-map (replace-regexp-in-string "/nix/store/[^/]+" "{nix}") xs)))
+    (apply oldformat xs)))
+
+(advice-add #'proced-format-args :around #'+proced/remove-nixos-path-name)
+#+END_SRC
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map! :map process-menu-mode-map
+      :n "gr" #'list-processes)
+(map! :map proced-mode-map
+      :n "gr" #'proced)
+#+END_SRC
 
 ** Bindings
 *** General Bindings
