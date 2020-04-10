@@ -1,0 +1,86 @@
+#+TITLE: System Autoload
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle yes
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+* Window Management
+
+** Window Listing
+
+#+BEGIN_SRC elisp
+ (setq wmctrl:window-list-re
+  "^\\(0x[0-9a-f]+\\)  \\([0-9]+\\) \\([^ ]+\\)\\.\\([^ ]+\\) +\\([a-z]*\\) \\(.*\\)$")
+
+(defun +wm/match-wm-string (x)
+  (-let* ((xs (-drop 1 (s-match wmctrl:window-list-re x)))
+          (pid (downcase (nth 0 xs)))
+          (monitor (nth 1 xs))
+          (process (nth 2 xs))
+          (process-title (nth 3 xs))
+          (user (nth 4 xs))
+          (title (nth 5 xs)))
+    (list
+     :pid pid
+     :monitor monitor
+     :process process
+     :process-title process-title
+     :user user
+     :title title)))
+
+(defun +wm/list-windows ()
+  "List X windows"
+  (->> (shell-command-to-string "wmctrl -lx")
+       (s-split "\n")
+       (-drop-last 1)
+       (-map #'+wm/match-wm-string)))
+
+(defun +wm/last-window-id ()
+  (--> (shell-command-to-string "bspc query -N -n last")
+       s-trim
+       downcase))
+
+(defun +wm/last-window ()
+  (let ((last-id (+wm/last-window-id))
+        (windows (+wm/list-windows)))
+    (--first (string= (plist-get it ':pid) last-id) windows)))
+#+END_SRC
+
+#+RESULTS:
+: +wm/last-window
+
+** Chrome Window Listing
+
+#+BEGIN_SRC elisp
+(setq wmctrl:chrome-window-title-re "^\\(.*\\) :: \\(.*\\) - Chromium$")
+
+(defun +wm/last-chrome-window-url-title ()
+  (-some--> (+wm/last-window)
+    (plist-get it ':title)
+    (s-match wmctrl:chrome-window-title-re it)
+    (-drop 1 it)))
+
+(defun +wm/last-chrome-window-org-link ()
+  (-some--> (+wm/last-chrome-window-url-title)
+    (let ((title (nth 0 it))
+          (url (nth 1 it)))
+      (template "[[<<url>>][<<title>>]]"))))
+
+(defun +wm/last-chrome-window-org-link-formatted ()
+  (let* ((window (+wm/last-chrome-window-url-title))
+         (title (nth 0 window))
+         (url (nth 1 window))
+         (title-formatted
+            (cond
+             ;; Custom Pull request Formatting
+              ((s-matches? "^https://github.com.*/pull/[0-9]+.*$" url)
+               (let* ((match (s-match "\\(.+\\) by \\(.+\\) · Pull Request \\(#[0-9]+\\).*$" title))
+                      (pr-title (nth 1 match))
+                      (pr-user (nth 2 match))
+                      (pr-id (nth 3 match)))
+                 (template "PR <<pr-id>>: <<pr-title>> by @<<pr-user>>")))
+              (t title))))
+    (template "[[<<url>>][<<title-formatted>>]]")))
+#+END_SRC

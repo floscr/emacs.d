@@ -76,6 +76,7 @@
  (default +bindings +snippets +evil-commands)
 
  :private
+ system
  literate
  reason
  work
