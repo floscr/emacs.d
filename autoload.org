@@ -238,7 +238,7 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
          (title-formatted
             (cond
              ;; Custom Pull request Formatting
-              ((s-matches? "^https://github.com.*/pull/[0-9]*$" url)
+              ((s-matches? "^https://github.com.*/pull/[0-9]+.*$" url)
                (let* ((match (s-match "\\(.+\\) by \\(.+\\) · Pull Request \\(#[0-9]+\\).*$" title))
                       (pr-title (nth 1 match))
                       (pr-user (nth 2 match))
