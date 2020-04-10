@@ -319,6 +319,26 @@ I disable posframe, since it doesn't go beyond the X Window.
                                  (tags priority-down category-keep user-defined-up time-up)
                                  (search category-keep))))
 #+END_SRC
+***** Always save files after agenda commands
+
+I always forget to save after agenda commands since it feels like an UI.
+So I've added ~advices~ to save all buffers after executing them.
+
+This is taken from [[https://emacs.stackexchange.com/questions/21754/how-to-automatically-save-all-org-files-after-marking-a-repeating-item-as-done-i][StackOverflow: How to automatically save all org files after marking a repeating item as DONE in the org agenda?]]
+
+The macro is take from [[file:~/.config/doom/autoload.org::*Ignore Arguments][Ignore Arguments]].
+
+#+BEGIN_SRC elisp
+(after! org
+  :init
+  (advice-add 'org-deadline         :after (η #'org-save-all-org-buffers))
+  (advice-add 'org-schedule         :after (η #'org-save-all-org-buffers))
+  (advice-add 'org-todo             :after (η #'org-save-all-org-buffers))
+  (advice-add 'org-agenda-clock     :after (η #'org-save-all-org-buffers))
+  (advice-add '+org|counsel-org-tag :after (η #'org-save-all-org-buffers))
+  (advice-add 'org-agenda-kill      :after (η #'org-save-all-org-buffers))
+  (advice-add 'org-agenda-archive   :after (η #'org-save-all-org-buffers)))
+#+END_SRC
 
 **** Bindings
 
