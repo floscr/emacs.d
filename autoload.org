@@ -53,6 +53,17 @@ Packages and utilities needed for this config.
           (replace-match "%s" t t))
         `(format ,(buffer-string) ,@(reverse (mapcar 'read matches)))))))
 #+END_SRC
+** Ignore Arguments
+:PROPERTIES:
+:SOURCE:   https://emacs.stackexchange.com/a/33063
+:END:
+
+#+BEGIN_SRC elisp
+(defmacro η (fnc)
+  "Return function that ignores its arguments and invokes FNC."
+  `(lambda (&rest _rest)
+     (funcall ,fnc)))
+#+END_SRC
 
 * General Utils
 ** Kill and Message
