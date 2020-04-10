@@ -12,7 +12,7 @@
 
 #+BEGIN_SRC elisp
  (setq wmctrl:window-list-re
-  "^\\(0x[0-9a-f]+\\)  \\([0-9]+\\) \\([^ ]+\\)\\.\\([^ ]+\\) +\\([a-z]*\\) \\(.*\\)$")
+  "^\\(0x[0-9a-f]+\\)  \\([0-9]+\\) \\(.+\\)\\.\\([^ ]+\\) +\\([a-z]*\\) \\(.*\\)$")
 
 (defun +wm/match-wm-string (x)
   (-let* ((xs (-drop 1 (s-match wmctrl:window-list-re x)))
