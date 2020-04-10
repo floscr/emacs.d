@@ -2312,60 +2312,6 @@ Other Bindings for multi-edit:
    :gniv "<f5>" #'global-auto-revert-mode))
 #+END_SRC
 *** Evil
-**** Normal Bindings
-***** Window navigation
-
-#+BEGIN_SRC elisp
-(map!
- :en "C-h"   #'evil-window-left
- :en "C-j"   #'evil-window-down
- :en "C-k"   #'evil-window-up
- :en "C-l"   #'evil-window-right)
-
-(map!
- :map evil-org-mode-map
- :en "C-h"   #'evil-window-left
- :en "C-j"   #'evil-window-down
- :en "C-k"   #'evil-window-up
- :en "C-l"   #'evil-window-right)
-#+END_SRC
-
-***** History navigation in minibuffer
-
-#+BEGIN_SRC elisp
-(define-key minibuffer-local-map "\C-p" 'previous-history-element)
-(define-key minibuffer-local-map "\C-n" 'next-history-element)
-#+END_SRC
-
-***** Jump to last buffer
-
-#+BEGIN_SRC elisp
-(map! :n "gb" #'evil-switch-to-windows-last-buffer)
-#+END_SRC
-
-***** Select last paste
-:PROPERTIES:
-:SOURCE:   https://emacs.stackexchange.com/a/21093
-:END:
-
-#+BEGIN_SRC elisp
-(defun +evil|select-pasted ()
-  (interactive)
-  (let ((start-marker (evil-get-marker ?\[))
-        (end-marker (evil-get-marker ?\])))
-    (evil-visual-select start-marker end-marker)))
-
-(map! :n "gp" #'+evil|select-pasted)
-#+END_SRC
-
-***** Visual Line Mode Navigation
-
-#+BEGIN_SRC elisp
-(map! :map visual-line-mode-map
-      :n "j" #'evil-next-visual-line
-      :n "k" #'evil-previous-visual-line)
-#+END_SRC
-
 **** Motions
 ***** Replace With Register Motion
 
@@ -2453,7 +2399,131 @@ and the line above, skipping empty lines."
 
 (define-key evil-inner-text-objects-map "{" 'evil-indent-plus-i-indent-line-up)
 #+END_SRC
+***** Little Word Motion
 
+#+BEGIN_SRC elisp
+(defun load-evil-camel-case-motion ()
+  (require 'evil-little-word)
+  (define-key evil-normal-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-normal-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "i M-w") 'evil-inner-little-word))
+
+(after! rjsx-mode
+  (load-evil-camel-case-motion))
+
+(after! reason-mode
+  (load-evil-camel-case-motion))
+
+(after! js2-mode
+  (load-evil-camel-case-motion))
+#+END_SRC
+
+**** Normal Bindings
+***** Window navigation
+
+#+BEGIN_SRC elisp
+(map!
+ :en "C-h"   #'evil-window-left
+ :en "C-j"   #'evil-window-down
+ :en "C-k"   #'evil-window-up
+ :en "C-l"   #'evil-window-right)
+
+(map!
+ :map evil-org-mode-map
+ :en "C-h"   #'evil-window-left
+ :en "C-j"   #'evil-window-down
+ :en "C-k"   #'evil-window-up
+ :en "C-l"   #'evil-window-right)
+#+END_SRC
+
+***** History navigation in minibuffer
+
+#+BEGIN_SRC elisp
+(define-key minibuffer-local-map "\C-p" 'previous-history-element)
+(define-key minibuffer-local-map "\C-n" 'next-history-element)
+#+END_SRC
+
+***** Jump to last buffer
+
+#+BEGIN_SRC elisp
+(map! :n "gb" #'evil-switch-to-windows-last-buffer)
+#+END_SRC
+
+***** Select last paste
+:PROPERTIES:
+:SOURCE:   https://emacs.stackexchange.com/a/21093
+:END:
+
+#+BEGIN_SRC elisp
+(defun +evil|select-pasted ()
+  (interactive)
+  (let ((start-marker (evil-get-marker ?\[))
+        (end-marker (evil-get-marker ?\])))
+    (evil-visual-select start-marker end-marker)))
+
+(map! :n "gp" #'+evil|select-pasted)
+#+END_SRC
+
+***** Visual Line Mode Navigation
+
+#+BEGIN_SRC elisp
+(map! :map visual-line-mode-map
+      :n "j" #'evil-next-visual-line
+      :n "k" #'evil-previous-visual-line)
+#+END_SRC
+
+**** Insert Bindings
+
+Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
+
+***** Insert from the kill ring in insert mode
+
+#+BEGIN_SRC elisp
+(map! :i "A-y" #'helm-show-kill-ring)
+#+END_SRC
+
+***** Unicode Symbols and German Umlaut
+
+#+BEGIN_SRC elisp
+(map!
+ :i "M-;"   (λ! (insert "ö"))
+ :i "M-:"   (λ! (insert "Ö"))
+ :i "M-'"   (λ! (insert "ä"))
+ :i "M-\""  (λ! (insert "Ä"))
+ :i "M-["   (λ! (insert "ü"))
+ :i "M-{"   (λ! (insert "Ü"))
+ :i "M-s"   (λ! (insert "ß"))
+ :i "M-e"   (λ! (insert "€"))
+ :i "M-`"   (λ! (insert "°"))
+ :i "M-."   (λ! (insert "…"))
+ :i "M-^"   (λ! (insert "°"))
+ :i "M-l"   (λ! (insert "λ"))
+ :i "M-w"   (λ! (insert "⚠"))
+ :i "M-i"   (λ! (insert "ℹ")))
+#+END_SRC
+**** Square Bracket Bindings
+
+Global ~[~ & ~]~ combinator bindings
+
+***** Dumb Jump
+
+#+BEGIN_SRC elisp
+(map!
+ :n "]F" #'dumb-jump-go
+ :n "[F" #'dumb-jump-back)
+#+END_SRC
+
+***** Flycheck Error Jumping
+
+#+BEGIN_SRC elisp
+(map!
+ :n "]e" #'flycheck-next-error
+ :n "[e" #'flycheck-previous-error)
+#+END_SRC
 **** Text Objects
 
 Custom evil text objects mostly stolen from [[https://github.com/jerryxgh/lambda-x/blob/master/lambda-evil.el#L236][Spacemacs|define-text-object-regexp]].
@@ -2521,55 +2591,6 @@ Change inner bracket with ~r~
   (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
   (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket))
 #+END_SRC
-**** Square Bracket Bindings
-
-Global ~[~ & ~]~ combinator bindings
-
-***** Dumb Jump
-
-#+BEGIN_SRC elisp
-(map!
- :n "]F" #'dumb-jump-go
- :n "[F" #'dumb-jump-back)
-#+END_SRC
-
-***** Flycheck Error Jumping
-
-#+BEGIN_SRC elisp
-(map!
- :n "]e" #'flycheck-next-error
- :n "[e" #'flycheck-previous-error)
-#+END_SRC
-
-**** Insert Bindings
-
-Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
-
-***** Insert from the kill ring in insert mode
-
-#+BEGIN_SRC elisp
-(map! :i "A-y" #'helm-show-kill-ring)
-#+END_SRC
-
-***** Unicode Symbols and German Umlaut
-
-#+BEGIN_SRC elisp
-(map!
- :i "M-;"   (λ! (insert "ö"))
- :i "M-:"   (λ! (insert "Ö"))
- :i "M-'"   (λ! (insert "ä"))
- :i "M-\""  (λ! (insert "Ä"))
- :i "M-["   (λ! (insert "ü"))
- :i "M-{"   (λ! (insert "Ü"))
- :i "M-s"   (λ! (insert "ß"))
- :i "M-e"   (λ! (insert "€"))
- :i "M-`"   (λ! (insert "°"))
- :i "M-."   (λ! (insert "…"))
- :i "M-^"   (λ! (insert "°"))
- :i "M-l"   (λ! (insert "λ"))
- :i "M-w"   (λ! (insert "⚠"))
- :i "M-i"   (λ! (insert "ℹ")))
-#+END_SRC
 **** Ex Commands
 
 Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+commands.el::;;; editor/evil/+commands.el -*- lexical-binding: t; -*-][+commands.el]]
@@ -2578,29 +2599,6 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 (after! evil-ex
   :config
   (evil-ex-define-cmd "W" #'evil-write))
-#+END_SRC
-
-**** Little Word Motion
-
-#+BEGIN_SRC elisp
-(defun load-evil-camel-case-motion ()
-  (require 'evil-little-word)
-  (define-key evil-normal-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-normal-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "i M-w") 'evil-inner-little-word))
-
-(after! rjsx-mode
-  (load-evil-camel-case-motion))
-
-(after! reason-mode
-  (load-evil-camel-case-motion))
-
-(after! js2-mode
-  (load-evil-camel-case-motion))
 #+END_SRC
 
 *** Leader
