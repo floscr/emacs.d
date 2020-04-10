@@ -30,6 +30,10 @@
      :user user
      :title title)))
 
+(defun +wm/window-history ()
+  (->> (shell-command-to-string "bspc wm -d")
+   (json-read-from-string)))
+
 (defun +wm/list-windows ()
   "List X windows"
   (->> (shell-command-to-string "wmctrl -lx")
@@ -42,22 +46,52 @@
        s-trim
        downcase))
 
+(defun +wm/window-id ()
+  (--> (shell-command-to-string "bspc query -N -n")
+       s-trim
+       downcase))
+
+(defun +wm/window ()
+  (let ((last-id (+wm/window-id))
+        (windows (+wm/list-windows)))
+    (--first (string= (plist-get it ':pid) last-id) windows)))
+
 (defun +wm/last-window ()
   (let ((last-id (+wm/last-window-id))
         (windows (+wm/list-windows)))
     (--first (string= (plist-get it ':pid) last-id) windows)))
-#+END_SRC
 
-#+RESULTS:
-: +wm/last-window
+(defun +wm/-proccess-eq? (id x)
+  (string= id (plist-get x ':process)))
+
+(defun +wm/-pid-eq? (id x)
+  (string= id (plist-get x ':pid)))
+#+END_SRC
 
 ** Chrome Window Listing
 
 #+BEGIN_SRC elisp
 (setq wmctrl:chrome-window-title-re "^\\(.*\\) :: \\(.*\\) - Chromium$")
 
+(defun +wm/-is-chromium? (x)
+  (+wm/-proccess-eq? "chromium-browser" x))
+
+(defun +wm/list-chromium-windows ()
+  (->> (+wm/list-windows)
+       (-filter #'+wm/-is-chromium?)))
+
+(defun +wm/prev-chromium-window ()
+  "Try either current or previous window to get the chrome id
+Everything further down the line would have to be parsed from bspc history,
+and most of the time it's not worth it.
+If the current or previous windows are not chrome, just get the first one from the list."
+  (--> (+wm/list-chromium-windows)
+       (or (--find (or (+wm/-pid-eq? (+wm/window-id) it)
+                       (+wm/-pid-eq? (+wm/last-window-id) it)) it)
+           (car it))))
+
 (defun +wm/last-chrome-window-url-title ()
-  (-some--> (+wm/last-window)
+  (-some--> (+wm/prev-chromium-window)
     (plist-get it ':title)
     (s-match wmctrl:chrome-window-title-re it)
     (-drop 1 it)))
