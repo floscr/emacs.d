@@ -906,22 +906,15 @@ E.g.: (Brackets signal the cursor position)
 : ***[]"
 
 #+BEGIN_SRC elisp
-(defun +org|insert-chrome-url ()
-  "Insert a link around the current selection."
-  (interactive)
-  (org-insert-link nil (+org/get-frontmost-chrome-url-raw)))
-
 (defun +org|paste-chrome-link ()
   "Paste the frontmost chrome link."
   (interactive)
-  (cond
-   ;; Visual Selection
-   ((region-active-p) (+org|insert-chrome-url))
-   ;; Normal
-   (t (progn
-        (unless (looking-at-p "[\s\t\n\r]") (forward-char))
-        (insert " ")
-        (insert (org-mac-chrome-get-frontmost-url))))))
+  (--> (+wm/last-chrome-window-org-link)
+       (cond
+        ;; Visual Selection
+        ;; ((region-active-p) (replace-region-contents it))
+        ;; Normal
+        (t (insert it)))))
 #+END_SRC
 
 *** Paste Markdown as org
