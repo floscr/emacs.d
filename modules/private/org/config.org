@@ -253,7 +253,16 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                       :keys "t")
                      ("Task (Chrome)"
                       :keys "c"
-                      :title "%(+wm/last-chrome-window-org-link-formatted)")))))))))
+                      :title "%(+wm/last-chrome-window-org-link-formatted)")))))
+                ("Pinboard"
+                 :keys "p"
+                 :file org-pinboard-file
+                 :headline "Pinboard"
+                 :template ("* %(nth 0 (+wm/last-chrome-window-url-title))"
+                            ":PROPERTIES:"
+                            ":URL: %(nth 1 (+wm/last-chrome-window-url-title))"
+                            ":CREATED: %U"
+                            ":END:"))))))
 #+END_SRC
 **** Command
 
