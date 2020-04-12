@@ -2251,7 +2251,7 @@ This shortens the nixos paths to ~{nix}~.
 
 #+BEGIN_SRC elisp
 (defun +proced/remove-nixos-path-name (oldformat &rest xs)
-  (let ((xs (-map (replace-regexp-in-string "/nix/store/[^/]+" "{nix}") xs)))
+  (let ((xs (--map (replace-regexp-in-string "/nix/store/[^/]+" "{nix}" it) xs)))
     (apply oldformat xs)))
 
 (advice-add #'proced-format-args :around #'+proced/remove-nixos-path-name)
