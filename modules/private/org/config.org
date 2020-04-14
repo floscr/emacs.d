@@ -253,7 +253,10 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                       :keys "t")
                      ("Task (Chrome)"
                       :keys "c"
-                      :title "%(+wm/last-chrome-window-org-link-formatted)")))))
+                      :title "%(+wm/last-chrome-window-org-link-formatted)")
+                     ("Review (Chrome)"
+                      :keys "r"
+                      :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %U")))))
                 ("Pinboard"
                  :keys "p"
                  :file org-pinboard-file
