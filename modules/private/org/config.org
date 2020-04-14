@@ -256,7 +256,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                       :title "%(+wm/last-chrome-window-org-link-formatted)")
                      ("Review (Chrome)"
                       :keys "r"
-                      :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %U")))))
+                      :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
                 ("Pinboard"
                  :keys "p"
                  :file org-pinboard-file
