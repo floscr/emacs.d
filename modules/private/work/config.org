@@ -420,19 +420,19 @@ bookmarks are not helpful since they're not relative.
 (defun +MM|kits-package-update ()
   "Update kits package by bumped version in package.json diff"
   (interactive)
-  (-if-let* ((package-json (car (magit-staged-files)))
-             (json (json-read-file package-json))
-             (package-path (--> package-json
-                                f-parent
-                                (f-join (projectile-project-root) it)
-                                log))
-             (v (alist-get 'version json))
-             (name (s-replace "@meisterlabs/" (alist-get 'name json) ""))
-             (msg (template "<<name>> - <<v>>")))
+  (let* ((package-json (car (magit-staged-files)))
+         (json (json-read-file package-json))
+         (package-path (->> package-json
+                            (f-parent)
+                            (f-join (projectile-project-root))))
+         (v (alist-get 'version json))
+         (name (s-replace "@meisterlabs/" "" (alist-get 'name json)))
+         (msg (template "<<name>> - <<v>>")))
       (progn
         (magit-call-git "commit" "-m" msg)
         (magit-refresh)
-        (copy-message (template "📦 <<msg>>"))
+        (copy-message (template "📦 <<msg>>)))))
+`npm i -S @meisterlabs/<<name>>@<<v>>`''"))
         (magit-push-current-to-upstream nil)
         (let ((default-directory package-path))
           (shell-command "npm publish")))
