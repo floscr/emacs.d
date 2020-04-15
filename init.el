@@ -38,6 +38,7 @@
  (dired +icons)
  electric
  vc
+ (undo +tree)
 
  :checkers
  (syntax +childframe)
