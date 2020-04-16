@@ -346,7 +346,8 @@ bookmarks are not helpful since they're not relative.
         (:file "src/containers/MapEditor.DragDrop/actions/helpers.js"
                :relative t
                :name "DragDrop: findDropPoint"
-               :goto "export const findDropPoint")
+               :goto "export const findDropPoint"
+               :goto-bol t)
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Arr.js"
                :relative t
                :name "Common: Arr"
@@ -372,7 +373,9 @@ bookmarks are not helpful since they're not relative.
                (goto-char (point-min))
                (search-forward it)) it))
     (-some--> (plist-get item :action)
-      (call-interactively it))))
+      (call-interactively it))
+    (-some--> (plist-get item :goto-bol)
+      (evil-first-non-blank))))
 
 (defun +MM|bookmarks ()
   "Project root relative bookmarks."
