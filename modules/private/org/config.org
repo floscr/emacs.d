@@ -209,7 +209,7 @@ Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (setq +org-capture-frame-parameters
-  `((name . "org-capture")
+  `((name . "doom-capture")
     (width . 150)
     (height . 45)
     (transient . t)))
