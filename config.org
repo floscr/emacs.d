@@ -2362,12 +2362,6 @@ Replace the current selection with a register.
   (define-key evil-inner-text-objects-map "B" 'evil-inner-curly))
 #+END_SRC
 
-***** Go up one directory from the current buffer
-
-#+BEGIN_SRC elisp
-(map! :m "-"  #'dired-jump)
-#+END_SRC
-
 ***** Up to next/previous indent
 
 Text objects for lines after or before the current line, that have the same or deeper indent.
@@ -2472,6 +2466,11 @@ and the line above, skipping empty lines."
 (map! :n "gp" #'+evil|select-pasted)
 #+END_SRC
 
+***** Go up one directory from the current buffer
+
+#+BEGIN_SRC elisp
+(map! :m "-"  #'dired-jump)
+#+END_SRC
 ***** Visual Line Mode Navigation
 
 #+BEGIN_SRC elisp
