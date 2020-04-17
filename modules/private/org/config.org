@@ -548,14 +548,14 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
  '("w" "Work Agenda"
-   ((agenda "a" ((org-agenda-sorting-strategy '(todo-state-up deadline-up user-defined-down timestamp-down time-down))
+   ((agenda "a" ((org-agenda-sorting-strategy '(time-up todo-state-up scheduled-up user-defined-up))
                  (org-agenda-span 3)
                  (org-agenda-start-on-weekday t)
                  (org-agenda-show-all-dates nil)
                  (org-agenda-use-time-grid 'require-timed)
                  (org-agenda-start-day "-1d")))
     (alltodo "+WORK-EVENT"
-             ((org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down time-down))
+             ((org-agenda-sorting-strategy '(time-up todo-state-up user-defined-down))
               (org-agenda-tag-filter-preset '("+WORK" "-EVENT"))
               (org-super-agenda-groups '((:name "In Progress" :todo ("ACTIVE" "[!]"))
                                          (:discard (:todo ("[ ]" "[|]")))
