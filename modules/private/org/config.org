@@ -1497,17 +1497,27 @@ Set my preferred clipboard paste method to ~xclip~.
    :desc "Visal Fill Column (Center)" "O" (λ! (+org|toggle-visual-wrap)))
 
  (:prefix-map ("n" . "Notes")
-   :desc "Pinboard File"              "B" (λ! (find-file org-pinboard-file))
    :desc "Save All Org Buffers"       "S" #'org-save-all-org-buffers
    :desc "Save All Org Buffers"       "s" #'+default/org-notes-search
-   :desc "Agenda"                     "a" #'org-agenda
-   :desc "Search Pinboard"            "b" #'helm-org-pinboard
-   :desc "Emacs"                      "e" (λ! (+org/find-in-files "Main/emacs.org"))
-   :desc "GTD (Home)"                 "h" (λ! (+org/find-in-files "Main/gtd.org"))
-   :desc "Inbox"                      "i" (λ! (+org/find-in-files "Main/inbox.org"))
    :desc "Find in notes"              "n" #'+org|search-in-notes
-   :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
+   :desc "Agenda"                     "a" #'org-agenda
    :desc "Store Link"                 "y" #'org-store-link
+
+   (:prefix-map ("b" . "Bookmarks")
+    :desc "Goto Bookmarks File"       "b" (λ! (find-file org-pinboard-file))
+    :desc "Search bookmarks"          "s" #'helm-org-pinboard)
+
+   ;; special goto locations I often visit
+   :desc "Inbox"                      "i" (λ! (+org/find-in-files "Main/inbox.org"))
+   :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
+
+   (:prefix-map ("g" . "Goto")
+    :desc "Goto Bookmarks File"       "b" (λ! (find-file org-pinboard-file))
+    :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
+    :desc "Work"                      "w" (λ! (+org/find-in-files "Work/work.org"))
+    :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
+    :desc "Capture Last Stored"       "c" #'org-capture-goto-last-stored
+    :desc "Refile Last Stored"        "r" #'org-refile-goto-last-stored)
 
    (:prefix-map ("c" . "clock")
      :desc "Timestamp Down"           "-" #'org-clock-timestamps-down
