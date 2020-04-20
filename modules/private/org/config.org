@@ -1465,7 +1465,6 @@ Set my preferred clipboard paste method to ~xclip~.
 (map! :map org-mode-map
       :gni [s-return]    #'+org/insert-item-below
       :gni [s-S-return]  #'+org/insert-item-above
-      :n "q"             #'+org|counsel-org-tag
       :n "M-k"           #'org-metaup
       :n "M-j"           #'org-metadown)
 #+END_SRC
