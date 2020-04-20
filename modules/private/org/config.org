@@ -494,6 +494,19 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "Overdue" :scheduled past))))))))
 #+END_SRC
 
+***** Books
+
+#+BEGIN_SRC elisp
+(+org/add-to-agenda-custom-commands
+ '("l" "Literature (Books)"
+   ((alltodo ""
+     ((org-agenda-files (--map (f-join org-directory it) '("Main/books.org")))
+      (org-super-agenda-groups '((:name "Fiction" :tag ("FICTION"))
+                                 (:name "Non-Fiction" :tag ("NON_FICTION"))
+                                 (:name "Self Help" :tag ("SELF_HELP"))
+                                 (:name "Comics" :tag ("COMIC")))))))))
+#+END_SRC
+
 ***** Backlog
 
 #+BEGIN_SRC elisp
