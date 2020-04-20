@@ -387,7 +387,8 @@ bookmarks are not helpful since they're not relative.
 
 #+BEGIN_SRC elisp
 (defun +MM/normalize-script-name (x)
-  (--> (s-replace "build-mindmeister-" "" it)
+  (--> x
+       (s-replace "build-mindmeister-" "" it)
        (s-replace "staging-" "Staging." (s-titleize it))))
 
 (defun +MM|commit-bundle (&optional branch)
