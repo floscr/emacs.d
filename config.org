@@ -2475,8 +2475,8 @@ and the line above, skipping empty lines."
 
 #+BEGIN_SRC elisp
 (map! :map visual-line-mode-map
-      :n "j" #'evil-next-visual-line
-      :n "k" #'evil-previous-visual-line)
+      :nv "j" #'evil-next-visual-line
+      :nv "k" #'evil-previous-visual-line)
 #+END_SRC
 
 **** Insert Bindings
