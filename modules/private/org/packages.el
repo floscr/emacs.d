@@ -19,6 +19,8 @@
 (package! graphql)
 (package! org-download)
 
+(package! counsel-org-clock)
+
 (package! org-caldav)
 (package! org-noter)
 (package! calctex :recipe (:host github :repo "johnbcoughlin/calctex" :files ("*.el")))
