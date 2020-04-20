@@ -1522,6 +1522,7 @@ Set my preferred clipboard paste method to ~xclip~.
     :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
     :desc "Work"                      "w" (λ! (+org/find-in-files "Work/work.org"))
     :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
+    :desc "Shoppinglist"              "s" (λ! (+org/find-in-files "Main/shoppinglist.org"))
     :desc "Capture Last Stored"       "c" #'org-capture-goto-last-stored
     :desc "Refile Last Stored"        "r" #'org-refile-goto-last-stored)
 
