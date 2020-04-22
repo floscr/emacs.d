@@ -10,6 +10,7 @@
 (package! doct :recipe (:host github :repo "progfolio/doct" :branch "master"))
 
 (package! helm-org-rifle)
+(package! om :recipe (:host github :repo "ndwarshuis/om.el"))
 (package! org-pinboard :recipe (:host github :repo "floscr/org-pinboard"))
 (package! org-media-info :recipe (:host github :repo "floscr/org-media-info"))
 (package! poporg)
