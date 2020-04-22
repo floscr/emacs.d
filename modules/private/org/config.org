@@ -949,7 +949,7 @@ E.g.: (Brackets signal the cursor position)
 (defun +org|paste-markdown-as-org ()
   "Convert the current clipboard to markdown."
   (interactive)
-  (insert (shell-command-to-string "pbpaste | pandoc -f markdown -t org")))
+  (insert (shell-command-to-string "xclip -selection clipboard -out | pandoc -f markdown -t org")))
 #+END_SRC
 
 *** Schedule Tomorrow
