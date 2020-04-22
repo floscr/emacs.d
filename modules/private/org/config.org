@@ -18,6 +18,16 @@ Doom resets the default ~org-directory~, so this is a workaround.
 (after! org (setq org-directory "~/Documents/Org"))
 #+END_SRC
 
+**** Fix Date Compatibility before 1970
+
+Org mode does not work for dates before 1970 for old emacs versions.
+I do not care about backwards compatibility and have dates for books date predate this.
+
+#+BEGIN_SRC elisp
+(after! org
+  (setq org-read-date-force-compatible-dates nil))
+#+END_SRC
+
 **** Org variables
 
 #+BEGIN_SRC elisp

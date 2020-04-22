@@ -1,3 +1,0 @@
-[submodule "om"]
-	path = packages/om
-	url = git@github.com:ndwarshuis/om.el.git
