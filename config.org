@@ -1128,7 +1128,41 @@ Custom eshell aliases.
 
 #+BEGIN_SRC elisp
 (use-package! indium
-  :commands indium-connect)
+  :commands (indium-connect indium-launch)
+  :init
+  (map! :after (js2-mode rjsx-mode)
+        :map (js2-mode-map rjsx-mode-map)
+        :localleader
+        (:prefix ("i" . "Indium")
+          :desc "Console"                   "c" #'indium-switch-to-repl-buffer
+          :desc "Launch"                    "l" #'indium-launch
+          :desc "Launch"                    "q" #'indium-quit
+          :desc "Add breakpoint"            "r" #'indium-reload
+          (:prefix ("b" . "breakpoint")
+            :desc "Add"                     "b" #'indium-add-breakpoint
+            :desc "Conditional"             "c" #'indium-add-conditional-breakpoint
+            :desc "Conditional"             "e" #'indium-edit-breakpoint-condition
+            :desc "Conditional"             "l" #'indium-list-breakpoints
+            :desc "Conditional"             "0" #'indium-deactivate-breakpoints
+            :desc "Conditional"             "1" #'indium-activate-breakpoints
+            :desc "Delete"                  "d" #'indium-remove-breakpoint
+            :desc "Delete all from buffer"  "D" #'indium-remove-all-breakpoints-from-buffer
+            :desc "Edit Condition"          "e" #'indium-toggle-breakpoint
+            :desc "Toggle"                  "t" #'indium-toggle-breakpoint)))
+  (map!
+        :map indium-inspector-mode-map
+        :n "-" #'indium-inspector-pop)
+  (map! :map indium-debugger-mode-map
+        :n "gr" #'indium-debugger-resume
+        :n "gi" #'indium-debugger-step-into
+        :n "go" #'indium-debugger-step-over
+        :n "ge" #'indium-debugger-evaluate
+        :n "gl" #'indium-debugger-locals)
+  :config
+  (setq indium-chrome-use-temporary-profile nil)
+  (setq indium-chrome-data-dir (f-join (getenv "XDG_CACHE_HOME") "inidum-chrome-profile"))
+  (set-popup-rule! "^\\*JS REPL*" :size 0.3)
+  (set-popup-rule! "^\\*JS Debugger Locals*" :size 0.3))
 #+END_SRC
 
 *** Impatient-Mode
