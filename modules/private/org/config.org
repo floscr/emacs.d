@@ -387,8 +387,10 @@ This helper replaces items with the same key, so you don't end up with a bunch o
 #+BEGIN_SRC elisp
 (defun +org/add-to-agenda-custom-commands (x)
   "Add or replace X in the org-agenda-custom-commands list."
-  (if-let ((item (alist-get (car x) org-agenda-custom-commands nil #'equal)))
-      (setf item x)
+  (if-let ((key (car x))
+           (index (--find-index (string= key (car it)) org-agenda-custom-commands)))
+      (->> (-replace-at index x org-agenda-custom-commands)
+           (setq org-agenda-custom-commands))
     (add-to-list 'org-agenda-custom-commands x)))
 #+END_SRC
 
