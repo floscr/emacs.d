@@ -10,6 +10,7 @@
 ;;; Javascript Packages
 (package! indium)
 (package! impatient-mode)
+(package! eslintd-fix)
 
 ;;; Org-Mode Packages
 
