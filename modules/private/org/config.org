@@ -19,6 +19,7 @@
   (setq org-default-notes-file (+org/expand-org-file-name "/Main/inbox.org")))
 
 (setq +org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
+(setq +org:reading-list-file (+org/expand-org-file-name "Main/reading-list.org"))
 #+END_SRC
 
 **** Fix date compatibility before 1970
@@ -641,12 +642,41 @@ Set the active state when clocking in.
 
 #+BEGIN_SRC elisp
 (if (featurep! +org-noter)        (load! "+org-noter"))
-(if (featurep! +org-reading-list) (load! "+org-reading-list"))
 (if (featurep! +org-web-tools)    (load! "+org-web-tools"))
 (if (featurep! +org-tags)         (load! "+org-tags"))
 (if (featurep! +org-pinboard)     (load! "+org-pinboard"))
 #+END_SRC
 
+*** Reading List
+**** Customize agenda ui
+
+Remove the underline from the links.
+
+#+BEGIN_SRC elisp
+(defun +org-reading-list/customize-agenda ()
+  (when (string= (buffer-name) +org-reading-list:agenda-buffer-name)
+    (face-remap-add-relative 'org-link '(:underline nil :foreground white))))
+
+(add-hook! 'org-agenda-finalize-hook :after '+org-reading-list/customize-agenda)
+#+END_SRC
+
+**** Agenda Command
+
+#+BEGIN_SRC elisp
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   '("r" "Reading List" alltodo ""
+     ((org-agenda-files (list +org:reading-list-file))
+      (org-agenda-buffer-name +org-reading-list:agenda-buffer-name)
+      (org-agenda-prefix-format "  %?-12t% s")
+      (org-agenda-hide-tags-regexp "TEXT\\|VIDEO\\|RESEARCH")
+      (org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-down))
+      (org-super-agenda-groups '((:name "Active" :todo ("NEXT" "ACTIVE") :order 0)
+                                 (:name "Research" :tag "RESEARCH" :order 3)
+                                 (:name "Someday" :todo "SOMEDAY" :order 3)
+                                 (:name "Articles" :tag "TEXT" :order 1)
+                                 (:name "Videos" :regexp "\\(youtube\\|vimeo\\).com" :tag "VIDEO" :order 2)))))))
+#+END_SRC
 ** Features
 
 Stuff that doesn't belong into modules, but is too big to put into a simple util section.
