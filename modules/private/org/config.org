@@ -9,13 +9,14 @@
 * Configuration
 ** Config
 *** General Config
-**** Default Org Directory
+**** Org Directories
 
 Doom resets the default ~org-directory~, so this is a workaround.
 
 #+BEGIN_SRC elisp
 (setq org-directory "~/Documents/Org")
 (after! org (setq org-directory "~/Documents/Org"))
+(setq +org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
 #+END_SRC
 
 **** Fix Date Compatibility before 1970
@@ -31,7 +32,6 @@ I do not care about backwards compatibility and have dates for books date predat
 **** Org variables
 
 #+BEGIN_SRC elisp
-(setq org-shopping-list-file (f-join org-directory "Main/shoppinglist.org"))
 
 (after! org
   :config
@@ -247,7 +247,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                   ("Shopping"
                    :keys "s"
                    :headline "Supermarket"
-                   :file org-shopping-list-file)
+                   :file +org:shopping-list-file)
                   ("Work:"
                     :keys "w"
                     :file ,(f-join org-directory "Work/work.org")
@@ -1164,7 +1164,7 @@ Moves a todo item from the agenda to the shopping list as a list item.
   (save-window-excursion
     (save-excursion
       (let ((title (nth 1 (s-match "^.*TODO \\(.*\\)$" (thing-at-point 'line t))))
-            (buffer (find-file org-shopping-list-file)))
+            (buffer (find-file +org:shopping-list-file)))
         (with-current-buffer buffer
           (org-narrow-to-subtree)
           (goto-char (point-max))
