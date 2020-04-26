@@ -208,8 +208,8 @@ All todo keywords are for general items.
   (setq org-agenda-refile org-agenda-files))
 #+END_SRC
 
-*** Org Capture
-**** Org Capture Config
+*** Capture
+**** Config
 
 #+BEGIN_SRC elisp
 (setq +org-capture-frame-parameters
@@ -219,7 +219,7 @@ All todo keywords are for general items.
     (transient . t)))
 #+END_SRC
 
-**** Org Capture Templates
+**** Templates
 
 Configured with [[https://github.com/progfolio/doct][doct]].
 
@@ -271,7 +271,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                             ":CREATED: %U"
                             ":END:"))))))
 #+END_SRC
-**** Command
+**** Open frame command
 
 My command to call the capture with following attributes.
 I disable posframe, since it doesn't go beyond the X Window.
