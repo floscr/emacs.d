@@ -6,10 +6,10 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
-* Configuration
+* Org Mode
 ** Config
 *** General Config
-**** Org Directories
+**** Directories
 
 #+BEGIN_SRC elisp
 ;; Doom resets the default ~org-directory~, so this is a workaround.
@@ -21,7 +21,7 @@
 (setq +org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
 #+END_SRC
 
-**** Fix Date Compatibility before 1970
+**** Fix date compatibility before 1970
 
 Org mode does not work for dates before 1970 for old emacs versions.
 I do not care about backwards compatibility and have dates for books date predate this.
@@ -31,7 +31,7 @@ I do not care about backwards compatibility and have dates for books date predat
   (setq org-read-date-force-compatible-dates nil))
 #+END_SRC
 
-**** Tags Column
+**** Unset tags column
 
 I prefer not having an aligned tags column,
 it just messes with the mobile clients, ~visual-line-mode~ and I view org files in the agenda most of the time anyway.
@@ -41,7 +41,7 @@ I don't set it to ~nil~ so the ~org-align-tags~ function still works.
 #+BEGIN_SRC elisp
 (setq org-tags-column 0)
 #+END_SRC
-**** Source Window
+**** Source window
 
 Open the source buffers in the same window.
 
@@ -50,14 +50,14 @@ Open the source buffers in the same window.
   (setq org-src-window-setup 'current-window))
 #+END_SRC
 
-**** Image Width
+**** Image width
 
 #+BEGIN_SRC elisp
 (after! org
   (setq org-image-actual-width 600)
 #+END_SRC
 
-**** Org Tags
+**** Tags
 
 #+BEGIN_SRC elisp
 (after! org
@@ -72,7 +72,7 @@ Open the source buffers in the same window.
                         ("TO_BUY"))))
 #+END_SRC
 
-**** Org Mode Load Hook
+**** Load hook
 
 Customize org mode to:
 - Always keep the buffer centered via ~viusal-fill-column-mode~.
@@ -106,7 +106,7 @@ Customize org mode to:
   (add-hook! org-mode #'+org*setup-org-mode-hook))
 #+END_SRC
 
-**** Todo State Keywords
+**** Todo-state keywords
 
 All todo keywords are for general items.
 
@@ -144,17 +144,14 @@ All todo keywords are for general items.
   (add-to-list 'org-link-abbrev-alist (cons "attach" (abbreviate-file-name org-attach-directory))))
 #+END_SRC
 
-**** Projectile Ignore
+**** Projectile ignore ~org_archive~
 
 #+BEGIN_SRC elisp
 (after! projectile
-  (add-to-list 'projectile-globally-ignored-file-suffixes ".org_archive")
-  (add-to-list 'projectile-globally-ignored-file-suffixes ".DS_Store"))
+  (add-to-list 'projectile-globally-ignored-file-suffixes ".org_archive"))
 #+END_SRC
 
 **** Latex
-
-Needs ~dvisvgm~
 
 #+BEGIN_SRC elisp
 (setq org-latex-create-formula-image-program 'dvisvgm)
