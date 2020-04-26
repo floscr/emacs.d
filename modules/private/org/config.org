@@ -146,19 +146,16 @@ Needs ~dvisvgm~
 *** Refile Targets
 
 #+BEGIN_SRC elisp
-(defun expand-org-file-names (xs)
-  (mapcar (lambda (x) (expand-file-name x org-directory)) xs))
-
-(setq level-1-refile-targets
-      (expand-org-file-names
+(setq +org:level-1-refile-targets
+      (+org/expand-org-file-names
        '("Main/reading-list.org"
          "Main/cooking.org"
          "Main/books.org"
          "Main/programming.org"
          "Main/shoppinglist.org")))
 
-(setq max-level-2-refile-targets
-      (expand-org-file-names
+(setq +org:max-level-2-refile-targets
+      (+org/expand-org-file-names
        '("Main/emacs.org"
          "Main/art.org"
          "Main/diary"
@@ -179,23 +176,24 @@ Needs ~dvisvgm~
          "Work/work.org")))
 
 (setq max-level-3-refile-targets
-      (expand-org-file-names
+      (+org/expand-org-file-names
        '("Main/projects.org")))
 
-(defun level-1-refile-targets () level-1-refile-targets)
+(defun +org:level-1-refile-targets () +org:level-1-refile-targets)
 
-(defun max-level-2-refile-targets () max-level-2-refile-targets)
+(defun +org:max-level-2-refile-targets () +org:max-level-2-refile-targets)
 
 (defun max-level-3-refile-targets () max-level-3-refile-targets)
 
 (after! org
   :config
   (setq org-refile-targets (quote ((nil :maxlevel . 5)
-                                   (max-level-2-refile-targets :maxlevel . 2)
+                                   (+org:max-level-2-refile-targets :maxlevel . 2)
                                    (max-level-3-refile-targets :maxlevel . 3)
-                                   (level-1-refile-targets :level . 1)))
-        org-agenda-refile org-agenda-files))
+                                   (+org:level-1-refile-targets :level . 1))))
+  (setq org-agenda-refile org-agenda-files))
 #+END_SRC
+
 *** Journal
 
 #+BEGIN_SRC elisp :tangle no

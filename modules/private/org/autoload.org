@@ -12,9 +12,11 @@
 #+BEGIN_SRC elisp
 ;;;###autoload
 (defun +org/expand-org-file-name (x)
+  "Expand file name X with org-directory."
   (expand-file-name x org-directory))
 
 ;;;###autoload
 (defun +org/expand-org-file-names (xs)
+  "Expand file names XS with org-directory."
   (-map #'+org/expand-org-file-name xs))
 #+END_SRC
