@@ -63,6 +63,7 @@
  emacs-lisp
  markdown
  ocaml
+ (javascript +lsp)
  ;; haskell
  (org
   +dragndrop
@@ -81,7 +82,6 @@
  literate
  reason
  work
- javascript
  (org
   +org-web-tools
   +org-reading-list
