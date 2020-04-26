@@ -11,11 +11,13 @@
 *** General Config
 **** Org Directories
 
-Doom resets the default ~org-directory~, so this is a workaround.
-
 #+BEGIN_SRC elisp
+;; Doom resets the default ~org-directory~, so this is a workaround.
 (setq org-directory "~/Documents/Org")
-(after! org (setq org-directory "~/Documents/Org"))
+(after! org
+  (setq org-directory "~/Documents/Org")
+  (setq org-default-notes-file (+org/expand-org-file-name "/Main/inbox.org")))
+
 (setq +org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
 #+END_SRC
 
@@ -29,17 +31,32 @@ I do not care about backwards compatibility and have dates for books date predat
   (setq org-read-date-force-compatible-dates nil))
 #+END_SRC
 
-**** Org variables
+**** Tags Column
+
+I prefer not having an aligned tags column,
+it just messes with the mobile clients, ~visual-line-mode~ and I view org files in the agenda most of the time anyway.
+
+I don't set it to ~nil~ so the ~org-align-tags~ function still works.
 
 #+BEGIN_SRC elisp
-
-(after! org
-  :config
-  (setq org-src-window-setup 'current-window)
-  (setq org-tags-column -110)
-  (setq org-image-actual-width 600)
-  (setq org-default-notes-file (concat org-directory "/Main/inbox.org")))
+(setq org-tags-column 0)
 #+END_SRC
+**** Source Window
+
+Open the source buffers in the same window.
+
+#+BEGIN_SRC elisp
+(after! org
+  (setq org-src-window-setup 'current-window))
+#+END_SRC
+
+**** Image Width
+
+#+BEGIN_SRC elisp
+(after! org
+  (setq org-image-actual-width 600)
+#+END_SRC
+
 **** Org Tags
 
 #+BEGIN_SRC elisp
