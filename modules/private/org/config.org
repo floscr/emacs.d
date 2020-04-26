@@ -54,7 +54,7 @@ Open the source buffers in the same window.
 
 #+BEGIN_SRC elisp
 (after! org
-  (setq org-image-actual-width 600)
+  (setq org-image-actual-width 600))
 #+END_SRC
 
 **** Tags
@@ -285,7 +285,7 @@ I disable posframe, since it doesn't go beyond the X Window.
   (ivy-posframe-mode -1))
 #+END_SRC
 
-*** Src Block Snippets
+*** SRC block snippets
 
 #+BEGIN_SRC elisp :tangle no
 (add-to-list 'org-structure-template-alist '("es" "#+BEGIN_SRC elisp\n?\n#+END_SRC\n"))
@@ -301,21 +301,26 @@ I disable posframe, since it doesn't go beyond the X Window.
 
 *** Agenda
 **** Config
-***** Agenda Files
+***** Customization
 
 #+BEGIN_SRC elisp
 (after! org-agenda
-  :config
-  (setq org-agenda-block-separator ?—)
-  (setq org-agenda-files
-        (--map (f-join org-directory it)
-               '("Main/gtd.org"
-                 "Main/inbox.org"
-                 "Main/calendar-family.org"
-                 "Work/work.org"))))
+  (setq org-agenda-block-separator ?—))
 #+END_SRC
 
-***** Custom Date Property
+***** Files
+
+#+BEGIN_SRC elisp
+(after! org-agenda
+  (setq org-agenda-files
+        (+org/expand-org-file-names
+         '("Main/gtd.org"
+           "Main/inbox.org"
+           "Main/calendar-family.org"
+           "Work/work.org"))))
+#+END_SRC
+
+***** Sorting strategies
 
 #+BEGIN_SRC elisp
 (after! org-agenda
@@ -349,8 +354,7 @@ The macro is take from [[file:~/.config/doom/autoload.org::*Ignore Arguments][Ig
 #+END_SRC
 
 **** Bindings
-
-Enable avy/evil-motion for agenda
+***** Enable avy/evil-motion for agenda
 
 #+BEGIN_SRC elisp
 (map! :after evil-org-agenda
@@ -378,21 +382,6 @@ Helper to reset the org agenda custom commands.
 #+END_SRC
 
 ***** Helpers
-****** Set agenda command or replace on reload
-
-When configuring agenda commands I often eval them for testing.
-This helper replaces items with the same key, so you don't end up with a bunch of duplicates in ~agenda-custom-commands~.
-
-#+BEGIN_SRC elisp
-(defun +org/add-to-agenda-custom-commands (x)
-  "Add or replace X in the org-agenda-custom-commands list."
-  (if-let ((key (car x))
-           (index (--find-index (string= key (car it)) org-agenda-custom-commands)))
-      (->> (-replace-at index x org-agenda-custom-commands)
-           (setq org-agenda-custom-commands))
-    (add-to-list 'org-agenda-custom-commands x)))
-#+END_SRC
-
 ****** Get Parent Project
 
 #+BEGIN_SRC elisp
@@ -416,62 +405,13 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                   (org-get-heading 'notags 'notodo)))))
 #+END_SRC
 
-***** Opening Tag
+***** Opening tag
 
 #+BEGIN_SRC elisp
 (after! org-agenda
 #+END_SRC
 
-***** Today View
-
-#+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("d" "Day View" ((agenda "a"
-                           ((org-agenda-prefix-format "  %?-12t% s")
-                            (org-agenda-start-on-weekday nil)
-                            (org-agenda-span 1)
-                            (org-agenda-start-day ".")
-                            (org-agenda-skip-scheduled-if-done t)
-                            (org-agenda-sorting-strategy '(timestamp-up time-up))
-                            (org-super-agenda-header-separator "")
-                            (org-agenda-day-view)
-                            (org-super-agenda-groups '((:name none :date today :time-grid t)
-                                                       (:name "\nOverdue" :deadline past :scheduled past)
-                                                       (:name "Future" :anything (:scheduled future)))))))))
-#+END_SRC
-
-***** Personal Project Agenda
-
-#+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("P" "Personal Project Agenda"
-   ((alltodo ""
-             ((org-agenda-sorting-strategy '(priority-down todo-state-down user-defined-down timestamp-down time-down))
-              (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
-                                         (:discard (:anything t)))))))
-   ((org-agenda-files (--> '("Main/projects.org" "Main/gtd.org")
-                            (--map (f-join org-directory it) it))))))
-#+END_SRC
-
-***** Week View
-
-#+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("D" "Day View" ((agenda "a"
-                           ((org-agenda-prefix-format "  %?-12t% s")
-                            (org-agenda-start-on-weekday nil)
-                            (org-agenda-span 5)
-                            (org-agenda-start-day ".")
-                            (org-agenda-skip-scheduled-if-done t)
-                            (org-agenda-sorting-strategy '(timestamp-up time-up))
-                            (org-super-agenda-header-separator "")
-                            (org-agenda-day-view)
-                            (org-super-agenda-groups '((:name none :date today :time-grid t)
-                                                       (:name "\nOverdue" :deadline past :scheduled past)
-                                                       (:name "Future" :anything (:scheduled future)))))))))
-#+END_SRC
-
-***** All TODO Items
+***** All TODO items
 
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
@@ -501,19 +441,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "Overdue" :scheduled past))))))))
 #+END_SRC
 
-***** Books
-
-#+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("l" "Literature (Books)"
-   ((alltodo ""
-     ((org-agenda-files (--map (f-join org-directory it) '("Main/books.org")))
-      (org-super-agenda-groups '((:name "Fiction" :tag ("FICTION"))
-                                 (:name "Non-Fiction" :tag ("NON_FICTION"))
-                                 (:name "Self Help" :tag ("SELF_HELP"))
-                                 (:name "Comics" :tag ("COMIC")))))))))
-#+END_SRC
-
 ***** Backlog
 
 #+BEGIN_SRC elisp
@@ -536,34 +463,37 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
     (org-agenda-files (--map (f-join org-directory it) '("Main/gtd.org"))))))
 #+END_SRC
 
-***** Cooking Backlog
+***** Today
 
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
- '("C" "Cooking Backlog"
-   ((tags-todo "+BACKLOG"
-     ((org-agenda-prefix-format "  %?-12t% s")
-      (org-agenda-todo-ignore-scheduled t)
-      (org-agenda-sorting-strategy '(todo-state-up user-defined-down timestamp-up))
-      (org-agenda-files (list (f-join org-directory "Main/cooking.org"))))))))
+ '("d" "Day View" ((agenda "a"
+                           ((org-agenda-prefix-format "  %?-12t% s")
+                            (org-agenda-start-on-weekday nil)
+                            (org-agenda-span 1)
+                            (org-agenda-start-day ".")
+                            (org-agenda-skip-scheduled-if-done t)
+                            (org-agenda-sorting-strategy '(timestamp-up time-up))
+                            (org-super-agenda-header-separator "")
+                            (org-agenda-day-view)
+                            (org-super-agenda-groups '((:name none :date today :time-grid t)
+                                                       (:name "\nOverdue" :deadline past :scheduled past)
+                                                       (:name "Future" :anything (:scheduled future)))))))))
 #+END_SRC
 
-***** Emacs
+***** Week
 
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
- '("e" "Emacs Items" alltodo ""
-   ((org-agenda-prefix-format "  %?-12t% s")
-    (org-agenda-sorting-strategy '(user-defined-down timestamp-down todo-state-down))
-    (org-agenda-files (list (f-join org-directory "Main/Emacs.org")))
-    (org-super-agenda-groups '((:name "Active" :todo "ACTIVE")
-                               (:auto-priority t)
-                               (:name "Next" :todo "NEXT")
-                               (:name "Backlog" :todo "TODO"))))))
+ '("c" "Calendar" agenda ""
+   ((org-agenda-span 7)
+    (org-agenda-start-on-weekday nil)
+    (org-agenda-start-day "-1d")
+    (org-agenda-tag-filter-preset '("+CALENDAR")))))
 #+END_SRC
 
 ***** Work
-****** Todo Agenda
+****** Main
 
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
@@ -588,7 +518,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
     (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org"))))))
 #+END_SRC
 
-****** Project Agenda
+****** Projects
 
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
@@ -601,16 +531,30 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
    ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
     (org-agenda-files (list (f-join org-directory "Work/work.org"))))))
 #+END_SRC
-
-***** Calendar
+***** Personal projects
 
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
- '("c" "Calendar" agenda ""
-   ((org-agenda-span 7)
-    (org-agenda-start-on-weekday nil)
-    (org-agenda-start-day "-1d")
-    (org-agenda-tag-filter-preset '("+CALENDAR")))))
+ '("P" "Personal Project Agenda"
+   ((alltodo ""
+             ((org-agenda-sorting-strategy '(priority-down todo-state-down user-defined-down timestamp-down time-down))
+              (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
+                                         (:discard (:anything t)))))))
+   ((org-agenda-files (--> '("Main/projects.org" "Main/gtd.org")
+                            (--map (f-join org-directory it) it))))))
+#+END_SRC
+
+***** Books
+
+#+BEGIN_SRC elisp
+(+org/add-to-agenda-custom-commands
+ '("l" "Literature (Books)"
+   ((alltodo ""
+     ((org-agenda-files (--map (f-join org-directory it) '("Main/books.org")))
+      (org-super-agenda-groups '((:name "Fiction" :tag ("FICTION"))
+                                 (:name "Non-Fiction" :tag ("NON_FICTION"))
+                                 (:name "Self Help" :tag ("SELF_HELP"))
+                                 (:name "Comics" :tag ("COMIC")))))))))
 #+END_SRC
 
 ***** Closing Tag
