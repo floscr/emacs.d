@@ -328,6 +328,7 @@ I disable posframe, since it doesn't go beyond the X Window.
                                  (tags priority-down category-keep user-defined-up time-up)
                                  (search category-keep))))
 #+END_SRC
+
 ***** Always save files after agenda commands
 
 I always forget to save after agenda commands since it feels like an UI.
@@ -572,22 +573,20 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
    ((agenda "a" ((org-agenda-sorting-strategy '(time-up todo-state-up scheduled-up user-defined-up))
                  (org-agenda-span 3)
                  (org-agenda-start-on-weekday t)
-                 (org-agenda-show-all-dates nil)
                  (org-agenda-use-time-grid 'require-timed)
                  (org-agenda-start-day "-1d")))
-    (alltodo "+WORK-EVENT"
+    (alltodo ""
              ((org-agenda-sorting-strategy '(time-up todo-state-up user-defined-down))
-              (org-agenda-tag-filter-preset '("+WORK" "-EVENT"))
-              (org-super-agenda-groups '((:name "In Progress" :todo ("ACTIVE" "[!]"))
-                                         (:discard (:todo ("[ ]" "[|]")))
-                                         (:name "Inbox" :category "Inbox")
+              (org-super-agenda-groups '((:discard (:todo ("[ ]" "[|]")))
+                                         (:name "Inbox" :category "Inbox" :order 5)
+                                         (:name "Meetings" :tag "MEETING" :order 2)
                                          (:name "Reviews" :tag "REVIEW" :order 4)
                                          (:name "Waiting" :todo ("WAITING" "[-]") :order 4)
                                          (:name "Backlog" :tag "BACKLOG" :order 11)
                                          (:name "GTD" :tag "GTD")
                                          (:name "Reading List" :tag "TEXT" :order 10))))))
    ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
-    (org-agenda-tag-filter-preset "+WORK")
+    (org-agenda-tag-filter-preset '("+WORK"))
     (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org"))))))
 #+END_SRC
 
