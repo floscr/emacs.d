@@ -981,13 +981,13 @@ E.g.: (Brackets signal the cursor position)
     (end-of-buffer)))
 #+END_SRC
 
-*** Algin all tags
+*** Align all tags
 
 #+BEGIN_SRC elisp
 (defun +org|align-all-tags ()
   "Interactive version of org-align-all-tags."
   (interactive)
-  (org-align-all-tags))
+  (org-align-tags t))
 #+END_SRC
 
 *** Org get chrome tab formatted
