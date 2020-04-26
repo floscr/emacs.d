@@ -20,6 +20,7 @@
 
 (setq +org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
 (setq +org:reading-list-file (+org/expand-org-file-name "Main/reading-list.org"))
+(setq +org:bookmarks-file (+org/expand-org-file-name "Bookmarks/bookmarks.org"))
 #+END_SRC
 
 **** Fix date compatibility before 1970
@@ -262,10 +263,10 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                      ("Review (Chrome)"
                       :keys "r"
                       :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
-                ("Pinboard"
-                 :keys "p"
-                 :file org-pinboard-file
-                 :headline "Pinboard"
+                ("Bookmarks"
+                 :keys "b"
+                 :file +org:bookmarks-file
+                 :headline "Bookmarks"
                  :template ("* %(nth 0 (+wm/last-chrome-window-url-title))"
                             ":PROPERTIES:"
                             ":URL: %(nth 1 (+wm/last-chrome-window-url-title))"
@@ -644,10 +645,40 @@ Set the active state when clocking in.
 (if (featurep! +org-noter)        (load! "+org-noter"))
 (if (featurep! +org-web-tools)    (load! "+org-web-tools"))
 (if (featurep! +org-tags)         (load! "+org-tags"))
-(if (featurep! +org-pinboard)     (load! "+org-pinboard"))
 #+END_SRC
 
-*** Reading List
+*** Bookmarks
+
+#+BEGIN_SRC elisp
+(defun +org|refile-to-bookmarks ()
+  "Refile the current headline to bookmarks with url in properties."
+  (interactive)
+  (require 'om)
+  (let* ((item (om-parse-this-headline))
+         (headline (om-get-property :raw-value item))
+         (headline-match (s-match "^\\[\\[\\(.+\\)\\]\\[\\(.*\\)\\]\\]" headline))
+         (new-item
+          (--> item
+               (om-set-property :level 2 it)
+               (om-headline-set-title! (nth 2 headline-match) nil it)
+               (om-set-property :todo-keyword nil it)
+               (om-headline-set-node-property "URL" (nth 1 headline-match) it)
+               (om-to-string it))))
+    (call-interactively #'org-cut-subtree)
+    (find-file +org:bookmarks-file)
+    (goto-char (point-max))
+    (insert "\n")
+    (insert new-item)
+    (call-interactively #'+org|counsel-org-tag)))
+
+(defun +org|agenda-refile-to-bookmarks ()
+  "Refile the current agenda headline to bookmarks with url in properties."
+  (interactive)
+  (org-agenda-switch-to)
+  (+org|refile-to-bookmarks))
+#+END_SRC
+
+*** Reading list
 **** Customize agenda ui
 
 Remove the underline from the links.
@@ -660,7 +691,7 @@ Remove the underline from the links.
 (add-hook! 'org-agenda-finalize-hook :after '+org-reading-list/customize-agenda)
 #+END_SRC
 
-**** Agenda Command
+**** Agenda command
 
 #+BEGIN_SRC elisp
 (after! org-agenda
@@ -1420,7 +1451,7 @@ Set my preferred clipboard paste method to ~xclip~.
 
         (:prefix-map ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-refile
-          :desc "Pinboard"           "p" '+pinboard|refile
+          :desc "Pinboard"           "p" '+org|refile-to-bookmarks
           :desc "To GTD Backlog"     "b" (λ! (+org/refile "Main/gtd.org" "GTD Backlog"))
           :desc "To GTD"             "g" (λ! (+org/refile "Main/gtd.org" "GTD")))))
 
@@ -1437,7 +1468,7 @@ Set my preferred clipboard paste method to ~xclip~.
         "q" #'+org|counsel-org-tag
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
-          :desc "Pinboard"           "p" '+pinboard|refile-agenda
+          :desc "Pinboard"           "p" '+org|agenda-refile-to-bookmarks
           :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "Main/gtd.org" "GTD Backlog"))
           :desc "To GTD"             "g" (λ! (+org/agenda-refile "Main/gtd.org" "GTD"))
           :desc "To Reading List"    "r" (λ! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
@@ -1501,7 +1532,7 @@ Set my preferred clipboard paste method to ~xclip~.
    :desc "Store Link"                 "y" #'org-store-link
 
    (:prefix-map ("b" . "Bookmarks")
-    :desc "Goto Bookmarks File"       "b" (λ! (find-file org-pinboard-file))
+    :desc "Goto Bookmarks File"       "b" (λ! (find-file +org:bookmarks-file))
     :desc "Search bookmarks"          "s" #'helm-org-pinboard)
 
    ;; special goto locations I often visit
@@ -1509,7 +1540,7 @@ Set my preferred clipboard paste method to ~xclip~.
    :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
 
    (:prefix-map ("g" . "Goto")
-    :desc "Goto Bookmarks File"       "b" (λ! (find-file org-pinboard-file))
+    :desc "Goto Bookmarks File"       "b" (λ! (find-file +org:bookmarks-file))
     :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
     :desc "Work"                      "w" (λ! (+org/find-in-files "Work/work.org"))
     :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
