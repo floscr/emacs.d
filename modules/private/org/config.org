@@ -208,20 +208,6 @@ All todo keywords are for general items.
   (setq org-agenda-refile org-agenda-files))
 #+END_SRC
 
-*** Journal
-
-#+BEGIN_SRC elisp :tangle no
-(defvar org-journal-dir-default "~/Dropbox/org/journal")
-(defvar org-journal-dir-diary "~/Dropbox/org/diary")
-
-(setq org-journal-dir org-journal-dir-default)
-(setq org-journal-file-format "%Y-%m-%d")
-(setq org-journal-date-prefix "#+TITLE: ")
-(setq org-journal-date-format "%A, %B %d %Y")
-(setq org-journal-time-prefix "* ")
-(setq org-journal-time-format "")
-#+END_SRC
-
 *** Org Capture
 **** Org Capture Config
 
