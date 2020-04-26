@@ -1,0 +1,20 @@
+#+TITLE: Org Utils
+#+AUTHOR: Florian Schrödl (floscr)
+#+PROPERTY: header-args :tangle yes
+#+STARTUP: org-startup-folded: showall
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
+
+* Utils
+** Expand org file name
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org/expand-org-file-name (x)
+  (expand-file-name x org-directory))
+
+;;;###autoload
+(defun +org/expand-org-file-names (xs)
+  (-map #'+org/expand-org-file-name xs))
+#+END_SRC
