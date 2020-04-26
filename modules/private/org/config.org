@@ -8,7 +8,7 @@
 
 * Org Mode
 ** Config
-*** General Config
+*** General config
 **** Directories
 
 #+BEGIN_SRC elisp
@@ -157,7 +157,7 @@ All todo keywords are for general items.
 (setq org-latex-create-formula-image-program 'dvisvgm)
 #+END_SRC
 
-*** Refile Targets
+*** Refile targets
 
 #+BEGIN_SRC elisp
 (setq +org:level-1-refile-targets
