@@ -16,7 +16,7 @@
 (setq org-directory "~/Documents/Org")
 (after! org
   (setq org-directory "~/Documents/Org")
-  (setq org-default-notes-file (+org/expand-org-file-name "/Main/inbox.org")))
+  (setq org-default-notes-file (+org/expand-org-file-name "Main/inbox.org")))
 
 (setq +org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
 (setq +org:reading-list-file (+org/expand-org-file-name "Main/reading-list.org"))
