@@ -2808,14 +2808,58 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 **** Yank
 
 #+BEGIN_SRC elisp
+(defun +yank/dired-path ()
+  (if (--none? (eq (line-number-at-pos) it) '(1 2))
+      (dired-file-name-at-point)
+    dired-directory))
+
+(defun +yank|filename ()
+  (interactive)
+  (->> (if (eq major-mode 'dired-mode)
+           (+yank/dired-path)
+         (file-name-nondirectory buffer-file-name))
+       (copy-message)))
+
+(defun +yank|base ()
+  (interactive)
+  (->> (if (eq major-mode 'dired-mode)
+           (+yank/dired-path)
+         buffer-file-name)
+       (file-name-base)
+       (copy-message)))
+
+(defun +yank|directory ()
+  (interactive)
+  (->> (if (eq major-mode 'dired-mode)
+           (+yank/dired-path)
+         buffer-file-name)
+       (file-name-directory)
+       (copy-message)))
+
+(defun +yank|path ()
+  (interactive)
+  (->> (if (eq major-mode 'dired-mode)
+           (+yank/dired-path)
+         buffer-file-name)
+       (copy-message)))
+
+(defun +yank|relative-to-project ()
+  (interactive)
+  (->> (if (eq major-mode 'dired-mode)
+           (+yank/dired-path)
+         buffer-file-name)
+       (f-full)
+       (s-replace (projectile-project-root) "")
+       (copy-message)))
+
 (map!
   :leader
   (:prefix-map ("y" . "Yank")
-    :desc "filename"                        "f" (λ! (copy-message (file-name-nondirectory buffer-file-name)))
-    :desc "base"                            "b" (λ! (copy-message (file-name-base (or buffer-file-name dired-directory))))
-    :desc "directory"                       "d" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
-    :desc "path"                            "p" (λ! (copy-message (file-name-directory (or buffer-file-name dired-directory))))
-    :desc "relative to propject project"    "r" (λ! (copy-message (s-replace (projectile-project-root) "" (or buffer-file-name dired-directory))))))
+    :desc "filename"                        "f" #'+yank|filename
+    :desc "base"                            "b" #'+yank|base
+    :desc "directory"                       "d" #'+yank|directory
+    :desc "path"                            "p" #'+yank|path
+    :desc "relative to project"             "r" #'+yank|relative-to-project))
 #+END_SRC
 
 *** Local-Leader
