@@ -422,7 +422,10 @@ bookmarks are not helpful since they're not relative.
                                              (deploy-url-directory (--> ,item
                                                                         (s-replace "Staging." "" it)
                                                                         (downcase it)))
-                                             (branch (+MM|commit-bundle ,web-branch-name)))
+                                             (branch (->> ,web-branch-name
+                                                          (s-replace "REVIEW-" "")
+                                                          (s-match-or-1 "^[0-9][0-9]-[0-9][0-9]-\\(.*\\)$")
+                                                          (+MM|commit-bundle))))
                                          (if +MM:deploy-url
                                              (browse-url (template "<<+MM:deploy-url>>/<<deploy-url-directory>>/deploys/new?reference=<<branch>>"))
                                            (user-error "Please define \"+MM:deploy-url\""))))))))
