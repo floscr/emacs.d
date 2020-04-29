@@ -1677,30 +1677,25 @@ npm i -g json-fix
 *** LSP
 **** Disable LSP hover
 
-#+BEGIN_SRC elisp :tangle no
-(use-package! lsp-mode
-  :config
-  (setq lsp-eldoc-render-all nil
-        lsp-eldoc-enable-hover nil
-        lsp-eldoc-enable-signature-help nil
-        lsp-eldoc-prefer-signature-help nil
-        lsp-inhibit-message t
-        lsp-highlight-symbol-at-point nil
-        ;; Disable make error highlighting
-        lsp-prefer-flymake nil))
-#+END_SRC
+#+BEGIN_SRC elisp
+(setq lsp-eldoc-render-all nil
+      lsp-eldoc-enable-hover nil
+      lsp-eldoc-enable-signature-help nil
+      lsp-eldoc-prefer-signature-help nil
+      lsp-inhibit-message t
+      lsp-highlight-symbol-at-point nil
+      ;; Disable make error highlighting
+      lsp-prefer-flymake nil)
+(setq lsp-eldoc-enable-hover nil)
 
-**** Disable LSP hover face
+(setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
+;; (setq-hook! 'js2-mode flycheck-checker 'javascript-eslint)
+;; (setq-hook! 'rjsx-mode flycheck-checker 'javascript-eslint)
 
-#+BEGIN_SRC elisp :tangle no
-(add-hook! 'doom-load-theme-hook
-  (after! lsp
-    (dolist (face '(lsp-face-highlight-read
-                    lsp-face-highlight-write
-                    lsp-face-highlight-textual))
-      (set-face-attribute
-       face nil
-       :foreground nil :distant-foreground nil :background nil))))
+(after! lsp-mode
+  (flycheck-add-next-checker 'lsp 'javascript-eslint t))
+;; (after! flycheck
+;;   (flycheck-add-next-checker 'lsp 'javascript-eslint t))
 #+END_SRC
 
 *** Mail
