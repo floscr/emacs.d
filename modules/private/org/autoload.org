@@ -20,3 +20,19 @@
   "Expand file names XS with org-directory."
   (-map #'+org/expand-org-file-name xs))
 #+END_SRC
+
+** Set agenda command or replace on reload
+
+When configuring agenda commands I often eval them for testing.
+This helper replaces items with the same key, so you don't end up with a bunch of duplicates in ~agenda-custom-commands~.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org/add-to-agenda-custom-commands (x)
+  "Add or replace X in the org-agenda-custom-commands list."
+  (if-let ((key (car x))
+           (index (--find-index (string= key (car it)) org-agenda-custom-commands)))
+      (->> (-replace-at index x org-agenda-custom-commands)
+           (setq org-agenda-custom-commands))
+    (add-to-list 'org-agenda-custom-commands x)))
+#+END_SRC
