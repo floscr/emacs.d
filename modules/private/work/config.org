@@ -455,6 +455,33 @@ bookmarks are not helpful since they're not relative.
           (shell-command "npm publish")))
     (user-error "Stage the package.json with a version bump.")))
 #+END_SRC
+*** Counsel Branches
+
+#+BEGIN_SRC elisp
+(defun +MM/counsel-branch-menu--collect-matches (regexp &optional match-number buffer)
+  "return a list of matches of REGEXP in BUFFER or the current buffer if not given."
+  (let ((matches))
+    (save-match-data
+      (save-excursion
+        (with-current-buffer (or buffer (current-buffer))
+          (save-restriction
+            (widen)
+            (goto-char 1)
+            (while (search-forward-regexp regexp nil t 1)
+              (push (cons (match-string-no-properties (or match-number 0)) (point)) matches)))))
+      matches)))
+
+(defun +MM/counsel-branch-menu--matches ()
+  (+MM/counsel-branch-menu--collect-matches "\\.\\(map\\|mapMerge\\|chain\\|tap\\)Branche?s?('?\\(.+\\)'?,.*$"))
+
+(defun +MM/counsel-branch-menu ()
+  "Jump to a buffer position indexed by imenu."
+  (interactive)
+  (ivy-read "imenu items: " (+MM/counsel-branch-menu--matches)
+            :require-match t
+            :action (lambda (x) (goto-char (cdr x)))))
+#+END_SRC
+
 
 ** Packages
 *** New Worktree
@@ -1037,22 +1064,19 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (defun +MM/setup-keybindings ()
   "Setup Keybindings"
   (map! :map +MM-Web-mode-map
-        :leader
-        (:prefix-map ("y" . "Yank")
-          (:desc "+MM relative" "m" (λ! (--> (or buffer-file-name dired-directory)
-                                             (s-replace (f-join (projectile-project-root) "src/") "" it)
-                                             (f-no-ext it)
-                                             (copy-message it)))))
-
         :localleader
         :desc  "Repl"             "R" #'+MM|nodejs-repl
         :desc  "Goto NPM Package" "m" #'+MM|goto-npm-package
         :desc  "Bookmarks"        "b" #'+MM|bookmarks
 
+
         (:prefix ("f" . "file")
           :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
           :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
-          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function))
+          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
+
+        (:prefix ("g" . "Goto")
+          :desc  "Branch"                       "b"  #'+MM/counsel-branch-menu))
 
   (map! :map js2-mode-map
         :n "[1" #'+MM|alternate-file
