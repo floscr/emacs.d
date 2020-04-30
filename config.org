@@ -883,6 +883,24 @@ Automatically revert dired buffers.
 #+END_SRC
 
 **** Functions
+***** Dired Paste DWIM
+
+#+BEGIN_SRC elisp
+(defun +dired|paste-dwim ()
+  "Paste data in the current directory."
+  (interactive)
+  (let ((file (read-string "Filename: "))
+        (last-clip-type (->> (shell-command-to-string "greenclip print")
+                             (s-split "\n")
+                             (-first-item))))
+    (unless (string= "" file)
+      (cond
+       ((s-matches? "^image\\/png" last-clip-type)
+        (shell-command-to-string (template "xclip -selection clipboard -t image/png -o > <<file>>")))))
+    (dired-revert)))
+#+END_SRC
+
+
 ***** Kill all dired buffers with ~Q~
 
 #+BEGIN_SRC elisp
@@ -1036,7 +1054,8 @@ Widen can be restored with ~g~.
 #+BEGIN_SRC elisp
 (map! :after dired
       :map dired-mode-map
-      :ng "<C-return>" '+dired|open-externally)
+      :ng "<C-return>" '+dired|open-externally
+      :n "p" '+dired|paste-dwim)
 #+END_SRC
 
 *** Eldoc
