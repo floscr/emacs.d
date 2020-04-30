@@ -1152,7 +1152,6 @@ Custom eshell aliases.
   (setq indium-chrome-use-temporary-profile t)
   (setq indium-chrome--default-data-dir (f-join (getenv "XDG_CACHE_HOME") "inidum-chrome-profile"))
   (setq indium-chrome-data-dir (f-join (getenv "XDG_CACHE_HOME") "inidum-chrome-profile"))
-  :config
   (map! :map (js2-mode-map rjsx-mode-map)
         :localleader
         (:prefix ("i" . "Indium")
@@ -1180,6 +1179,7 @@ Custom eshell aliases.
         :n "go" #'indium-debugger-step-over
         :n "ge" #'indium-debugger-evaluate
         :n "gl" #'indium-debugger-locals)
+  :config
   (set-popup-rule! "^\\*JS REPL*" :size 0.3)
   (set-popup-rule! "^\\*JS Debugger Locals*" :size 0.3))
 #+END_SRC
