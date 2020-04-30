@@ -2286,14 +2286,6 @@ Fix buffers not being added to the current workspace.
         (yas/insert-snippet t)))))
 #+END_SRC
 
-***** TODO Expand first company snippet
-
-#+BEGIN_SRC elisp :tangle no
-(defun yasnippet/expand-first-item ()
-  (interactive)
-  (call-interactively #'company-yasnippet)
-  (company-complete-selection))
-#+END_SRC
 *** Babel Async
 
 #+BEGIN_SRC elisp
