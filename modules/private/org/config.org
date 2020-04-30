@@ -679,6 +679,13 @@ Set the active state when clocking in.
 #+END_SRC
 
 *** Reading list
+**** Config
+
+#+BEGIN_SRC elisp
+(setq +org-reading-list:agenda-buffer-name "*Org Agenda: Reading List*")
+#+END_SRC
+
+
 **** Customize agenda ui
 
 Remove the underline from the links.
