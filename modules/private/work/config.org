@@ -352,6 +352,22 @@ bookmarks are not helpful since they're not relative.
                :relative t
                :name "Common: Arr"
                :action #'counsel-imenu)
+        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Str.js"
+               :relative t
+               :name "Common: Str"
+               :action #'counsel-imenu)
+        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Obj.js"
+               :relative t
+               :name "Common: Obj"
+               :action #'counsel-imenu)
+        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Maybe.js"
+               :relative t
+               :name "Common: Maybe"
+               :action #'counsel-imenu)
+        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Box.js"
+               :relative t
+               :name "Common: Bxo"
+               :action #'counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx"
                :relative t
                :name "Command Line Flags"
