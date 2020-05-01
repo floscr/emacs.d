@@ -2315,6 +2315,32 @@ This shortens the nixos paths to ~{nix}~.
 (map! :map proced-mode-map
       :n "gr" #'proced)
 #+END_SRC
+*** NixOs
+
+**** Edit indirect
+
+Edit nix script regions in an indirect buffer just like ~org-edit-special~.
+
+#+BEGIN_SRC elisp
+(defun +nix|edit-indirect ()
+  "Function docstring"
+  (interactive)
+  (let ((beg (save-excursion
+               (search-backward "''\n" nil t)
+               (forward-char 3)
+               (point)))
+        (end (save-excursion
+               (search-forward "'';" nil t)
+               (backward-char 3)
+               (point))))
+    (edit-indirect-region beg end t)
+    (sh-mode)))
+
+(map! :map nix-mode-map
+      "C-c '" '+nix|edit-indirect)
+
+(set-popup-rule! "^\\*edit-indirect" :ignore t)
+#+END_SRC
 
 ** Bindings
 *** General
