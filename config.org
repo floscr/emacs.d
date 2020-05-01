@@ -2323,7 +2323,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 
 #+BEGIN_SRC elisp
 (defun +nix|edit-indirect ()
-  "Function docstring"
+  "Edit script in an indirect buffer."
   (interactive)
   (let ((beg (save-excursion
                (search-backward "''\n" nil t)
