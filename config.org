@@ -662,13 +662,14 @@ plays a sound and prompts me to insert my count.
 *** IRC
 
 #+BEGIN_SRC elisp
-(set-irc-server! "chat.freenode.net"
-  `(:tls t
-    :port 6697
-    :nick "floscr"
-    :sasl-username ,(+pass-get-user "Irc/freenode.net")
-    :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
-    :channels ("#emacs" "#nixos")))
+(after! circe
+  (set-irc-server! "chat.freenode.net"
+                   `(:tls t
+                          :port 6697
+                          :nick "floscr"
+                          :sasl-username ,(+pass-get-user "Irc/freenode.net")
+                          :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
+                          :channels ("#emacs" "#nixos"))))
 #+End_SRC
 
 *** Calendar
