@@ -1210,7 +1210,6 @@ Source:
 #+END_SRC
 
 *** Ivy / Swiper
-**** Config
 **** Bindings
 
 Adds general bindings to ivy.
@@ -1225,7 +1224,8 @@ Adds general bindings to ivy.
   "<C-return>" 'ivy-immediate-done)
 #+END_SRC
 
-**** Counsel Project File Jump
+**** Functions
+***** Counsel Project File Jump
 
 #+BEGIN_SRC elisp
 (defun +ivy/counsel-project-file-jump (x)
@@ -1234,7 +1234,7 @@ Adds general bindings to ivy.
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
 #+END_SRC
 
-**** Counsel Files
+***** Counsel Grep Buffers
 
 #+BEGIN_SRC elisp
 (defun +ivy|search-buffers ()
