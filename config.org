@@ -1794,21 +1794,30 @@ Show a list of the changed files in the current branch.
 For now only works on branches that were directly forked from master.
 
 #+BEGIN_SRC elisp
-(defun git-new-files ()
+(defun +git/new-files ()
+  "List of added files in the current branch."
   (shell-command-to-list "git ls-files -om --exclude-standard"))
 
-(defun git-modified-files (&optional branch)
+(defun +git/modfied-files (&optional branch)
+  "Get a list of modified files from the BRANCH to head."
   (shell-command-to-list
    (template "git --no-pager diff --no-renames --name-only --no-merges <<(magit-rev-parse \"HEAD\")>> <<branch>>;")))
 
-(defun git-get-changed-files (b)
-    (delete-dups (append (git-modified-files b) (git-new-files))))
+(defun +git/changed-branch-files (branch)
+  "Get a list of new and modified files from BRANCH to head."
+  (->> (+git/modfied-files branch)
+       (-concat (+git/new-files))
+       (-uniq)
+       (-filter
+        (lambda (x)
+          (let ((default-directory (projectile-project-root)))
+            (f-exists? x))))))
 
 (defun +git|ivy-changed-files (&optional branch)
   (interactive)
   (let ((enable-recursive-minibuffers t))
     (ivy-read (template "Changed files for <<(or branch (magit-get-current-branch))>>:")
-              (git-get-changed-files (or "origin/master"))
+              (+git/changed-branch-files (or "origin/master"))
               :require-match t
               :history 'file-name-history
               :action counsel-projectile-find-file-action
