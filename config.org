@@ -1794,10 +1794,6 @@ Show a list of the changed files in the current branch.
 For now only works on branches that were directly forked from master.
 
 #+BEGIN_SRC elisp
-(defun shell-command-to-list (cmd)
-  "Split output from shell-command to list"
-  (split-string (shell-command-to-string cmd) "\n" t))
-
 (defun git-new-files ()
   (shell-command-to-list "git ls-files -om --exclude-standard"))
 

@@ -190,6 +190,13 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
   (let ((display-buffer-alist (list (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))))
     (async-shell-command command)))
 #+END_SRC
+** Shell command to list
+
+#+BEGIN_SRC elisp
+(defun shell-command-to-list (cmd)
+  "Split output from shell-command to list"
+  (split-string (shell-command-to-string cmd) "\n" t))
+#+END_SRC
 
 * Functional Utils
 ** Noop
