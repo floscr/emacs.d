@@ -16,7 +16,6 @@
 #+END_SRC
 
 ** Config
-
 *** Variables
 
 #+BEGIN_SRC elisp
@@ -500,7 +499,6 @@ bookmarks are not helpful since they're not relative.
             :require-match t
             :action (lambda (x) (goto-char (cdr x)))))
 #+END_SRC
-
 
 ** Packages
 *** New Worktree
