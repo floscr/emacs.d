@@ -443,7 +443,8 @@ bookmarks are not helpful since they're not relative.
                                              (branch (->> ,web-branch-name
                                                           (s-replace "REVIEW-" "")
                                                           (s-match-or-1 "^[0-9][0-9]-[0-9][0-9]-\\(.*\\)$")
-                                                          (+MM|commit-bundle))))
+                                                          (+MM|commit-bundle)
+                                                          (s-replace "origin/" ""))))
                                          (if +MM:deploy-url
                                              (browse-url (template "<<+MM:deploy-url>>/<<deploy-url-directory>>/deploys/new?reference=<<branch>>"))
                                            (user-error "Please define \"+MM:deploy-url\""))))))))
