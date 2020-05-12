@@ -603,7 +603,7 @@ Clock out when the todo state is set to a delay state.
 
 Set the active state when clocking in.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun +org/org-set-active-state (&optional args args2)
   "Set the active state for the current item."
   (cond ((buf-line-has "PROJECT") nil)
