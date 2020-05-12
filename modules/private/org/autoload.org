@@ -36,3 +36,18 @@ This helper replaces items with the same key, so you don't end up with a bunch o
            (setq org-agenda-custom-commands))
     (add-to-list 'org-agenda-custom-commands x)))
 #+END_SRC
+
+** Open frame command
+
+My command to call the capture with following attributes.
+I disable posframe, since it doesn't go beyond the X Window.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org-capture|my-open-frame ()
+  "Open capture, adjust display, disable posframe."
+  (interactive)
+  (+ui|adjust-ui-to-display)
+  (+org-capture/open-frame)
+  (ivy-posframe-mode -1))
+#+END_SRC
