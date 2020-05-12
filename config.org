@@ -1846,7 +1846,8 @@ When no BRANCH is given, take the current one."
   (let* ((branch (or branch (magit-get-current-branch)))
          (date (format-time-string "%y-%m"))
          (remote (template "origin/<<date>>-<<branch>>")))
-    (magit-git-push branch remote "--set-upstream")))
+    (magit-git-push branch remote "--set-upstream")
+    remote))
 #+END_SRC
 
 ***** Diff Range from current branch to ~magit-thing-at-point~
