@@ -415,9 +415,11 @@ bookmarks are not helpful since they're not relative.
     (unless (s-matches? "bundle-.*" (magit-get-current-branch))
       (magit-branch-spinoff (template "bundle-<<branch>>")))
     (if (magit-get-upstream-branch)
-        (magit-push-current-to-upstream nil)
-      (+git|push-dated))
-    (magit-get-upstream-branch)))
+        (progn
+          (magit-push-current-to-upstream nil)
+          ;; The branch alread exists, so we can safely take the branch name
+          (magit-get-upstream-branch))
+      (+git|push-dated))))
 
 (defun +MM|build-test-package ()
   (interactive)
