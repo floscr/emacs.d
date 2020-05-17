@@ -775,7 +775,17 @@ Take the host as the base and either the TITLE or the path from the URL."
          it
          "-o" (f-swap-ext it "org"))))
 
-(defun +org-archive|archive-dwim ()
+(defun +org-archive/convert-html-to-epub (path)
+  "Convert html files at PATH to org documents."
+  (--> (f-entries path)
+       (--filter (f-ext? it "html") it)
+       (-first-item it)
+       (deferred:process
+         "ebook-convert"
+         it
+         "-o" (f-swap-ext it "epub"))))
+
+(defun +org-archive|archive-dwim (&optional to-epub?)
   "Archive the first link under the cursor and set the property."
   (interactive)
   (require 'deferred)
@@ -792,8 +802,16 @@ Take the host as the base and either the TITLE or the path from the URL."
     (org-set-property "ARCHIVE" (template "[[<<dir>>]]"))
     (deferred:$
       (+org-archive/wget-link dir)
-      (deferred:nextc it `(lambda () (+org-archive/convert-html-to-org ,dir)))
-      (deferred:nextc it `(lambda () (+org-archive/convert-html-to-org ,dir))))))
+      (deferred:nextc it `(lambda ()
+                            (+org-archive/convert-html-to-org ,dir)))
+      (deferred:nextc it `(lambda ()
+                            (when to-epub?
+                              (+org-archive/convert-html-to-epub ,dir)))))))
+
+(defun +org-archive|archive-dwim-epub ()
+  "Function docstring"
+  (interactive)
+  (+org-archive|archive-dwim t))
 #+END_SRC
 
 
