@@ -53,6 +53,12 @@
   "Either return the title of a link or the original STR."
   (or (nth 2 (+org/parse-link str))
       str))
+
+;;;###autoload
+(defun +org/link-url-or-original (str)
+  "Either return the title of a link or the original STR."
+  (or (nth 1 (+org/parse-link str))
+      str))
 #+END_SRC
 
 ** Expand org file name
