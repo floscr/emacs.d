@@ -290,3 +290,15 @@ DISPLAY is a display name, frame or terminal, as in
    ((string= system-name "Florians-MacBook-Air.local")
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
+* Elisp Helpers
+
+** Get buffer in other window
+
+#+BEGIN_SRC elisp
+(defun +my/buffer-other-window ()
+  "Return the buffer from the next window."
+  (interactive)
+  (save-window-excursion
+    (other-window 1)
+    (current-buffer)))
+#+END_SRC
