@@ -1724,10 +1724,10 @@ npm i -g json-fix
 ;; (setq-hook! 'js2-mode flycheck-checker 'javascript-eslint)
 ;; (setq-hook! 'rjsx-mode flycheck-checker 'javascript-eslint)
 
-(after! (js2-mode rjsx-mode)
+;; (after! (js2-mode rjsx-mode)
+  ;; (flycheck-remove-next-checker 'lsp))
+(after! lsp
   (flycheck-add-next-checker 'lsp 'javascript-eslint t))
-;; (after! flycheck
-;;   (flycheck-add-next-checker 'lsp 'javascript-eslint t))
 #+END_SRC
 
 *** Mail
