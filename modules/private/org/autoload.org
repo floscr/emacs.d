@@ -7,6 +7,54 @@
 #+END_SRC
 
 * Utils
+** Copy Link under Cursor
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org|link-from-point ()
+  (interactive)
+  (let* ((link-info (assoc :link (org-context)))
+         (text (when link-info
+                 ;; org-context seems to return nil if the current element
+                 ;; starts at buffer-start or ends at buffer-end
+                 (buffer-substring-no-properties (or (cadr link-info) (point-min))
+                                                 (or (caddr link-info) (point-max))))))
+    (if (not text)
+        (error "Not in org link")
+      (add-text-properties 0 (length text) '(yank-handler (my-yank-org-link)) text)
+      text)))
+
+;;;###autoload
+(defun +org|link-url-from-point ()
+  (interactive)
+  (-some->> (+org|link-from-point)
+    (+org/parse-link)
+    (nth 1)))
+
+;;;###autoload
+(defun +org|link-title-from-point ()
+  (interactive)
+  (-some->> (+org|link-from-point)
+    (+org/parse-link)
+    (nth 2)))
+#+END_SRC
+
+
+** Parse Link
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org/parse-link (link)
+  "Parse org LINK to pair of url and title."
+  (s-match org-bracket-link-regexp link))
+
+;;;###autoload
+(defun +org/link-title-or-original (str)
+  "Either return the title of a link or the original STR."
+  (or (nth 2 (+org/parse-link str))
+      str))
+#+END_SRC
+
 ** Expand org file name
 
 #+BEGIN_SRC elisp
