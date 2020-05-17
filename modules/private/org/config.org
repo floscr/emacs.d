@@ -734,37 +734,51 @@ Take the host as the base and either the TITLE or the path from the URL."
     (shell-command-to-string (concat "mkdir -p " path))
     path))
 
-(defun +org-archive/wget-link (url title)
+(defun +org-archive/wget-link (dir)
   "Wget the given URL to the +org-archive:link-archive-directory."
   (require 'deferred)
-  (let ((default-directory (+org-archive/create-directory url title)))
+  (let ((default-directory dir))
     (deferred:process
-      "wget"
-      ;; Disable Robots
-      "-e" "robots=off"
-      ;; Disable generation of host directories which might be nested
-      "--no-host-directories"
-      ;; Removes query parameters from media
-      "--content-disposition"
-      ;; Don't create directories
-      "--no-directories"
-      ;; Do not ascend to the parent
-      "--no-parent"
-      ;; Always download index as html file
-      "--adjust-extension"
-      ;; Enable spanning across hosts when doing recursive retrieving.
-      "--span-hosts"
-      ;; After the download is complete, convert the links in the document to make them suitable for local viewing.
-      "--convert-links"
-      ;; Download all files neccssary to view the page offline
-      "--page-requisites"
-      ;; These files are not neccessary for offline viewing and just cost space
-      "--reject" "css,woff,ttf,js"
-      url)))
+        "wget"
+        ;; Disable Robots
+        "-e" "robots=off"
+        ;; Disable generation of host directories which might be nested
+        "--no-host-directories"
+        ;; Removes query parameters from media
+        "--content-disposition"
+        ;; Don't create directories
+        "--no-directories"
+        ;; Do not ascend to the parent
+        "--no-parent"
+        ;; Always download index as html file
+        "--adjust-extension"
+        ;; Enable spanning across hosts when doing recursive retrieving.
+        "--span-hosts"
+        ;; After the download is complete, convert the links in the document to make them suitable for local viewing.
+        "--convert-links"
+        ;; Download all files neccssary to view the page offline
+        "--page-requisites"
+        ;; These files are not neccessary for offline viewing and just cost space
+        "--reject" "css,woff,ttf,js"
+        url)))
+
+(defun +org-archive/convert-html-to-org (path)
+  "Convert html files at PATH to org documents."
+  (--> (f-entries path)
+       (--filter (f-ext? it "html") it)
+       (-first-item it)
+       (deferred:process
+         "pandoc"
+         "--wrap=none"
+         "-f" "html"
+         "-t" "org"
+         it
+         "-o" (f-swap-ext it "org"))))
 
 (defun +org-archive|archive-dwim ()
-  "Function docstring"
+  "Archive the first link under the cursor and set the property."
   (interactive)
+  (require 'deferred)
   (require 'om)
   (let* ((header (om-parse-this-headline))
          (url (->> (org-offer-links-in-entry (current-buffer) (point) 0)
@@ -773,8 +787,13 @@ Take the host as the base and either the TITLE or the path from the URL."
                    (+org/link-url-or-original)))
          (title (->> header
                   (om-get-property :raw-value)
-                  (+org/link-title-or-original))))
-    (message "%s %s" url title)))
+                  (+org/link-title-or-original)))
+         (dir (+org-archive/create-directory url title)))
+    (org-set-property "ARCHIVE" (template "[[<<dir>>]]"))
+    (deferred:$
+      (+org-archive/wget-link dir)
+      (deferred:nextc it `(lambda () (+org-archive/convert-html-to-org ,dir)))
+      (deferred:nextc it `(lambda () (+org-archive/convert-html-to-org ,dir))))))
 #+END_SRC
 
 
