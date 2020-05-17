@@ -1491,7 +1491,11 @@ Set my preferred clipboard paste method to ~xclip~.
         :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
         :desc  "Schedule"                  "s"  #'org-schedule
         :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
-        :desc  "Copy Buffer To Markdown"   "y"  #'+org|copy-buffer-as-markdown
+        :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
+
+        (:prefix-map ("y" . "Yank")
+         :desc "Item" "l" (λ! (copy-message (+org|link-url-from-point)))
+         :desc "Item" "t" (λ! (copy-message (+org|link-title-from-point))))  
 
         (:prefix-map ("C" . "Cut")
           :desc "Item" "C" 'org-cut-subtree
