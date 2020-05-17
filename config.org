@@ -7,6 +7,17 @@
 #+END_SRC
 
 * Configuration
+** TEMP
+
+Fixes =(void-function ad-Advice-newline-and-indent)= error for now
+
+#+BEGIN_SRC elisp
+(map!
+ :map evil-org-mode-map
+ :after org
+ :i [return] #'org-return-and-maybe-indent)
+#+END_SRC
+
 ** External Files
 *** Load additional packages
 
