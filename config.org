@@ -2737,7 +2737,6 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 (map!
  :leader
  (:prefix-map ("g" . "git")
-   :desc "Worktree Popup"              "%" #'magit-worktree
    :desc "Amend Commit (No Message)"   "A" (λ! (magit-commit-amend "--no-edit"))
    :desc "Blame"                       "B" #'magit-blame
    :desc "Changed Files"               "F" #'+git|ivy-changed-files
@@ -2748,7 +2747,8 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
    :desc "Checkout"                    "b" #'magit-checkout
    :desc "Diff"                        "d" #'magit-diff
    :desc "Push"                        "p" #'magit-push
-   :desc "Undo"                        "u" #'+git|undo))
+   :desc "Undo"                        "u" #'+git|undo
+   :desc "Worktree Popup"              "w" #'magit-worktree))
 #+END_SRC
 
 **** Insert
