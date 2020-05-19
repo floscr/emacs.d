@@ -1715,10 +1715,16 @@ npm i -g json-fix
       lsp-eldoc-enable-signature-help nil
       lsp-eldoc-prefer-signature-help nil
       lsp-inhibit-message t
+
+      lsp-eldoc-enable-hover nil
+      ;; Disable Signature
+      lsp-signature-auto-activate nil
+      lsp-signature-render-documentation nil
+      lsp-signature-doc-lines 1
+
       lsp-highlight-symbol-at-point nil
       ;; Disable make error highlighting
       lsp-prefer-flymake nil)
-(setq lsp-eldoc-enable-hover nil)
 
 (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
 ;; (setq-hook! 'js2-mode flycheck-checker 'javascript-eslint)
