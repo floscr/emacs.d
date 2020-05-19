@@ -616,11 +616,14 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         (insert "\n\n\n")))))
 
 (defun +MM:import|insert-local-import (import)
-  (let ((replacement-char "$$0")
-        (import-file-or-dir (--> import
-                                 (replace-regexp-in-string "/index\.js$" "" it)
-                                 (f-no-ext it))))
-    (insert (template "import { <<replacement-char>> } from './<<import-file-or-dir>>';\n"))
+  (let* ((replacement-char "$$0")
+         (import-file-or-dir (--> import
+                                  (replace-regexp-in-string "/index\.js$" "" it)
+                                  (f-no-ext it)))
+         (current-dir-prefix (if (f-exists? import-file-or-dir)
+                                 "./"
+                               "")))
+    (insert (template "import { <<replacement-char>> } from '<<current-dir-prefix>><<import-file-or-dir>>';\n"))
     (search-backward "$$0")
     (delete-forward-char 3)
     (evil-insert-state)))
@@ -679,6 +682,15 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
           (+MM:import|insert-local-import package)
         (+MM:import|insert-package-import package))
       (+MM:import/fix-empty-lines))))
+
+(defun +MM-import|import-other-window-file ()
+  "Function docstring"
+  (interactive)
+  (let ((file
+         (save-window-excursion
+           (other-window 1)
+           (+MM/relative-file-name (buffer-file-name)))))
+    (+MM:import|import file t)))
 
 (defun +MM:import|ivy-import ()
   (interactive)
