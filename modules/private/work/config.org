@@ -545,6 +545,11 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 **** Main
 
 #+BEGIN_SRC elisp
+(defun +MM/relative-file-name (file)
+  (--> file
+       (file-relative-name it (f-join (doom-project-root) "src"))
+       (f-no-ext it)))
+
 (defun +MM:import/get-local-imports ()
   "Get possible importable files in the current directory."
   (let ((dir default-directory))
