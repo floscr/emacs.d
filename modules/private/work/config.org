@@ -961,7 +961,8 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
     (indent-according-to-mode)
     (insert (template "    .<<rule>>(<<prop>>)"))
     (when has-trailing-semi (insert ","))
-    (when (s-matches? "^[A-Za-z0-9\\.]*$" prop)
+    (when (and (eq (type-of prop) 'string)
+               (s-matches? "^[A-Za-z0-9\\.]*$" prop))
       (cond ((s-matches? "^colors" prop)
              (save-window-excursion
                (save-excursion (+MM-import/import-package "@meisterlabs/ui" "colors" nil))))
