@@ -824,6 +824,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
           ("alignSelf"                +MM-Rules-flex-align)
           ("flexGrow"                 '+MM-Rules-number)
           ("flexShrink"               '+MM-Rules-number)
+          ("stretch"                  'noop)
           ("flexWrap"                 '+MM-Rules-number)
 
           ("display"                  '("flex" "block" "inline-flex" "inline-block"))
