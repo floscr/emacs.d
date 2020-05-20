@@ -963,9 +963,11 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
     (when has-trailing-semi (insert ","))
     (when (s-matches? "^[A-Za-z0-9\\.]*$" prop)
       (cond ((s-matches? "^colors" prop)
-             (save-excursion (+MM-import/import-package "@meisterlabs/ui" "colors" nil)))
+             (save-window-excursion
+               (save-excursion (+MM-import/import-package "@meisterlabs/ui" "colors" nil))))
             ((s-matches? "^fonts" prop)
-             (save-excursion (+MM-import/import-package "@meisterlabs/ui" "fonts" nil)))))))
+             (save-window-excursion
+               (save-excursion (+MM-import/import-package "@meisterlabs/ui" "fonts" nil))))))))
 
 (defun +MM|write-rule-and-restart (rule &optional prop)
   (+MM|write-rule rule prop)
