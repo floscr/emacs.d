@@ -635,7 +635,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (import-file-or-dir (--> import
                                   (replace-regexp-in-string "/index\.js$" "" it)
                                   (f-no-ext it)))
-         (current-dir-prefix (if (f-exists? import-file-or-dir)
+         (current-dir-prefix (if (f-exists? import)
                                  "./"
                                "")))
     (insert (template "import { <<replacement-char>> } from '<<current-dir-prefix>><<import-file-or-dir>>';\n"))
