@@ -550,6 +550,21 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
        (file-relative-name it (f-join (doom-project-root) "src"))
        (f-no-ext it)))
 
+(defun +MM:import/has-import? (import)
+  "Check if the current line is a multi-line import statement."
+  (save-excursion
+    (search-backward "{" (point-at-bol) t)))
+
+(defun +MM:import/import-line-is-single-line? ()
+  "Check if the current line is a multi-line import statement."
+  (save-excursion
+    (search-backward "{" (point-at-bol) t)))
+
+(defun +MM:import/import-line-has-export? (export)
+  "Check if EXPORT is already declared in the import statement."
+  (let ((open-curly (save-excursion (search-backward "{" nil t))))
+    (save-excursion (search-backward export open-curly t))))
+
 (defun +MM:import/get-local-imports ()
   "Get possible importable files in the current directory."
   (let ((dir default-directory))
@@ -639,21 +654,30 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         (delete-forward-char 3)
         (evil-insert-state)))))
 
-(defun +MM:import|update-import (import)
+(defun +MM-import/update-import (package &optional export)
   (goto-char (point-at-eol))
-  (if (search-backward-regexp "[A-Za-z] }" (point-at-bol) t)
-      (progn
-        (forward-char)
-        (insert ", ")
-        (evil-insert-state))
-    (progn
-      (previous-line)
-      (goto-char (point-at-eol))
-      (insert "\n")
-      (indent-according-to-mode)
-      (insert ",")
-      (backward-char)
-      (evil-insert-state))))
+  (cond ((and export (+MM:import/import-line-has-export? export)
+          (goto-char (+MM:import/import-line-has-export? export))))
+
+        ((+MM:import/import-line-is-single-line?)
+         (progn
+             (search-backward-regexp "[A-Za-z] }" (point-at-bol) t)
+             (forward-char)
+             (insert ", ")
+             (if export
+                 (insert export)
+               (evil-insert-state))))
+        (t
+         (progn
+           (previous-line)
+           (goto-char (point-at-eol))
+           (insert "\n")
+           (indent-according-to-mode)
+           (insert ",")
+           (backward-char)
+           (if export
+               (insert export)
+             (evil-insert-state))))))
 
 (defun +MM:import/fix-empty-lines ()
   (save-excursion
@@ -675,7 +699,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (defun +MM:import|import (package is-local?)
   (goto-char (point-min))
   (if (search-forward-regexp (template "from '.*<<package>>.*';") nil t)
-      (+MM:import|update-import package)
+      (+MM-import/update-import package)
     (progn
       (+MM:import/buffer-goto-or-create-header (if is-local? "LOCALS" "EXTERNALS"))
       (if is-local?
