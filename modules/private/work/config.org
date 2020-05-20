@@ -700,115 +700,6 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
               :action (lambda (x) (+MM:import|import x (-contains? local-imports x))))))
 #+END_SRC
 
-**** Old Main
-
-#+BEGIN_SRC elisp :tangle no
-(defun +MM:get-remaining-headers-list (header)
-  "Returns a reversed list of headers to search through"
-  (->> +MM-comment-headers
-       (-split-on header)
-       (-first-item)))
-
-(defun +MM:import-file/goto-or-add-header (header)
-  "Goes to a comment header or if it doesnt exist creates one"
-  (goto-char (point-min))
-  (if (search-forward header nil t)
-      (progn
-        (search-forward-regexp "^/\\*\\*" nil t)
-        (previous-line 2))
-    ;; Create header when none was found
-    (progn
-      (let* ((headers (+MM:get-remaining-headers-list header))
-             (next-nearest-header (--first (search-forward it nil t) headers)))
-
-        (if (< (-elem-index header +MM-comment-headers)
-               (-elem-index next-nearest-header +MM-comment-headers))
-            (evil-insert-newline-above)
-          (evil-insert-newline-below))
-
-        (insert (template  "/** <<header>> **/\n\n\n\n"))
-        (previous-line 1)))))
-
-(defun +MM:import-file/goto-or-add-import-header (header)
-  "Goes to a comment header or if it doesnt exist creates one"
-  (goto-char (point-min))
-  (if (search-forward header nil t)
-      (progn
-        (search-forward-regexp "^/\\*\\*" nil t)
-        (previous-line 2))
-    (progn
-      (cond ((string= header "EXTERNALS")
-             (progn
-               (insert (template  "/** EXTERNALS **/\n\n\n\n"))
-               (previous-line 1)
-               (evil-insert-newline-below)
-               (previous-line 1)))
-
-            ((and (string= header "LOCALS") (search-forward-regexp "/\\*\\* EXTERNALS" nil t))
-             (progn
-               (search-forward-regexp "^/\\*\\*" nil t)
-               (evil-insert-newline-above)
-               (insert (template  "/** LOCALS **/\n\n\n"))
-               (evil-insert-newline-below)
-               (previous-line 1)))
-
-            (t
-             (progn
-               (insert (template  "/** LOCALS **/\n\n\n\n"))
-               (previous-line 1)
-               (evil-insert-newline-below)
-               (previous-line 1)))))))
-
-
-(->> (list (list "{ default as typeOf }" "typeOf"))
-     (-map 'cdr))
-
-
-(defun +MM:import-file/grep-index-file ()
-  (let ((file-contents
-         (with-temp-buffer
-           (insert-file-contents "/Users/flo/Code/Meisterlabs/kits-2.0/packages/common/src/index.js")
-           (buffer-string))))
-    (->> (s-match-strings-all "{\\(.*\n\\)}" file-contents)
-         (-map 'last))))
-
-(defun +MM:import-file/add-import (import)
-  (goto-char (point-min))
-
-  (if (search-forward-regexp import nil t)
-      ;; Import Exists
-      (progn
-        (beginning-of-visual-line)
-        (cond
-         ;; Inline import
-         ((search-forward-regexp "{.*}" (point-at-eol) t)
-          (progn
-            (left-char 2)
-            (insert ", ")
-            (evil-insert-state)))
-
-         ;; Multiline import
-         ((search-forward-regexp "}" (point-at-eol) t)
-          (progn
-            (evil-insert-newline-above)
-            (evil-insert-state)))
-
-         ;; Default import
-         (t (noop))))
-
-    (progn
-      (let* ((is-local (s-contains? "./" import))
-             (comment-header-title (if is-local "LOCALS" "EXTERNALS")))
-        (+MM:import-file/goto-or-add-import-header comment-header-title)
-        (evil-insert-newline-below)
-        (previous-line 1)
-        (+js/import-file import)))))
-
-(defun +MM|import-file ()
-  (interactive)
-  (+js|ivy-import-file '+MM:import-file/add-import))
-#+END_SRC
-
 **** Add section line
 
 #+BEGIN_SRC elisp
@@ -863,6 +754,31 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
     "colors.red"
     "colors.pink"
     "colors.purple"))
+
+(defvar +MM-Rules:fonts nil "All fonts")
+
+(setq +MM-Rules:fonts
+      '("fonts.xxxl.bold"
+        "fonts.xxxl.medium"
+        "fonts.xxxl.regular"
+        "fonts.xxl.bold"
+        "fonts.xxl.medium"
+        "fonts.xxl.regular"
+        "fonts.xl.bold"
+        "fonts.xl.medium"
+        "fonts.l.bold"
+        "fonts.l.medium"
+        "fonts.l.regular"
+        "fonts.m.bold"
+        "fonts.m.medium"
+        "fonts.m.regular"
+        "fonts.s.bold"
+        "fonts.s.medium"
+        "fonts.s.regular"
+        "fonts.xs.bold"
+        "fonts.xs.medium"
+        "fonts.xs.regular"))
+
 
 (setq +MM-Web-Rules
       (ht ("flexDirection"            '("column" "row" "row-reverse" "column-reverse"))
@@ -923,6 +839,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
           ("rotate"                   '+MM-Rules-deg)
 
           ("color"                    +MM-Rules-colors)
+          ("font"                     +MM-Rules:fonts)
           ("fontWeight"               '("heavy" "bold" "black" "light" "normal" "regular"))
           ("fontFamily"               '+MM-Rules-number)
           ("fontSize"                 '+MM-Rules-number)
@@ -991,6 +908,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
                      ((eq prop nil) nil)
                      ;; Color variable
                      ((-contains? +MM-Rules-colors prop) prop)
+                     ((-contains? +MM-Rules:fonts prop) prop)
                      ;; String
                      (t (template "'<<prop>>'"))))
          (has-trailing-semi (buf-line-has ",$")))
