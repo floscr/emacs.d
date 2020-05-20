@@ -960,7 +960,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 
     (evil-insert-newline-below)
     (indent-according-to-mode)
-    (insert (template "    .<<rule>>(<<prop>>)"))
+    (insert (template "    .<<rule>>(<<(or prop \"\")>>)"))
     (when has-trailing-semi (insert ","))
     (when (and (eq (type-of prop) 'string)
                (s-matches? "^[A-Za-z0-9\\.]*$" prop))
