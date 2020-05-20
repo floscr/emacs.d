@@ -643,18 +643,18 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
     (delete-forward-char 3)
     (evil-insert-state)))
 
-(defun +MM:import|insert-package-import (package &optional import)
+(defun +MM:import|insert-package-import (package &optional export)
   (let* ((replacement-char "$$0")
          (line (template "import { <<replacement-char>> } from '<<package>>';\n")))
-    (if import
-        (insert (s-replace "\$\$0" import line))
+    (if export
+        (insert (s-replace "\$\$0" export line))
       (progn
         (insert (template "import { <<replacement-char>> } from '<<package>>';\n"))
         (search-backward replacement-char)
         (delete-forward-char 3)
         (evil-insert-state)))))
 
-(defun +MM-import/update-import (package &optional export)
+(defun +MM-import/update-import (&optional export)
   (goto-char (point-at-eol))
   (cond ((and export (+MM:import/import-line-has-export? export)
           (goto-char (+MM:import/import-line-has-export? export))))
@@ -696,16 +696,24 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
            (s-repeat it "\n")
            (insert it))))))
 
-(defun +MM:import|import (package is-local?)
+(defun +MM-import/import-package (package &optional export is-local?)
   (goto-char (point-min))
   (if (search-forward-regexp (template "from '.*<<package>>.*';") nil t)
-      (+MM-import/update-import package)
+      (+MM-import/update-import export)
     (progn
       (+MM:import/buffer-goto-or-create-header (if is-local? "LOCALS" "EXTERNALS"))
       (if is-local?
           (+MM:import|insert-local-import package)
-        (+MM:import|insert-package-import package))
+        (+MM:import|insert-package-import package export))
       (+MM:import/fix-empty-lines))))
+
+(defun +MM-import/find-package-export (package)
+  (cond ((string= package "@meisterlabs/common")
+         '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch"))
+        ((string= package "@meisterlabs/ui")
+         '("animations" "animationHelpers" "colors" "rgba" "shadows" "gradients" "planColors" "fonts"
+           "Line" "Badge" "Input" "Button" "Toggle" "Select" "Message" "Spinner" "Checkbox" "IconButton" "CommentReply" "DiagonalLine" "IconTextButton" "RadioButton" "PopoverHeader" "UpgradeButton" "TextBlockPlaceholder" "TextBlockPlaceholders" "I18nHtml" "LinkShare"
+           "Grid" "GridCore" "GridConfig" "MixedGrid" "GridHelpers"))))
 
 (defun +MM-import|import-other-window-file ()
   "Function docstring"
@@ -714,14 +722,18 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (save-window-excursion
            (other-window 1)
            (+MM/relative-file-name (buffer-file-name)))))
-    (+MM:import|import file t)))
+    (+MM-import/import-package file nil t)))
 
 (defun +MM:import|ivy-import ()
   (interactive)
   (let ((local-imports (+MM:import/get-local-imports))
         (package-imports (+MM:import/get-package-imports)))
     (ivy-read "Import: " (-concat local-imports package-imports)
-              :action (lambda (x) (+MM:import|import x (-contains? local-imports x))))))
+              :action (lambda (import)
+                        (let* ((is-local? (-contains? local-imports import))
+                               (export (unless is-local?
+                                         (ivy-read "Export: " (+MM-import/find-package-export import)))))
+                          (+MM-import/import-package import export is-local?))))))
 #+END_SRC
 
 **** Add section line
