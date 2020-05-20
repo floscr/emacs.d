@@ -466,8 +466,8 @@ bookmarks are not helpful since they're not relative.
       (progn
         (magit-call-git "commit" "-m" msg)
         (magit-refresh)
-        (copy-message (template "📦 <<msg>>)))))
-`npm i -S @meisterlabs/<<name>>@<<v>>`''"))
+        (copy-message (template "📦 <<msg>>
+`npm i -S @meisterlabs/<<name>>@<<v>>`"))
         (magit-push-current-to-upstream nil)
         (let ((default-directory package-path))
           (shell-command "npm publish")))
