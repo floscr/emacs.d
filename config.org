@@ -670,6 +670,17 @@ plays a sound and prompts me to insert my count.
         (+guitar|start-timer from to)))))
 #+END_SRC
 ** Package Config
+*** Beancount
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! beancount
+  :disabled t
+  :config
+    (add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode)))
+#+END_SRC
+
 *** IRC
 
 #+BEGIN_SRC elisp
