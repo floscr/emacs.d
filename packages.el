@@ -7,7 +7,8 @@
 
 (package! symex)
 
-(package! beancount :recipe (:host github :repo "beancount/beancount" :files ("editors/emacs/beancount.el")))
+;; (package! beancount :recipe (:host github :repo "beancount/beancount" :files ("editors/emacs/beancount.el")))
+(package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
 
 ;;; Javascript Packages
 (package! indium)

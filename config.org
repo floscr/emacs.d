@@ -676,9 +676,65 @@ plays a sound and prompts me to insert my count.
 
 #+BEGIN_SRC elisp
 (use-package! beancount
-  :disabled t
+  :defer t
+  :mode
+  ("\\.bean\\(?:count\\)?\\'" . beancount-mode)
   :config
-    (add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode)))
+  (setq beancount-accounts-files
+        (directory-files "~/Documents/Beancount"
+                         'full
+                         (rx ".beancount.gpg" eos))))
+#+END_SRC
+
+**** Functions
+
+***** Helpers
+
+#+BEGIN_SRC elisp
+(defun +beancount/collect-accounts ()
+  "Collect accounts from beancount files."
+  (beancount-collect beancount-account-regexp 0 beancount-accounts-files))
+
+(defvar +beancount:income-accounts nil
+  "Prefixes for expense accounts.")
+(setq +beancount:income-accounts '("Assets" "Liabilities"))
+
+(defun +beancount/collect-expense-accounts (accounts)
+  "Collect accounts from list ACCOUNTS."
+  (-filter (lambda (x) (--find (s-starts-with? it x) +beancount:income-accounts)) accounts))
+
+(defun +beancount/date-string ()
+  "Function docstring"
+  (format-time-string "%Y-%m-%d"))
+#+END_SRC
+
+***** Open Main File
+
+#+BEGIN_SRC elisp
+(defun +beancount|open-main ()
+  "Open the main beancount-accounts-files file."
+  (interactive)
+  (find-file (car beancount-accounts-files)))
+#+END_SRC
+
+***** Add expense
+
+Manually add an expense to the Cash Book.
+
+#+BEGIN_SRC elisp
+(defun +beancount|add-expense ()
+  "Add expense to the bottom of the file."
+  (interactive)
+  (and-let* ((accounts (+beancount/collect-accounts))
+             (from (ivy-read "From: " (+beancount/collect-expense-accounts accounts)))
+             (to (ivy-read "To: " accounts))
+             (subject (read-string "Subject: "))
+             (amount (read-number "Amount: ")))
+      (insert (template "<<(+beancount/date-string)>> * \"<<subject>>\"
+  <<from>> -<<amount>> EUR
+  <<to>> <<amount>> EUR
+
+"))))
 #+END_SRC
 
 *** IRC
@@ -3002,6 +3058,15 @@ redefines its keys every time `eshell-mode' is enabled."
 #+END_SRC
 
 **** Mail
+
+#+BEGIN_SRC elisp
+(map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
+      :localleader
+      :g "x" (λ!
+              (require 'org-mu4e)
+              (org-mu4e-store-and-capture)))
+#+END_SRC
+**** Beancount
 
 #+BEGIN_SRC elisp
 (map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
