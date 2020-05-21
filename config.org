@@ -1300,6 +1300,15 @@ Adds general bindings to ivy.
        (unless res
          (goto-char init-point))))))
 #+END_SRC
+***** Counsel External Drives
+
+#+BEGIN_SRC elisp
+(defun +ivy|counsel-mounted-drives ()
+  "Counsel of mounted drives from udiskie."
+  (interactive)
+  (let ((default-directory (concat "/run/media/" (user-login-name) "/")))
+    (counsel-find-file)))
+#+END_SRC
 
 **** Hacks
 ***** Banish mouse cursor
@@ -2743,9 +2752,11 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
     :desc "Last captured" "c" (λ! (org-goto-marker-or-bmk org-capture-last-stored-marker))
     :desc "Downloads" "d" (λ! (find-file "~/Downloads"))
     :desc "Project Root"  "p" (λ! (find-file (projectile-project-root)))
-    :desc "Last refiled" "r" (λ! (org-refile-goto-last-stored)))))
+    :desc "Last refiled" "r" (λ! (org-refile-goto-last-stored))
     :desc "Tmp" "t" (λ! (find-file "/tmp"))
     :desc "Home" "h" (λ! (find-file "~"))
+    :desc "Home" "h" (λ! (find-file "~"))
+    :desc "Drive" "/" #'+ivy|counsel-mounted-drives)))
 #+END_SRC
 
 **** Git
