@@ -53,7 +53,7 @@ And I will load them on system start:
 ** Defaults
 *** Garbage Collection
 
-Set it to ~32 MiB~.
+Set it to =32 MiB=.
 
 #+BEGIN_SRC elisp
 (setq doom-gc-cons-threshold 33554432)
@@ -109,9 +109,13 @@ Call FUNC with ARGS."
 (advice-add 'bookmark-delete :after #'+bookmark/set)
 (advice-add 'bookmark-rename :after #'+bookmark/set)
 #+END_SRC
-*** Fine undo
 
-Whether actions like "cw" are undone in several steps.
+*** Evil Fine undo
+
+Whether evil actions like =cw= are undone in several steps.
+This is sometimes annoying, as it might need you to press =u= multiple times.
+But I prefer the fine grained control, as I'm often staying longer in insert mode,
+and don't want one single undo action for the whole "session".
 
 #+BEGIN_SRC elisp
 (setq evil-want-fine-undo t)
