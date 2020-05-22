@@ -6,12 +6,31 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
+* Code Style
+
+** Variable Naming
+
+All my private functions have the prefix ~+my~.
+If I extend a module I will prefix it with the ~+module~.
+
+Furthermore the naming schema follows these rules:
+
+- ~+my:variable~: Variable
+- ~+my/function~: A private function
+- ~+my|function~: An interactive function
+
+** Code style
+
+Most of the code here will follow a functional mindset using [[https://github.com/magnars/dash.el][dash.el]] and [[https://github.com/magnars/s.el][s.el]].
+I will prefer those functions over built in functions if they are nicer to use.
+
+I often use my helper function [[file:autoload.org::*Template Literals][(template)]] for template strings.
+
 * Configuration
 ** External Files
 *** Secrets
 
 Config files that I don't want to share with the world.
-
 They will be stored in here:
 
 #+BEGIN_SRC elisp
