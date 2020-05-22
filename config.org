@@ -7,17 +7,6 @@
 #+END_SRC
 
 * Configuration
-** TEMP
-
-Fixes =(void-function ad-Advice-newline-and-indent)= error for now
-
-#+BEGIN_SRC elisp
-(map!
- :map evil-org-mode-map
- :after org
- :i [return] #'org-return-and-maybe-indent)
-#+END_SRC
-
 ** External Files
 *** Load additional packages
 
@@ -3115,4 +3104,16 @@ E.g.: ?* -> Clipboard Contents"
 
 ;; (define-key! :keymaps +default-minibuffer-maps
 ;;   "C-w" 'sp-backward-delete-word)
+#+END_SRC
+** Hacks
+*** Fix ~evil-org-mode-map~
+
+Fixes =(void-function ad-Advice-newline-and-indent)= error for now.
+I honestly don't know where this comes from.
+
+#+BEGIN_SRC elisp
+(map!
+ :map evil-org-mode-map
+ :after org
+ :i [return] #'org-return-and-maybe-indent)
 #+END_SRC
