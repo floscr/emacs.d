@@ -234,8 +234,11 @@ Log the current input without breaking the pipe.
 ** When Forward
 
 #+BEGIN_SRC elisp
-(defun -when-id (when? x)
-  "When a condition is t return the identity, otherwise return nil."
+(defun -id-when (fn x)
+  "When FN equals t forward X."
+  (when (funcall fn x) x))
+#+END_SRC
+
   (interactive)
   (if when? x nil))
 #+END_SRC
