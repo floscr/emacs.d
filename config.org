@@ -154,15 +154,14 @@ Variables that I want to safely set from ~.dir-locals~ files.
   "Screenshots Directory"
   :type 'string)
 #+END_SRC
+
 *** Disable Blinking Cursor
 
+Never blink the cursor, it's too distracting.
+
 #+BEGIN_SRC elisp
-;; Don't blink the cursor, it's too distracting.
 (blink-cursor-mode -1)
-
-;; Don't blink the paren matching the one at point, it's too distracting.
 (setq blink-matching-paren nil)
-
 (setq visible-cursor nil)
 #+END_SRC
 
