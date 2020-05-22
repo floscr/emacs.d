@@ -192,7 +192,7 @@ buffer in current window."
 :SOURCE:   https://www.reddit.com/r/emacs/comments/also27/second_trial_for_a_weekly_tipstricksetc_thread/efi7pbj/
 :END:
 
-Expand region using a hydra.
+Expand visual region using a hydra.
 Double press ~v~ to enable.
 
 #+BEGIN_SRC elisp
@@ -204,15 +204,6 @@ Double press ~v~ to enable.
 
 (evil-define-key 'visual 'global (kbd "v") #'hydra-expand-region/body)
 #+END_SRC
-*** Chmod this file
-
-#+BEGIN_SRC elisp
-(defun chmod-this-file ()
-  "Chmod +x the current file"
-  (interactive)
-  (shell-command (template "chmod +x \"<<(buffer-file-name)>>\"")))
-#+END_SRC
-
 ** UI
 *** Zen Mode
 

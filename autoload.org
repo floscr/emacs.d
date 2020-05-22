@@ -303,6 +303,15 @@ Get the last created file in a directory.
        (car)))
 #+END_SRC
 
+** Chmod this file
+
+#+BEGIN_SRC elisp
+(defun +file|chmod-this-file ()
+  "Chmod +x the current file."
+  (interactive)
+  (shell-command (template "chmod +x \"<<(buffer-file-name)>>\"")))
+#+END_SRC
+
 * UI
 #+BEGIN_SRC elisp
 (defun +ui/get-display-dpi (&optional display)
