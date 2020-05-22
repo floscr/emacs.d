@@ -185,24 +185,6 @@ buffer in current window."
      "%s: Window unlocked!")
    (current-buffer)))
 #+END_SRC
-*** File Utilities
-**** Get the latest file in directory
-:PROPERTIES:
-:SOURCE:   https://stackoverflow.com/a/30886283
-:END:
-
-Get the last created file in a directory.
-Used for getting the last screenshot to attach to an [[file:modules/private/org/config.org::*Screenshot][org document]].
-
-#+BEGIN_SRC elisp
-(defun +file/latest-file-in-dir (path)
-  (let ((e (f-entries path)))
-    (car (sort e (lambda (a b)
-                   (not (time-less-p (file-timestamp a)
-                                     (file-timestamp b))))))))
-
-(defun file-timestamp (f) (let ((attrs (file-attributes f))) (nth 5 attrs)))
-#+END_SRC
 
 *** Hydras
 **** Hydra Expand Region

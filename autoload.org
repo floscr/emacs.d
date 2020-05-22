@@ -176,6 +176,24 @@ shuffling is done in place."
     (goto-char (point-at-bol))
     (search-forward-regexp regexp (point-at-eol) t)))
 #+END_SRC
+
+*** Matches in buffer
+
+#+BEGIN_SRC elisp
+(defun -buffer-matches (regexp &optional match-number buffer)
+  "return a list of matches of REGEXP in BUFFER or the current buffer if not given."
+  (let ((matches))
+    (save-match-data
+      (save-excursion
+        (with-current-buffer (or buffer (current-buffer))
+          (save-restriction
+            (widen)
+            (goto-char 1)
+            (while (search-forward-regexp regexp nil t 1)
+              (push (match-string (or match-number 0)) matches)))))
+      matches)))
+#+END_SRC
+
 ** Async Command No Window
 :PROPERTIES:
 :SOURCE:   [[https://stackoverflow.com/a/47910509/2298462][How to avoid pop-up of *Async Shell Command* buffer in Emacs?]]
@@ -239,9 +257,52 @@ Log the current input without breaking the pipe.
   (when (funcall fn x) x))
 #+END_SRC
 
+** String Match
+
+#+BEGIN_SRC elisp
+(defun s-match-or (regex x)
+  "Return match groups or original"
   (interactive)
-  (if when? x nil))
+  (-if-let ((match (s-match regex x)))
+      (cdr match)
+    (list x)))
+
+(defun s-match-or-1 (regex x)
+  "Return 1st match group or original."
+  (interactive)
+  (-if-let ((match (s-match regex x)))
+      (car (cdr match))
+    x))
 #+END_SRC
+
+* Files
+
+** File Timestamp
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +file/timestamp (path)
+  (->> (file-attributes path)
+       (nth 5)))
+#+END_SRC
+
+
+** Get the latest file in directory
+:PROPERTIES:
+:SOURCE:   https://stackoverflow.com/a/30886283
+:END:
+
+Get the last created file in a directory.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +file/latest-file-in-dir (path)
+  (->> (f-entries path)
+       (-sort (lambda (a b) (not (time-less-p (+file/timestamp a)
+                                              (+file/timestamp b)))))
+       (car)))
+#+END_SRC
+
 * UI
 #+BEGIN_SRC elisp
 (defun +ui/get-display-dpi (&optional display)
