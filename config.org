@@ -174,7 +174,7 @@ Never blink the cursor, it's too distracting.
 Lock a window so the buffer can't be changed or it cant be deleted.
 
 #+BEGIN_SRC elisp
-(defun toggle-window-dedicated ()
+(defun +my|toggle-window-dedicated ()
   "Control whether or not Emacs is allowed to display another
 buffer in current window."
   (interactive)
@@ -2882,7 +2882,7 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
   :desc  "Set Height"           "C-|"  #'evil-window-set-width
 
   :desc  "Swap"                 "SPC"  #'ace-swap-window
-  :desc "Toggle Locked"         "#"    #'toggle-window-dedicated))
+  :desc "Toggle Locked"         "#"    #'+my|toggle-window-dedicated))
 #+END_SRC
 
 **** Workspace
