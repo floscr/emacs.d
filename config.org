@@ -129,15 +129,6 @@ and don't want one single undo action for the whole "session".
  delete-by-moving-to-trash t)
 #+END_SRC
 
-*** Filename Auto Modes
-
-Automatically set mode for specific filenames.
-
-#+BEGIN_SRC elisp
-(add-to-list 'auto-mode-alist '("Brewfile" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.otf\\'" . image-mode))
-#+END_SRC
-
 *** Automatically reload tags files
 
 #+BEGIN_SRC elisp
