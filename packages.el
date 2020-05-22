@@ -7,6 +7,8 @@
 
 (package! symex)
 
+(package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
+
 ;; (package! beancount :recipe (:host github :repo "beancount/beancount" :files ("editors/emacs/beancount.el")))
 (package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
 

@@ -8,14 +8,6 @@
 
 * Configuration
 ** External Files
-*** Load additional packages
-
-~straight.el~ doesn't accept EmacsWiki as a source, so I'm loading them manually.
-
-#+BEGIN_SRC elisp
-(add-to-list 'load-path "~/.config/doom/packages")
-#+END_SRC
-
 *** Secrets
 
 Config files that I don't want to share with the world.
