@@ -15,17 +15,20 @@ Config files that I don't want to share with the world.
 They will be stored in here:
 
 #+BEGIN_SRC elisp
-(setq my-secrets-config-file "~/.config/secrets.el")
+(defvar +my:secrets-config-file nil
+  "My private config file.")
+(setq +my:secrets-config-file "~/.config/secrets.el")
 #+END_SRC
 
 And I will load them on system start:
 
 #+BEGIN_SRC elisp
-(defun my-load-secrets-config ()
-  (if-let ((file (if (file-exists-p my-secrets-config-file) my-secrets-config-file)))
-      (load-library my-secrets-config-file)))
+(defun +my/load-secrets-config ()
+  (-some->> +my:secrets-config-file
+    (-id-when 'file-exists-p)
+    (load-library)))
 
-(my-load-secrets-config)
+(+my/load-secrets-config)
 #+END_SRC
 
 ** Defaults
