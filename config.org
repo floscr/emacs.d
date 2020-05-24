@@ -459,27 +459,6 @@ Run a simple mathematic operation on a number under the cursor.
   (interactive)
   (math-on-number '*))
 #+END_SRC
-*** Birthday Messsage
-
-#+BEGIN_SRC elisp
-(setq birthday-slack-emojis '("🍰" "🎂" "🎉" "🎈" "🎁"))
-
-(defun birthday-msg (name &optional emojis)
-  "Creates birthday string"
-  (let ((emojis (or emojis (--> birthday-slack-emojis
-                               (-shuffle it)
-                               (-take 3 it)
-                               (string-join it " ")))))
-    (template "<<(reverse emojis)>> !! Happy Birthday <<name>> !! <<emojis>>")))
-
-(defun birthday-msg|copy ()
-  "Copies birthday string"
-  (interactive)
-  (--> (read-string "Name: ")
-       (birthday-msg it)
-       (copy-message it)))
-#+END_SRC
-
 *** Guitar Timer
 
 I log my guitar learning into an org file that is formated like this.
