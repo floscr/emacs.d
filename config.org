@@ -2284,9 +2284,10 @@ Text objects for lines after or before the current line, that have the same or d
   "Text object describing the block with the same (or greater) indentation as the current line,
 and the line above, skipping empty lines."
   :type line
+  (require 'evil-indent-plus)
   (evil-indent-plus--linify (evil-indent-plus--line-down-indent-range)))
 
-(define-key evil-inner-text-objects-map "}" 'evil-indent-plus-i-indent-line-down)
+(define-key evil-inner-text-objects-map "+" 'evil-indent-plus-i-indent-line-down)
 
 (defun evil-indent-plus--line-up-indent-range (&optional point)
   (require 'evil-indent-plus)
@@ -2299,9 +2300,10 @@ and the line above, skipping empty lines."
   "Text object describing the block with the same (or greater) indentation as the current line,
 and the line above, skipping empty lines."
   :type line
+  (require 'evil-indent-plus)
   (evil-indent-plus--linify (evil-indent-plus--line-up-indent-range)))
 
-(define-key evil-inner-text-objects-map "{" 'evil-indent-plus-i-indent-line-up)
+(define-key evil-inner-text-objects-map "-" 'evil-indent-plus-i-indent-line-up)
 #+END_SRC
 ***** Little Word Motion
 
