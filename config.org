@@ -2194,7 +2194,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 *** General
 
 #+BEGIN_SRC elisp
-(map! :en "C-±" #'+popup/raise)
+(map! :g "C-±" #'+popup/raise)
 #+END_SRC
 
 **** Disable emacs-state-toggle
@@ -2208,26 +2208,19 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 #+BEGIN_SRC elisp
 (map!
  (:map override
-   :gniv "s-;" #'eval-expression
-   :gniv "s-a" #'mark-whole-buffer
-   :gniv "s-s" #'save-buffer
-   :gniv "s-v" #'yank
-   :gniv "s-x" #'execute-extended-command
-   :gniv "s-y" #'helm-show-kill-ring
+   :g "s-;" #'eval-expression
+   :g "s-a" #'mark-whole-buffer
+   :g "s-s" #'save-buffer
+   :g "s-v" #'yank
+   :g "s-x" #'execute-extended-command
+   :g "s-y" #'helm-show-kill-ring
 
    ;; Text scale
-   :gniv "s-="   #'doom/increase-font-size
-   :gniv "s--"   #'doom/decrease-font-size
-   :gniv "s-0"   #'doom/reset-font-size))
+   :g "s-="   #'doom/increase-font-size
+   :g "s--"   #'doom/decrease-font-size
+   :g "s-0"   #'doom/reset-font-size))
 #+END_SRC
 
-*** Function Keys
-
-#+BEGIN_SRC elisp
-(map!
- (:map override
-   :gniv "<f5>" #'global-auto-revert-mode))
-#+END_SRC
 *** Evil
 **** Motions
 ***** Replace With Register Motion
