@@ -2226,6 +2226,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 ***** Replace With Register Motion
 
 Replace the current selection with a register.
+Press =gr= with a following motion character like =w=.
 
 #+BEGIN_SRC elisp
 (use-package! evil-replace-with-register
@@ -2238,6 +2239,10 @@ Replace the current selection with a register.
 #+END_SRC
 
 ***** Additional text objects
+
+- =q= for any type of quote
+- =B= for curly braces
+- =r= for square brackets
 
 #+BEGIN_SRC elisp
 (after! evil
@@ -2270,7 +2275,8 @@ Replace the current selection with a register.
 
 ***** Up to next/previous indent
 
-Text objects for lines after or before the current line, that have the same or deeper indent.
+Text objects for lines after or before the current line,
+that have the same or deeper indent.
 
 #+BEGIN_SRC elisp
 (defun evil-indent-plus--line-down-indent-range (&optional point)
@@ -2305,6 +2311,7 @@ and the line above, skipping empty lines."
 
 (define-key evil-inner-text-objects-map "-" 'evil-indent-plus-i-indent-line-up)
 #+END_SRC
+
 ***** Little Word Motion
 
 #+BEGIN_SRC elisp
