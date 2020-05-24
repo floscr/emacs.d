@@ -7,7 +7,6 @@
 #+END_SRC
 
 * Code Style
-
 ** Variable Naming
 
 All my private functions have the prefix ~+my~.
@@ -208,7 +207,9 @@ Double press ~v~ to enable.
 *** Zen Mode
 
 #+BEGIN_SRC elisp
-(setq doom-variable-pitch-font (font-spec :family "Overpass" :size 5))
+(setq +zen-text-scale 0.8)
+(setq doom-variable-pitch-font (font-spec :family "Ubuntu" :height 80 :size 21)
+      doom-serif-font (font-spec :family "Ubuntu" :height 80 :size 21))
 #+END_SRC
 
 *** Frame padding
@@ -305,9 +306,8 @@ Start scrolling X lines before the end of a screen.
 Disable for certain modes (terminal & ivy) where the window is to small.
 
 #+BEGIN_SRC elisp
-(setq
- scroll-conservatively 10
- scroll-margin 10)
+(setq scroll-conservatively 10)
+(setq scroll-margin 10)
 
 (add-hook 'term-mode-hook (λ! (setq-local scroll-margin 0)))
 (add-hook 'ivy-mode-hook (λ! (setq-local scroll-margin 0)))
