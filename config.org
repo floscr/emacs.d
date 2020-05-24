@@ -498,8 +498,7 @@ Manually add an expense to the Cash Book.
 #+End_SRC
 
 *** Calendar
-
-**** Conf
+**** Config
 ***** Calendars
 
 Emacs comes with a lot of custom calendars that I don't want.
@@ -725,7 +724,6 @@ Automatically revert dired buffers.
         (shell-command-to-string (template "xclip -selection clipboard -t image/png -o > <<file>>")))))
     (dired-revert)))
 #+END_SRC
-
 
 ***** Kill all dired buffers with ~Q~
 
@@ -955,7 +953,7 @@ Custom eshell aliases.
 (setq shr-width 120)
 #+END_SRC
 
-*** git-lens
+*** Git Lens
 
 #+BEGIN_SRC elisp
 (use-package! git-lens
@@ -1521,6 +1519,7 @@ npm i -g json-fix
 #+END_SRC
 
 **** Bindings
+
 #+BEGIN_SRC elisp
 (map!
  :after json-mode
@@ -2506,6 +2505,7 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
   :config
   (evil-ex-define-cmd "W" #'evil-write))
 #+END_SRC
+
 **** MultiEdit
 
 #+BEGIN_SRC elisp
