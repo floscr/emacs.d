@@ -418,48 +418,6 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 #+END_SRC
 
 ** Custom Packages
-*** Math on Numbers
-
-Run a simple mathematic operation on a number under the cursor.
-
-#+BEGIN_SRC elisp
-(defun math-on-number (f &optional num)
-  "Read user input and apply with function f to the number at point"
-  (let* ((x (thing-at-point 'number))
-         (arithmetic-symbol (pcase f
-                              ('+ "+")
-                              ('- "-")
-                              ('/ "/")
-                              ('* "*")
-                              (_ (error "Unknown function %s" f))))
-         (readline (concat (number-to-string x) " " arithmetic-symbol " "))
-         (y (or num (read-number readline)))
-         (result (funcall f x y))
-         (bounds (bounds-of-thing-at-point 'evil-WORD)))
-    (delete-region (car bounds) (cdr bounds))
-    (insert (format "%.02f" result))))
-
-(defun +math|add-to-number ()
-  (interactive)
-  (math-on-number '+))
-
-(defun +math|subtract-from-number ()
-  (interactive)
-  (math-on-number '-))
-
-(defun +math|subtract-maran-vegan ()
-  (interactive)
-  (math-on-number '- 8.60))
-
-(defun +math|divide-by-number ()
-  (interactive)
-  (math-on-number '/))
-
-(defun +math|multiply-by-number ()
-  (interactive)
-  (math-on-number '*))
-#+END_SRC
-
 ** Package Config
 *** Beancount
 
