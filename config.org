@@ -2380,6 +2380,7 @@ and the line above, skipping empty lines."
 #+BEGIN_SRC elisp
 (map! :m "-"  #'dired-jump)
 #+END_SRC
+
 ***** Visual Line Mode Navigation
 
 #+BEGIN_SRC elisp
@@ -2398,18 +2399,10 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 (map! :i "A-y" #'helm-show-kill-ring)
 #+END_SRC
 
-***** Unicode Symbols and German Umlaut
+***** Unicode Characters
 
 #+BEGIN_SRC elisp
 (map!
- :i "M-;"   (λ! (insert "ö"))
- :i "M-:"   (λ! (insert "Ö"))
- :i "M-'"   (λ! (insert "ä"))
- :i "M-\""  (λ! (insert "Ä"))
- :i "M-["   (λ! (insert "ü"))
- :i "M-{"   (λ! (insert "Ü"))
- :i "M-s"   (λ! (insert "ß"))
- :i "M-e"   (λ! (insert "€"))
  :i "M-`"   (λ! (insert "°"))
  :i "M-."   (λ! (insert "…"))
  :i "M-^"   (λ! (insert "°"))
@@ -2417,6 +2410,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
  :i "M-w"   (λ! (insert "⚠"))
  :i "M-i"   (λ! (insert "ℹ")))
 #+END_SRC
+
 **** Square Bracket Bindings
 
 Global ~[~ & ~]~ combinator bindings
