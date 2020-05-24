@@ -5,6 +5,7 @@ tmp/
 /config.el
 /modules/private/work/config.el
 /modules/private/org/config.el
+/modules/private/org/config.el
 /autoload.el
 *.elc
 /modules/private/dired/+sidebar.el
