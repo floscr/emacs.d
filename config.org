@@ -186,7 +186,66 @@ buffer in current window."
 #+END_SRC
 
 *** Hydras
-**** Hydra Expand Region
+**** Line Spacing
+
+Change and reset line-spacing for all buffers.
+
+#+BEGIN_SRC elisp
+(defvar +ui-default-line-spacing line-spacing)
+(defvar +ui-default-line-spacing-increment 1)
+(defvar +ui-big-line-spacing-increment 10)
+
+(defun +ui/set-line-spacing (&optional increment)
+  "Set the line spacing
+When no line spacing is given is the default-line-spacing"
+  (setq-default line-spacing (+ (or increment +ui-default-line-spacing-increment) line-spacing)))
+
+(defun +ui|reset-line-spacing ()
+  (interactive)
+  (setq-default line-spacing +ui-default-line-spacing))
+
+(defun +ui|increase-line-spacing ()
+  (interactive)
+  (+ui/set-line-spacing))
+
+(defun +ui|decrease-line-spacing ()
+  (interactive)
+  (+ui/set-line-spacing (- +ui-default-line-spacing-increment)))
+
+(defun +ui|increase-line-spacing-big ()
+  (interactive)
+  (+ui/set-line-spacing +ui-big-line-spacing-increment))
+
+(defun +ui|decrease-line-spacing-big ()
+  (interactive)
+  (+ui/set-line-spacing (- +ui-big-line-spacing-increment)))
+
+(evil-define-key 'normal 'global (kbd "]z") #'+line-spacing/step/body)
+
+;;;###autoload (autoload '+common-lisp/macrostep/body "lang/common-lisp/autoload/hydras" nil nil)
+(defhydra +line-spacing/step (:exit nil :hint nil :foreign-keys run :color pink)
+  "
+Macro Expansion
+^^Definitions                           ^^Compiler Notes             ^^Stickers
+^^^^^^─────────────────────────────────────────────────────────────────────────────────────
+[_r_] Reset
+[_]_] Expand
+[_[_] Collapse
+[_}_] Expand Big
+[_{_] Collapse Big
+"
+  ("r" +ui|reset-line-spacing)
+  ("]" +ui|increase-line-spacing)
+  ("[" +ui|decrease-line-spacing)
+  ("}" +ui|increase-line-spacing-big)
+  ("{" +ui|decrease-line-spacing-big)
+  ("q" nil "cancel" :color blue))
+#+END_SRC
+
+#+RESULTS:
+: +line-spacing/step/body
+
+**** Expand Region
 :PROPERTIES:
 :SOURCE:   https://www.reddit.com/r/emacs/comments/also27/second_trial_for_a_weekly_tipstricksetc_thread/efi7pbj/
 :END:
@@ -313,65 +372,6 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 (add-hook 'ivy-mode-hook (λ! (setq-local scroll-margin 0)))
 #+END_SRC
 
-*** Line Spacing
-
-Change and reset line-spacing for all buffers.
-
-#+BEGIN_SRC elisp
-(defvar +ui-default-line-spacing line-spacing)
-(defvar +ui-default-line-spacing-increment 1)
-(defvar +ui-big-line-spacing-increment 10)
-
-(defun +ui/set-line-spacing (&optional increment)
-  "Set the line spacing
-When no line spacing is given is the default-line-spacing"
-  (setq-default line-spacing (+ (or increment +ui-default-line-spacing-increment) line-spacing)))
-
-(defun +ui|reset-line-spacing ()
-  (interactive)
-  (setq-default line-spacing +ui-default-line-spacing))
-
-(defun +ui|increase-line-spacing ()
-  (interactive)
-  (+ui/set-line-spacing))
-
-(defun +ui|decrease-line-spacing ()
-  (interactive)
-  (+ui/set-line-spacing (- +ui-default-line-spacing-increment)))
-
-(defun +ui|increase-line-spacing-big ()
-  (interactive)
-  (+ui/set-line-spacing +ui-big-line-spacing-increment))
-
-(defun +ui|decrease-line-spacing-big ()
-  (interactive)
-  (+ui/set-line-spacing (- +ui-big-line-spacing-increment)))
-
-(evil-define-key 'normal 'global (kbd "]z") #'+line-spacing/step/body)
-
-;;;###autoload (autoload '+common-lisp/macrostep/body "lang/common-lisp/autoload/hydras" nil nil)
-(defhydra +line-spacing/step (:exit nil :hint nil :foreign-keys run :color pink)
-  "
-Macro Expansion
-^^Definitions                           ^^Compiler Notes             ^^Stickers
-^^^^^^─────────────────────────────────────────────────────────────────────────────────────
-[_r_] Reset
-[_]_] Expand
-[_[_] Collapse
-[_}_] Expand Big
-[_{_] Collapse Big
-"
-  ("r" +ui|reset-line-spacing)
-  ("]" +ui|increase-line-spacing)
-  ("[" +ui|decrease-line-spacing)
-  ("}" +ui|increase-line-spacing-big)
-  ("{" +ui|decrease-line-spacing-big)
-  ("q" nil "cancel" :color blue))
-#+END_SRC
-
-#+RESULTS:
-: +line-spacing/step/body
-
 *** Popups
 
 #+BEGIN_SRC elisp
@@ -417,10 +417,8 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 (setq x-underline-at-descent-line nil)
 #+END_SRC
 
-** Custom Packages
 ** Package Config
 *** Beancount
-
 **** Config
 
 #+BEGIN_SRC elisp
