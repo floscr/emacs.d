@@ -965,7 +965,7 @@ For example when archiving a task, there would be an empty window left over."
 
 *** Archive all done tasks
 
-#+BEGIN_SRC elisp :tangle no
+#+BEGIN_SRC elisp
 (defun +org|archive-done-tasks ()
   "Archive tasks with DONE or CANCELED todo state."
   (interactive)
