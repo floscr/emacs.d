@@ -254,10 +254,11 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                     :headline "GTD"
                     :children
                     (("Task"
+                      :title "%? :TASK:"
                       :keys "t")
                      ("Task (Chrome)"
                       :keys "c"
-                      :title "%(+wm/last-chrome-window-org-link-formatted)")
+                      :title "%(+wm/last-chrome-window-org-link-formatted) :TASK:")
                      ("Review (Chrome)"
                       :keys "r"
                       :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
