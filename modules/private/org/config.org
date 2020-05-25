@@ -1350,6 +1350,16 @@ Return the path of the file."
     (kill-new link)))
 #+END_SRC
 
+*** Filter agenda
+
+#+BEGIN_SRC elisp
+(defun +org/agenda-set-tag-filter (tags)
+  "Set the agenda TAGS filter."
+  (org-agenda-filter-show-all-tag)
+  (setq org-agenda-tag-filter tags)
+  (org-agenda-filter-apply org-agenda-tag-filter 'tag t))
+#+END_SRC
+
 ** Package Config
 *** Org Caldav
 
@@ -1586,6 +1596,9 @@ Set my preferred clipboard paste method to ~xclip~.
         :map org-agenda-mode-map
         :localleader
         "q" #'+org|counsel-org-tag
+        (:prefix ("f" . "Filter by")
+         :desc "Tasks"               "t" (λ! (+org/agenda-set-tag-filter '("+TASK")))
+         :desc "Reviews"             "r" (λ! (+org/agenda-set-tag-filter '("+REVIEW"))))
         (:prefix ("w" . "Refile")
           :desc "Dynamic"            "w" 'org-agenda-refile
           :desc "Pinboard"           "p" '+org|agenda-refile-to-bookmarks
