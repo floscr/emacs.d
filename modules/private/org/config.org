@@ -878,7 +878,6 @@ What I've changed:
 #+BEGIN_SRC elisp
 (set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :transient t :ttl t :select t)
 
-
 (defun +org-indirect/save-and-kill-window ()
   "Save the buffer and close the indirect buffer and window."
   (interactive)
@@ -892,7 +891,8 @@ What I've changed:
   :keymap +org-indirect-window-mode-map)
 
 (map! :map +org-indirect-window-mode-map
-      "C-c C-c" #'+org-indirect/save-and-kill-window)
+      "C-c C-c" #'+org-indirect/save-and-kill-window
+      "C-c C-k" #'kill-buffer-and-window)
 
 (defun +org|narrow-subtree-indirect (&optional visit-fn)
   "Narrow to an indirect buffer in a popup."
@@ -909,7 +909,7 @@ What I've changed:
             nil))))
     (with-current-buffer buffer
       (widen)
-      (setq header-line-format "Edit, then exit with 'C-c C-c'")
+      (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
       (org-narrow-to-subtree)
       (+org-indirect-window-mode 1)
       (pop-to-buffer buffer)
