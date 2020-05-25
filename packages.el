@@ -37,6 +37,7 @@
 (package! dired-narrow)
 (package! dired-subtree)
 (package! dired-filter)
+(package! openwith)
 
 (package! visual-fill-column)
 
