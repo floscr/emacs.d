@@ -667,6 +667,13 @@ Bindings
   (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$"))
 #+END_SRC
 
+***** Enable Async Mode
+
+#+BEGIN_SRC elisp
+(after! async
+  (dired-async-mode 1))
+#+END_SRC
+
 ***** Ignore .bs.js
 
 #+BEGIN_SRC elisp
