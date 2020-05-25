@@ -464,6 +464,20 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
   (find-file (car beancount-accounts-files)))
 #+END_SRC
 
+***** Balance
+:PROPERTIES:
+:SOURCE:   https://github.com/CanftIn/dotfiles/blob/cd919c6e3f4970ba56248ac68ab072111a00049f/.doom.d/config%20copy.el
+:END:
+
+#+BEGIN_SRC elisp
+(defun +beancount|balance ()
+    "Show the current balances."
+    (interactive)
+    (let ((compilation-read-command nil))
+      (beancount--run "bean-report"
+                      (file-relative-name buffer-file-name) "bal")))
+#+END_SRC
+
 ***** Add expense
 
 Manually add an expense to the Cash Book.
