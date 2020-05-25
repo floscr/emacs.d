@@ -196,9 +196,7 @@ All todo keywords are for general items.
        '("Main/projects.org")))
 
 (defun +org:level-1-refile-targets () +org:level-1-refile-targets)
-
 (defun +org:max-level-2-refile-targets () +org:max-level-2-refile-targets)
-
 (defun max-level-3-refile-targets () max-level-3-refile-targets)
 
 (after! org
@@ -628,6 +626,7 @@ Set the active state when clocking in.
   (save-excursion
     (kill-new (s-trim (org-table-get-field)))))
 #+END_SRC
+
 ** Modules
 
 #+BEGIN_SRC elisp
@@ -673,7 +672,6 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 (setq +org-reading-list:agenda-buffer-name "*Org Agenda: Reading List*")
 #+END_SRC
-
 
 **** Customize agenda ui
 
@@ -814,7 +812,6 @@ Take the host as the base and either the TITLE or the path from the URL."
   (+org-archive|archive-dwim t))
 #+END_SRC
 
-
 ** Features
 
 Stuff that doesn't belong into modules, but is too big to put into a simple util section.
@@ -829,7 +826,6 @@ Stuff that doesn't belong into modules, but is too big to put into a simple util
   (+org-capture/open-frame)
   (ivy-posframe-mode -1))
 #+END_SRC
-
 
 *** Counsel Tagging Enhancement
 
