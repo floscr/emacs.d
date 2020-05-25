@@ -505,7 +505,10 @@ Manually add an expense to the Cash Book.
 #+BEGIN_SRC elisp
 (map! :map beancount-mode-map
       :localleader
-      :n "a" #'+beancount|add-expense)
+      :n "a" #'+beancount|add-expense
+      :n "c" #'beancount-check
+      :n "q" #'beancount-query
+      :n "b" #'+beancount|balance)
 #+END_SRC
 
 *** IRC
