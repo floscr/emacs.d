@@ -477,9 +477,14 @@ Manually add an expense to the Cash Book.
              (to (ivy-read "To: " accounts))
              (subject (read-string "Subject: "))
              (amount (read-number "Amount: ")))
+      (goto-char (point-max))
+      (newline 1)
       (insert (template "<<(+beancount/date-string)>> * \"<<subject>>\"
   <<from>> -<<amount>> EUR
   <<to>> <<amount>> EUR
+"))
+      (beancount-align-to-previous-number)))
+#+END_SRC
 
 "))))
 #+END_SRC
