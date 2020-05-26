@@ -1572,87 +1572,81 @@ Set my preferred clipboard paste method to ~xclip~.
 ***** Org Mode
 
 #+BEGIN_SRC elisp
-(defun +org-my-init-keybinds-h ()
-  (map! :map org-mode-map
-        :localleader
-        :desc  "Goto Archive"              "$"  #'+org|visit-archive-file
-        :desc  "Align Tags"                "%"  #'+org|align-all-tags
-        :desc  "Schedule Tomorrow"         "+"  #'+org|schedule-tomorrow
-        :desc  "Archive Subtree and Done"  "A"  #'+org|archive-and-done
-        :desc  "Grab tabs"                 "P"  #'+org|grab-chrome-tabs
-        :desc  "Paste Subtree"             "P"  #'org-paste-subtree
-        :desc  "Sort Entries"              "S"  #'+org|sort-entries
-        :desc  "Archive Subtree"           "a"  #'org-archive-subtree
-        :desc  "Deadline"                  "d"  #'org-deadline
-        :desc  "Filter"                    "f"  #'org-match-sparse-tree
-        :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
-        :desc  "Create/Edit Todo"          "o"  #'org-todo
-        :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
-        :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
-        :desc  "Schedule"                  "s"  #'org-schedule
-        :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
-        :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
+(map! :map org-mode-map
+      :localleader
+      :desc  "Goto Archive"              "$"  #'+org|visit-archive-file
+      :desc  "Align Tags"                "%"  #'+org|align-all-tags
+      :desc  "Schedule Tomorrow"         "+"  #'+org|schedule-tomorrow
+      :desc  "Archive Subtree and Done"  "A"  #'+org|archive-and-done
+      :desc  "Grab tabs"                 "P"  #'+org|grab-chrome-tabs
+      :desc  "Paste Subtree"             "P"  #'org-paste-subtree
+      :desc  "Sort Entries"              "S"  #'+org|sort-entries
+      :desc  "Archive Subtree"           "a"  #'org-archive-subtree
+      :desc  "Deadline"                  "d"  #'org-deadline
+      :desc  "Filter"                    "f"  #'org-match-sparse-tree
+      :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
+      :desc  "Create/Edit Todo"          "o"  #'org-todo
+      :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
+      :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
+      :desc  "Schedule"                  "s"  #'org-schedule
+      :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
+      :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
-        (:prefix-map ("y" . "Yank")
-         :desc "Item" "l" (λ! (copy-message (+org|link-url-from-point)))
-         :desc "Item" "t" (λ! (copy-message (+org|link-title-from-point))))  
+      (:prefix-map ("y" . "Yank")
+       :desc "Item" "l" (λ! (copy-message (+org|link-url-from-point)))
+       :desc "Item" "t" (λ! (copy-message (+org|link-title-from-point))))
 
-        (:prefix-map ("C" . "Cut")
-          :desc "Item" "C" 'org-cut-subtree
-          :desc "Link" "L" '+org|cut-link)
+      (:prefix-map ("C" . "Cut")
+       :desc "Item" "C" 'org-cut-subtree
+       :desc "Link" "L" '+org|cut-link)
 
-        (:prefix-map ("i" . "Insert")
-          :desc "Inavtive Timestamp" "i" 'org-time-stamp-inactive
-          :desc "Subheadeing"        "s" (λ!
-                                          (call-interactively 'org-insert-subheading)
-                                          (evil-insert-state)))
+      (:prefix-map ("i" . "Insert")
+       :desc "Inavtive Timestamp" "i" 'org-time-stamp-inactive
+       :desc "Subheadeing"        "s" (λ!
+                                       (call-interactively 'org-insert-subheading)
+                                       (evil-insert-state)))
 
-        (:prefix-map ("f" . "Attach File")
-          :desc "Downloads File"  "d" '+org-attach/downloads-file
-          :desc "File"            "f" '+org-attach/file
-          :desc "Screenshot"      "s" '+org-attach/last-screenshot
-          :desc "URI"             "u" '+org/attach-file-and-insert-link)
+      (:prefix-map ("f" . "Attach File")
+       :desc "Downloads File"  "d" '+org-attach/downloads-file
+       :desc "File"            "f" '+org-attach/file
+       :desc "Screenshot"      "s" '+org-attach/last-screenshot
+       :desc "URI"             "u" '+org/attach-file-and-insert-link)
 
-        (:prefix-map ("g" . "Goto")
-          :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
+      (:prefix-map ("g" . "Goto")
+       :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
 
-        (:prefix-map ("n" . "Narrow")
-          :desc "Block"                "b" #'org-narrow-to-block
-          :desc "Element"              "e" #'org-narrow-to-element
-          :desc "Indirect Buffer Tree" "i" #'org-tree-to-indirect-buffer
-          :desc "Subtree"              "s" #'org-narrow-to-subtree
-          :desc "widen"                "w" #'widen)
+      (:prefix-map ("n" . "Narrow")
+       :desc "Block"                "b" #'org-narrow-to-block
+       :desc "Element"              "e" #'org-narrow-to-element
+       :desc "Indirect Buffer Tree" "i" #'org-tree-to-indirect-buffer
+       :desc "Subtree"              "s" #'org-narrow-to-subtree
+       :desc "widen"                "w" #'widen)
 
-        (:prefix-map ("w" . "Refile")
-          :desc "Dynamic"            "w" 'org-refile
-          :desc "Pinboard"           "p" '+org|refile-to-bookmarks
-          :desc "To GTD Backlog"     "b" (λ! (+org/refile "Main/gtd.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/refile "Main/gtd.org" "GTD")))))
-
-(advice-add '+org-init-keybinds-h :after '+org-my-init-keybinds-h)
+      (:prefix-map ("w" . "Refile")
+       :desc "Dynamic"            "w" 'org-refile
+       :desc "Pinboard"           "p" '+org|refile-to-bookmarks
+       :desc "To GTD Backlog"     "b" (λ! (+org/refile "Main/gtd.org" "GTD Backlog"))
+       :desc "To GTD"             "g" (λ! (+org/refile "Main/gtd.org" "GTD"))))
 #+END_SRC
 
 ***** Agenda
 
 #+BEGIN_SRC elisp
-(defun +org-my-init-agenda-keybinds-h ()
-  (map! :after org-agenda
-        :map org-agenda-mode-map
-        :localleader
-        "q" #'+org|counsel-org-tag
-        (:prefix ("f" . "Filter by")
-         :desc "Tasks"               "t" (λ! (+org/agenda-set-tag-filter '("+TASK")))
-         :desc "Reviews"             "r" (λ! (+org/agenda-set-tag-filter '("+REVIEW"))))
-        (:prefix ("w" . "Refile")
-          :desc "Dynamic"            "w" 'org-agenda-refile
-          :desc "Pinboard"           "p" '+org|agenda-refile-to-bookmarks
-          :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "Main/gtd.org" "GTD Backlog"))
-          :desc "To GTD"             "g" (λ! (+org/agenda-refile "Main/gtd.org" "GTD"))
-          :desc "To Reading List"    "r" (λ! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
-          :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
-          :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos")))))
-
-(advice-add '+org-init-keybinds-h :after '+org-my-init-agenda-keybinds-h)
+(map! :after org-agenda
+      :map org-agenda-mode-map
+      :localleader
+      "q" #'+org|counsel-org-tag
+      (:prefix ("f" . "Filter by")
+       :desc "Tasks"               "t" (λ! (+org/agenda-set-tag-filter '("+TASK")))
+       :desc "Reviews"             "r" (λ! (+org/agenda-set-tag-filter '("+REVIEW"))))
+      (:prefix ("w" . "Refile")
+       :desc "Dynamic"            "w" 'org-agenda-refile
+       :desc "Pinboard"           "p" '+org|agenda-refile-to-bookmarks
+       :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "Main/gtd.org" "GTD Backlog"))
+       :desc "To GTD"             "g" (λ! (+org/agenda-refile "Main/gtd.org" "GTD"))
+       :desc "To Reading List"    "r" (λ! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
+       :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
+       :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos"))))
 #+END_SRC
 
 #+RESULTS:
