@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: ivy-set-actions
+# condition: t           
+# --
+(after! ivy
+  (ivy-set-actions
+   '${1:ivy-caller}
+   '(("${2:key}" ${3:action} "${4:message}"))))
