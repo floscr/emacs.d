@@ -25,6 +25,7 @@
 (package! org-download)
 ;; Sync caldav with org
 (package! org-caldav)
+(package! org-journal)
 
 
 ;;; Agenda
