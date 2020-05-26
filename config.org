@@ -1584,7 +1584,13 @@ npm i -g json-fix
 #+END_SRC
 
 *** LSP
-**** Disable LSP hover
+**** Disable Annoying LSP Presets
+
+All are these are distracting and not helpful.
+
+- Removes all popup UIs
+- Remove signature message
+- Remove lsp flycheck
 
 #+BEGIN_SRC elisp
 (setq lsp-eldoc-render-all nil
@@ -1604,13 +1610,10 @@ npm i -g json-fix
       lsp-prefer-flymake nil)
 
 (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
-;; (setq-hook! 'js2-mode flycheck-checker 'javascript-eslint)
-;; (setq-hook! 'rjsx-mode flycheck-checker 'javascript-eslint)
 
-;; (after! (js2-mode rjsx-mode)
-  ;; (flycheck-remove-next-checker 'lsp))
-(after! lsp
-  (flycheck-add-next-checker 'lsp 'javascript-eslint t))
+(after! lsp-mode
+  (remove-hook 'lsp-mode-hook #'+lsp-init-flycheck-or-flymake-h))
+
 #+END_SRC
 
 *** Mail
