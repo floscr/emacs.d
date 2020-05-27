@@ -27,6 +27,23 @@ Packages and utilities needed for this config.
 (defalias 'λ 'lambda)
 #+END_SRC
 
+** Without undo
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defmacro without-undo (&rest forms)
+  "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
+Taken from http://www.emacswiki.org/emacs/UndoCommands with some
+modifications."
+  `(let* ((buffer-undo-list)
+          (modified (buffer-modified-p))
+          (inhibit-read-only t))
+     (unwind-protect
+         (progn ,@forms)
+       (set-buffer-modified-p modified)) ()))
+#+END_SRC
+
+
 ** Template Literals
 :PROPERTIES:
 :SOURCE:   https://gist.github.com/cbowdon/012d623920bd28453bf8
@@ -273,6 +290,19 @@ Log the current input without breaking the pipe.
   (-if-let ((match (s-match regex x)))
       (car (cdr match))
     x))
+#+END_SRC
+
+** Line Indent
+
+#+BEGIN_SRC elisp
+(defun +my/line-indent ()
+  "Function docstring"
+  (interactive)
+  (or (-some->> (substring-no-properties (thing-at-point 'line))
+        (s-match "^\\(\s*\\).*\n$")
+        (nth 1)
+        (length))
+      0))
 #+END_SRC
 
 * Files
