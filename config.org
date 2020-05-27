@@ -1124,14 +1124,22 @@ Adds general bindings to ivy.
 ***** Counsel Grep Buffers
 
 #+BEGIN_SRC elisp
-(defun +ivy|search-buffers ()
+(defun +ivy|search-buffers (buffer-list)
   "Grep workspace buffers."
   (interactive)
   (-->
-   (+workspace-buffer-list)
+   (or buffer-list (+workspace-buffer-list))
    (cl-remove-if-not #'buffer-file-name it)
    (-map #'buffer-file-name it)
    (-map #'shell-quote-argument it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun +ivy/search-buffer-list (&optional buffer-list)
+  (--> (or buffer-list ivy--old-cands)
+   (-log it)
+   (-map #'shell-quote-argument it)
+   (--map (f-join (doom-project-root) it) it)
    (s-join " " it)
    (counsel-grep-files it)))
 
@@ -1163,7 +1171,15 @@ Adds general bindings to ivy.
                              :caller 'counsel-grep))
        (unless res
          (goto-char init-point))))))
+
+(after! ivy
+  (ivy-set-actions
+   '+git|ivy-changed-files
+   '(("/" (lambda (&optional arg)
+            (+ivy/search-buffer-list))
+      "Grep Forward"))))
 #+END_SRC
+
 ***** Counsel External Drives
 
 #+BEGIN_SRC elisp
