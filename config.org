@@ -2258,6 +2258,26 @@ This shortens the nixos paths to ~{nix}~.
 Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 
 #+BEGIN_SRC elisp
+(defvar-local +nix:indent 0)
+
+(define-minor-mode +nix-indirect-mode "TODO")
+
+(advice-add #'edit-indirect-commit :before #'+nix/edit-indirect--fix-indent-before-commit)
+(advice-add #'edit-indirect-save :before #'+nix/edit-indirect--fix-indent-before-commit)
+(advice-add #'edit-indirect-save :after #'+nix/edit-indirect--fix-indent-after-commit)
+
+(defun +nix/edit-indirect--fix-indent-before-commit ()
+  (when (and (bound-and-true-p +nix-indirect-mode)
+             (not (eq +nix:indent 0)))
+    (without-undo
+      (indent-rigidly (point-min) (point-max) (+ +nix:indent)))))
+
+(defun +nix/edit-indirect--fix-indent-after-commit ()
+  (when (and (bound-and-true-p +nix-indirect-mode)
+             (not (eq +nix:indent 0)))
+    (without-undo
+      (indent-rigidly (point-min) (point-max) (- +nix:indent)))))
+
 (defun +nix|edit-indirect ()
   "Edit script in an indirect buffer."
   (interactive)
@@ -2266,11 +2286,20 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
                (forward-char 3)
                (point)))
         (end (save-excursion
-               (search-forward "'';" nil t)
-               (backward-char 3)
+               (re-search-forward "''.*;$" nil t)
+               (previous-line 1)
+               (goto-char
+                (point-at-eol))
                (point))))
     (edit-indirect-region beg end t)
-    (sh-mode)))
+    (let ((indent (indent-rigidly--current-indentation (point-min) (point-max))))
+      (message "%s" +nix:indent)
+      (unless (eq indent 0)
+        (without-undo)
+        (indent-rigidly (point-min) (point-max) (- indent)))
+      (sh-mode)
+      (+nix-indirect-mode 1)
+      (setq +nix:indent indent))))
 
 (map! :map nix-mode-map
       "C-c '" '+nix|edit-indirect)
