@@ -1087,7 +1087,15 @@ Source:
   (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
 #+END_SRC
 
-*** Ivy / Swiper
+*** Ivy / Counsel
+**** Config
+
+Always show actions in hydra.
+
+#+BEGIN_SRC elisp
+(setq ivy-read-action-function #'ivy-hydra-read-action)
+#+END_SRC
+
 **** Bindings
 
 Adds general bindings to ivy.
