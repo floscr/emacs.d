@@ -1308,6 +1308,28 @@ console.log(`${foo}`)
   (pop kill-ring))
 #+END_SRC
 
+***** Split / Join Tag
+
+#+BEGIN_SRC elisp
+(defun +rjsx|split-join-tag ()
+  "Split or join the xml attributes list in the current tag."
+  (interactive)
+  (if-let ((closing-tag (save-excursion
+                          (rjsx-jump-opening-tag)
+                          (re-search-forward "\\\\?>" (point-at-eol) t))))
+      (save-excursion
+        (rjsx-jump-opening-tag)
+        (evil-forward-WORD-begin 1)
+        (while (< (point) closing-tag)
+          (newline-and-indent)
+          (evil-forward-WORD-begin 1)))
+    (save-excursion
+      (rjsx-jump-opening-tag)
+      (while (not (re-search-forward "\\\\?>" (point-at-eol) t))
+        (next-line)
+        (join-line)))))
+#+END_SRC
+
 ***** Expand self closing tag
 
 Converts self closing JSX tags to closing tags.
