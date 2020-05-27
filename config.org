@@ -263,7 +263,7 @@ Double press ~v~ to enable.
 (evil-define-key 'visual 'global (kbd "v") #'hydra-expand-region/body)
 #+END_SRC
 ** UI
-*** Zen Mode
+*** Zen Mode & Variable Pitch Fonts
 
 #+BEGIN_SRC elisp
 (setq +zen-text-scale 0.8)
