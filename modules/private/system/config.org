@@ -93,8 +93,10 @@ If the current or previous windows are not chrome, just get the first one from t
 (defun +wm/last-chrome-window-url-title ()
   (-some--> (+wm/prev-chromium-window)
     (plist-get it ':title)
-    (s-match wmctrl:chrome-window-title-re it)
-    (-drop 1 it)))
+    (or
+     (->> (s-match wmctrl:chrome-window-title-re it)
+          (-drop 1))
+     (user-error (template "Chrome title \"<<it>>\" does not match regexp.")))))
 
 (defun +wm/last-chrome-window-org-link ()
   (-some--> (+wm/last-chrome-window-url-title)
@@ -103,18 +105,18 @@ If the current or previous windows are not chrome, just get the first one from t
       (template "[[<<url>>][<<title>>]]"))))
 
 (defun +wm/last-chrome-window-org-link-formatted ()
-  (let* ((window (+wm/last-chrome-window-url-title))
-         (title (nth 0 window))
-         (url (nth 1 window))
-         (title-formatted
-            (cond
-             ;; Custom Pull request Formatting
-              ((s-matches? "^https://github.com.*/pull/[0-9]+.*$" url)
-               (let* ((match (s-match "\\(.+\\) by \\(.+\\) · Pull Request \\(#[0-9]+\\).*$" title))
-                      (pr-title (nth 1 match))
-                      (pr-user (nth 2 match))
-                      (pr-id (nth 3 match)))
-                 (template "PR <<pr-id>>: <<pr-title>> by @<<pr-user>>")))
-              (t title))))
+  (and-let* ((window (+wm/last-chrome-window-url-title))
+             (title (nth 0 window))
+             (url (nth 1 window))
+             (title-formatted
+                (cond
+                 ;; Custom Pull request Formatting
+                  ((s-matches? "^https://github.com.*/pull/[0-9]+.*$" url)
+                   (let* ((match (s-match "\\(.+\\) by \\(.+\\) · Pull Request \\(#[0-9]+\\).*$" title))
+                          (pr-title (nth 1 match))
+                          (pr-user (nth 2 match))
+                          (pr-id (nth 3 match)))
+                     (template "PR <<pr-id>>: <<pr-title>> by @<<pr-user>>")))
+                  (t title))))
     (template "[[<<url>>][<<title-formatted>>]]")))
 #+END_SRC
