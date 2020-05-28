@@ -417,6 +417,54 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 (setq x-underline-at-descent-line nil)
 #+END_SRC
 
+** Features
+
+*** Indirect Indent Mode
+
+Adds minor mode for editing indented source code in an indirect buffer,
+with the indentation reset to 0.
+Saving and committing keeps the indentation in the source buffer.
+
+#+BEGIN_SRC elisp
+(defvar-local +indirect-indent 0)
+
+(defvar +indirect-indent-mode-map (make-sparse-keymap))
+
+(define-minor-mode +indirect-indent-mode
+  "Editing indented source code without the indent in an indirect buffer."
+  :keymap +indirect-indent-mode-map)
+
+(advice-add #'edit-indirect-commit :before #'+indirect-indent/restore-indentation)
+(advice-add #'edit-indirect-save :before #'+indirect-indent/remove-indentation)
+(advice-add #'edit-indirect-save :after #'+indirect-indent/restore-indentation)
+
+(defun +indirect-indent/restore-indentation ()
+  (when (and (bound-and-true-p +indirect-indent-mode)
+             (not (eq +indirect-indent 0)))
+    (without-undo
+      (indent-rigidly (point-min) (point-max) (+ +indirect-indent)))))
+
+(defun +indirect-indent/remove-indentation ()
+  (when (and (bound-and-true-p +indirect-indent-mode)
+             (not (eq +indirect-indent 0)))
+    (without-undo
+      (indent-rigidly (point-min) (point-max) (- +indirect-indent)))))
+
+(defun +indirect-indent|edit (beg end &optional with-mode)
+  "Edit script in an indirect buffer."
+  (interactive)
+  (edit-indirect-region beg end t)
+  (let ((indent (indent-rigidly--current-indentation (point-min) (point-max))))
+    (unless (eq indent 0)
+      (without-undo
+       (indent-rigidly (point-min) (point-max) (- indent)))
+      ;; Local variables get undone when calling a mode
+      ;; So we have to define the major mode before
+      (funcall with-mode)
+      (+indirect-indent-mode 1)
+      (setq +indirect-indent indent))))
+#+END_SRC
+
 ** Package Config
 *** Beancount
 **** Config
@@ -2277,51 +2325,21 @@ This shortens the nixos paths to ~{nix}~.
 Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 
 #+BEGIN_SRC elisp
-(defvar-local +nix:indent 0)
-
-(define-minor-mode +nix-indirect-mode "TODO")
-
-(advice-add #'edit-indirect-commit :before #'+nix/edit-indirect--fix-indent-before-commit)
-(advice-add #'edit-indirect-save :before #'+nix/edit-indirect--fix-indent-before-commit)
-(advice-add #'edit-indirect-save :after #'+nix/edit-indirect--fix-indent-after-commit)
-
-(defun +nix/edit-indirect--fix-indent-before-commit ()
-  (when (and (bound-and-true-p +nix-indirect-mode)
-             (not (eq +nix:indent 0)))
-    (without-undo
-      (indent-rigidly (point-min) (point-max) (+ +nix:indent)))))
-
-(defun +nix/edit-indirect--fix-indent-after-commit ()
-  (when (and (bound-and-true-p +nix-indirect-mode)
-             (not (eq +nix:indent 0)))
-    (without-undo
-      (indent-rigidly (point-min) (point-max) (- +nix:indent)))))
-
 (defun +nix|edit-indirect ()
   "Edit script in an indirect buffer."
   (interactive)
-  (let ((beg (save-excursion
-               (search-backward "''\n" nil t)
-               (forward-char 3)
-               (point)))
-        (end (save-excursion
-               (re-search-forward "''.*;$" nil t)
-               (previous-line 1)
-               (goto-char
-                (point-at-eol))
-               (point))))
-    (edit-indirect-region beg end t)
-    (let ((indent (indent-rigidly--current-indentation (point-min) (point-max))))
-      (message "%s" +nix:indent)
-      (unless (eq indent 0)
-        (without-undo)
-        (indent-rigidly (point-min) (point-max) (- indent)))
-      (sh-mode)
-      (+nix-indirect-mode 1)
-      (setq +nix:indent indent))))
+  (and-let* ((beg (save-excursion
+                    (search-backward "''\n" nil t)
+                    (forward-char 3)
+                    (point)))
+             (end (save-excursion
+                    (re-search-forward "''.*;$" nil t)
+                    (previous-line 1)
+                    (goto-char (point-at-eol))
+                    (point))))
+    (+indirect-indent|edit beg end #'sh-mode)))
 
-(map! :map nix-mode-map
-      "C-c '" '+nix|edit-indirect)
+(map! :map nix-mode-map "C-c '" '+nix|edit-indirect)
 
 (set-popup-rule! "^\\*edit-indirect" :ignore t)
 #+END_SRC
