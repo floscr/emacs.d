@@ -913,7 +913,8 @@ What I've changed:
                       (buffer-name)
                       (int-to-string (point-min))
                       (int-to-string (point-max))
-                      "*")))))
+                      "*"))
+      (evil-forward-word-begin 1))))
 
 (defun +org/kill-indirect-buffer-maybe ()
   "Kill the window/buffer if it's indirect.
