@@ -244,6 +244,10 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                   ("Chrome Window"
                     :keys "c"
                     :title "%(+wm/last-chrome-window-org-link)")
+                  ("Reading List"
+                    :keys "r"
+                    :title "%(+wm/last-chrome-window-org-link)"
+                    :file +org:reading-list-file)
                   ("Shopping"
                    :keys "s"
                    :headline "Supermarket"
