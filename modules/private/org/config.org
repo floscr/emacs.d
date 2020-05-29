@@ -138,14 +138,6 @@ All todo keywords are for general items.
           ("PROJECT" :inherit 'org-todo :weight bold))))
 #+END_SRC
 
-**** Attachments
-
-#+BEGIN_SRC elisp :tangle no
-(after! org
-  :config
-  (add-to-list 'org-link-abbrev-alist (cons "attach" (abbreviate-file-name org-attach-directory))))
-#+END_SRC
-
 **** Projectile ignore ~org_archive~
 
 #+BEGIN_SRC elisp
@@ -1031,25 +1023,6 @@ For example when archiving a task, there would be an empty window left over."
   (+org/copy-as-markdown t))
 #+END_SRC
 
-*** Org Attach
-**** Download
-
-#+BEGIN_SRC elisp
-(defun +org-attach/downloads-file (file)
-  "Attach a file in your downloads-directory."
-  (interactive (list (read-file-name "Attach File: " downloads-dir)))
-  (+org/attach-file-and-insert-link file))
-#+END_SRC
-
-**** Screenshot
-
-#+BEGIN_SRC elisp
-(defun +org-attach/last-screenshot ()
-  "Attaches the last screenshot"
-  (interactive)
-  (+org-attach/file (+file/latest-file-in-dir screenshot-dir)))
-#+END_SRC
-
 *** Paste Chrome Link Fix
 
 Fixes wrong paste behaviour where the link would be inserted directly on the character by adding a space
@@ -1223,29 +1196,7 @@ Projectile search is not fast reliable enough."
   "Find file in org directory."
   (find-file (f-join org-directory file)))
 #+END_SRC
-*** Rename Attachment
 
-#+BEGIN_SRC elisp
-(defun +org-attach|rename-attachment ()
-  "Rename the attachment under the cursor."
-  (interactive)
-  (save-excursion
-    (while (not (org-element-link-parser))
-      (backward-char))
-    (if-let* ((link (org-element-link-parser))
-              (filename (org-element-property :path link))
-              (begin (org-element-property :begin link))
-              (end (org-element-property :end link))
-
-              (path (f-join org-attach-directory filename))
-              (new-path (let ((ivy--directory org-attach-directory))
-                          (counsel-find-file-move path)))
-              (new-filename (s-replace org-attach-directory "" new-path))
-              (new-attach-link (template "[[attach:<<new-filename>>]]")))
-        (progn
-          (delete-region begin end)
-          (insert new-attach-link)))))
-#+END_SRC
 *** Visual Fill Column
 
 #+BEGIN_SRC elisp
@@ -1609,12 +1560,6 @@ Set my preferred clipboard paste method to ~xclip~.
        :desc "Subheadeing"        "s" (λ!
                                        (call-interactively 'org-insert-subheading)
                                        (evil-insert-state)))
-
-      (:prefix-map ("f" . "Attach File")
-       :desc "Downloads File"  "d" '+org-attach/downloads-file
-       :desc "File"            "f" '+org-attach/file
-       :desc "Screenshot"      "s" '+org-attach/last-screenshot
-       :desc "URI"             "u" '+org/attach-file-and-insert-link)
 
       (:prefix-map ("g" . "Goto")
        :desc "Org Web Link" "l" #'+org-web-tools/read-url-at-point)
