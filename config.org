@@ -967,7 +967,8 @@ Automatically open files with external applications.
   :hook (after-init . openwith-mode)
   :config
   (setq openwith-associations
-        '(("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "mpv" (file))))
+        '(("\\.\\(?:mp3\\|ogg\\)\\'" "mpv" (file))
+          ("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "mpv" (file))))
   ;; (openwith-mode)
   ;; Don't ask if file is too large when it'll be handled by openwith-mode.
   (advice-add 'abort-if-file-too-large :before-until
