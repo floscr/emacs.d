@@ -702,11 +702,11 @@ Remove the underline from the links.
 *** Backup Link
 
 #+BEGIN_SRC elisp
-(defvar +org-archive:link-archive-directory nil
+(defvar +org-backup:link-backup-directory nil
   "Directory where the backup files are stored.")
-(setq +org-archive:link-archive-directory (+org/expand-org-file-name "LinkArchives"))
+(setq +org-backup:link-backup-directory (+org/expand-org-file-name "LinkBackups"))
 
-(defun +org-archive/archive-path (url &optional title)
+(defun +org-backup/backup-path (url &optional title)
   "Return the target directory path from an URL.
 Take the host as the base and either the TITLE or the path from the URL."
   (let* ((url-obj (url-generic-parse-url url))
@@ -720,17 +720,17 @@ Take the host as the base and either the TITLE or the path from the URL."
                   (s-replace-regexp "/$" "")
                   (s-replace "/" "_")
                   (s-replace-regexp "\\.[a-zA-Z]+$" "")))))
-    (f-join +org:link-archive-directory host path)))
+    (f-join +org:link-backup-directory host path)))
 
-(defun +org-archive/create-directory (url &optional title)
-  "Create archive target directory from URL and TITLE."
+(defun +org-backup/create-directory (url &optional title)
+  "Create backup target directory from URL and TITLE."
   (interactive)
-  (let ((path (+org-archive/archive-path url title)))
+  (let ((path (+org-backup/backup-path url title)))
     (shell-command-to-string (concat "mkdir -p " path))
     path))
 
-(defun +org-archive/wget-link (dir)
-  "Wget the given URL to the +org-archive:link-archive-directory."
+(defun +org-backup/wget-link (dir)
+  "Wget the given URL to the +org-backup:link-backup-directory."
   (require 'deferred)
   (let ((default-directory dir))
     (deferred:process
@@ -757,7 +757,7 @@ Take the host as the base and either the TITLE or the path from the URL."
         "--reject" "css,woff,ttf,js"
         url)))
 
-(defun +org-archive/convert-html-to-org (path)
+(defun +org-backup/convert-html-to-org (path)
   "Convert html files at PATH to org documents."
   (--> (f-entries path)
        (--filter (f-ext? it "html") it)
@@ -770,7 +770,7 @@ Take the host as the base and either the TITLE or the path from the URL."
          it
          "-o" (f-swap-ext it "org"))))
 
-(defun +org-archive/convert-html-to-epub (path)
+(defun +org-backup/convert-html-to-epub (path)
   "Convert html files at PATH to org documents."
   (--> (f-entries path)
        (--filter (f-ext? it "html") it)
@@ -780,8 +780,8 @@ Take the host as the base and either the TITLE or the path from the URL."
          it
          "-o" (f-swap-ext it "epub"))))
 
-(defun +org-archive|archive-dwim (&optional to-epub?)
-  "Archive the first link under the cursor and set the property."
+(defun +org-backup|backup-dwim (&optional to-epub?)
+  "Backup the first link under the cursor and set the property."
   (interactive)
   (require 'deferred)
   (require 'om)
@@ -793,20 +793,20 @@ Take the host as the base and either the TITLE or the path from the URL."
          (title (->> header
                   (om-get-property :raw-value)
                   (+org/link-title-or-original)))
-         (dir (+org-archive/create-directory url title)))
-    (org-set-property "ARCHIVE" (template "[[<<dir>>]]"))
+         (dir (+org-backup/create-directory url title)))
+    (org-set-property "BACKUP" (template "[[<<dir>>]]"))
     (deferred:$
-      (+org-archive/wget-link dir)
+      (+org-backup/wget-link dir)
       (deferred:nextc it `(lambda ()
-                            (+org-archive/convert-html-to-org ,dir)))
+                            (+org-backup/convert-html-to-org ,dir)))
       (deferred:nextc it `(lambda ()
                             (when to-epub?
-                              (+org-archive/convert-html-to-epub ,dir)))))))
+                              (+org-backup/convert-html-to-epub ,dir)))))))
 
-(defun +org-archive|archive-dwim-epub ()
+(defun +org-backup|backup-dwim-epub ()
   "Function docstring"
   (interactive)
-  (+org-archive|archive-dwim t))
+  (+org-backup|backup-dwim t))
 #+END_SRC
 
 ** Features
