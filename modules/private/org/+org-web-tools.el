@@ -15,13 +15,17 @@
         (org-web-tools-read-url-as-org clipboard-url)
         (message "No url found")))))
 
+(defun +org-web-tools/backup ()
+  "Open the url under the cursor"
+  (interactive)
+  (let ((url (org-web-tools--read-url))))
+  (org-web-tools-read-url-as-org))
+
+
 (defun +org-web-tools/read-url-at-point ()
   "Open the url under the cursor"
   (interactive)
-  (org-web-tools-read-url-as-org (org-web-tools--read-url))
-  (visual-line-mode)
-  (visual-fill-column-mode)
-  (setq display-line-numbers nil))
+  (org-web-tools-read-url-as-org (org-web-tools--read-url)))
 
 (defun +org-web-tools|read-url-from-chrome ()
   "Open the url under the cursor"

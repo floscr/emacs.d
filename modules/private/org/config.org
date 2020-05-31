@@ -699,6 +699,7 @@ Remove the underline from the links.
                                  (:name "Articles" :tag "TEXT" :order 1)
                                  (:name "Videos" :regexp "\\(youtube\\|vimeo\\).com" :tag "VIDEO" :order 2)))))))
 #+END_SRC
+
 *** Backup Link
 
 #+BEGIN_SRC elisp
@@ -807,6 +808,80 @@ Take the host as the base and either the TITLE or the path from the URL."
   "Function docstring"
   (interactive)
   (+org-backup|backup-dwim t))
+
+(defun +org-backup/wget-images (dir)
+  "Wget the given URL to the +org-backup:link-backup-directory"
+  (require 'deferred)
+  (let ((default-directory dir))
+    (deferred:process
+        "wget"
+        ;; Disable Robots
+        "-e" "robots=off"
+        ;; Disable generation of host directories which might be nested
+        "--no-host-directories"
+        ;; Removes query parameters from media
+        "--content-disposition"
+        ;; Don't create directories
+        "--no-directories"
+        ;; Do not ascend to the parent
+        "--no-parent"
+        ;; Always download index as html file
+        "--adjust-extension"
+        ;; Enable spanning across hosts when doing recursive retrieving.
+        "--span-hosts"
+        ;; After the download is complete, convert the links in the document to make them suitable for local viewing.
+        "--convert-links"
+        ;; Download all files neccssary to view the page offline
+        "--page-requisites"
+        ;; These files are not neccessary for offline viewing and just cost space
+        "-A" "jpeg,jpg,bmp,gif,png"
+        url)))
+
+(defun +org-web-tools|org-backup ()
+  "Open the url under the cursor"
+  (interactive)
+  (require 'om)
+  (and-let* ((header (om-parse-this-headline))
+             (link (->> (org-offer-links-in-entry (current-buffer) (point) 0)
+                        (car)
+                        (substring-no-properties)
+                        (-log)))
+             (url (->> link
+                       (+org/link-url-or-original)))
+             (title (->> link
+                         (+org/link-title-or-original)))
+             (dir (+org-backup/create-directory url title))
+             (file (f-join dir "article.org"))
+             (entry (->> (org-web-tools--url-as-readable-org url)
+                         ;; Remove more than one line break
+                         (s-replace-regexp "\n\n\s*\n" "\n")
+                         (s-replace-regexp "(https?://)?" "\n"))))
+    (org-set-property "BACKUP" (template "[[<<file>>]]"))
+    (save-window-excursion
+      (switch-to-buffer url)
+      (org-mode)
+      (insert entry)
+      (goto-char (point-min))
+      (set-visited-file-name file)
+      (save-buffer)
+      (deferred:$
+        (+org-backup/wget-images dir)))))
+
+(defun +org-backup|relative-image-links ()
+  "Convert links to relative image links."
+  (interactive)
+  (save-excursion
+    (while (re-search-forward org-link-any-re nil t)
+      (-some->> (substring-no-properties (thing-at-point 'line))
+        (s-match "\\(https?\\)?\\(/.+\\)\\(/.*\\.\\)\\(png\\|jpg\\|jpeg\\|gif\\)")
+        (-take-last 2)
+        (s-join "")
+        (s-prepend ".")
+        ((lambda (x) (template "[[<<x>>]]\n")))
+        ((lambda (x)
+           (delete-current-line)
+           (insert x)
+           x))))))
 #+END_SRC
 
 ** Features
