@@ -232,6 +232,17 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
   "Split output from shell-command to list"
   (split-string (shell-command-to-string cmd) "\n" t))
 #+END_SRC
+** Delete Current Line
+
+#+BEGIN_SRC elisp
+(defun delete-current-line ()
+  "Delete (not kill) the current line."
+  (interactive)
+  (save-excursion
+    (delete-region
+     (progn (forward-visible-line 0) (point))
+     (progn (forward-visible-line 1) (point)))))
+#+END_SRC
 
 * Functional Utils
 ** Noop
