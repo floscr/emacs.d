@@ -1416,17 +1416,16 @@ Return the path of the file."
 **** Bindings
 
 #+BEGIN_SRC elisp
-(after! org-roam
-  (map! :leader
-        :prefix "n"
-        (:prefix-map ("r" . "Roam")
-          :desc "Journal: New Entry" "j" #'org-journal-new-entry
-          :desc "List (Main)" "l" #'org-roam
-          :desc "Insert" "i" #'org-roam-insert
-          :desc "Switch to Buffer" "b" #'org-roam-switch-to-buffer
-          :desc "Find File" "f" #'org-roam-find-file
-          :desc "Show Graph" "g" #'org-roam-show-graph
-          :desc "Capture" "c" #'org-roam-capture)))
+(map! :leader
+      :prefix "n"
+      (:prefix-map ("r" . "Roam")
+       :desc "Journal: New Entry" "j" #'org-journal-new-entry
+       :desc "List (Main)" "l" #'org-roam
+       :desc "Insert" "i" #'org-roam-insert
+       :desc "Switch to Buffer" "b" #'org-roam-switch-to-buffer
+       :desc "Find File" "f" #'org-roam-find-file
+       :desc "Show Graph" "g" #'org-roam-show-graph
+       :desc "Capture" "c" #'org-roam-capture))
 #+END_SRC
 
 **** Journal
