@@ -2668,6 +2668,24 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 (map! :nv "C-M-d" #'evil-multiedit-match-all)
 #+END_SRC
 
+**** Evil Jump with =tab=
+
+#+BEGIN_SRC elisp
+(map! :n [tab] (general-predicate-dispatch nil
+                 (and (featurep! :editor fold)
+                      (save-excursion (end-of-line) (invisible-p (point))))
+                 #'+fold/toggle
+                 (fboundp 'evil-jump-item)
+                 #'evil-jump-item)
+      :v [tab] (general-predicate-dispatch nil
+                 (and (bound-and-true-p yas-minor-mode)
+                      (or (eq evil-visual-selection 'line)
+                          (not (memq (char-after) (list ?\( ?\[ ?\{ ?\} ?\] ?\))))))
+                 #'yas-insert-snippet
+                 (fboundp 'evil-jump-item)
+                 #'evil-jump-item))
+#+END_SRC
+
 *** Leader
 
 #+BEGIN_SRC elisp
