@@ -21,7 +21,6 @@
   (let ((url (org-web-tools--read-url))))
   (org-web-tools-read-url-as-org))
 
-
 (defun +org-web-tools/read-url-at-point ()
   "Open the url under the cursor"
   (interactive)

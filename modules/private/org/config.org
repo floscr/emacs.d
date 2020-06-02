@@ -725,10 +725,15 @@ Take the host as the base and either the TITLE or the path from the URL."
 
 (defun +org-backup/create-directory (url &optional title)
   "Create backup target directory from URL and TITLE."
-  (interactive)
   (let ((path (+org-backup/backup-path url title)))
     (shell-command-to-string (concat "mkdir -p " path))
     path))
+#+END_SRC
+
+**** Main
+
+#+BEGIN_SRC elisp
+
 
 (defun +org-backup/wget-link (dir)
   "Wget the given URL to the +org-backup:link-backup-directory"
