@@ -2763,6 +2763,7 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
  (:desc "open" :prefix "o"
    :desc "Calendar"   :g "c" #'=calendar
    :desc "Calc"       :g "C" #'calc
+   :desc "Irc"        :g "i" #'=irc
    :desc "Mail"       :g "m" #'=mu4e
    :desc "Snippet"    :g "s" #'+snippets/edit))
 #+END_SRC
