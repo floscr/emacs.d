@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: Binding List
+# key: mb
+# --
+my.bindings = [
+  {
+      binding = "$0";
+      description = "$1";
+      command = "$2";
+  }
+];
