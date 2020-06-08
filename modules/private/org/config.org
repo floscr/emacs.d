@@ -1413,21 +1413,6 @@ Return the path of the file."
 (setq org-roam-directory (+org/expand-org-file-name "Roam"))
 #+END_SRC
 
-**** Bindings
-
-#+BEGIN_SRC elisp
-(map! :leader
-      :prefix "n"
-      (:prefix-map ("r" . "Roam")
-       :desc "Journal: New Entry" "j" #'org-journal-new-entry
-       :desc "List (Main)" "l" #'org-roam
-       :desc "Insert" "i" #'org-roam-insert
-       :desc "Switch to Buffer" "b" #'org-roam-switch-to-buffer
-       :desc "Find File" "f" #'org-roam-find-file
-       :desc "Show Graph" "g" #'org-roam-show-graph
-       :desc "Capture" "c" #'org-roam-capture))
-#+END_SRC
-
 **** Journal
 
 #+BEGIN_SRC elisp
@@ -1734,6 +1719,15 @@ Set my preferred clipboard paste method to ~xclip~.
    (:prefix-map ("b" . "Bookmarks")
     :desc "Goto Bookmarks File"       "b" (λ! (find-file +org:bookmarks-file))
     :desc "Search bookmarks"          "s" #'helm-org-pinboard)
+
+   (:prefix-map ("r" . "Roam")
+    :desc "Journal: New Entry" "j" #'org-journal-new-entry
+    :desc "List (Main)" "l" #'org-roam
+    :desc "Insert" "i" #'org-roam-insert
+    :desc "Switch to Buffer" "b" #'org-roam-switch-to-buffer
+    :desc "Find File" "f" #'org-roam-find-file
+    :desc "Show Graph" "g" #'org-roam-show-graph
+    :desc "Capture" "c" #'org-roam-capture)
 
    ;; special goto locations I often visit
    :desc "Inbox"                      "i" (λ! (+org/find-in-files "Main/inbox.org"))
