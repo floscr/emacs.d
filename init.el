@@ -63,6 +63,7 @@
  emacs-lisp
  markdown
  ocaml
+ nim
  (javascript +lsp)
  ;; haskell
  (org
