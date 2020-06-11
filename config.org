@@ -1248,7 +1248,7 @@ which is really unacceptable, but works for now.
 
 ***** Fix case-insensitive wgrep
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (after! ivy
   (defadvice! respect-case-fold-search (args)
     :filter-return #'counsel--ag-extra-switches
