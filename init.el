@@ -80,6 +80,7 @@
  (default +bindings +snippets +evil-commands)
 
  :private
+ rss
  system
  literate
  reason
