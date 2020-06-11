@@ -473,6 +473,7 @@ bookmarks are not helpful since they're not relative.
           (shell-command "npm publish")))
     (user-error "Stage the package.json with a version bump.")))
 #+END_SRC
+
 *** Counsel Branches
 
 #+BEGIN_SRC elisp
