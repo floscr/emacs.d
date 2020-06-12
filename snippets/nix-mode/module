@@ -3,13 +3,21 @@
 # key: m
 # condition: t
 # --
-options.modules.${1:moduleName} = {
-  enable = mkOption {
-    type = types.bool;
-    default = false;
+{ config, options, lib, pkgs, ... }:
+
+with lib;
+
+{
+  options.modules.${1:moduleName} = {
+    enable = mkOption { type = types.bool; default = false; };
   };
-};
 
-
-config = mkIf config.modules.$1 {
-};
+  config = mkIf config.modules.$1.enable {
+    my = {
+      packages = with pkgs; [
+        $2
+      ];
+      $0
+    };
+  };
+}
