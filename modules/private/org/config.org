@@ -1586,6 +1586,10 @@ Set my preferred clipboard paste method to ~xclip~.
 
 **** Normal Mode Fixes
 
+When I'm in insert mode I want the cursor to behave as if I'm in insert on the next character.
+Also special fixes for pasting links and similar things, to automatically insert a space.
+Unless I'm looking at a link, than continue like common.
+
 #+BEGIN_SRC elisp
 (defun +evil-org/normal-mode-paste-fix (fn)
   "Move forward one character and then paste."
