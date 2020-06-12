@@ -2693,6 +2693,33 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
                  (fboundp 'evil-jump-item)
                  #'evil-jump-item))
 #+END_SRC
+**** Evil Paste Fix
+
+Evil pastes at the current cursor, which I don't expect it to do.
+Most of the time it requires me to move into insert mode, move one character,
+and then do my function.
+
+#+BEGIN_SRC elisp
+(defun +evil/normal-mode-paste-fix (fn)
+  "Move forward one character and then paste."
+  (interactive)
+  (if (and (evil-normal-state-p)
+           (buf-line-has "[^\s]"))
+      (progn
+        (forward-char 1)
+        (when (looking-at " ")
+          (insert " "))
+        (let ((line (substring-no-properties (thing-at-point 'line))))
+          (call-interactively fn)
+          (when (eq line (substring-no-properties (thing-at-point 'line)))
+            (delete-char 1))))
+    (call-interactively fn)))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(map! :map evil-org-mode-map
+ :n "C-c C-l" (λ! (+evil/normal-mode-paste-fix #'org-insert-link)))
+#+END_SRC
 
 *** Leader
 
