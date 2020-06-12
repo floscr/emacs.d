@@ -2795,6 +2795,7 @@ and then do my function.
  :leader
  (:desc "open" :prefix "o"
    :desc "Calendar"   :g "c" #'=calendar
+   :desc "Eleed"      :g "E" #'elfeed
    :desc "Calc"       :g "C" #'calc
    :desc "Irc"        :g "i" #'=irc
    :desc "Mail"       :g "m" #'=mu4e
