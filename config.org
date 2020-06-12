@@ -2703,15 +2703,15 @@ Most of the time it requires me to move into insert mode, move one character,
 and then do my function.
 
 #+BEGIN_SRC elisp
-(defun +evil/normal-mode-paste-fix (fn)
+(defun +evil/normal-mode-paste-fix (fn &optional insert-char)
   "Move forward one character and then paste."
   (interactive)
   (if (and (evil-normal-state-p)
            (buf-line-has "[^\s]"))
       (progn
         (forward-char 1)
-        (when (looking-at " ")
-          (insert " "))
+        (when (looking-at insert-char)
+          (insert insert-char))
         (let ((line (substring-no-properties (thing-at-point 'line))))
           (call-interactively fn)
           (when (eq line (substring-no-properties (thing-at-point 'line)))
