@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: Module
+# key: m
+# condition: t
+# --
+options.modules.${1:moduleName} = {
+  enable = mkOption {
+    type = types.bool;
+    default = false;
+  };
+};
+
+
+config = mkIf config.modules.$1 {
+};
