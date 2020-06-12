@@ -1117,8 +1117,7 @@ E.g.: (Brackets signal the cursor position)
 (defun +org|paste-chrome-link ()
   "Paste the frontmost chrome link."
   (interactive)
-  (kill-new (+wm/last-chrome-window-org-link))
-  (call-interactively #'evil-paste-after))
+  (insert (+wm/last-chrome-window-org-link)))
 #+END_SRC
 
 *** Paste Markdown as org
@@ -1583,6 +1582,34 @@ Set my preferred clipboard paste method to ~xclip~.
 #+END_SRC
 
 ** Bindings
+*** Evil
+
+**** Normal Mode Fixes
+
+#+BEGIN_SRC elisp
+(defun +evil-org/normal-mode-paste-fix (fn)
+  "Move forward one character and then paste."
+  (cond ((not (evil-normal-state-p))
+         (call-interactively fn))
+        ((assoc :link (org-context))
+         (call-interactively fn))
+        ((and (eq (+ (point) 1) (point-at-eol))
+              (not (looking-at " ")))
+         (evil-insert-state)
+         (forward-char 1)
+         (insert " ")
+         (+evil/normal-mode-paste-fix fn " ")
+         (evil-normal-state))
+        (t (+evil/normal-mode-paste-fix fn " "))))
+#+END_SRC
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map! :map evil-org-mode-map
+ :n "C-c C-l" (λ! (+evil-org/normal-mode-paste-fix #'org-insert-link)))
+#+END_SRC
+
 *** Local Leader Bindings
 **** Local Leader Mapping
 ***** Org Mode
@@ -1602,7 +1629,7 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Filter"                    "f"  #'org-match-sparse-tree
       :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
       :desc  "Create/Edit Todo"          "o"  #'org-todo
-      :desc  "Paste Chrome Link"         "p"  #'+org|paste-chrome-link
+      :desc  "Paste Chrome Link"         "p"  (λ! (+evil-org/normal-mode-paste-fix #'+org|paste-chrome-link))
       :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
       :desc  "Schedule"                  "s"  #'org-schedule
       :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
@@ -1617,7 +1644,7 @@ Set my preferred clipboard paste method to ~xclip~.
        :desc "Link" "L" '+org|cut-link)
 
       (:prefix-map ("i" . "Insert")
-       :desc "Inavtive Timestamp" "i" 'org-time-stamp-inactive
+       :desc "Inavtive Timestamp" "i" (λ! (+evil-org/normal-mode-paste-fix #'org-time-stamp-inactive))
        :desc "Subheadeing"        "s" (λ!
                                        (call-interactively 'org-insert-subheading)
                                        (evil-insert-state)))
