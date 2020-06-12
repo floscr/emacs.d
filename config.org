@@ -2710,7 +2710,7 @@ and then do my function.
            (buf-line-has "[^\s]"))
       (progn
         (forward-char 1)
-        (when (looking-at insert-char)
+        (when (and insert-char (looking-at insert-char))
           (insert insert-char))
         (let ((line (substring-no-properties (thing-at-point 'line))))
           (call-interactively fn)
