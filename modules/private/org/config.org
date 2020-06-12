@@ -1106,7 +1106,7 @@ For example when archiving a task, there would be an empty window left over."
 
 *** Paste Chrome Link Fix
 
-Fixes wrong paste behaviour where the link would be inserted directly on the character by adding a space
+Fixes wrong paste behavior where the link would be inserted directly on the character by adding a space
 
 E.g.: (Brackets signal the cursor position)
 
