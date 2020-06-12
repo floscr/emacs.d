@@ -1117,12 +1117,8 @@ E.g.: (Brackets signal the cursor position)
 (defun +org|paste-chrome-link ()
   "Paste the frontmost chrome link."
   (interactive)
-  (--> (+wm/last-chrome-window-org-link)
-       (cond
-        ;; Visual Selection
-        ;; ((region-active-p) (replace-region-contents it))
-        ;; Normal
-        (t (insert it)))))
+  (kill-new (+wm/last-chrome-window-org-link))
+  (call-interactively #'evil-paste-after))
 #+END_SRC
 
 *** Paste Markdown as org
