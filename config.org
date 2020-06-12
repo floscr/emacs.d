@@ -2785,6 +2785,7 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("i" . "insert")
+   :desc "New Snippet"    "S" #'+snippets/new
    :desc "Killring"       "y" #'helm-show-kill-ring))
 #+END_SRC
 
