@@ -7,7 +7,17 @@
 #+END_SRC
 
 * Utils
-** Copy Link under Cursor
+** Org Links
+*** Is looking at link
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org/link-at-point ()
+  "Is the point under a link."
+  (assoc :link (org-context)))
+#+END_SRC
+
+*** Copy Link under Cursor
 
 #+BEGIN_SRC elisp
 ;;;###autoload
