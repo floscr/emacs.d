@@ -11,34 +11,27 @@
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +org|link-from-point ()
+(defun +org/link-from-point ()
   (interactive)
-  (let* ((link-info (assoc :link (org-context)))
-         (text (when link-info
-                 ;; org-context seems to return nil if the current element
-                 ;; starts at buffer-start or ends at buffer-end
-                 (buffer-substring-no-properties (or (cadr link-info) (point-min))
-                                                 (or (caddr link-info) (point-max))))))
-    (if (not text)
-        (error "Not in org link")
-      (add-text-properties 0 (length text) '(yank-handler (my-yank-org-link)) text)
-      text)))
+  (-some--> (+org/link-at-point)
+            (buffer-substring-no-properties (or (cadr it) (point-min))
+                                            (or (caddr it) (point-max)))
+            (--tap (add-text-properties 0 (length it) '(yank-handler (my-yank-org-link)) it) it)))
 
 ;;;###autoload
 (defun +org|link-url-from-point ()
   (interactive)
-  (-some->> (+org|link-from-point)
+  (-some->> (+org/link-from-point)
     (+org/parse-link)
     (nth 1)))
 
 ;;;###autoload
 (defun +org|link-title-from-point ()
   (interactive)
-  (-some->> (+org|link-from-point)
+  (-some->> (+org/link-from-point)
     (+org/parse-link)
     (nth 2)))
 #+END_SRC
-
 
 ** Parse Link
 
