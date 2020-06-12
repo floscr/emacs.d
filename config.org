@@ -2719,11 +2719,6 @@ and then do my function.
     (call-interactively fn)))
 #+END_SRC
 
-#+BEGIN_SRC elisp
-(map! :map evil-org-mode-map
- :n "C-c C-l" (λ! (+evil/normal-mode-paste-fix #'org-insert-link)))
-#+END_SRC
-
 *** Leader
 
 #+BEGIN_SRC elisp
