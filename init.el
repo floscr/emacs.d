@@ -94,5 +94,4 @@
 (provide 'init)
 
 (setq
- user-mail-address "flo.schroedl@gmail.com"
  user-full-name "Florian Schrödl")
