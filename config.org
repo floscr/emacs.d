@@ -1730,7 +1730,7 @@ All are these are distracting and not helpful.
                         (mu4e-trash-folder      . "/Work/[Gmail]/Trash")
                         (mu4e-refile-folder     . "/Work/[Gmail]/All Mail")
                         (smtpmail-smtp-user     . +MM:email-aress)
-                        (user-mail-address      . +MM:email-aress)
+                        (user-mail-address      . +---\nFlorain SchrödlMM:email-aress)
                         (mu4e-compose-signature . ""))))
 #+END_SRC
 
