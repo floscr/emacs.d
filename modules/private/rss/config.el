@@ -6,20 +6,23 @@
   (setq elfeed-search-filter "@2-week-ago "
         elfeed-db-directory (concat doom-local-dir "elfeed/db/")
         elfeed-enclosure-default-dir (concat doom-local-dir "elfeed/enclosures/")
-        elfeed-show-entry-switch #'+rss-popup-pane
+        elfeed-show-entry-switch #'pop-to-buffer
         elfeed-show-entry-delete #'+rss/delete-pane
         shr-max-image-proportion 0.6)
 
   (make-directory elfeed-db-directory t)
 
+  (set-popup-rule! "^\\*elfeed-entry"
+    :size 0.75 :actions '(display-buffer-below-selected)
+    :select t :quit nil :ttl t)
+ 
   ;; Ensure elfeed buffers are treated as real
-  (push (lambda (buf) (string-match-p "^\\*elfeed" (buffer-name buf)))
-        doom-real-buffer-functions)
+  (add-hook! 'doom-real-buffer-functions
+    (defun +rss-buffer-p (buf)
+      (string-match-p "^\\*elfeed" (buffer-name buf))))
 
   ;; Enhance readability of a post
-  (add-hook 'elfeed-show-mode-hook #'+rss|elfeed-wrap)
-
-  (set-popup-rule! "^\\*elfeed-entry" :size 0.75 :select t :quit nil :ttl t))
+  (add-hook 'elfeed-show-mode-hook #'+rss|elfeed-wrap))
 
 (use-package! elfeed-org
   :after (:all org elfeed)
