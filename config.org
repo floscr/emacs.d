@@ -1720,18 +1720,12 @@ All are these are distracting and not helpful.
 *** Mail
 **** Config
 ***** Accounts
-****** Work
+****** COMMENT Work
 
 #+BEGIN_SRC elisp
-(after! mu4e
-  (set-email-account! "Work"
-                      '((mu4e-sent-folder       . "/Work/[Gmail]/Sent Mail")
-                        (mu4e-drafts-folder     . "/Work/[Gmail]/Drafts")
-                        (mu4e-trash-folder      . "/Work/[Gmail]/Trash")
-                        (mu4e-refile-folder     . "/Work/[Gmail]/All Mail")
-                        (smtpmail-smtp-user     . +MM:email-address)
-                        (user-mail-address      . +---\nFlorain SchrödlMM:email-aress)
-                        (mu4e-compose-signature . ""))))
+(setq smtpmail-default-smtp-server "smtp.gmail.com")
+(setq smtpmail-smtp-service 587)
+(setq smtpmail-debug-info t)
 #+END_SRC
 
 ***** Disable Background Color
