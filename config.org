@@ -315,6 +315,19 @@ Bound to ~SPC t t~.
 (add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
 #+END_SRC
 
+**** Magit
+
+#+BEGIN_SRC elisp
+(after! diff-mode
+  (set-face-attribute 'diff-refine-added nil
+                      :foreground (doom-blend "#98be65" "#3e493d" 0.15)
+                      :background (doom-lighten "#98bb5d" 0.2))
+  (set-face-attribute 'diff-refine-removed nil
+                      :foreground (doom-blend "#ff6c6b" "#4f343a" 0.2)
+                      :background (doom-lighten "#ff6c6b" 0.1)))
+#+END_SRC
+
+
 **** Function Start
 
 #+BEGIN_SRC elisp
