@@ -1930,6 +1930,29 @@ Browse the current thing at point for git
     (call-interactively 'git-link)))
 #+END_SRC
 
+***** ACTIVE Branches by user
+
+#+BEGIN_SRC elisp
+(defun +magit|branches-by-user ()
+  "List all branches by user."
+  (interactive)
+  (let ((branches
+         (->>
+          (concat "git for-each-ref"
+                  " --sort=-committerdate"
+                  " --format='%(committerdate) %(authorname) %(refname)'"
+                  " --sort=-committerdate"
+                  ;; refs/remotes/origin/ for remote branches
+                  " refs/heads"
+                  " | grep -e 'Florian Schroedl'")
+          (shell-command-to-string)
+          (s-split "\n")
+          (-butlast)
+          (-map (lambda (x) (->> (s-match ".*Florian Schroedl refs\\/heads\\/\\(.*\\)" x)
+                                 (-last-item)))))))
+    (ivy-read "Checkout: " branches :action #'magit-checkout)))
+#+END_SRC
+
 **** Config
 
 #+BEGIN_SRC elisp
