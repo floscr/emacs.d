@@ -2390,7 +2390,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
                     (forward-char 3)
                     (point)))
              (end (save-excursion
-                    (re-search-forward "''.*;$" nil t)
+                    (re-search-forward "''" nil t)
                     (previous-line 1)
                     (goto-char (point-at-eol))
                     (point))))
