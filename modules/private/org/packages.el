@@ -24,7 +24,7 @@
 ;; Download from clipboard to attachment
 (package! org-download)
 ;; Sync caldav with org
-(package! org-caldav)
+(package! org-caldav :recipe (:host github :repo "floscr/org-caldav"))
 (package! org-journal)
 
 
