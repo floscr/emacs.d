@@ -75,12 +75,13 @@
  :app
  irc
  calendar
+ (rss +org)
 
  :config
  (default +bindings +snippets +evil-commands)
 
  :private
- rss
+ ;; rss
  system
  literate
  reason
