@@ -318,7 +318,7 @@ Bound to ~SPC t t~.
 **** Magit
 
 #+BEGIN_SRC elisp
-(after! diff-mode
+(after! (diff-mode)
   (set-face-attribute 'diff-refine-added nil
                       :foreground (doom-blend "#98be65" "#3e493d" 0.15)
                       :background (doom-lighten "#98bb5d" 0.2))
