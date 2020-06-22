@@ -574,6 +574,40 @@ Manually add an expense to the Cash Book.
       :n "q" #'beancount-query
       :n "b" #'+beancount|balance)
 #+END_SRC
+*** Elfeed
+**** Utils
+
+***** Custom Filters
+****** All unread
+
+#+BEGIN_SRC elisp
+(defun +rss|search-unread ()
+  "Show elfeed articles tagged with unread"
+  (interactive)
+  (elfeed-search-set-filter "@6-months-ago +unread"))
+#+END_SRC
+
+***** Open with Eww
+
+#+BEGIN_SRC elisp
+(defun +rss|open-eww ()
+  "Open the current entry with eww."
+  (interactive)
+  (eww (elfeed-entry-link elfeed-show-entry))
+  (add-hook 'eww-after-render-hook 'eww-readable nil t))
+#+END_SRC
+
+**** Config
+**** Bindings
+***** LocalLeader
+
+#+BEGIN_SRC elisp
+(map! :map (elfeed-search-mode-map elfeed-show-mode-map)
+      :localleader
+      :desc "Open Eww"  "o" #'+rss|open-eww
+      (:prefix-map ("s" . "Search")
+       :desc "Unread" "u" #'+rss|search-unread))
+#+END_SRC
 
 *** IRC
 
