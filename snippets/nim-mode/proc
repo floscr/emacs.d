@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Proc
+# uuid: proc
+# key: p
+# --
+proc $1($2):
+  $0
