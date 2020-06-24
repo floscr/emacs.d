@@ -327,6 +327,8 @@ The macro is take from [[file:~/.config/doom/autoload.org::*Ignore Arguments][Ig
 #+BEGIN_SRC elisp
 (after! org
   :init
+  (advice-add 'org-agenda-clock-in  :after (η #'org-save-all-org-buffers))
+  (advice-add 'org-agenda-clock-out :after (η #'org-save-all-org-buffers))
   (advice-add 'org-deadline         :after (η #'org-save-all-org-buffers))
   (advice-add 'org-schedule         :after (η #'org-save-all-org-buffers))
   (advice-add 'org-todo             :after (η #'org-save-all-org-buffers))
