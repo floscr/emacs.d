@@ -1964,6 +1964,23 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
         (magit-branch-checkout review-branch-name)
       (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch))))
 #+END_SRC
+***** Cleanup Branches
+
+Cleans up all merged and review branches
+
+#+BEGIN_SRC elisp
+(defun +magit|cleanup-branches (&optional base-branch)
+  "Remove all merged and review branches."
+  (interactive)
+  (+magit|delete-review-branches)
+  (let* ((base-branch (or base-branch "master")))
+    (call-interactively #'+magit|delete-review-branches)
+    (deferred:$
+      (deferred:process-shell (template "git branch --merged | egrep -v \"(^\\*|<<base-branch>>)\" | xargs git branch -d"))
+      (deferred:nextc it
+        (magit-status-maybe-update-revision-buffer)))))
+#+END_SRC
+
 
 ***** TODO Browse git link
 
