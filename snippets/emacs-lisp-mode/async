@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: deferred async process command
+# uuid:
+# key: async
+# --
+(deferred:$
+  (deferred:process "${1:command}" "${2:arg}")
+  (deferred:nextc it
+    (lambda (x) (message "It's done!")))

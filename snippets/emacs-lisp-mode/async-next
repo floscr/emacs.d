@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: deferred:nextc
+# uuid:
+# key: dn
+# --
+(deferred:nextc it
+  (lambda (x) (message "It's done!")))
