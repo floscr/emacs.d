@@ -1039,7 +1039,7 @@ For example when archiving a task, there would be an empty window left over."
 (defun +org|source-properties-key-from-browser ()
   "Add the link from the frontmost chrome tab as a source property."
   (interactive)
-  (org-set-property "SOURCE" (org-mac-chrome-get-frontmost-url)))
+  (org-set-property "SOURCE" (+wm/last-chrome-window-org-link)))
 #+END_SRC
 
 *** Archive all done tasks
