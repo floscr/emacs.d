@@ -1780,6 +1780,14 @@ All are these are distracting and not helpful.
 (setq smtpmail-debug-info t)
 #+END_SRC
 
+***** Bookmarks
+
+#+BEGIN_SRC elisp
+(setq mu4e-bookmarks
+  `(("flag:unread AND NOT flag:trashed AND NOT maildir:/Spam" "Unread messages"      ?u)
+    ("date:today..now AND NOT maildir:/Spam"                  "Today's messages"     ?T)))
+#+END_SRC
+
 ***** Disable Background Color
 
 #+BEGIN_SRC elisp
