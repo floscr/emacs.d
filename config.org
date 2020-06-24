@@ -598,6 +598,11 @@ Manually add an expense to the Cash Book.
 #+END_SRC
 
 **** Config
+
+#+BEGIN_SRC elisp
+(setq rmh-elfeed-org-files (list (+org/expand-org-file-name "Elfeed/Elfeed.org")))
+#+END_SRC
+
 **** Bindings
 ***** LocalLeader
 
