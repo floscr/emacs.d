@@ -185,6 +185,18 @@ buffer in current window."
    (current-buffer)))
 #+END_SRC
 
+*** Jump to definition for tangled files
+
+Take me to the literate source file when using ~find-function~ etc.
+
+#+BEGIN_SRC elisp
+(defadvice! +org|try-org-babel-tangle-jump-to-org (&optional arg1)
+  :after '(find-function
+           find-variable)
+  (ignore-errors
+    (org-babel-tangle-jump-to-org)))
+#+END_SRC
+
 *** Hydras
 **** Line Spacing
 
