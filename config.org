@@ -598,11 +598,19 @@ Manually add an expense to the Cash Book.
 #+END_SRC
 
 **** Config
+***** Org Elfeed File
 
 #+BEGIN_SRC elisp
 (setq rmh-elfeed-org-files (list (+org/expand-org-file-name "Elfeed/Elfeed.org")))
 #+END_SRC
 
+***** Disable sliced images
+
+These don't work if you have a big line-heihgt.
+
+#+BEGIN_SRC elisp
+(setq +rss-enable-sliced-images nil)
+#+END_SRC
 
 **** Minor Mode for org-elfeed
 
@@ -2003,7 +2011,7 @@ Browse the current thing at point for git
     (call-interactively 'git-link)))
 #+END_SRC
 
-***** ACTIVE Branches by user
+***** Branches by user
 
 #+BEGIN_SRC elisp
 (defun +magit|branches-by-user (&optional ignore-review?)
