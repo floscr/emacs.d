@@ -348,27 +348,21 @@ bookmarks are not helpful since they're not relative.
                :goto "export const findDropPoint"
                :goto-bol t)
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Arr.js"
-               :relative t
                :name "Common: Arr"
                :action #'counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Str.js"
-               :relative t
                :name "Common: Str"
                :action #'counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Obj.js"
-               :relative t
                :name "Common: Obj"
                :action #'counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Maybe.js"
-               :relative t
                :name "Common: Maybe"
                :action #'counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Box.js"
-               :relative t
                :name "Common: Bxo"
                :action #'counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx"
-               :relative t
                :name "Command Line Flags"
                :action #'counsel-imenu)))
 #+END_SRC
@@ -379,9 +373,12 @@ bookmarks are not helpful since they're not relative.
 (defun +MM/find-bookmark-buffer (name)
   "Jump to a FILE relative to the project root, go to character POS."
   (-when-let* ((item (--find (string= name (plist-get it :name)) +MM-dynamic-bookmarks))
-               (file (--> (plist-get item :file)
-                          (when (plist-get item :relative)
-                            (f-join (projectile-project-root) it)))))
+               (file (->> (plist-get item :file)
+                          ((lambda (x)
+                             (if (plist-get item :relative)
+                                 (f-join (projectile-project-root) x)
+                               x))))))
+
     (find-file file)
     (-some--> (plist-get item :goto)
       (--tap (progn
