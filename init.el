@@ -45,7 +45,10 @@
  spell
 
  :tools
- (lookup +devdocs +docsets +dictionary)
+ (lookup
+  +devdocs
+  +docsets
+  +dictionary)
  eval
  editorconfig
  magit

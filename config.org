@@ -25,6 +25,150 @@ I will prefer those functions over built in functions if they are nicer to use.
 
 I often use my helper function [[file:autoload.org::*Template Literals][(template)]] for template strings.
 
+* Packages
+:PROPERTIES:
+:header-args: :tangle "packages.el" :comments link
+:END:
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments no
+;; -*- no-byte-compile: t; -*-
+#+END_SRC
+
+** General Packages
+*** Evil
+
+[[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
+
+#+BEGIN_SRC elisp
+(package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
+#+END_SRC
+
+And more motions
+
+#+BEGIN_SRC elisp
+(package! evil-replace-with-register)
+(package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
+#+END_SRC
+
+*** UI
+
+Narrow to an indirect buffer
+
+#+BEGIN_SRC elisp
+(package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
+#+END_SRC
+
+Colorized hex strings
+
+#+BEGIN_SRC elisp
+(package! rainbow-mode)
+#+END_SRC
+
+Centered buffers, doom does not support this anymore.
+
+#+BEGIN_SRC elisp
+(package! visual-fill-column)
+#+END_SRC
+
+*** External
+
+Edit the current chrome input field directly in emacs
+
+#+BEGIN_SRC elisp
+(package! atomic-chrome)
+#+END_SRC
+
+*** Dired
+
+Filter dired buffers
+
+#+BEGIN_SRC elisp
+(package! dired-narrow)
+(package! dired-filter)
+#+END_SRC
+
+Open subtrees directly in the current view
+
+#+BEGIN_SRC elisp
+(package! dired-subtree)
+#+END_SRC
+
+Open files with the default application instead of Emacs,
+keep the process alive after closing Emacs.
+
+#+BEGIN_SRC elisp
+(package! openwith)
+#+END_SRC
+
+** Language Packages
+*** Elisp
+
+[[https://github.com/countvajhula/symex.el][Symex]] for editing emacs lisp by structure.
+
+#+BEGIN_SRC elisp
+(package! symex)
+#+END_SRC
+
+*** Beancount
+
+#+BEGIN_SRC elisp
+(package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
+#+END_SRC
+*** Javascript
+
+Javascript debugging environment
+
+#+BEGIN_SRC elisp
+(package! indium)
+#+END_SRC
+
+Live editing of html
+
+#+BEGIN_SRC elisp
+(package! impatient-mode)
+#+END_SRC
+
+Autofixing that isn't slow
+
+#+BEGIN_SRC elisp
+(package! eslintd-fix)
+#+END_SRC
+
+*** Git
+
+Show changes in current branch
+
+#+BEGIN_SRC elisp
+(package! git-lens)
+#+END_SRC
+
+*** Ebooks
+
+#+BEGIN_SRC elisp
+(package! nov)
+#+END_SRC
+
+** Overrides
+*** Calfw
+Continuous events are broken in the current calfw source,
+also it seems it isn't maintained anymore.
+[[https://github.com/floscr/emacs-calfw/commit/3d17649c545423d919fd3bb9de2efe6dfff210fe][This Commit]] fixes the behavior.
+
+#+BEGIN_SRC elisp
+(package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+#+END_SRC
+** Disabled Packages
+
+Remove those annoying LSP interface plugins
+
+#+BEGIN_SRC elisp
+(package! lsp-ui :disable t)
+(package! merlin-eldoc :disable t)
+#+END_SRC
+
+
 * Configuration
 ** External Files
 *** Secrets
