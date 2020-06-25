@@ -603,6 +603,15 @@ Manually add an expense to the Cash Book.
 (setq rmh-elfeed-org-files (list (+org/expand-org-file-name "Elfeed/Elfeed.org")))
 #+END_SRC
 
+
+**** Minor Mode for org-elfeed
+
+#+BEGIN_SRC elisp :tangle no
+(def-project-mode! +org-elfeed-mode
+  :modes (org-mode)
+  :files "")
+#+END_SRC
+
 **** Bindings
 ***** LocalLeader
 
@@ -1997,9 +2006,10 @@ Browse the current thing at point for git
 ***** ACTIVE Branches by user
 
 #+BEGIN_SRC elisp
-(defun +magit|branches-by-user ()
-  "List all branches by user."
-  (interactive)
+(defun +magit|branches-by-user (&optional ignore-review?)
+  "List all branches by user.
+Universal argument to ignore review branches."
+  (interactive "P")
   (let ((branches
          (->>
           (concat "git for-each-ref"
@@ -2013,7 +2023,11 @@ Browse the current thing at point for git
           (s-split "\n")
           (-butlast)
           (-map (lambda (x) (->> (s-match ".*Florian Schroedl refs\\/heads\\/\\(.*\\)" x)
-                                 (-last-item)))))))
+                                 (-last-item))))
+          ((lambda (xs)
+             (if ignore-review?
+                 (--reject (s-starts-with? "REVIEW" it) xs)
+               xs))))))
     (ivy-read "Checkout: " branches :action #'magit-checkout)))
 #+END_SRC
 
