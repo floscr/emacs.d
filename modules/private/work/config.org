@@ -1,6 +1,6 @@
 #+TITLE: Emacs Work Config
 #+AUTHOR: Florian Schrödl (floscr)
-#+PROPERTY: header-args :tangle yes
+#+PROPERTY: header-args :emacs-lisp :tangle yes :cache yes :results silent :comments yes
 #+STARTUP: org-startup-folded: content
 #+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t -*-

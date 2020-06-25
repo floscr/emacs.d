@@ -1,6 +1,6 @@
 #+TITLE: Org Utils
 #+AUTHOR: Florian Schrödl (floscr)
-#+PROPERTY: header-args :tangle yes
+#+PROPERTY: header-args :emacs-lisp :tangle yes :cache yes :results silent :comments link
 #+STARTUP: org-startup-folded: showall
 #+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t -*-
