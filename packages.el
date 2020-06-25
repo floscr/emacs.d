@@ -12,6 +12,10 @@
 ;; (package! beancount :recipe (:host github :repo "beancount/beancount" :files ("editors/emacs/beancount.el")))
 (package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
 
+(package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+
 ;;; Javascript Packages
 (package! indium)
 (package! impatient-mode)
