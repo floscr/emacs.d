@@ -3034,16 +3034,16 @@ and then do my function.
  (:prefix-map ("f" . "file")
    :desc "Open Private Config" "P" (λ! (find-file (f-join doom-private-dir "config.org")))
    (:prefix-map ("g" . "goto")
-    :desc "Desktop" "D" (λ! (find-file "~/Desktop"))
-    :desc "Code" "c" (λ! (find-file "~/Code"))
-    :desc "Last captured" "c" (λ! (org-goto-marker-or-bmk org-capture-last-stored-marker))
-    :desc "Downloads" "d" (λ! (find-file "~/Downloads"))
-    :desc "Project Root"  "p" (λ! (find-file (projectile-project-root)))
-    :desc "Last refiled" "r" (λ! (org-refile-goto-last-stored))
-    :desc "Tmp" "t" (λ! (find-file "/tmp"))
-    :desc "Home" "h" (λ! (find-file "~"))
-    :desc "Home" "h" (λ! (find-file "~"))
-    :desc "Drive" "/" #'+ivy|counsel-mounted-drives)))
+    :desc "Drive"          "/" #'+ivy|counsel-mounted-drives
+    :desc "Desktop"        "D" (λ! (find-file "~/Desktop"))
+    :desc "Code"           "c" (λ! (find-file "~/Code"))
+    :desc "Last captured"  "c" (λ! (org-goto-marker-or-bmk org-capture-last-stored-marker))
+    :desc "Downloads"      "d" (λ! (find-file "~/Downloads"))
+    :desc "Project Root"   "p" (λ! (find-file (projectile-project-root)))
+    :desc "Last refiled"   "r" (λ! (org-refile-goto-last-stored))
+    :desc "Tmp"            "t" (λ! (find-file "/tmp"))
+    :desc "Home"           "h" (λ! (find-file "~"))
+    :desc "Home"           "h" (λ! (find-file "~")))))
 #+END_SRC
 
 **** Git
