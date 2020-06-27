@@ -4,6 +4,9 @@
 # --
 ** Overview
 
+*Changelog*
+
+$0
 
 *What features/fixes does this PR include?*
 
@@ -15,11 +18,14 @@
 
 *Describe technical (nontrivial / non-obvious) parts of your code*
 
-*Does this branch require a server deploy?*
+*Side effects*
 
-*Does this branch affect desktop apps?*
-
-*Does this branch introduce backwards compatibility issues?*
+# Server deploy required?
+# Desktop apps?
+# MS Teams app?
+# Onboarding?
+# Backwards compatibility?
+# Performance sensitive changes?
 
 ** Testing
 
