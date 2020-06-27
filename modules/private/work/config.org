@@ -1107,6 +1107,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         (:prefix-map ("c" . "Create")
           :desc  "Generate Index"               "I"  (λ! (+js|generate-index nil '("helpers")))
           :desc  "Import File"                  "i"  #'+MM:import|ivy-import
+          :desc  "Import Symbol"                "s"  #'+MM-import|import-symbol-at-point
           :desc  "Rule"                         "r"  #'+MM|add-rule
           :desc  "Container Action"             "a"  #'+MM|create-action
           :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
