@@ -718,8 +718,24 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
              "Line" "Badge" "Input" "Button" "Toggle" "Select" "Message" "Spinner" "Checkbox" "IconButton" "CommentReply" "DiagonalLine" "IconTextButton" "RadioButton" "PopoverHeader" "UpgradeButton" "TextBlockPlaceholder" "TextBlockPlaceholders" "I18nHtml" "LinkShare"
              "Grid" "GridCore" "GridConfig" "MixedGrid" "GridHelpers"))))
 
+(defun +MM-import/find-package-by-symbol (symbol)
+  "Find a package by the passed symbol X."
+  (ht-find (lambda (key value)
+             (--find (equal symbol it) value))
+           +MM-import:package-exports))
+
 (defun +MM-import/find-package-export (package)
   (ht-get +MM-import:package-exports package))
+
+(defun +MM-import|import-symbol-at-point ()
+  "Import the symbol at point or search for import."
+  (interactive)
+  (let* ((symbol (format "%s" (symbol-at-point)))
+         (package (+MM-import/find-package-by-symbol symbol)))
+    (if package
+        (save-excursion
+          (+MM-import/import-package (car package) symbol nil))
+      (user-error "Package not found"))))
 
 (defun +MM-import|import-other-window-file ()
   "Function docstring"
