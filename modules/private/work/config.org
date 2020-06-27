@@ -757,10 +757,10 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
                             (let* ((is-local? (-contains? local-imports import))
                                    (export (unless is-local?
                                              (ivy-read "Export: " (+MM-import/find-package-export import)))))
-                              (when export
-                                (setq pos (point))
-                                (message (template "Imported: <<export>> from <<import>>")))
-                              (+MM-import/import-package import export is-local?))))))
+                              (+MM-import/import-package import export is-local?)
+                              (if export
+                                  (message (template "Imported: <<export>> from <<import>>"))
+                                (setq pos (point))))))))
     (when pos (goto-char pos))))
 #+END_SRC
 
