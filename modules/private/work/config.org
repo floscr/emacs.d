@@ -728,14 +728,20 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 
 (defun +MM:import|ivy-import ()
   (interactive)
-  (let ((local-imports (+MM:import/get-local-imports))
-        (package-imports (+MM:import/get-package-imports)))
-    (ivy-read "Import: " (-concat local-imports package-imports)
-              :action (lambda (import)
-                        (let* ((is-local? (-contains? local-imports import))
-                               (export (unless is-local?
-                                         (ivy-read "Export: " (+MM-import/find-package-export import)))))
-                          (+MM-import/import-package import export is-local?))))))
+  (let ((pos nil))
+    (save-excursion
+      (let ((local-imports (+MM:import/get-local-imports))
+            (package-imports (+MM:import/get-package-imports)))
+        (ivy-read "Import: " (-concat local-imports package-imports)
+                  :action (lambda (import)
+                            (let* ((is-local? (-contains? local-imports import))
+                                   (export (unless is-local?
+                                             (ivy-read "Export: " (+MM-import/find-package-export import)))))
+                              (when export
+                                (setq pos (point))
+                                (message (template "Imported: <<export>> from <<import>>")))
+                              (+MM-import/import-package import export is-local?))))))
+    (when pos (goto-char pos))))
 #+END_SRC
 
 **** Add section line
@@ -1067,37 +1073,30 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         :desc  "Repl"             "R" #'+MM|nodejs-repl
         :desc  "Goto NPM Package" "m" #'+MM|goto-npm-package
         :desc  "Bookmarks"        "b" #'+MM|bookmarks
-
-
         (:prefix ("f" . "file")
           :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
           :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
           :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
-
         (:prefix ("g" . "Goto")
           :desc  "Branch"                       "b"  #'+MM/counsel-branch-menu))
 
   (map! :map js2-mode-map
         :n "[1" #'+MM|alternate-file
         :n "]1" #'+MM|alternate-file
-
         :localleader
-
-        (:prefix ("c" . "Create")
+        (:prefix-map ("c" . "Create")
           :desc  "Generate Index"               "I"  (λ! (+js|generate-index nil '("helpers")))
           :desc  "Import File"                  "i"  #'+MM:import|ivy-import
           :desc  "Rule"                         "r"  #'+MM|add-rule
           :desc  "Container Action"             "a"  #'+MM|create-action
           :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
           :desc  "Container"                    "c"  #'+MM|canvas-create-action)
-
-        (:prefix ("d" . "Debug")
+        (:prefix-map ("d" . "Debug")
           :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
           :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state
           :desc  "Debugger"                     "d"  #'+js|insert-debugger)
-
-        (:prefix ("r" . "Refactor")
-          :desc  "Update props header"           "u"  #'+MM|update-schema-props
+        (:prefix-map ("r" . "Refactor")
+          :desc  "Update props header"           "U"  #'+MM|update-schema-props
           :desc  "Style function into object"   "rs" #'+MM|turn-style-object-into-function
           :desc  "Extract Props"                 "x"  #'+js|extract-props
           :desc  "Convert into new Redux Style"  "X"  #'+MM|turn-style-object-into-function)))
