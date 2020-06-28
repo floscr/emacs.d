@@ -142,7 +142,6 @@ Create a canvas action
 #+END_SRC
 
 *** Search MapEditor Only
-
 **** Canvas Files
 
 #+BEGIN_SRC elisp
@@ -257,10 +256,10 @@ Create a canvas action
   (interactive)
   (let* ((branch-name (magit-get-current-branch))
          (branch-name (if (magit-name-remote-branch branch-name)
-                          (--> branch-name
-                               (magit-name-remote-branch it)
-                               (magit-split-branch-name it)
-                               (cdr it))
+                          (->> branch-name
+                               (magit-name-remote-branch)
+                               (magit-split-branch-name)
+                               (cdr))
                         (concat  (format-time-string "%y-%m") "-" branch-name)))
          (file (f-join org-directory "Work/.pull-requests" (concat branch-name ".org")))
          ;; Prevent file template being applied for file
