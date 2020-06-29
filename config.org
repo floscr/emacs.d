@@ -767,6 +767,11 @@ These don't work if you have a big line-heihgt.
 #+BEGIN_SRC elisp
 (setq +rss-enable-sliced-images nil)
 #+END_SRC
+***** Default Search
+
+#+BEGIN_SRC elisp
+(setq elfeed-search-filter "@2-week-ago +unread ")
+#+END_SRC
 
 **** Minor Mode for org-elfeed
 
