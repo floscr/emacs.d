@@ -777,6 +777,15 @@ These don't work if you have a big line-heihgt.
 #+END_SRC
 
 **** Bindings
+
+***** Show Mode
+
+#+BEGIN_SRC elisp
+(after! elfeed-show
+  (evil-define-key 'normal elfeed-search-mode-map
+    "r" #'elfeed-update))
+#+END_SRC
+
 ***** LocalLeader
 
 #+BEGIN_SRC elisp
