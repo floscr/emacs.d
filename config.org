@@ -808,6 +808,23 @@ Manually add an expense to the Cash Book.
   (eww (elfeed-entry-link elfeed-show-entry))
   (add-hook 'eww-after-render-hook 'eww-readable nil t))
 #+END_SRC
+***** Wrap Elfeed
+
+#+BEGIN_SRC elisp
+(defun +rss|elfeed-wrap ()
+  "Enhances an elfeed entry's readability by wrapping it to a width of
+`fill-column' and centering it with `visual-fill-column-mode'."
+  (let ((inhibit-read-only t)
+        (inhibit-modification-hooks t))
+    (setq-local truncate-lines nil)
+    (setq-local shr-width 50)
+    (setq-local +zen-text-scale 0.9)
+    (mixed-pitch-mode)
+    (writeroom-mode)
+    (set-buffer-modified-p nil)))
+
+(add-hook 'elfeed-show-mode-hook #'+rss|elfeed-wrap)
+#+END_SRC
 
 **** Config
 ***** Org Elfeed File
