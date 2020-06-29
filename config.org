@@ -3109,6 +3109,7 @@ and then do my function.
     :desc "Code"           "c" (λ! (find-file "~/Code"))
     :desc "Last captured"  "c" (λ! (org-goto-marker-or-bmk org-capture-last-stored-marker))
     :desc "Downloads"      "d" (λ! (find-file "~/Downloads"))
+    :desc "Elfeed"         "e" (λ! (find-file (car rmh-elfeed-org-files)))
     :desc "Music"          "m" (λ! (find-file "~/Media/Music"))
     :desc "Project Root"   "p" (λ! (find-file (projectile-project-root)))
     :desc "Last refiled"   "r" (λ! (org-refile-goto-last-stored))
