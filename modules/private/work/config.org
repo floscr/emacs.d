@@ -150,8 +150,9 @@ Create a canvas action
   (interactive)
   (ivy-read "Find File: "
             (--filter (s-contains? "MapEditor" it) (projectile-current-project-files))
-            :action (lambda (x) (find-file (f-join (projectile-project-root) x)))))
+            :action (lambda (x) (doom-project-find-file x))))
 #+END_SRC
+
 *** Insert tap
 
 #+BEGIN_SRC elisp
@@ -169,7 +170,6 @@ Create a canvas action
           (evil-insert-newline-above)
           (next-line)
           (evil-insert-newline-below))))))
-
 
 (defun +MM|chain-tap-log-state ()
   "Adds a tap method to a chain."
