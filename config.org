@@ -428,9 +428,12 @@ Double press ~v~ to enable.
 *** Zen Mode & Variable Pitch Fonts
 
 #+BEGIN_SRC elisp
-(setq +zen-text-scale 0.8)
-(setq doom-variable-pitch-font (font-spec :family "Ubuntu" :height 80 :size 21)
-      doom-serif-font (font-spec :family "Ubuntu" :height 80 :size 21))
+(setq +zen-text-scale 1.5)
+
+(let ((height 140)
+      (size 23))
+  (setq doom-variable-pitch-font (font-spec :family "IBM Plex Sans" :size size)
+        doom-serif-font (font-spec :family "IBM Plex Sans" :size size)))
 #+END_SRC
 
 *** Frame padding
