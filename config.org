@@ -174,7 +174,6 @@ Remove those annoying LSP interface plugins
 (package! merlin-eldoc :disable t)
 #+END_SRC
 
-
 * Configuration
 ** External Files
 *** Secrets
@@ -790,7 +789,6 @@ Manually add an expense to the Cash Book.
 #+END_SRC
 *** Elfeed
 **** Utils
-
 ***** Custom Filters
 ****** All unread
 
@@ -1354,7 +1352,7 @@ Custom eshell aliases.
 **** Set the max page width
 
 #+BEGIN_SRC elisp
-(setq shr-width 120)
+(setq shr-width 100)
 #+END_SRC
 
 *** Git Lens
