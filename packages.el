@@ -58,6 +58,10 @@
 (package! eslintd-fix)
 ;; Javascript:3 ends here
 
+;; [[file:~/.config/doom/config.org::*Javascript][Javascript:4]]
+(package! js-import :recipe (:host github :repo "floscr/js-import"))
+;; Javascript:4 ends here
+
 ;; [[file:~/.config/doom/config.org::*Git][Git:1]]
 (package! git-lens)
 ;; Git:1 ends here

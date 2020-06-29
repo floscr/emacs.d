@@ -134,6 +134,12 @@ Autofixing that isn't slow
 (package! eslintd-fix)
 #+END_SRC
 
+Package importing
+
+#+BEGIN_SRC elisp
+(package! js-import :recipe (:host github :repo "floscr/js-import"))
+#+END_SRC
+
 *** Git
 
 Show changes in current branch
