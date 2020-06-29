@@ -647,6 +647,55 @@ Saving and committing keeps the indentation in the source buffer.
 #+END_SRC
 
 ** Package Config
+*** Writeroom
+
+**** Setup
+
+The setup function
+
+#+BEGIN_SRC elisp
+(defun +writeroom/writeroom-setup ()
+  (if writeroom-mode
+      (+writeroom/writeroom-load)
+    (+writeroom/writeroom-unload)))
+
+(defun +writeroom/writeroom-load ()
+  (setq-local line-spacing 0.4)
+  (+org-pretty-mode 1)
+  (setq-local +writeroom:faceremaps
+              (list
+               (face-remap-add-relative
+                'org-link `(:foreground ,(face-attribute 'default :foreground)
+                            :underline ,(face-attribute 'default :foreground)
+                            :weight normal))
+               (face-remap-add-relative
+                'default `(:foreground ,(doom-blend
+                                         (face-attribute 'default :background)
+                                         (face-attribute 'default :foreground)
+                                         0.1))))))
+
+(defun +writeroom/writeroom-unload ()
+  (kill-local-variable 'line-spacing)
+  (+org-pretty-mode -1)
+  (mapc #'face-remap-remove-relative +writeroom:faceremaps)
+  (kill-local-variable '+writeroom:faceremaps))
+
+;; (defun +writeroom|toggle ()
+;;   (interactive)
+;;   (require 'writeroom-mode)
+;;   (if writeroom-mode
+;;       (progn
+;;         (+writeroom/writeroom-unload)
+;;         (writeroom-mode -1))
+;;     (writeroom-mode 1)))
+#+END_SRC
+
+and the hooks:
+
+#+BEGIN_SRC elisp 
+(add-hook! 'writeroom-mode-hook #'+writeroom/writeroom-setup)
+#+END_SRC
+
 *** Beancount
 **** Config
 
