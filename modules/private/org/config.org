@@ -1401,6 +1401,19 @@ Return the path of the file."
   (org-agenda-filter-apply org-agenda-tag-filter 'tag t))
 #+END_SRC
 
+*** Attach File
+
+#+BEGIN_SRC elisp
+(defun +org/attach-file (x)
+  "Function docstring"
+  (interactive "P")
+  (->>
+   (or x (let ((default-directory downloads-dir))
+           (flet ((counsel-find-file-action (identity)))
+             (counsel-find-file))))
+   (+org/attach-file-and-insert-link)))
+#+END_SRC
+
 ** Package Config
 *** Roam
 **** Config
