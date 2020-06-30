@@ -150,7 +150,7 @@ Create a canvas action
   (interactive)
   (ivy-read "Find File: "
             (--filter (s-contains? "MapEditor" it) (projectile-current-project-files))
-            :action (lambda (x) (doom-project-find-file x))))
+            :action (lambda (x) (find-file (f-join (projectile-project-root) x)))))
 #+END_SRC
 
 *** Insert tap
