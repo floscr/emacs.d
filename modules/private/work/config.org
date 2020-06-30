@@ -364,7 +364,10 @@ bookmarks are not helpful since they're not relative.
                :name "Common: Maybe"
                :action counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Box.js"
-               :name "Common: Bxo"
+               :name "Common: Box"
+               :action counsel-imenu)
+        (:file "~/Code/Meisterlabs/kits-2.0/packages/redux-core/src/CollectionStore.js"
+               :name "Common: CollectionStore"
                :action counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx"
                :name "Command Line Flags"
