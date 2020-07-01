@@ -1799,7 +1799,8 @@ Unless I'm looking at a link, than continue like common.
      :desc "Goto Current"             "g" #'counsel-org-clock-history
      :desc "Resolve"                  "r" #'org-resolve-clocks
      :desc "Clock In Last"            "l" #'org-clock-in-last
-     :desc "Cancel"                   "x" #'org-clock-cancel)))
+     :desc "Cancel"                   "x" #'org-clock-cancel
+     :desc "Visit Entry"              "'" #'+org|clock-visit-entry)))
 #+END_SRC
 *** Fixes
 **** Evil replace with register fixes
