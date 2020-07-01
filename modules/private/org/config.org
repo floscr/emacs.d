@@ -1531,7 +1531,10 @@ To sync the calendars use ~org-caldav-sync~.
 
 #+BEGIN_SRC elisp
 (use-package! org-noter
-  :commands (org-noter))
+  :commands (org-noter)
+  :config
+  (setq org-noter-always-create-frame nil)
+  (setq org-noter-kill-frame-at-session-end nil))
 #+END_SRC
 
 **** Utils
