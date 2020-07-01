@@ -314,6 +314,40 @@ Never blink the cursor, it's too distracting.
 #+END_SRC
 
 ** Utilities
+*** Toggle Window Split
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
+:END:
+
+
+#+BEGIN_SRC elisp
+(defun +window|toggle-split-direction ()
+  "Toggle current window split between horizontal and vertical."
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+#+END_SRC
+
 *** Toggle Window Dedicated
 :PROPERTIES:
 :SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
@@ -3222,6 +3256,8 @@ and then do my function.
   :desc  "Undo"                 "u"    #'winner-undo
   :desc  "Redo"                 "r"    #'winner-redo
   :desc  "Enlargen"             "o"    #'doom/window-enlargen
+
+  :desc  "Toggle Split"         "T"    #'+window|toggle-split-direction
 
   :desc  "Split Vertical"       "|"    #'evil-window-vsplit
   :desc  "Split Horizontal"     "_"    #'evil-window-split
