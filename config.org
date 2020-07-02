@@ -2899,8 +2899,7 @@ and the line above, skipping empty lines."
   (define-key evil-visual-state-map (kbd "M-b") 'evil-backward-little-word-begin)
   (define-key evil-visual-state-map (kbd "i M-w") 'evil-inner-little-word))
 
-(after! (rjsx-mode reason-mode js2-mode)
-  (load-evil-camel-case-motion))
+(load-evil-camel-case-motion)
 #+END_SRC
 
 **** Normal Bindings
