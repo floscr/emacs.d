@@ -821,7 +821,7 @@ Manually add an expense to the Cash Book.
       :n "q" #'beancount-query
       :n "b" #'+beancount|balance)
 #+END_SRC
-*** Elfeed
+*** RSS with Elfeed
 **** Utils
 ***** Custom Filters
 ****** All unread
@@ -975,12 +975,26 @@ These don't work if you have a big line-heihgt.
 #+END_SRC
 
 **** Bindings
-***** Show Mode
+***** Search Mode Bindings
 
 #+BEGIN_SRC elisp
-(after! elfeed-show
-  (evil-define-key 'normal elfeed-search-mode-map
-    "r" #'elfeed-update))
+(map!
+ :after elfeed
+ :map elfeed-search-mode-map
+ :gn "r" #'elfeed-update
+ (:prefix-map ("g" . "Go")
+  :desc "Youtube" :gn "y" (λ! (elfeed-search-set-filter "@2-week-ago +YOUTUBE +unread"))
+  :desc "Normal"  :gn "n" (λ! (elfeed-search-set-filter "@2-week-ago -YOUTUBE +unread"))
+  :desc "Month"   :gn "m" (λ! (elfeed-search-set-filter "@1-month-ago +unread"))))
+#+END_SRC
+
+***** Show Mode Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after elfeed
+ :map elfeed-search-mode-map
+ :gn "r" #'elfeed-update)
 #+END_SRC
 
 ***** LocalLeader
