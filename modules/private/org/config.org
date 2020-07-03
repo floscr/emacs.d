@@ -242,10 +242,18 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                     :headline "Reading List"
                     :file +org:reading-list-file)
                   ("Elfeed"
-                    :keys "e"
-                    :title "%(pop kill-ring)"
-                    :headline "Watching List"
-                    :file +org:reading-list-file)
+                   :keys "e"
+                   :children
+                   (("Watch"
+                     :keys "w"
+                     :title "%(pop kill-ring)"
+                     :headline "Watching List"
+                     :file +org:reading-list-file)
+                    ("Read"
+                     :keys "r"
+                     :title "%(pop kill-ring)"
+                     :headline "Reading List"
+                     :file +org:reading-list-file)))
                   ("Shopping"
                    :keys "s"
                    :headline "Supermarket"
