@@ -1043,6 +1043,16 @@ These don't work if you have a big line-heihgt.
       (call-interactively #'=calendar)))
 #+END_SRC
 
+****** Personal (Just Birthdays)
+
+#+BEGIN_SRC elisp
+(defun +calendar|birthdays (&rest args)
+  (interactive)
+  (let ((org-agenda-files `(,(+org/expand-org-file-name "Main/contacts.org")))
+        (org-agenda-skip-function '(+org/agenda-skip-without-match "+BIRTHDAY")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
 ****** Personal (Without Family)
 
 #+BEGIN_SRC elisp
