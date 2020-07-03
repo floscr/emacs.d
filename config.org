@@ -833,6 +833,28 @@ Manually add an expense to the Cash Book.
   (elfeed-search-set-filter "@6-months-ago +unread"))
 #+END_SRC
 
+***** Visit
+
+Open the current entry:
+- With the browser
+- Or if it's a youtube feed, open with [[*Elfeed MPV][mpv]]
+
+#+BEGIN_SRC elisp
+(defun +rss|visit-dwim ()
+  "Either open the current entry in eww or play it in mpv."
+  (interactive)
+  (message "")
+  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
+        (patterns +rss:mpv-patterns))
+    (while (and patterns (not (string-match (car +rss:mpv-patterns) (elfeed-entry-link entry))))
+      (setq patterns (cdr patterns)))
+    (if patterns
+        (+rss|play-with-mpv)
+      (if (eq major-mode 'elfeed-search-mode)
+          (elfeed-search-browse-url)
+        (elfeed-show-visit)))))
+#+END_SRC
+
 ***** Open with Eww
 
 #+BEGIN_SRC elisp
@@ -842,6 +864,7 @@ Manually add an expense to the Cash Book.
   (eww (elfeed-entry-link elfeed-show-entry))
   (add-hook 'eww-after-render-hook 'eww-readable nil t))
 #+END_SRC
+
 ***** Wrap Elfeed
 
 #+BEGIN_SRC elisp
@@ -859,6 +882,30 @@ Manually add an expense to the Cash Book.
 
 (add-hook 'elfeed-show-mode-hook #'+rss|elfeed-wrap)
 #+END_SRC
+
+***** Elfeed MPV
+
+Play youtube entries via mpv
+
+#+BEGIN_SRC elisp
+(defvar +rss:mpv-patterns
+  '("youtu\\.?be")
+  "List of regexp to match against elfeed entry link to know
+whether to use mpv to visit the link.")
+
+(defun +rss|play-with-mpv ()
+  "Play entry link with mpv."
+  (interactive)
+  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
+        (quality-arg "")
+        (quality-val (completing-read "Max height resolution (0 for unlimited): " '("0" "480" "720" "1080") nil nil "720")))
+    (setq quality-val (string-to-number quality-val))
+    (message "Opening %s with height≤%s with mpv..." (elfeed-entry-link entry) quality-val)
+    (when (< 0 quality-val)
+      (setq quality-arg (format "--ytdl-format=[height<=?%s]" quality-val)))
+    (+my/start-inferior-process "elfeed-mpv" nil "mpv" quality-arg (elfeed-entry-link entry))))
+#+END_SRC
+
 
 ***** Capture Elfeed Entries
 
@@ -898,7 +945,6 @@ Manually add an expense to the Cash Book.
 ;;  :gn "Co" #'+rss|capture)
 #+END_SRC
 
-
 **** Config
 ***** Org Elfeed File
 
@@ -913,6 +959,7 @@ These don't work if you have a big line-heihgt.
 #+BEGIN_SRC elisp
 (setq +rss-enable-sliced-images nil)
 #+END_SRC
+
 ***** Default Search
 
 #+BEGIN_SRC elisp
@@ -928,7 +975,6 @@ These don't work if you have a big line-heihgt.
 #+END_SRC
 
 **** Bindings
-
 ***** Show Mode
 
 #+BEGIN_SRC elisp
@@ -944,6 +990,7 @@ These don't work if you have a big line-heihgt.
       :localleader
       :desc "Capture"   "c" #'+rss|capture
       :desc "Open Eww"  "o" #'+rss|open-eww
+      :desc "Visit"     "v" #'+rss|visit-dwim
       (:prefix-map ("s" . "Search")
        :desc "Unread" "u" #'+rss|search-unread))
 #+END_SRC
