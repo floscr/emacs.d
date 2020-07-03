@@ -1297,6 +1297,31 @@ I undo this option with the interactive prefix argument, which can be accessed v
                   (expand-file-name file-path))))
      file-list)))
 #+END_SRC
+***** Toggle Sorting
+
+When you toggle the sorting via ~dired-sort-toggle-or-edit~ the cursor stays at the current file, which is very disorienting.
+With this function the cursor stays on the current line.
+~save-excursion~ does not work in this function, it just throws to the top of the buffer.
+The dired-line jumps at the end are used to jump the filename again.
+
+#+BEGIN_SRC elisp
+(defun +dired|toggle-sort (&optional arg)
+  "Toggle sorting but stay on the same line"
+  (interactive "P")
+  (let ((pos (point)))
+    (cond
+     ((eq arg 2)
+      (setq dired-listing-switches
+            (read-string "ls switches (must contain -l): " dired-listing-switches)))
+     (arg
+      (setq dired-actual-switches
+            (read-string "ls switches (must contain -l): " dired-actual-switches)))
+     (t
+      (goto-char pos)
+      (dired-sort-toggle-or-edit)
+      (dired-next-line 1)
+      (dired-previous-line 1)))))
+#+END_SRC
 
 **** Extensions
 ***** Narrow
@@ -1372,6 +1397,7 @@ Automatically open files with external applications.
 (map! :after dired
       :map dired-mode-map
       :ng "<C-return>" '+dired|open-externally
+      :gn "o" '+dired|toggle-sort
       :n "p" '+dired|paste-dwim)
 #+END_SRC
 
