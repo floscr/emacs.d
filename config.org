@@ -3336,7 +3336,8 @@ and then do my function.
   :desc  "Set Height"           "C-|"  #'evil-window-set-width
 
   :desc  "Swap"                 "SPC"  #'ace-swap-window
-  :desc "Toggle Locked"         "#"    #'+my|toggle-window-dedicated))
+  :desc  "Toggle Locked"        "#"    #'+my|toggle-window-dedicated
+  :desc "Toggle Locked"         "."    #'+popup/raise))
 #+END_SRC
 
 **** Workspace
