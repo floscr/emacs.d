@@ -963,7 +963,7 @@ These don't work if you have a big line-heihgt.
 ***** Default Search
 
 #+BEGIN_SRC elisp
-(setq elfeed-search-filter "@2-week-ago +unread ")
+(setq-default elfeed-search-filter "@2-week-ago +unread -YOUTUBE")
 #+END_SRC
 
 **** Minor Mode for org-elfeed
