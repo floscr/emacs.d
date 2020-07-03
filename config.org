@@ -1009,6 +1009,35 @@ These don't work if you have a big line-heihgt.
 #+End_SRC
 
 *** Calendar
+**** Utils
+***** Filtered Calendars
+****** Personal (Without Work)
+
+#+BEGIN_SRC elisp
+(defun +calendar|personal (&rest args)
+  (interactive)
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
+****** Personal (Without Family)
+
+#+BEGIN_SRC elisp
+(defun +calendar|no-family (&rest args)
+  (interactive)
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-FAMILY-WORK")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
+****** Work
+
+#+BEGIN_SRC elisp
+(defun +calendar|work (&rest args)
+  (interactive)
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
 **** Config
 ***** Calendars
 

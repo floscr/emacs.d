@@ -7,6 +7,55 @@
 #+END_SRC
 
 * Utils
+** Parsing Functions
+*** Match at point
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/questions/10074016/org-mode-filter-on-tag-in-agenda-view/33444799#33444799][emacs - Org-mode: Filter on tag in agenda view? - Stack Overflow]]
+:END:
+
+Weather the entry at point matches either =TAG= or =TODO=.
+
+#+BEGIN_SRC elisp
+(defun +org/match-at-point-p (match)
+  "Return non-nil if headline at point matches MATCH.
+Here MATCH is a match string of the same format used by
+`org-tags-view'."
+  (funcall (cdr (org-make-tags-matcher match))
+           (org-get-todo-state)
+           (org-get-tags-at)
+           (org-reduced-level (org-current-level))))
+#+END_SRC
+
+** Agenda
+*** Skip agenda entry without match
+
+Skip entries without =TODO= or =TAG=.
+
+Can be used like this
+
+#+BEGIN_SRC elisp :tangle no
+(let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK")))
+    (org-agenda "a"))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(defun +org/agenda-skip-without-match (match)
+  "Skip current headline unless it matches MATCH.
+
+Return nil if headline containing point matches MATCH (which
+should be a match string of the same format used by
+`org-tags-view').  If headline does not match, return the
+position of the next headline in current buffer.
+
+Intended for use with `org-agenda-skip-function', where this will
+skip exactly those headlines that do not match."
+  (save-excursion
+    (unless (org-at-heading-p) (org-back-to-heading))
+    (let ((next-headline (save-excursion
+                           (or (outline-next-heading) (point-max)))))
+      (if (+org/match-at-point-p match) nil next-headline))))
+#+END_SRC
+
 ** Org Links
 *** Is looking at link
 
