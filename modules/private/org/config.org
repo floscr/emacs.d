@@ -306,6 +306,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
         (+org/expand-org-file-names
          '("Main/gtd.org"
            "Main/inbox.org"
+           "Main/contacts.org"
            "Main/calendar-family.org"
            "Work/work.org"))))
 #+END_SRC
@@ -621,7 +622,6 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 )
 #+END_SRC
-
 *** Tables
 **** Copy Table Field
 
