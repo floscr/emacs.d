@@ -1177,7 +1177,7 @@ Automatically revert dired buffers.
                    (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
           (make-directory directory-name t))))))
 #+END_SRC
-**** Functions
+**** Utils
 ***** Dired Paste DWIM
 
 #+BEGIN_SRC elisp
