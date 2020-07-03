@@ -860,6 +860,45 @@ Manually add an expense to the Cash Book.
 (add-hook 'elfeed-show-mode-hook #'+rss|elfeed-wrap)
 #+END_SRC
 
+***** Capture Elfeed Entries
+
+#+BEGIN_SRC elisp
+(defun +rss/stringify-entry (entry)
+  (let ((title (->> (elfeed-entry-title entry)
+                    ;; Remove braces, they're just confusing to org links
+                    (s-replace "[" "")
+                    (s-replace "]" "")))
+        (url (elfeed-entry-link entry))
+        (author (->> (elfeed-meta entry :authors)
+                     car
+                     ((lambda (x) (plist-get x :name)))))
+        (tags (-some--> (elfeed-entry-tags entry)
+                (-remove-item 'unread it)
+                (-map #'symbol-name it)
+                (s-join ":" it)
+                (s-wrap it ":" ":"))))
+    (template "[[<<url>>][<<author>> - <<title>>]] <<(when tags tags)>>")))
+
+(defun +rss|capture ()
+  "Capture current entry of elfeed."
+  (interactive)
+  (let* ((entry (if (eq major-mode 'elfeed-show-mode)
+                   elfeed-show-entry
+                 (elfeed-search-selected :single)))
+         (org-entry (+rss/stringify-entry entry)))
+       (kill-new org-entry)
+       (if (s-contains? org-entry "youtube.com")
+           (org-capture nil "ew")
+        (org-capture nil "er"))))
+
+;; (map!
+;;  :after elfeed
+;;  :map (elfeed-show-mode-map elfeed-show-mode-map)
+;;  :local
+;;  :gn "Co" #'+rss|capture)
+#+END_SRC
+
+
 **** Config
 ***** Org Elfeed File
 
@@ -903,6 +942,7 @@ These don't work if you have a big line-heihgt.
 #+BEGIN_SRC elisp
 (map! :map (elfeed-search-mode-map elfeed-show-mode-map)
       :localleader
+      :desc "Capture"   "c" #'+rss|capture
       :desc "Open Eww"  "o" #'+rss|open-eww
       (:prefix-map ("s" . "Search")
        :desc "Unread" "u" #'+rss|search-unread))

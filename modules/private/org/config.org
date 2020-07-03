@@ -239,6 +239,12 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                   ("Reading List"
                     :keys "r"
                     :title "%(+wm/last-chrome-window-org-link)"
+                    :headline "Reading List"
+                    :file +org:reading-list-file)
+                  ("Elfeed"
+                    :keys "e"
+                    :title "%(pop kill-ring)"
+                    :headline "Watching List"
                     :file +org:reading-list-file)
                   ("Shopping"
                    :keys "s"
@@ -267,6 +273,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                             ":URL: %(nth 1 (+wm/last-chrome-window-url-title))"
                             ":CREATED: %U"
                             ":END:"))))))
+
 #+END_SRC
 *** SRC block snippets
 
