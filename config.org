@@ -874,7 +874,7 @@ Open the current entry:
   (let ((inhibit-read-only t)
         (inhibit-modification-hooks t))
     (setq-local truncate-lines nil)
-    (setq-local shr-width 50)
+    (setq-local shr-width 100)
     (setq-local +zen-text-scale 0.9)
     (mixed-pitch-mode)
     (writeroom-mode)
@@ -905,7 +905,6 @@ whether to use mpv to visit the link.")
       (setq quality-arg (format "--ytdl-format=[height<=?%s]" quality-val)))
     (+my/start-inferior-process "elfeed-mpv" nil "mpv" quality-arg (elfeed-entry-link entry))))
 #+END_SRC
-
 
 ***** Capture Elfeed Entries
 
