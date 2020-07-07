@@ -295,6 +295,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
 (add-to-list 'org-structure-template-alist '("oc" "#+BEGIN_SRC ocaml\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("rb" "#+BEGIN_SRC ruby\n?\n#+END_SRC\n"))
 (add-to-list 'org-structure-template-alist '("md" "#+BEGIN_SRC markdown\n?\n#+END_SRC\n"))
+(add-to-list 'org-structure-template-alist '("n" "#+BEGIN_SRC nim\n?\n#+END_SRC\n"))
 #+END_SRC
 
 *** Agenda
