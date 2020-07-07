@@ -2078,6 +2078,7 @@ Adds general bindings to ivy.
  :after ivy
  :map ivy-minibuffer-map
   "<s-return>" 'ivy-call
+  "<C-tab>" 'minibuffer-complete
   "<C-return>" 'ivy-immediate-done
   "M-m" 'ivy-mark)
 #+END_SRC
