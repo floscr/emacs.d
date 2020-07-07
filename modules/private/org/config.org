@@ -1430,6 +1430,12 @@ Return the path of the file."
 #+END_SRC
 
 ** Package Config
+*** Org Download
+
+#+BEGIN_SRC elisp
+(setq org-download-screenshot-method "flameshot gui --raw > %s")
+#+END_SRC
+
 *** Roam
 **** Config
 
