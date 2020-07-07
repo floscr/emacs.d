@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: React Class Constructor
+# key: rcon
+# --
+constructor(props) {
+    super(props);
+}
