@@ -70,7 +70,7 @@ skip exactly those headlines that do not match."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +org/link-from-point ()
+(defun +org|link-from-point ()
   (interactive)
   (-some--> (+org/link-at-point)
             (buffer-substring-no-properties (or (cadr it) (point-min))
@@ -80,14 +80,14 @@ skip exactly those headlines that do not match."
 ;;;###autoload
 (defun +org|link-url-from-point ()
   (interactive)
-  (-some->> (+org/link-from-point)
+  (-some->> (+org|link-from-point)
     (+org/parse-link)
     (nth 1)))
 
 ;;;###autoload
 (defun +org|link-title-from-point ()
   (interactive)
-  (-some->> (+org/link-from-point)
+  (-some->> (+org|link-from-point)
     (+org/parse-link)
     (nth 2)))
 #+END_SRC

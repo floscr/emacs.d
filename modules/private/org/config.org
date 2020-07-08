@@ -1394,6 +1394,7 @@ Return the path of the file."
                   (org-find-exact-headline-in-buffer headline))))
       (org-agenda-refile arg (list headline file nil pos) t))))
 #+END_SRC
+
 *** Cut Link
 
 #+BEGIN_SRC elisp
@@ -1679,8 +1680,9 @@ Unless I'm looking at a link, than continue like common.
       :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
       (:prefix-map ("y" . "Yank")
-       :desc "Item" "l" (λ! (copy-message (+org|link-url-from-point)))
-       :desc "Item" "t" (λ! (copy-message (+org|link-title-from-point))))
+       :desc "Link" "l" (λ! (copy-message (+org|link-from-point)))
+       :desc "Url" "u" (λ! (copy-message (+org|link-url-from-point)))
+       :desc "Title" "t" (λ! (copy-message (+org|link-title-from-point))))
 
       (:prefix-map ("C" . "Cut")
        :desc "Item" "C" 'org-cut-subtree
