@@ -62,6 +62,10 @@
 (package! js-import :recipe (:host github :repo "floscr/js-import"))
 ;; Javascript:4 ends here
 
+;; [[file:~/.config/doom/config.org::*Graphql][Graphql:1]]
+(package! graphql)
+;; Graphql:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*Git][Git:1]]
 (package! git-lens)
 ;; Git:1 ends here

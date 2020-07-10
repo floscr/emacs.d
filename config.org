@@ -140,6 +140,12 @@ Package importing
 (package! js-import :recipe (:host github :repo "floscr/js-import"))
 #+END_SRC
 
+*** Graphql
+
+#+BEGIN_SRC elisp
+(package! graphql)
+#+END_SRC
+
 *** Git
 
 Show changes in current branch
