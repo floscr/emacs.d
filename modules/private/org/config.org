@@ -535,6 +535,23 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
    ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
     (org-agenda-files (list (f-join org-directory "Work/work.org"))))))
 #+END_SRC
+
+****** Meistermacs
+
+#+BEGIN_SRC elisp
+(+org/add-to-agenda-custom-commands
+ '("ys" "Sprint"
+   ((alltodo ""
+             ((org-super-agenda-groups '((:auto-property "TASK_SECTION"))))))
+   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mind_meister_sprint.org"))))))
+
+(+org/add-to-agenda-custom-commands
+ '("yb" "Beta"
+   ((alltodo ""
+             ((org-super-agenda-groups '((:auto-property "TASK_SECTION"))))))
+   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mm_panda.org"))))))
+#+END_SRC
+
 ***** Personal projects
 
 #+BEGIN_SRC elisp
@@ -560,7 +577,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "Self Help" :tag ("SELF_HELP"))
                                  (:name "Comics" :tag ("COMIC")))))))))
 #+END_SRC
-
 ***** Closing Tag
 
 #+BEGIN_SRC elisp
