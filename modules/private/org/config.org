@@ -542,14 +542,15 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 (+org/add-to-agenda-custom-commands
  '("ys" "Sprint"
    ((alltodo ""
-             ((org-super-agenda-groups '((:auto-property "TASK_SECTION"))))))
+             ((org-super-agenda-groups '((:auto-category t))))))
    ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mind_meister_sprint.org"))))))
 
 (+org/add-to-agenda-custom-commands
  '("yb" "Beta"
    ((alltodo ""
-             ((org-super-agenda-groups '((:auto-property "TASK_SECTION"))))))
-   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mm_panda.org"))))))
+             ((org-super-agenda-groups '((:auto-category t))))))
+   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mm_panda.org")))
+    (org-agenda-hide-tags-regexp "meistertask_mm_panda"))))
 #+END_SRC
 
 ***** Personal projects
