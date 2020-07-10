@@ -347,6 +347,12 @@ bookmarks are not helpful since they're not relative.
                :name "DragDrop: findDropPoint"
                :goto "export const findDropPoint"
                :goto-bol t)
+        (:file "src/API/MapEditor.Changes/index.js"
+               :relative t
+               :name "Changes: Action Whitelist"
+               :goto "const ACTION_WHITELIST = Arr"
+               :goto-bol t)
+
         (:file "~/Code/Meisterlabs/kits-2.0/packages/knightrider/src/Rules.js"
                :name "Redux: Rules"
                :action counsel-imenu
