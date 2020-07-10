@@ -243,6 +243,7 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
      (progn (forward-visible-line 0) (point))
      (progn (forward-visible-line 1) (point)))))
 #+END_SRC
+
 ** Start Process with Nohup
 
 I don't want some processes to exit, when I close emacs.
@@ -253,13 +254,20 @@ I don't want some processes to exit, when I close emacs.
   (let ((name (format "*nohup: %s*" command)))
     (start-process-shell-command name nil (format "nohup %s" command))))
 
-;;;autoload
+;;;###autoload
 (defun +my/start-inferior-process (name buffer program &rest program-args)
-  (let ((nohup-name (lambda (text)
+  (let ((nohup-name (lambda (&optional text)
                       (if (not (null text))
                           (format "*nohup: %s*" text)
-                        nil))))
-    (apply 'start-process (append `(,(funcall nohup-name name) ,(funcall nohup-name buffer) "nohup" ,program) program-args))))
+                        nil)))
+        (args (-some->> program-args
+                (s-join " "))))
+    (start-process
+     (funcall nohup-name name)
+     (funcall nohup-name buffer)
+     shell-file-name
+     shell-command-switch
+     (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
 #+END_SRC
 
 

@@ -1265,8 +1265,8 @@ whether to use mpv to visit the link.")
     (setq quality-val (string-to-number quality-val))
     (message "Opening %s with height≤%s with mpv..." (elfeed-entry-link entry) quality-val)
     (when (< 0 quality-val)
-      (setq quality-arg (format "--ytdl-format=[height<=?%s]" quality-val)))
-    (+my/start-inferior-process "elfeed-mpv" nil "mpv" quality-arg (elfeed-entry-link entry))))
+      (setq quality-arg (format "--ytdl-format=\"[height<=?%s]\"" quality-val)))
+    (+my/start-inferior-process "elfeed-mpv" nil "mpv" quality-arg (s-wrap (elfeed-entry-link entry) "\""))))
 #+END_SRC
 
 ***** Capture Elfeed Entries
