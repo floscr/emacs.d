@@ -1759,13 +1759,8 @@ I undo this option with the interactive prefix argument, which can be accessed v
   (interactive)
   (let ((file-list (dired-get-marked-files))
         (process-connection-type nil))
-    (mapc
-     (lambda (file-path)
-       (start-process
-          "" nil shell-file-name
-          shell-command-switch
-          (format "nohup 1>/dev/null 2>/dev/null xdg-open \"%s\" &"
-                  (expand-file-name file-path))))
+    (--map
+     (+my/start-inferior-process "xdg-open: " nil "xdg-open" (s-wrap (expand-file-name it) "\""))
      file-list)))
 #+END_SRC
 ***** Toggle Sorting
