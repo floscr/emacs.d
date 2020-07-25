@@ -269,6 +269,9 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                      ("Task (Chrome)"
                       :keys "c"
                       :title "%(+wm/last-chrome-window-org-link-formatted) :TASK:")
+                     ("Meeting (Chrome)"
+                      :keys "m"
+                      :title "%(+wm/last-chrome-window-org-link-formatted) :MEETING:")
                      ("Review (Chrome)"
                       :keys "r"
                       :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
