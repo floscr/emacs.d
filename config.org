@@ -1184,6 +1184,7 @@ Manually add an expense to the Cash Book.
       :n "q" #'beancount-query
       :n "b" #'+beancount|balance)
 #+END_SRC
+
 *** RSS with Elfeed
 **** Utils
 ***** Custom Filters
@@ -1763,6 +1764,7 @@ I undo this option with the interactive prefix argument, which can be accessed v
      (+my/start-inferior-process "xdg-open: " nil "xdg-open" (s-wrap (expand-file-name it) "\""))
      file-list)))
 #+END_SRC
+
 ***** Toggle Sorting
 
 When you toggle the sorting via ~dired-sort-toggle-or-edit~ the cursor stays at the current file, which is very disorienting.
