@@ -721,6 +721,10 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (setq +MM-import:package-exports
       (ht ("@meisterlabs/common"
            '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch"))
+          ("@meisterlabs/knightrider"
+           '("View" "Text"))
+          ("@meisterlabs/react-hide"
+           '("Show" "Hide"))
           ("@meisterlabs/ui"
            '("animations" "animationHelpers" "colors" "rgba" "shadows" "gradients" "planColors" "fonts"
              "Line" "Badge" "Input" "Button" "Toggle" "Select" "Message" "Spinner" "Checkbox" "IconButton" "CommentReply" "DiagonalLine" "IconTextButton" "RadioButton" "PopoverHeader" "UpgradeButton" "TextBlockPlaceholder" "TextBlockPlaceholders" "I18nHtml" "LinkShare"
