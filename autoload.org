@@ -270,6 +270,27 @@ I don't want some processes to exit, when I close emacs.
      (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
 #+END_SRC
 
+** Map Lines
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +my/map-lines (fun &optional start end)
+  "Map lines in buffer with FUN, fn gets called with the line contents."
+  (let ((start (or start (point-min)))
+        (end (or end (point-max)))
+        (lines (list)))
+    (save-excursion
+      (goto-char start)
+      (while (< (point) end)
+        (add-to-list 'lines
+          (funcall fun (buffer-substring (line-beginning-position) (line-end-position))))
+        (forward-line 1))
+      (erase-buffer)
+      (->> lines
+           reverse
+           (s-join "\n")
+           insert))))
+#+END_SRC
 
 * Functional Utils
 ** Noop
