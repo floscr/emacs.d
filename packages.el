@@ -1,5 +1,9 @@
 ;; -*- no-byte-compile: t; -*-
 
+;; [[file:~/.config/doom/config.org::*System][System:1]]
+(package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
+;; System:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*Evil][Evil:1]]
 (package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
 ;; Evil:1 ends here

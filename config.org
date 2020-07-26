@@ -35,6 +35,12 @@ I often use my helper function [[file:autoload.org::*Template Literals][(templat
 #+END_SRC
 
 ** General Packages
+*** System
+
+#+BEGIN_SRC elisp
+(package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
+#+END_SRC
+
 *** Evil
 
 [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
