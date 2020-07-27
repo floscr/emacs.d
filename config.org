@@ -2542,6 +2542,13 @@ Universal argument to ignore review branches."
                xs))))))
     (ivy-read "Checkout: " branches :action #'magit-checkout)))
 #+END_SRC
+***** Load forge when needed
+
+#+BEGIN_SRC elisp
+(use-package! forge
+  :commands (forge-browse-commit))
+#+END_SRC
+
 
 **** Config
 
