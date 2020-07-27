@@ -1866,18 +1866,19 @@ Unless I'm looking at a link, than continue like common.
     :desc "Refile Last Stored"        "r" #'org-refile-goto-last-stored)
 
    (:prefix-map ("c" . "clock")
-     :desc "Timestamp Down"           "-" #'org-clock-timestamps-down
-     :desc "Timestamp Up"             "=" #'org-clock-timestamps-up
-     :desc "Clock Out"                "C" #'org-clock-out
-     :desc "Goto Select"              "G" (λ! (org-clock-goto 'select))
-     :desc "Clock In"                 "c" #'org-clock-in
-     :desc "Mark Default Task"        "d" #'org-clock-mark-default-task
-     :desc "Modify Effort Estimate"   "e" #'org-clock-modify-effort-estimate
-     :desc "Goto Current"             "g" #'counsel-org-clock-history
-     :desc "Resolve"                  "r" #'org-resolve-clocks
-     :desc "Clock In Last"            "l" #'org-clock-in-last
-     :desc "Cancel"                   "x" #'org-clock-cancel
-     :desc "Visit Entry"              "'" #'+org|clock-visit-entry)))
+     :desc "Timestamp Down"           "-"   #'org-clock-timestamps-down
+     :desc "Timestamp Up"             "="   #'org-clock-timestamps-up
+     :desc "Clock Out"                "C"   #'org-clock-out
+     :desc "Goto Select"              "G"   (λ! (org-clock-goto 'select))
+     :desc "Clock In"                 "c"   #'org-clock-in
+     :desc "Mark Default Task"        "d"   #'org-clock-mark-default-task
+     :desc "Modify Effort Estimate"   "e"   #'org-clock-modify-effort-estimate
+     :desc "Goto Current"             "g"   #'counsel-org-clock-history
+     :desc "Resolve"                  "r"   #'org-resolve-clocks
+     :desc "Clock In Last"            "l"   #'org-clock-in-last
+     :desc "Cancel"                   "x"   #'org-clock-cancel
+     :desc "Visit Entry"              "SPC" #'+org|clock-visit-entry
+     :desc "Visit Entry"              "'"   #'+org|clock-visit-entry)))
 #+END_SRC
 *** Fixes
 **** Evil replace with register fixes
