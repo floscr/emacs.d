@@ -3009,6 +3009,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 #+BEGIN_SRC elisp
 (map!
  (:map override
+   :g "s-n" #'evil-buffer-new
    :g "s-;" #'eval-expression
    :g "s-a" #'mark-whole-buffer
    :g "s-s" #'save-buffer
