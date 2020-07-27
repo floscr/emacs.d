@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: map! mode map
+# key: mm           
+# --
+:map ${1:mode}-map

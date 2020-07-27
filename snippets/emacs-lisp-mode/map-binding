@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: map! binding
+# key: mb                                                      
+# --
+ :desc "${3:description}" "${1:char}" #'${2:fn}
