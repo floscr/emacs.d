@@ -6,7 +6,7 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
-* Org Mode
+* * Org Mode
 ** Config
 *** General config
 **** Directories
@@ -822,8 +822,6 @@ Take the host as the base and either the TITLE or the path from the URL."
 **** Main
 
 #+BEGIN_SRC elisp
-
-
 (defun +org-backup/wget-link (dir)
   "Wget the given URL to the +org-backup:link-backup-directory"
   (require 'deferred)
@@ -873,7 +871,7 @@ Take the host as the base and either the TITLE or the path from the URL."
        (deferred:process
          "ebook-convert"
          it
-         "-o" (f-swap-ext it "epub"))))
+         (f-swap-ext it "epub"))))
 
 (defun +org-backup|backup-dwim (&optional to-epub?)
   "Backup the first link under the cursor and set the property."
