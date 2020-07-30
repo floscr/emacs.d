@@ -893,8 +893,14 @@ Take the host as the base and either the TITLE or the path from the URL."
       (deferred:nextc it `(lambda ()
                             (+org-backup/convert-html-to-org ,dir)))
       (deferred:nextc it `(lambda ()
-                            (when to-epub?
-                              (+org-backup/convert-html-to-epub ,dir)))))))
+                            (when ,to-epub?
+                              (+org-backup/convert-html-to-epub ,dir))))
+      (deferred:nextc it `(lambda ()
+                            (when ,to-epub?
+                              (-some->> (f-files ,dir)
+                                        (--find (f-ext? it "epub"))
+                                        (s-prepend "file:")
+                                        (org-set-property "BACKUP_EPUB"))))))))
 
 (defun +org-backup|backup-dwim-epub ()
   "Function docstring"
