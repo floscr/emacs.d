@@ -57,22 +57,54 @@ skip exactly those headlines that do not match."
 #+END_SRC
 
 ** Org Links
-*** Is looking at link
+*** Link context at point
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +org/link-at-point ()
+(defun +org/link-context-at-point ()
   "Is the point under a link."
   (assoc :link (org-context)))
 #+END_SRC
 
-*** Copy Link under Cursor
+*** Offer links at point
+
+Offer all links for either file or agenda under the current =point=.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org/agenda-offer-links-at-point (&optional arg)
+  (-when-let* ((marker (or (org-get-at-bol 'org-hd-marker)
+                           (org-get-at-bol 'org-marker)))
+               (buffer (marker-buffer marker))
+               (prefix (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+               (link (org-offer-links-in-entry buffer marker arg prefix)))
+    link))
+
+;;;###autoload
+(defun +org/offer-links-at-point (&optional arg)
+  (-when-let* ((marker (point))
+               (buffer (current-buffer))
+               (prefix (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+               (link (org-offer-links-in-entry buffer marker arg prefix)))
+    link))
+
+;;;###autoload
+(defun +org|offer-links-at-point (&optional arg)
+  (interactive "P")
+  (-some->> (if (eq major-mode 'org-agenda-mode)
+                (+org/agenda-offer-links-at-point arg)
+              (+org/offer-links-at-point arg))
+    (car)
+    ((lambda (x) (or (+org/link-url-or-original x) x)))))
+#+END_SRC
+
+*** Copy link under Cursor
 
 #+BEGIN_SRC elisp
 ;;;###autoload
 (defun +org|link-from-point ()
   (interactive)
-  (-some--> (+org/link-at-point)
+  (-some--> (+org/link-context-at-point)
             (buffer-substring-no-properties (or (cadr it) (point-min))
                                             (or (caddr it) (point-max)))
             (--tap (add-text-properties 0 (length it) '(yank-handler (my-yank-org-link)) it) it)))
