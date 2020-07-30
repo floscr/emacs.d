@@ -151,6 +151,24 @@ All todo keywords are for general items.
 (setq org-latex-create-formula-image-program 'dvisvgm)
 #+END_SRC
 
+
+**** Disable Spellchecking SRC Regions
+
+#+BEGIN_SRC elisp
+(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
+  (let* ((rlt ad-return-value)
+         (begin-regexp "^[ \t]*#\\+BEGIN_SRC")
+         (end-regexp "^[ \t]*#\\+END_SRC")
+         (case-fold-search t)
+         b e)
+    (when ad-return-value
+      (save-excursion
+        (setq b (re-search-backward begin-regexp nil t))
+        (if b (setq e (re-search-forward end-regexp nil t))))
+      (if (and b e (< (point) e)) (setq rlt nil)))
+    (setq ad-return-value rlt)))
+#+END_SRC
+
 *** Refile targets
 
 #+BEGIN_SRC elisp
@@ -673,9 +691,9 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp :tangle no
 (defun +org/org-set-active-state (&optional args args2)
   "Set the active state for the current item."
-  (cond ((buf-line-has "PROJECT") nil)
-        ((buf-line-has "\\[.\\]") (org-todo "[!]"))
-        ((not (buf-line-has (rx (or "ACTIVE" "NEXT" "DONE" "TODO" "WAITING" "SOMEDAY" "CANCELLED" "PROJECT")))) nil)
+  (cond ((+my/buffer-line-has "PROJECT") nil)
+        ((+my/buffer-line-has "\\[.\\]") (org-todo "[!]"))
+        ((not (+my/buffer-line-has (rx (or "ACTIVE" "NEXT" "DONE" "TODO" "WAITING" "SOMEDAY" "CANCELLED" "PROJECT")))) nil)
         (t (org-todo "ACTIVE"))))
 
 (advice-add #'org-clock-in :after #'+org/org-set-active-state)
@@ -1733,9 +1751,9 @@ Unless I'm looking at a link, than continue like common.
       :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
       (:prefix-map ("y" . "Yank")
-       :desc "Link" "l" (λ! (copy-message (+org|link-from-point)))
-       :desc "Url" "u" (λ! (copy-message (+org|link-url-from-point)))
-       :desc "Title" "t" (λ! (copy-message (+org|link-title-from-point))))
+       :desc "Link" "l" (λ! (+my/copy-message (+org|link-from-point)))
+       :desc "Url" "u" (λ! (+my/copy-message (+org|link-url-from-point)))
+       :desc "Title" "t" (λ! (+my/copy-message (+org|link-title-from-point))))
 
       (:prefix-map ("C" . "Cut")
        :desc "Item" "C" 'org-cut-subtree

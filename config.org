@@ -1253,7 +1253,7 @@ Open the current entry:
 (add-hook 'elfeed-show-mode-hook #'+rss|elfeed-wrap)
 #+END_SRC
 
-***** Elfeed MPV
+***** Elfeed open video with MPV
 
 Play youtube entries via mpv
 
@@ -2196,7 +2196,7 @@ which is really unacceptable, but works for now.
   "Is the next line the last json key."
   (save-excursion
     (forward-line)
-    (buf-line-has "}")))
+    (+my/buffer-line-has "}")))
 #+END_SRC
 
 ***** Insert JSON Key
@@ -2207,7 +2207,7 @@ This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# -
 #+BEGIN_SRC elisp
 (defun +json/insert-key (&optional above?)
   "Adds a new JSON key pair."
-  (let ((last-line? (buf-line-has ",$")))
+  (let ((last-line? (+my/buffer-line-has ",$")))
     ;; Insert comma
     (if (and (not last-line?) (not above?))
         (replace-regexp "$" "," nil (point-at-bol) (point-at-eol)))
@@ -3349,7 +3349,7 @@ and then do my function.
   "Move forward one character and then paste."
   (interactive)
   (if (and (evil-normal-state-p)
-           (buf-line-has "[^\s]"))
+           (+my/buffer-line-has "[^\s]"))
       (progn
         (forward-char 1)
         (when (and insert-char (looking-at insert-char))
@@ -3538,7 +3538,7 @@ and then do my function.
   (->> (if (eq major-mode 'dired-mode)
            (+yank/dired-path)
          (file-name-nondirectory buffer-file-name))
-       (copy-message)))
+       (+my/copy-message)))
 
 (defun +yank|base ()
   (interactive)
@@ -3546,7 +3546,7 @@ and then do my function.
            (+yank/dired-path)
          buffer-file-name)
        (file-name-base)
-       (copy-message)))
+       (+my/copy-message)))
 
 (defun +yank|directory ()
   (interactive)
@@ -3554,14 +3554,14 @@ and then do my function.
            (+yank/dired-path)
          buffer-file-name)
        (file-name-directory)
-       (copy-message)))
+       (+my/copy-message)))
 
 (defun +yank|path ()
   (interactive)
   (->> (if (eq major-mode 'dired-mode)
            (+yank/dired-path)
          buffer-file-name)
-       (copy-message)))
+       (+my/copy-message)))
 
 (defun +yank|relative-to-project ()
   (interactive)
@@ -3570,7 +3570,7 @@ and then do my function.
          buffer-file-name)
        (f-full)
        (s-replace (projectile-project-root) "")
-       (copy-message)))
+       (+my/copy-message)))
 
 (map!
   :leader

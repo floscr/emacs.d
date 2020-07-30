@@ -476,7 +476,7 @@ bookmarks are not helpful since they're not relative.
       (progn
         (magit-call-git "commit" "-m" msg)
         (magit-refresh)
-        (copy-message (template "📦 <<msg>>
+        (+my/copy-message (template "📦 <<msg>>
 `npm i @meisterlabs/<<name>>@<<v>>`"))
         (magit-push-current-to-upstream nil)
         (let ((default-directory package-path))
@@ -988,7 +988,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
                      ((-contains? +MM-Rules:fonts prop) prop)
                      ;; String
                      (t (template "'<<prop>>'"))))
-         (has-trailing-semi (buf-line-has ",$")))
+         (has-trailing-semi (+my/buffer-line-has ",$")))
 
     (if has-trailing-semi
         (while

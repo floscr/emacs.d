@@ -87,39 +87,19 @@ modifications."
 ** Kill and Message
 
 #+BEGIN_SRC elisp
-(defun copy-message (x)
+(defun +my/copy-message (x)
   "Executes kill-new but with a message log side effect."
   (kill-new x)
   (message "Copied to clipboard: %s" x))
 #+END_SRC
 
-** Shuffle List
-:PROPERTIES:
-:SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun swap-list-items (LIST el1 el2)
-  "in LIST swap indices EL1 and EL2 in place"
-  (let ((tmp (elt LIST el1)))
-    (setf (elt LIST el1) (elt LIST el2))
-    (setf (elt LIST el2) tmp)))
-
-(defun -shuffle (LIST)
-  "Shuffle the elements in LIST.
-shuffling is done in place."
-  (loop for i in (reverse (number-sequence 1 (1- (length LIST))))
-        do (let ((j (random (+ i 1))))
-             (swap-list-items LIST i j)))
-  LIST)
-#+END_SRC
 ** Eval and Replace sexp
 :PROPERTIES:
 :SOURCE:   https://emacsredux.com/blog/2013/06/21/eval-and-replace/
 :END:
 
 #+BEGIN_SRC elisp
-(defun eval-and-replace-sexp ()
+(defun +my|eval-and-replace-sexp ()
   "Replace the preceding sexp with its value."
   (interactive)
   (right-char) ;; Fix for normal mode
@@ -131,33 +111,15 @@ shuffling is done in place."
            (insert (current-kill 0)))))
 #+END_SRC
 
-** Buffer
-*** Check current line for regex
+** Check current line for regex
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun buf-line-has (regexp)
+(defun +my/buffer-line-has (regexp)
   "Check for REGEXP at current line."
   (save-excursion
     (goto-char (point-at-bol))
     (search-forward-regexp regexp (point-at-eol) t)))
-#+END_SRC
-
-*** Matches in buffer
-
-#+BEGIN_SRC elisp
-(defun -buffer-matches (regexp &optional match-number buffer)
-  "return a list of matches of REGEXP in BUFFER or the current buffer if not given."
-  (let ((matches))
-    (save-match-data
-      (save-excursion
-        (with-current-buffer (or buffer (current-buffer))
-          (save-restriction
-            (widen)
-            (goto-char 1)
-            (while (search-forward-regexp regexp nil t 1)
-              (push (match-string (or match-number 0)) matches)))))
-      matches)))
 #+END_SRC
 
 ** Async Command No Window
@@ -174,6 +136,7 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
   (let ((display-buffer-alist (list (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))))
     (async-shell-command command)))
 #+END_SRC
+
 ** Shell command to list
 
 #+BEGIN_SRC elisp
@@ -300,6 +263,27 @@ Log the current input without breaking the pipe.
     x))
 #+END_SRC
 
+** Shuffle List
+:PROPERTIES:
+:SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun swap-list-items (LIST el1 el2)
+  "in LIST swap indices EL1 and EL2 in place"
+  (let ((tmp (elt LIST el1)))
+    (setf (elt LIST el1) (elt LIST el2))
+    (setf (elt LIST el2) tmp)))
+
+(defun -shuffle (LIST)
+  "Shuffle the elements in LIST.
+shuffling is done in place."
+  (loop for i in (reverse (number-sequence 1 (1- (length LIST))))
+        do (let ((j (random (+ i 1))))
+             (swap-list-items LIST i j)))
+  LIST)
+#+END_SRC
+
 ** Line Indent
 
 #+BEGIN_SRC elisp
@@ -314,7 +298,6 @@ Log the current input without breaking the pipe.
 #+END_SRC
 
 * Files
-
 ** File Timestamp
 
 #+BEGIN_SRC elisp
@@ -323,7 +306,6 @@ Log the current input without breaking the pipe.
   (->> (file-attributes path)
        (nth 5)))
 #+END_SRC
-
 
 ** Get the latest file in directory
 :PROPERTIES:
@@ -351,6 +333,7 @@ Get the last created file in a directory.
 #+END_SRC
 
 * UI
+
 #+BEGIN_SRC elisp
 (defun +ui/get-display-dpi (&optional display)
   "Get the DPI of DISPLAY.
@@ -402,7 +385,6 @@ DISPLAY is a display name, frame or terminal, as in
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
 * Elisp Helpers
-
 ** Get buffer in other window
 
 #+BEGIN_SRC elisp
