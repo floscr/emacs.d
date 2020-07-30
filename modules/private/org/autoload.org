@@ -124,6 +124,15 @@ Offer all links for either file or agenda under the current =point=.
     (nth 2)))
 #+END_SRC
 
+*** Open link with mpv
+
+#+BEGIN_SRC elisp
+(defun +org|play-external-url ()
+  (interactive)
+  (-some->> (+org|offer-links-at-point)
+    (+mpv/play-external-url)))
+#+END_SRC
+
 ** Parse Link
 
 #+BEGIN_SRC elisp
