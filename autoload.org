@@ -203,6 +203,25 @@ I don't want some processes to exit, when I close emacs.
            (s-join "\n")
            insert))))
 #+END_SRC
+** Open Link with MPV
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +mpv/play-external-url (url)
+  (-when-let* ((quality-val
+                (-some->> (completing-read
+                            "Max height resolution (0 for unlimited): "
+                            '("720" "0" "480" "1080"))
+                  (string-to-number)))
+               (quality-arg (if (> 0 quality-val)
+                                (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
+                              "")))
+    (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
+    (+my/start-inferior-process
+     "elfeed-mpv" nil "mpv"
+     quality-arg
+     (s-wrap url "\""))))
+#+END_SRC
 
 * Functional Utils
 ** Noop
