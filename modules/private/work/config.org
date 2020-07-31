@@ -383,16 +383,17 @@ bookmarks are not helpful since they're not relative.
 **** Utils
 
 #+BEGIN_SRC elisp
-(defun +MM/find-bookmark-buffer (name)
+(defun +MM/find-bookmark-buffer (name &optional other-window?)
   "Jump to a FILE relative to the project root, go to character POS."
-  (-when-let* ((item (--find (string= name (plist-get it :name)) +MM-dynamic-bookmarks))
+  (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
+               (item (--find (string= name (plist-get it :name)) +MM-dynamic-bookmarks))
                (file (->> (plist-get item :file)
                           ((lambda (x)
                              (if (plist-get item :relative)
                                  (f-join (projectile-project-root) x)
                                x))))))
 
-    (find-file file)
+    (funcall find-fn file)
     (-some--> (plist-get item :goto)
       (--tap (progn
                (goto-char (point-min))
@@ -402,11 +403,19 @@ bookmarks are not helpful since they're not relative.
     (-some--> (plist-get item :goto-bol)
       (evil-first-non-blank))))
 
+(defun +MM/find-bookmark-buffer-other-window (item)
+  (+MM/find-bookmark-buffer item t))
+
 (defun +MM|bookmarks ()
   "Project root relative bookmarks."
   (interactive)
   (ivy-read "Jump to bookmark: " (--map (plist-get it :name) +MM-dynamic-bookmarks)
             :action #'+MM/find-bookmark-buffer))
+
+(after! ivy
+  (ivy-set-actions
+   '+MM|bookmarks
+   '(("j" +MM/find-bookmark-buffer-other-window "open in other window"))))
 #+END_SRC
 *** Build Package
 
