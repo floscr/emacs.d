@@ -3131,6 +3131,19 @@ and the line above, skipping empty lines."
 
 (load-evil-camel-case-motion)
 #+END_SRC
+***** Sort Motion
+
+#+BEGIN_SRC elisp
+(evil-define-operator +evil/sort (beg end)
+  "Sort lines with motion"
+  (interactive "<r>")
+  (sort-lines nil beg end))
+
+(map!
+ (:after evil
+    :m "gS" #'+evil/sort))
+#+END_SRC
+
 
 **** Normal Bindings
 ***** Window navigation
