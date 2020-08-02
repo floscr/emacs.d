@@ -78,6 +78,10 @@
 (package! nov)
 ;; Ebooks:1 ends here
 
+;; [[file:~/.config/doom/config.org::*Literate Calc Mode][Literate Calc Mode:1]]
+(package! literate-calc-mode)
+;; Literate Calc Mode:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*Calfw][Calfw:1]]
 (package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
 (package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")

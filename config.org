@@ -165,6 +165,14 @@ Show changes in current branch
 #+BEGIN_SRC elisp
 (package! nov)
 #+END_SRC
+*** Literate Calc Mode
+
+Inline Calculation
+
+#+BEGIN_SRC elisp
+(package! literate-calc-mode)
+#+END_SRC
+
 
 ** Overrides
 *** Calfw
@@ -1385,6 +1393,13 @@ These don't work if you have a big line-heihgt.
                           :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
                           :channels ("#emacs" "#nixos"))))
 #+End_SRC
+
+*** Literate Calc Mode
+
+#+BEGIN_SRC elisp
+(use-package! literate-calc-mode
+  :modes (literate-calc-mode literate-calc-minor-mode))
+#+END_SRC
 
 *** Calendar
 **** Utils
