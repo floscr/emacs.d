@@ -1218,8 +1218,13 @@ E.g.: (Brackets signal the cursor position)
 #+BEGIN_SRC elisp
 (defun +org|paste-markdown-as-org ()
   "Convert the current clipboard to markdown."
-  (interactive)
-  (insert (shell-command-to-string "xclip -selection clipboard -out | pandoc -f markdown -t org")))
+  (interactive
+   (let ((select-enable-clipboard t))
+     (->> (current-kill 0)
+          (shell-quote-argument)
+          ((lambda (x) (shell-command-to-string (template "echo <<x>> | pandoc -f markdown -t org"))))
+          (s-trim)
+          (insert)))))
 #+END_SRC
 
 *** Schedule Tomorrow
