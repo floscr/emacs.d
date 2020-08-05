@@ -1057,6 +1057,23 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** Flycheck
+**** Disabled Checkers
+***** Elisp
+
+#+BEGIN_SRC elisp
+(add-hook! 'emacs-lisp-mode-hook :append
+  (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+#+END_SRC
+
+***** Nim
+
+#+BEGIN_SRC elisp
+(add-hook! 'nim-mode-hook :append
+  (setq flycheck-disabled-checkers '(nim-nimsuggest))
+  (flycheck-select-checker 'nim))
+#+END_SRC
+
 *** Writeroom
 
 **** Setup
