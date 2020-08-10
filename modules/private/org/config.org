@@ -1537,6 +1537,25 @@ Return the path of the file."
   (setq org-journal-enable-agenda-integration t))
 #+END_SRC
 
+***** Private Journal
+
+My private journal with personal thoughts and notes.
+This will be encrypted and in a different directory than org-roam.
+
+#+BEGIN_SRC elisp
+(defvar +private-journal:dir nil
+  "Location of the private journal.")
+(setq +private-journal:dir (+org/expand-org-file-name "Journal"))
+
+(defun +private-journal|new-entry ()
+  "Create a new private journal entry file."
+  (interactive)
+  (let ((org-journal-encrypt-journal t)
+        (org-journal-dir +private-journal:dir))
+      (call-interactively #'org-journal-new-entry)
+      (setq-local epa-file-encrypt-to +my:gpg-simple-key)))
+#+END_SRC
+
 *** Org Caldav
 
 Calendar management using org mode and [[https://github.com/dengste/org-caldav][org-caldav]].
@@ -1863,6 +1882,7 @@ Unless I'm looking at a link, than continue like common.
    :desc "Find in notes"              "n" #'+org|search-in-notes
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Store Link"                 "y" #'org-store-link
+   :desc "Store Link"                 "j" #'+private-journal|new-entry
 
    (:prefix-map ("b" . "Bookmarks")
     :desc "Goto Bookmarks File"       "b" (λ! (find-file +org:bookmarks-file))
