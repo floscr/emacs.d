@@ -86,6 +86,8 @@
 (package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
 (package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
 (package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-cal :disable t)
+(package! org-gcal :disable t)
 ;; Calfw:1 ends here
 
 ;; [[file:~/.config/doom/config.org::*Disabled Packages][Disabled Packages:1]]
