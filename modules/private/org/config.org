@@ -980,6 +980,31 @@ Take the host as the base and either the TITLE or the path from the URL."
            (insert x)
            x))))))
 #+END_SRC
+**** Send To Device
+
+#+BEGIN_SRC elisp
+(defvar +ebook:device-name nil
+  "The name of the directory under which your reader is going to be mounted.")
+(setq +ebook:device-name "tolino")
+
+(defun +ebook/root-dir ()
+  "Return the ebook reader directory or user-error."
+  (let ((dir (f-join "/run/media" (user-login-name) +ebook:device-name)))
+    (if (f-exists? dir)
+        dir
+      (user-error (template "Device <<+ebook:device-name>> is not mounted.")))))
+
+(defun +ebook/books-dir ()
+  "Books dir"
+  (-some--> (+ebook/root-dir)
+            (f-join it "Books")))
+
+(defun +ebook/articles-dir ()
+  "Article directory, create on if it doesnt exist."
+  (-some--> (+ebook/books-dir)
+            (f-join it "Articles")
+            (f-mkdir it)))
+#+END_SRC
 
 ** Features
 
