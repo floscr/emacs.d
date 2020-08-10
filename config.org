@@ -1060,6 +1060,14 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** PDF
+
+#+BEGIN_SRC elisp
+(map!
+ :map pdf-occur-buffer-mode-map
+ :gn [tab] (cmd! (pdf-occur-goto-occurrence t)))
+#+END_SRC
+
 *** Flycheck
 **** Disabled Checkers
 ***** Elisp
