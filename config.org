@@ -1340,10 +1340,10 @@ When I save the elfeed org-mode file I want to automatically update the feed lis
 Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/elfeed-org.el::rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id)][elfeed package]].
 
 #+BEGIN_SRC elisp
-(def-project-mode! +org-elfeed-mode
-  :files (car rmh-elfeed-org-files)
-  :on-enter (add-hook! 'after-save-hook
-                       :local (defun +org-efleed/update-feeds ()
+(add-hook 'after-save-hook (defun +org-efleed/update-feeds ()
+                             (when (and (eq major-mode 'org-mode)
+                                        (string= buffer-file-name (car rmh-elfeed-org-files)))
+                                (require 'elfeed)
                                 (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))))
 #+END_SRC
 
