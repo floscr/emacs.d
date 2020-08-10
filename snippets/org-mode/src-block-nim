@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Javascript SRC Block
+# key: <n
+# --
+#+BEGIN_SRC nim
+$0
+#+END_SRC
