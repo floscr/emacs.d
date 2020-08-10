@@ -6,7 +6,7 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
-* * Org Mode
+* Org Mode
 ** Config
 *** General config
 **** Directories
