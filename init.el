@@ -52,7 +52,7 @@
   +dictionary)
  eval
  editorconfig
- magit
+ (magit +forge)
  rgb
  pdf
  pass
