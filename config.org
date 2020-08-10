@@ -1088,7 +1088,6 @@ The setup function
 
 (defun +writeroom/writeroom-load ()
   (setq-local line-spacing 0.4)
-  (+org-pretty-mode 1)
   (setq-local +writeroom:faceremaps
               (list
                (face-remap-add-relative
@@ -1103,18 +1102,8 @@ The setup function
 
 (defun +writeroom/writeroom-unload ()
   (kill-local-variable 'line-spacing)
-  (+org-pretty-mode -1)
   (mapc #'face-remap-remove-relative +writeroom:faceremaps)
   (kill-local-variable '+writeroom:faceremaps))
-
-;; (defun +writeroom|toggle ()
-;;   (interactive)
-;;   (require 'writeroom-mode)
-;;   (if writeroom-mode
-;;       (progn
-;;         (+writeroom/writeroom-unload)
-;;         (writeroom-mode -1))
-;;     (writeroom-mode 1)))
 #+END_SRC
 
 and the hooks:
