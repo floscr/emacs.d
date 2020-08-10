@@ -239,8 +239,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
   :init (setq org-capture-templates '())
   :config
   (setq org-capture-templates
-        (doct `(("Inbox"
-                 :keys ""
+        (doct `((:group "Inbox"
                  :todo "TODO"
                  :title "%?"
                  :file org-default-notes-file
