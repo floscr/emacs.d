@@ -1406,7 +1406,7 @@ These don't work if you have a big line-heihgt.
 
 #+BEGIN_SRC elisp
 (use-package! literate-calc-mode
-  :modes (literate-calc-mode literate-calc-minor-mode))
+  :commands (literate-calc-mode literate-calc-minor-mode))
 #+END_SRC
 
 *** Calendar
