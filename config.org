@@ -624,6 +624,7 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 (set-popup-rule! "^\\*nodejs" :side 'right :size 0.55 :select t :modeline t :ttl nil :quit nil)
 
 (set-popup-rule! "^\\*helpful command" :side 'right :size 0.5 :select t :modeline t :ttl nil :quit nil)
+(set-popup-rule! "^\\*PDF-Occur*" :side 'right :size 0.5 :select t :modeline t)
 
 (set-popup-rule! "^\\*nim-compile" :size 0.5)
 #+END_SRC
