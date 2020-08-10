@@ -1334,6 +1334,19 @@ whether to use mpv to visit the link.")
 ;;  :gn "Co" #'+rss|capture)
 #+END_SRC
 
+***** Update feeds when saving org-elfeed file
+
+When I save the elfeed org-mode file I want to automatically update the feed list.
+Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/elfeed-org.el::rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id)][elfeed package]].
+
+#+BEGIN_SRC elisp
+(def-project-mode! +org-elfeed-mode
+  :files (car rmh-elfeed-org-files)
+  :on-enter (add-hook! 'after-save-hook
+                       :local (defun +org-efleed/update-feeds ()
+                                (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))))
+#+END_SRC
+
 **** Config
 ***** Org Elfeed File
 
@@ -1353,14 +1366,6 @@ These don't work if you have a big line-heihgt.
 
 #+BEGIN_SRC elisp
 (setq-default elfeed-search-filter "@2-week-ago +unread -YOUTUBE")
-#+END_SRC
-
-**** Minor Mode for org-elfeed
-
-#+BEGIN_SRC elisp :tangle no
-(def-project-mode! +org-elfeed-mode
-  :modes (org-mode)
-  :files "")
 #+END_SRC
 
 **** Bindings
@@ -3175,7 +3180,6 @@ and the line above, skipping empty lines."
  (:after evil
     :m "gS" #'+evil/sort))
 #+END_SRC
-
 
 **** Normal Bindings
 ***** Window navigation
