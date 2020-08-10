@@ -127,7 +127,8 @@ Offer all links for either file or agenda under the current =point=.
 *** Open link with mpv
 
 #+BEGIN_SRC elisp
-(defun +org|play-external-url ()
+;;;###autoload
+(defun +org|mpv-link-at-point ()
   (interactive)
   (-some->> (+org|offer-links-at-point)
     (+mpv/play-external-url)))
