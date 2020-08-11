@@ -1811,6 +1811,7 @@ Unless I'm looking at a link, than continue like common.
        :desc "Link" "L" '+org|cut-link)
 
       (:prefix-map ("i" . "Insert")
+       :desc "Attachment"         "a" #'+org|attach-file
        :desc "Inavtive Timestamp" "i" (λ! (+evil-org/normal-mode-paste-fix #'org-time-stamp-inactive))
        :desc "Subheadeing"        "s" (λ!
                                        (call-interactively 'org-insert-subheading)
