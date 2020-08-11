@@ -275,6 +275,17 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                    :keys "s"
                    :headline "Supermarket"
                    :file +org:shopping-list-file)
+                  ("Recipe"
+                   :keys "R"
+                   :headline "Recipes"
+                   :file ,(f-join org-directory "Main/cooking.org")
+                   :template ("* %(car (+wm/last-chrome-window-url-title))"
+                              ":PROPERTIES:"
+                              ":SOURCE: %(nth 1 (+wm/last-chrome-window-url-title))"
+                              ":END:"
+                              "** Prep"
+                              "%?"
+                              "** Ingredients"))
                   ("Work:"
                     :keys "w"
                     :file ,(f-join org-directory "Work/work.org")
