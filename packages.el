@@ -42,6 +42,10 @@
 (package! openwith)
 ;; Dired:3 ends here
 
+;; [[file:~/.config/doom/config.org::*Etc][Etc:1]]
+(package! proced-narrow)
+;; Etc:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*Elisp][Elisp:1]]
 (package! symex)
 ;; Elisp:1 ends here

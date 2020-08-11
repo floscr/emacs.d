@@ -105,6 +105,11 @@ keep the process alive after closing Emacs.
 #+BEGIN_SRC elisp
 (package! openwith)
 #+END_SRC
+*** Etc
+
+#+BEGIN_SRC elisp
+(package! proced-narrow)
+#+END_SRC
 
 ** Language Packages
 *** Elisp
@@ -2984,6 +2989,16 @@ Fix buffers not being added to the current workspace.
 
 *** Process List / Proced
 **** Config
+***** Proced Narrow
+
+#+BEGIN_SRC elisp
+(use-package! proced-narrow
+  :after proced
+  :config
+  (map!
+   :n "/" #'proced-narrow))
+#+END_SRC
+
 ***** Shorten nixos path names in proced
 
 Nixos paths can be very long, which is distracting in proced.
