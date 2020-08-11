@@ -101,7 +101,6 @@ If the current or previous windows are not chrome, just get the first one from t
   (-some--> (+wm/last-chrome-window-url-title)
     (let ((title (nth 0 it))
           (url (nth 1 it)))
-      (message title)
       (if (s-blank-str? title)
           url
         (template "[[<<url>>][<<title>>]]")))))
