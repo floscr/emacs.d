@@ -334,6 +334,11 @@ Never blink the cursor, it's too distracting.
 (setq blink-matching-paren nil)
 (setq visible-cursor nil)
 #+END_SRC
+*** Buffer naming
+
+#+BEGIN_SRC elisp
+(setq uniquify-buffer-name-style 'forward)
+#+END_SRC
 
 ** Utilities
 *** Toggle Window Split
