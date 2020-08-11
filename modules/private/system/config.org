@@ -71,7 +71,7 @@
 ** Chrome Window Listing
 
 #+BEGIN_SRC elisp
-(setq wmctrl:chrome-window-title-re "^\\(.*\\) :: \\(.*\\) - Chromium$")
+(setq wmctrl:chrome-window-title-re "^\\(.*?\\)? ?\\(:: \\)?\\(https?.*\\) - Chromium$")
 
 (defun +wm/-is-chromium? (x)
   (+wm/-proccess-eq? "chromium-browser" x))
@@ -93,16 +93,18 @@ If the current or previous windows are not chrome, just get the first one from t
 (defun +wm/last-chrome-window-url-title ()
   (-some--> (+wm/prev-chromium-window)
     (plist-get it ':title)
-    (or
-     (->> (s-match wmctrl:chrome-window-title-re it)
-          (-drop 1))
-     (user-error (template "Chrome title \"<<it>>\" does not match regexp.")))))
+    (->> (s-match wmctrl:chrome-window-title-re it)
+         (-drop 1)
+         (-remove-at 1))))
 
 (defun +wm/last-chrome-window-org-link ()
   (-some--> (+wm/last-chrome-window-url-title)
     (let ((title (nth 0 it))
           (url (nth 1 it)))
-      (template "[[<<url>>][<<title>>]]"))))
+      (message title)
+      (if (s-blank-str? title)
+          url
+        (template "[[<<url>>][<<title>>]]")))))
 
 (defun +wm/last-chrome-window-org-link-formatted ()
   (and-let* ((window (+wm/last-chrome-window-url-title))
