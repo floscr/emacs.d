@@ -1421,6 +1421,7 @@ Projectile search is not fast reliable enough."
         (visual-line-mode)
         (visual-fill-column-mode)))))
 #+END_SRC
+
 *** Agenda Cut Entry
 
 #+BEGIN_SRC elisp
