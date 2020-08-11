@@ -1525,8 +1525,8 @@ Return the path of the file."
 *** Attach File
 
 #+BEGIN_SRC elisp
-(defun +org/attach-file (x)
-  "Function docstring"
+(defun +org|attach-file (x)
+  "Attach a file and insert the link."
   (interactive "P")
   (->>
    (or x (let ((default-directory downloads-dir))
@@ -1746,7 +1746,6 @@ Set my preferred clipboard paste method to ~xclip~.
 
 ** Bindings
 *** Evil
-
 **** Normal Mode Fixes
 
 When I'm in insert mode I want the cursor to behave as if I'm in insert on the next character.
