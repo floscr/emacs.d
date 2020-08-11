@@ -3503,6 +3503,7 @@ and then do my function.
 (map!
  :leader
  (:desc "open" :prefix "o"
+   :desc "Proced"     :g "p" #'proced
    :desc "Calendar"   :g "c" #'=calendar
    :desc "Eleed"      :g "E" #'elfeed
    :desc "Calc"       :g "C" #'calc
