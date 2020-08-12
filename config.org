@@ -2375,7 +2375,7 @@ All are these are distracting and not helpful.
 
 *** Magit / Git
 **** Utils
-***** Create New Git Worktree Workspace
+***** Create worktree workspace
 
 Creates a new git workspace from a branch.
 Automatically adds ~.projectfile~ and opens a new doom workspace.
@@ -2400,7 +2400,7 @@ Automatically adds ~.projectfile~ and opens a new doom workspace.
     path))
 #+END_SRC
 
-***** Revision show orignal file
+***** Revision show original file
 
 Show the orginal file when visiting a revision buffer.
 E.g.: When showing a diff from a commit, you may want to edit that file.
@@ -2419,7 +2419,7 @@ If possible also go to the pointing line"
       (goto-line line-number))))
 #+END_SRC
 
-***** Git changed files
+***** Changed files in branch
 
 Show a list of the changed files in the current branch.
 For now only works on branches that were directly forked from master.
@@ -2454,7 +2454,7 @@ For now only works on branches that were directly forked from master.
               :action counsel-projectile-find-file-action
               :caller '+git|ivy-changed-files)))
 #+END_SRC
-***** Git undo
+***** Undo commit
 
 #+BEGIN_SRC elisp
 (defun +git|undo ()
@@ -2480,7 +2480,7 @@ When no BRANCH is given, take the current one."
     remote))
 #+END_SRC
 
-***** Diff Range from current branch to ~magit-thing-at-point~
+***** Diff range from current branch to ~magit-thing-at-point~
 
 When I'm on the log view, I want to quickliy diff it against the currently checked out branch.
 The transient shortcut for this is ~d R~ define [[*Transient][here]].
@@ -2492,7 +2492,7 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
   (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
 #+END_SRC
 
-***** Review Branch
+***** Review branch
 
 #+BEGIN_SRC elisp
 (defun +magit|delete-review-branches ()
@@ -2527,7 +2527,7 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
         (magit-branch-checkout review-branch-name)
       (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch))))
 #+END_SRC
-***** Cleanup Branches
+***** Cleanup branches
 
 Cleans up all merged and review branches
 
@@ -2542,18 +2542,6 @@ Cleans up all merged and review branches
       (deferred:process-shell (template "git branch --merged | egrep -v \"(^\\*|<<base-branch>>)\" | xargs git branch -d"))
       (deferred:nextc it
         (magit-status-maybe-update-revision-buffer)))))
-#+END_SRC
-
-***** TODO Browse git link
-
-Browse the current thing at point for git
-
-#+BEGIN_SRC elisp
-(defun browse-git-link ()
-  "Browse the git link at the current point"
-  (interactive)
-  (let ((git-link-open-in-browser t))
-    (call-interactively 'git-link)))
 #+END_SRC
 
 ***** Branches by user
@@ -2583,6 +2571,7 @@ Universal argument to ignore review branches."
                xs))))))
     (ivy-read "Checkout: " branches :action #'magit-checkout)))
 #+END_SRC
+
 ***** Load forge when needed
 
 #+BEGIN_SRC elisp
