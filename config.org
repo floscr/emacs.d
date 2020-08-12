@@ -2544,7 +2544,6 @@ Cleans up all merged and review branches
         (magit-status-maybe-update-revision-buffer)))))
 #+END_SRC
 
-
 ***** TODO Browse git link
 
 Browse the current thing at point for git
@@ -2590,7 +2589,6 @@ Universal argument to ignore review branches."
 (use-package! forge
   :commands (forge-browse-commit))
 #+END_SRC
-
 
 **** Config
 
