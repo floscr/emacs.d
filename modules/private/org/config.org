@@ -1524,6 +1524,16 @@ Return the path of the file."
   (org-agenda-filter-apply org-agenda-tag-filter 'tag t))
 #+END_SRC
 
+*** Show unestimated items backlog
+
+#+BEGIN_SRC elisp
+(defun +org|agenda-filter-unestimated ()
+  "Filter for unestimated items in the backlog agenda."
+  (interactive)
+  (setq-local org-agenda-tag-filter '("-LOW_EFFORT" "-MEDIUM_EFFORT" "-HIGH_EFFORT"))
+  (org-agenda-filter-apply org-agenda-tag-filter 'tag t))
+#+END_SRC
+
 *** Attach File
 
 #+BEGIN_SRC elisp
