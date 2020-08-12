@@ -3083,6 +3083,16 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 #+END_SRC
 
 *** Evil
+**** Config
+***** Use global ex by default
+
+I almost always want global search and replace, doom changed this in [[orgit-rev:~/.emacs.d/::1a6f5086400d164178016784aac12114934c8245][1a6f50864]].
+To undo this behavior just add =g= flag
+
+#+BEGIN_SRC elisp
+(setq evil-ex-substitute-global t)
+#+END_SRC
+
 **** Motions
 ***** Replace With Register Motion
 
