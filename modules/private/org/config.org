@@ -459,7 +459,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
       (org-super-agenda-header-separator "")
       (org-agenda-sorting-strategy '(priority-down scheduled-down ts-down todo-state-down))
       (org-super-agenda-groups '((:name "Work Meetings" :and (:tag ("MEETING") :not (:tag ("REPEATING"))))
-                                 (:name nil :discard (:tag "WORK"))
+                                 (:name nil :discard (:tag "WORK" :todo "PROJECT"))
                                  (:name none :date today :time-grid t)
                                  (:name "\nOverdue" :deadline past :scheduled past)
                                  (:name "Future" :anything (:scheduled future))))))
