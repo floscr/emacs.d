@@ -648,16 +648,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 )
 #+END_SRC
 
-**** Hacks
-***** Fix agenda view
-
-For some reason my tag filters don't get applied for the agenda.
-Calling an update after the finalize fixes it
-
-#+BEGIN_SRC elisp
-(add-hook 'org-agenda-finalize-hook (lambda () (org-agenda-filter-apply org-agenda-tag-filter 'tag)))
-#+END_SRC
-
 *** Clocking
 **** Automatically set clocking or todo state
 :PROPERTIES:
