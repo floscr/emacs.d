@@ -2579,6 +2579,24 @@ Universal argument to ignore review branches."
   :commands (forge-browse-commit))
 #+END_SRC
 
+***** Commit Template
+
+Loads commit template from ~./git/TEMPLATE~ if the file exist.
+
+#+BEGIN_SRC elisp
+(defun +git/load-git-template (&rest discard)
+  "When a TEMPLATE file in the git directory exists, insert it as a commit template."
+  (when (eq (point) (point-at-eol))
+      (-some->> (f-join (projectile-project-root) ".git" "TEMPLATE")
+        (f-read)
+        (s-trim)
+        (s-append " ")
+        (insert)))
+  (evil-insert-state))
+
+(add-hook! 'git-commit-setup-hook :append #'+git/load-git-template)
+#+END_SRC
+
 **** Config
 
 #+BEGIN_SRC elisp
