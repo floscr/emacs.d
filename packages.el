@@ -46,6 +46,10 @@
 (package! proced-narrow)
 ;; Etc:1 ends here
 
+;; [[file:~/.config/doom/config.org::*Etc][Etc:2]]
+(package! transmission)
+;; Etc:2 ends here
+
 ;; [[file:~/.config/doom/config.org::*Elisp][Elisp:1]]
 (package! symex)
 ;; Elisp:1 ends here
