@@ -3525,12 +3525,12 @@ and then do my function.
 (map!
  :leader
  (:desc "open" :prefix "o"
-   :desc "Proced"     :g "p" #'proced
-   :desc "Calendar"   :g "c" #'=calendar
-   :desc "Eleed"      :g "E" #'elfeed
    :desc "Calc"       :g "C" #'calc
+   :desc "Eleed"      :g "E" #'elfeed
+   :desc "Calendar"   :g "c" #'=calendar
    :desc "Irc"        :g "i" #'=irc
    :desc "Mail"       :g "m" #'=mu4e
+   :desc "Proced"     :g "p" #'proced
    :desc "Snippet"    :g "s" #'+snippets/edit))
 #+END_SRC
 
