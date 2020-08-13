@@ -107,9 +107,18 @@ keep the process alive after closing Emacs.
 #+END_SRC
 *** Etc
 
+Narrow Proced Buffers
+
 #+BEGIN_SRC elisp
 (package! proced-narrow)
 #+END_SRC
+
+Transmission Interface
+
+#+BEGIN_SRC elisp
+(package! transmission)
+#+END_SRC
+
 
 ** Language Packages
 *** Elisp
@@ -637,6 +646,7 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 (set-popup-rule! "^\\*PDF-Occur*" :side 'right :size 0.5 :select t :modeline t)
 
 (set-popup-rule! "^\\*nim-compile" :size 0.5)
+(set-popup-rule! "^\\*transmission" :size 0.5)
 #+END_SRC
 
 *** (Visual) Fill Column
@@ -1070,6 +1080,18 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** Transmission
+
+#+BEGIN_SRC elisp
+(use-package! transmission
+  :commands (transmission)
+  :config
+  (map! :map transmission-files-mode-map
+        :n "<C-return>" (cmd! (->> (transmission-files-file-at-point)
+                                   (f-parent)
+                                   (dired)))))
+#+END_SRC
+
 *** PDF
 
 #+BEGIN_SRC elisp
@@ -3525,13 +3547,14 @@ and then do my function.
 (map!
  :leader
  (:desc "open" :prefix "o"
-   :desc "Calc"       :g "C" #'calc
-   :desc "Eleed"      :g "E" #'elfeed
-   :desc "Calendar"   :g "c" #'=calendar
-   :desc "Irc"        :g "i" #'=irc
-   :desc "Mail"       :g "m" #'=mu4e
-   :desc "Proced"     :g "p" #'proced
-   :desc "Snippet"    :g "s" #'+snippets/edit))
+   :desc "Calc"         :g "C" #'calc
+   :desc "Transmission" :g "D" #'transmission
+   :desc "Eleed"        :g "E" #'elfeed
+   :desc "Calendar"     :g "c" #'=calendar
+   :desc "Irc"          :g "i" #'=irc
+   :desc "Mail"         :g "m" #'=mu4e
+   :desc "Proced"       :g "p" #'proced
+   :desc "Snippet"      :g "s" #'+snippets/edit))
 #+END_SRC
 
 **** Projects
