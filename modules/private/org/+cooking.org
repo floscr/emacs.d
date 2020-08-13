@@ -157,17 +157,17 @@ Items sorted by where they are grouped in the super market.
   (interactive)
   (message))
 
-(require 'om)
+(require 'org-ml)
 
 (defun +cooking|add-to-shopping-list (item)
   (interactive)
   (with-temp-buffer (insert-file-contents +org:shopping-list-file)))
 
-    ;; (->> (om-parse-subtree-at 1)
-    ;;      (om-update (lambda (tree)
-    ;;                   (let ((child-tree (om-get-children tree))
-    ;;                         (item (om-build-headline! :title-text "New Item" :todo-keyword "TODO" :level 2)))
-    ;;                     (om-set-children (-snoc child-tree item) tree)))))))
+    ;; (->> (org-ml-parse-subtree-at 1)
+    ;;      (org-ml-update (lambda (tree)
+    ;;                   (let ((child-tree (org-ml-get-children tree))
+    ;;                         (item (org-ml-build-headline! :title-text "New Item" :todo-keyword "TODO" :level 2)))
+    ;;                     (org-ml-set-children (-snoc child-tree item) tree)))))))
 
 (defun +cooking|ivy-add-to-shopping-list ()
   (interactive)

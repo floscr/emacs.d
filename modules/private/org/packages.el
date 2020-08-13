@@ -6,7 +6,7 @@
 ;; Better capture templates
 (package! doct :recipe (:host github :repo "progfolio/doct" :branch "master"))
 ;; dash like util util library for org mode
-(package! om :recipe (:host github :repo "ndwarshuis/om.el"))
+(package! om :recipe (:host github :repo "ndwarshuis/org-ml"))
 ;; Browse Org Version of a webpage
 (package! org-web-tools)
 ;; Edit Comments in Org Src Buffers
