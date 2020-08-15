@@ -352,6 +352,11 @@ bookmarks are not helpful since they're not relative.
                :name "Changes: Action Whitelist"
                :goto "const ACTION_WHITELIST = Arr"
                :goto-bol t)
+        (:file "src/apps/Main/webpack.config.js"
+               :relative t
+               :name "Webpack: CLI flags"
+               :goto "const env = extractEnv"
+               :goto-bol t)
 
         (:file "~/Code/Meisterlabs/kits-2.0/packages/knightrider/src/Rules.js"
                :name "Redux: Rules"
@@ -376,7 +381,7 @@ bookmarks are not helpful since they're not relative.
                :name "Common: CollectionStore"
                :action counsel-imenu)
         (:file "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx"
-               :name "Command Line Flags"
+               :name "Docs: Command Line Flags"
                :action counsel-imenu)))
 #+END_SRC
 
