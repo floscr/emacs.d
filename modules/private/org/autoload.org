@@ -199,3 +199,27 @@ I disable posframe, since it doesn't go beyond the X Window.
   (+org-capture/open-frame)
   (ivy-posframe-mode -1))
 #+END_SRC
+** Create timestamp
+:PROPERTIES:
+:SOURCE:   [[https://github.com/rails-to-cosmos/ledna/blob/f61b1a831173043c6ba445ba0f5601fa815a1f46/ledna.org#timestamps][ledna/ledna.org at f61b1a831173043c6ba445ba0f5601fa815a1f46 · rails-to-cosmos/ledna]]
+:END:
+
+Create org timestamps by passing a string like you would in the date picker.
+
+#+BEGIN_SRC elisp
+(defun +org/active-timestamp (&optional str)
+  (let* ((str (or str ""))
+         (default-time (org-current-time))
+         (decoded-time (decode-time default-time nil))
+         (analyzed-time (org-read-date-analyze str default-time decoded-time))
+         (encoded-time (apply #'encode-time analyzed-time)))
+    (format-time-string (org-time-stamp-format t) encoded-time)))
+
+(defun +org/inactive-timestamp (&optional str)
+  (let* ((str (or str ""))
+         (default-time (org-current-time))
+         (decoded-time (decode-time default-time nil))
+         (analyzed-time (org-read-date-analyze str default-time decoded-time))
+         (encoded-time (apply #'encode-time analyzed-time)))
+    (format-time-string (org-time-stamp-format t t) encoded-time)))
+#+END_SRC
