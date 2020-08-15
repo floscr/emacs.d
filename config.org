@@ -3023,6 +3023,7 @@ Fix buffers not being added to the current workspace.
   :after proced
   :config
   (map!
+   :map proced-mode-map
    :n "/" #'proced-narrow))
 #+END_SRC
 
