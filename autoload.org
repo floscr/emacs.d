@@ -282,6 +282,16 @@ Log the current input without breaking the pipe.
     x))
 #+END_SRC
 
+** Append
+
+#+BEGIN_SRC elisp
+(defun -append (elem list)
+  "Append ELEM to the end of list.
+
+This is like -snoc but it takes the ELEM as the first argument for easier composition"
+  (-snoc list elem))
+#+END_SRC
+
 ** Shuffle List
 :PROPERTIES:
 :SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
