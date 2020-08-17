@@ -1078,6 +1078,16 @@ I mainly changed the function marking helper.
                     (point)))))
       (evil-range beg end type))))
 #+END_SRC
+*** Nim
+**** Dotfiles compilation command
+
+#+BEGIN_SRC elisp
+(def-project-mode! +dotfiles-nim-compile-mode
+  :modes '(nim-mode)
+  :when (string= (doom-project-root) "/etc/dotfiles/")
+  :on-load
+  (setq-local nim-compile-default-command (-snoc nim-compile-default-command "--outdir:../dst")))
+#+END_SRC
 
 ** Package Config
 *** Transmission
