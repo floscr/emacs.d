@@ -38,10 +38,6 @@
 (package! dired-subtree)
 ;; Dired:2 ends here
 
-;; [[file:~/.config/doom/config.org::*Dired][Dired:3]]
-(package! openwith)
-;; Dired:3 ends here
-
 ;; [[file:~/.config/doom/config.org::*Etc][Etc:1]]
 (package! proced-narrow)
 ;; Etc:1 ends here

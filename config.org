@@ -99,12 +99,6 @@ Open subtrees directly in the current view
 (package! dired-subtree)
 #+END_SRC
 
-Open files with the default application instead of Emacs,
-keep the process alive after closing Emacs.
-
-#+BEGIN_SRC elisp
-(package! openwith)
-#+END_SRC
 *** Etc
 
 Narrow Proced Buffers
@@ -118,7 +112,6 @@ Transmission Interface
 #+BEGIN_SRC elisp
 (package! transmission)
 #+END_SRC
-
 
 ** Language Packages
 *** Elisp
@@ -1840,9 +1833,7 @@ I undo this option with the interactive prefix argument, which can be accessed v
   (interactive)
   (let ((file-list (dired-get-marked-files))
         (process-connection-type nil))
-    (--map
-     (+my/start-inferior-process "xdg-open: " nil "xdg-open" (s-wrap (expand-file-name it) "\""))
-     file-list)))
+    (--map (+my/nohup-shell-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
 #+END_SRC
 
 ***** Toggle Sorting
@@ -1957,28 +1948,6 @@ Widen can be restored with ~g~.
                 ("documents"
                  (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub"))))))
 
-#+END_SRC
-
-***** OpenWith
-
-Automatically open files with external applications.
-
-#+BEGIN_SRC elisp
-(defun openwith-has-association (file)
-  (-any? (lambda (oa) (string-match (car oa) file)) openwith-associations))
-
-(use-package! openwith
-  :hook (after-init . openwith-mode)
-  :config
-  (setq openwith-associations
-        '(("\\.\\(?:mp3\\|ogg\\)\\'" "mpv" (file))
-          ("\\.\\(?:mkv\\|webm\\|avi\\|mp4\\)\\'" "mpv" (file))))
-  ;; (openwith-mode)
-  ;; Don't ask if file is too large when it'll be handled by openwith-mode.
-  (advice-add 'abort-if-file-too-large :before-until
-              (lambda (size op-type filename &rest args)
-                (and (boundp 'openwith-mode) openwith-mode
-                     (openwith-has-association filename)))))
 #+END_SRC
 
 **** Bindings

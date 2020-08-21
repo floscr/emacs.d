@@ -180,6 +180,14 @@ I don't want some processes to exit, when I close emacs.
      shell-file-name
      shell-command-switch
      (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
+
+;;;###autoload
+(defun +my/nohup-shell-command (cmd args)
+  "Launch a shell command, without opening a message buffer.
+The proram persists when emacs is closed."
+  (save-window-excursion
+    (shell-command
+     (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args>> &") nil nil)))
 #+END_SRC
 
 ** Map Lines
