@@ -2669,6 +2669,17 @@ Fixes evil window navigation for magit special buffers
  :n "[[" #'git-timemachine-show-previous-revision
  :n "]]" #'git-timemachine-show-previous-revision)
 #+END_SRC
+***** Disable quit for locked buffers
+
+Disable accidentally quitting magit buffers with ~q~ when the buffer is locked.
+
+#+BEGIN_SRC elisp
+(defun +magit/disable-locked-quit (orig-fn &rest args)
+  (unless magit-buffer-locked-p
+    (apply orig-fn args)))
+
+(advice-add #'magit-mode-bury-buffer :around #'+magit/disable-locked-quit)
+#+END_SRC
 
 **** Transient
 
