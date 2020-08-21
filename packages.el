@@ -86,6 +86,14 @@
 (package! literate-calc-mode)
 ;; Literate Calc Mode:1 ends here
 
+;; [[file:~/.config/doom/config.org::*Doom Snippets][Doom Snippets:1]]
+(package! doom-snippets :disable t)
+(package! my-doom-snippets
+  :recipe (:host github
+           :repo "floscr/doom-snippets"
+           :files ("*.el" "*")))
+;; Doom Snippets:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*Calfw][Calfw:1]]
 (package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
 (package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")

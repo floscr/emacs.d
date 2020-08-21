@@ -180,8 +180,17 @@ Inline Calculation
 (package! literate-calc-mode)
 #+END_SRC
 
-
 ** Overrides
+*** Doom Snippets
+
+#+BEGIN_SRC elisp
+(package! doom-snippets :disable t)
+(package! my-doom-snippets
+  :recipe (:host github
+           :repo "floscr/doom-snippets"
+           :files ("*.el" "*")))
+#+END_SRC
+
 *** Calfw
 Continuous events are broken in the current calfw source,
 also it seems it isn't maintained anymore.
@@ -194,6 +203,7 @@ also it seems it isn't maintained anymore.
 (package! calfw-cal :disable t)
 (package! org-gcal :disable t)
 #+END_SRC
+
 ** Disabled Packages
 
 Remove those annoying LSP interface plugins
@@ -2984,6 +2994,13 @@ Fix buffers not being added to the current workspace.
     (let ((yas/prompt-functions '(dummy-prompt)))
       (catch 'notfound
         (yas/insert-snippet t)))))
+#+END_SRC
+**** Load custom snippets
+
+#+BEGIN_SRC elisp
+(use-package! yasnippet
+  :init
+  (require 'doom-snippets nil t))
 #+END_SRC
 
 *** Babel Async
