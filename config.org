@@ -2681,7 +2681,7 @@ Disable accidentally quitting magit buffers with ~q~ when the buffer is locked.
 (advice-add #'magit-mode-bury-buffer :around #'+magit/disable-locked-quit)
 #+END_SRC
 
-**** Transient
+**** Transient Bindings
 
 You can add flags or commands to the magit interface transient here.
 To append something, just state the flag that you see in the transient popup as the 2nd argument.
@@ -3534,8 +3534,8 @@ and then do my function.
     :desc "List gists"                         "g" #'+gist:list
     :desc "List submodules"                    "n" #'magit-list-submodules
     :desc "List issues"                        "p" #'forge-list-issues
-    :desc "List pull requests"                 "r" #'forge-list-requested-reviews
-    :desc "List pull awaiting review requests" "R" #'forge-list-pullreqs
+    :desc "List pull requests"                 "r" #'forge-list-pullreqs
+    :desc "List pull awaiting review requests" "R" #'forge-list-requested-reviews
     :desc "List notifications"                 "s" #'forge-list-notifications)))
 #+END_SRC
 
