@@ -1011,17 +1011,6 @@ Take the host as the base and either the TITLE or the path from the URL."
 
 Stuff that doesn't belong into modules, but is too big to put into a simple util section.
 
-*** Capture
-
-#+BEGIN_SRC elisp
-(defun +org-capture|my-open-frame ()
-  "Open capture, adjust display, disable posframe."
-  (interactive)
-  (+ui|adjust-ui-to-display)
-  (+org-capture/open-frame)
-  (ivy-posframe-mode -1))
-#+END_SRC
-
 *** Counsel Tagging Enhancement
 
 Custom counsel tagging for org buffers and agenda buffers.
