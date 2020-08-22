@@ -1859,8 +1859,8 @@ Unless I'm looking at a link, than continue like common.
       (:prefix-map ("w" . "Refile")
        :desc "Dynamic"            "w" 'org-refile
        :desc "Pinboard"           "p" '+org|refile-to-bookmarks
-       :desc "To GTD Backlog"     "b" (λ! (+org/refile "Main/gtd.org" "GTD Backlog"))
-       :desc "To GTD"             "g" (λ! (+org/refile "Main/gtd.org" "GTD"))))
+       :desc "To GTD Backlog"     "b" (cmd! (+org/refile "Main/gtd.org" "GTD Backlog"))
+       :desc "To GTD"             "g" (cmd! (+org/refile "Main/gtd.org" "GTD"))))
 #+END_SRC
 
 ***** Agenda
