@@ -363,7 +363,6 @@ Never blink the cursor, it's too distracting.
 :SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
 :END:
 
-
 #+BEGIN_SRC elisp
 (defun +window|toggle-split-direction ()
   "Toggle current window split between horizontal and vertical."
@@ -3571,7 +3570,8 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("p" . "project")
-   :desc "Workspace Project Files"     "P" #'+workspace|find-workspace-project-file))
+   :desc "Workspace Project Files" "P" #'+workspace|find-workspace-project-file
+   :desc "Project Bookmarks"       "RET" #'+bookmarks))
 #+END_SRC
 
 **** Search
