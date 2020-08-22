@@ -1912,7 +1912,6 @@ The dired-line jumps at the end are used to jump the filename again.
      (dired-map-over-marks (dired-get-filename) arg))))
 #+END_SRC
 
-
 **** Extensions
 ***** Narrow
 
@@ -1967,6 +1966,8 @@ Widen can be restored with ~g~.
       :ng "<C-return>" '+dired|open-externally
       :gn "o" '+dired|toggle-sort
       :n "p" '+dired|paste-dwim)
+
+(define-key dired-mode-map (kbd "<down-mouse-1>") 'dired-mouse-find-file)
 #+END_SRC
 
 *** Eldoc
