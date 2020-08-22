@@ -432,3 +432,54 @@ DISPLAY is a display name, frame or terminal, as in
     (other-window 1)
     (current-buffer)))
 #+END_SRC
+* Project Bookmarks
+
+Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
+
+#+BEGIN_SRC elisp
+(defun +bookmarks/find-bookmarks (x &optional &key other-window?)
+  "Jump to a X relative to the project root, go to character POS."
+  (-log (alist-get 'file (car x)))
+  (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
+               (item (car x))
+               (file (->> (alist-get 'file item)
+                          ((lambda (x)
+                             (if (alist-get 'relative item)
+                                 (f-join (projectile-project-root) x)
+                               x))))))
+    (funcall find-fn file)
+    (-some--> (alist-get 'goto item)
+      (--tap (progn
+               (goto-char (point-min))
+               (search-forward it)) it))
+    (-some--> (alist-get 'action item)
+      (call-interactively it))
+    (-some--> (alist-get 'goto-bol item)
+      (evil-first-non-blank))))
+
+(defun +bookmarks/find-bookmarks-other-window (x)
+  "Open bookmark X in other window, used with ivy action 'j'."
+  (+bookmarks/find-bookmarks x :other-window? t))
+
+;;;###autoload
+(defun +bookmarks (&optional bookmarks-list)
+  "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
+If found, show an ivy window with the bookmarks"
+  (interactive)
+  (-if-let* ((bookmarks
+              (or bookmarks-list
+                  (-some->> (doom-project-root)
+                    ((lambda (x) (f-join x "bookmarks.json")))
+                    (-id-when #'f-exists?)
+                    (json-read-file))))
+             (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
+      (ivy-read "Bookmark: " bookmarks
+                :action (lambda (x) (+bookmarks/find-bookmarks (cdr x)))
+                :caller #'+bookmarks|find-bookmarks)
+    (user-error "No bookmarks file found at project root.")))
+
+(after! ivy
+  (ivy-set-actions
+   '+bookmarks|find-bookmarks
+   '(("j" +bookmarks/find-bookmarks-other-window "open in other window"))))
+#+END_SRC
