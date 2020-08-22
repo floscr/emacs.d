@@ -319,109 +319,79 @@ bookmarks are not helpful since they're not relative.
 
 #+BEGIN_SRC elisp
 (setq +MM-dynamic-bookmarks
-      '((:file "src/containers/MapEditor/Components/Canvas.defaultProps.js"
-               :relative t
-               :name "Canvas Shortcuts: Edit Mode"
-               :goto "const editableKeybindings = {")
-        (:file "src/containers/MapEditor/Components/Canvas.defaultProps.js"
-               :relative t
-               :name "Canvas Shortcuts: All"
-               :goto "const allModesKeybindings = {")
-        (:file "src/containers/MapEditor.Node.Editor/Default/actions/componentWillMount.js"
-               :relative t
-               :name "Node Editor: Tokenization"
-               :goto "const convertTextToTokens")
-        (:file "src/containers/MapEditor.Node.Editor/Default/component.js"
-               :relative t
-               :name "Node Editor: Component"
-               :goto "const Component")
-        (:file "src/containers/MapEditor.Root/Editable/component.js"
-               :relative t
-               :name "renderEntities"
-               :goto "const renderEntities =")
-        (:file "src/apps/Main/DevPlugin.local.js"
-               :relative t
-               :name "DevPlugin")
-        (:file "src/containers/MapEditor.DragDrop/actions/helpers.js"
-               :relative t
-               :name "DragDrop: findDropPoint"
-               :goto "export const findDropPoint"
-               :goto-bol t)
-        (:file "src/API/MapEditor.Changes/index.js"
-               :relative t
-               :name "Changes: Action Whitelist"
-               :goto "const ACTION_WHITELIST = Arr"
-               :goto-bol t)
-        (:file "src/apps/Main/webpack.config.js"
-               :relative t
-               :name "Webpack: CLI flags"
-               :goto "const env = extractEnv"
-               :goto-bol t)
-
-        (:file "~/Code/Meisterlabs/kits-2.0/packages/knightrider/src/Rules.js"
-               :name "Redux: Rules"
-               :action counsel-imenu
-               :goto "const methods = {")
-        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Arr.js"
-               :name "Common: Arr"
-               :action counsel-imenu)
-        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Str.js"
-               :name "Common: Str"
-               :action counsel-imenu)
-        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Obj.js"
-               :name "Common: Obj"
-               :action counsel-imenu)
-        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Maybe.js"
-               :name "Common: Maybe"
-               :action counsel-imenu)
-        (:file "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Box.js"
-               :name "Common: Box"
-               :action counsel-imenu)
-        (:file "~/Code/Meisterlabs/kits-2.0/packages/redux-core/src/CollectionStore.js"
-               :name "Common: CollectionStore"
-               :action counsel-imenu)
-        (:file "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx"
-               :name "Docs: Command Line Flags"
-               :action counsel-imenu)))
+      '(((file . "src/containers/MapEditor/Components/Canvas.defaultProps.js")
+         (relative . t)
+         (name . "Canvas Shortcuts: Edit Mode")
+         (goto . "const editableKeybindings = "))
+        ((file . "src/containers/MapEditor/Components/Canvas.defaultProps.js")
+         (relative . t)
+         (name . "Canvas Shortcuts: All")
+         (goto . "const allModesKeybindings = "))
+        ((file . "src/containers/MapEditor.Node.Editor/Default/actions/componentWillMount.js")
+         (relative . t)
+         (name . "Node Editor: Tokenization")
+         (goto . "const convertTextToTokens"))
+        ((file . "src/containers/MapEditor.Node.Editor/Default/component.js")
+         (relative . t)
+         (name . "Node Editor: Component")
+         (goto . "const Component"))
+        ((file . "src/containers/MapEditor.Root/Editable/component.js")
+         (relative . t)
+         (name . "renderEntities")
+         (goto . "const renderEntities ="))
+        ((file . "src/apps/Main/DevPlugin.local.js")
+         (relative . t)
+         (name . "DevPlugin"))
+        ((file . "src/containers/MapEditor.DragDrop/actions/helpers.js")
+         (relative . t)
+         (name . "DragDrop: findDropPoint")
+         (goto . "export const findDropPoint")
+         ("goto-bol" t))
+        ((file . "src/API/MapEditor.Changes/index.js")
+         (relative . t)
+         (name . "Changes: Action Whitelist")
+         (goto . "const ACTION_WHITELIST = Arr")
+         ("goto-bol" t))
+        ((file . "src/apps/Main/webpack.config.js")
+         (relative . t)
+         (name . "Webpack: CLI flags")
+         (goto . "const env = extractEnv")
+         ("goto-bol" t))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/knightrider/src/Rules.js")
+         (name . "Redux: Rules")
+         (action . #'counsel-imenu)
+         (goto . "const methods = {"))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Arr.js")
+         (name . "Common: Arr")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Str.js")
+         (name . "Common: Str")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Obj.js")
+         (name . "Common: Obj")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Maybe.js")
+         (name . "Common: Maybe")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/common/src/Types/Box.js")
+         (name . "Common: Box")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/redux-core/src/CollectionStore.js")
+         (name . "Common: CollectionStore")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx")
+         (name . "Docs: Command Line Flags")
+         (action . #'counsel-imenu))))
 #+END_SRC
 
 **** Utils
 
 #+BEGIN_SRC elisp
-(defun +MM/find-bookmark-buffer (name &optional other-window?)
-  "Jump to a FILE relative to the project root, go to character POS."
-  (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
-               (item (--find (string= name (plist-get it :name)) +MM-dynamic-bookmarks))
-               (file (->> (plist-get item :file)
-                          ((lambda (x)
-                             (if (plist-get item :relative)
-                                 (f-join (projectile-project-root) x)
-                               x))))))
-
-    (funcall find-fn file)
-    (-some--> (plist-get item :goto)
-      (--tap (progn
-               (goto-char (point-min))
-               (search-forward it)) it))
-    (-some--> (plist-get item :action)
-      (call-interactively it))
-    (-some--> (plist-get item :goto-bol)
-      (evil-first-non-blank))))
-
-(defun +MM/find-bookmark-buffer-other-window (item)
-  (+MM/find-bookmark-buffer item t))
-
 (defun +MM|bookmarks ()
-  "Project root relative bookmarks."
   (interactive)
-  (ivy-read "Jump to bookmark: " (--map (plist-get it :name) +MM-dynamic-bookmarks)
-            :action #'+MM/find-bookmark-buffer))
-
-(after! ivy
-  (ivy-set-actions
-   '+MM|bookmarks
-   '(("j" +MM/find-bookmark-buffer-other-window "open in other window"))))
+  (+bookmarks +MM-dynamic-bookmarks))
 #+END_SRC
+
 *** Build Package
 
 #+BEGIN_SRC elisp
