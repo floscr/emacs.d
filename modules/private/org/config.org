@@ -1492,7 +1492,7 @@ Return the path of the file."
 
 #+BEGIN_SRC elisp
 (defun +org/refile (file headline &optional arg)
-  (let ((file (+org/find-in-files file))
+  (let ((file (+org/expand-org-file-name file))
         (pos (save-excursion
                (find-file file)
                (org-find-exact-headline-in-buffer headline))))
@@ -1500,7 +1500,7 @@ Return the path of the file."
 
 (defun +org/agenda-refile (file headline &optional arg)
   (save-window-excursion
-    (let* ((file (+org/find-in-files file))
+    (let* ((file (+org/expand-org-file-name file))
            (pos (save-excursion
                   (find-file file)
                   (org-find-exact-headline-in-buffer headline))))
