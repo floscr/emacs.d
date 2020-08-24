@@ -1904,9 +1904,7 @@ Unless I'm looking at a link, than continue like common.
 
 #+BEGIN_SRC elisp
 (map! :map org-agenda-mode-map
-      :m "C-c C-l" #'+org|agenda-change-link
-      :desc "Org Window Left" "C-h" #'evil-window-left
-      :desc "Org Window Left" "C-l" #'evil-window-right)
+      :m "C-c C-l" #'+org|agenda-change-link)
 #+END_SRC
 
 *** Leader Bindings

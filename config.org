@@ -2643,20 +2643,6 @@ Then use ~]~ to navigate the sections
    :n "{" (λ! (floscr:magit-jumpunfold-section))))
 #+END_SRC
 
-***** Magit Window Navigation Binding Fixes
-
-Fixes evil window navigation for magit special buffers
-
-#+BEGIN_SRC elisp
-(map!
- (:after evil-magit
-   :map (magit-status-mode-map magit-revision-mode-map magit-diff-mode-map)
-   :n "C-j" #'evil-window-down
-   :n "C-k" #'evil-window-up
-   :n "C-h" #'evil-window-left
-   :n "C-l" #'evil-window-right))
-#+END_SRC
-
 ***** Time Machine Navigation
 
 #+BEGIN_SRC elisp
@@ -3247,6 +3233,10 @@ and the line above, skipping empty lines."
 **** Normal Bindings
 ***** Window navigation
 
+Fix window navigations for various modes.
+I don't like pressing ~C-w~ or ~SPC w~ as leader to navigate,
+so I have to work around it:
+
 #+BEGIN_SRC elisp
 (map!
  :en "C-h"   #'evil-window-left
@@ -3255,11 +3245,31 @@ and the line above, skipping empty lines."
  :en "C-l"   #'evil-window-right)
 
 (map!
- :map evil-org-mode-map
+ :map (image-mode-map
+       magit-diff-mode-map
+       magit-revision-mode-map
+       magit-status-mode-map
+       eshell-mode-map
+       evil-org-mode-map)
  :en "C-h"   #'evil-window-left
  :en "C-j"   #'evil-window-down
  :en "C-k"   #'evil-window-up
  :en "C-l"   #'evil-window-right)
+
+(add-hook! 'eshell-first-time-mode-hook
+  (map!
+   :map eshell-mode-map
+   :en "C-h"   #'evil-window-left
+   :en "C-j"   #'evil-window-down
+   :en "C-k"   #'evil-window-up
+   :en "C-l"   #'evil-window-right))
+
+(map!
+ :map org-agenda-mode-map
+ "C-h"  #'evil-window-left
+ "C-j"  #'evil-window-down
+ "C-k"  #'evil-window-up
+ "C-l"  #'evil-window-right)
 #+END_SRC
 
 ***** History navigation in minibuffer
@@ -3709,11 +3719,6 @@ redefines its keys every time `eshell-mode' is enabled."
   (map! :map eshell-mode-map
         :in "C-p"         #'eshell-previous-input
         :in "C-n"         #'eshell-next-input
-
-        :in "C-k"         #'evil-window-up
-        :in "C-j"         #'evil-window-down
-        :in "C-h"         #'evil-window-left
-        :in "C-l"         #'evil-window-right
 
         :localleader "l"  #'eshell/clear))
 
