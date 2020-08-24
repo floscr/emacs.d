@@ -547,6 +547,7 @@ Bound to ~SPC t t~.
 #+END_SRC
 
 *** Theme Modifications
+**** General
 
 #+BEGIN_SRC elisp
 (add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
@@ -565,7 +566,7 @@ Bound to ~SPC t t~.
 #+END_SRC
 
 
-**** Function Start
+***** Function Start
 
 #+BEGIN_SRC elisp
 (defun *doom-themes-custom-set-faces ()
@@ -575,7 +576,7 @@ Bound to ~SPC t t~.
   (custom-set-faces!
 #+END_SRC
 
-**** Dired Output
+***** Dired Output
 
 Remove the rainbow colors from dired.
 
@@ -596,7 +597,7 @@ Remove the rainbow colors from dired.
 #+END_SRC
 
 
-**** Mu4E
+***** Mu4E
 
 Switch the highlight.
 
@@ -604,7 +605,7 @@ Switch the highlight.
 '(mu4e-highlight-face :inherit mu4e-unread-face)
 #+END_SRC
 
-**** Function End
+***** Function End
 
 #+BEGIN_SRC elisp
 ))
