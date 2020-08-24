@@ -3791,6 +3791,14 @@ redefines its keys every time `eshell-mode' is enabled."
               (require 'org-mu4e)
               (org-mu4e-store-and-capture)))
 #+END_SRC
+**** Images
+
+#+BEGIN_SRC elisp
+(map! :map 'image-mode-map
+      :desc "Zoom in" :gn "+" #'image-increase-size
+      :desc "Zoom in" :gn "-" #'image-decrease-size
+      :desc "Zoom in" :gn "0" (cmd! (image-transform-set-scale 1)))
+#+END_SRC
 
 *** Minibuffer
 **** Copy and Paste from the minibuffer
