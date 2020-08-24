@@ -36,20 +36,20 @@ I often use my helper function [[file:autoload.org::*Template Literals][(templat
 
 ** General Packages
 *** System
+**** Udiskie
 
 #+BEGIN_SRC elisp
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
 #+END_SRC
 
 *** Evil
-
-[[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
+**** [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
 
 #+BEGIN_SRC elisp
 (package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
 #+END_SRC
 
-And more motions
+**** Evil motions
 
 #+BEGIN_SRC elisp
 (package! evil-replace-with-register)
@@ -57,57 +57,53 @@ And more motions
 #+END_SRC
 
 *** UI
-
-Narrow to an indirect buffer
+**** Narrow to an indirect buffer
 
 #+BEGIN_SRC elisp
 (package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
 #+END_SRC
 
-Colorized hex strings
+**** Colorized hex strings
 
 #+BEGIN_SRC elisp
 (package! rainbow-mode)
 #+END_SRC
 
-Centered buffers, doom does not support this anymore.
+**** Centered buffers, doom does not support this anymore.
 
 #+BEGIN_SRC elisp
 (package! visual-fill-column)
 #+END_SRC
 
 *** External
-
-Edit the current chrome input field directly in emacs
+**** Edit the current chrome input field directly in emacs
 
 #+BEGIN_SRC elisp
 (package! atomic-chrome)
 #+END_SRC
 
 *** Dired
-
-Filter dired buffers
+**** Filter dired buffers
 
 #+BEGIN_SRC elisp
 (package! dired-narrow)
 (package! dired-filter)
 #+END_SRC
 
-Open subtrees directly in the current view
+**** Open subtrees directly in the current view
 
 #+BEGIN_SRC elisp
 (package! dired-subtree)
 #+END_SRC
 
 *** Etc
-
-Narrow Proced Buffers
+**** Narrow Proced Buffers
 
 #+BEGIN_SRC elisp
 (package! proced-narrow)
 #+END_SRC
 
-Transmission Interface
+**** Transmission Interface
 
 #+BEGIN_SRC elisp
 (package! transmission)
@@ -556,7 +552,7 @@ Bound to ~SPC t t~.
 (add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
 #+END_SRC
 
-**** Magit
+**** Magit Diff
 
 #+BEGIN_SRC elisp
 (after! (diff-mode)
@@ -2669,6 +2665,7 @@ Fixes evil window navigation for magit special buffers
  :n "[[" #'git-timemachine-show-previous-revision
  :n "]]" #'git-timemachine-show-previous-revision)
 #+END_SRC
+
 ***** Disable quit for locked buffers
 
 Disable accidentally quitting magit buffers with ~q~ when the buffer is locked.

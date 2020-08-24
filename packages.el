@@ -1,50 +1,50 @@
 ;; -*- no-byte-compile: t; -*-
 
-;; [[file:~/.config/doom/config.org::*System][System:1]]
+;; [[file:~/.config/doom/config.org::*Udiskie][Udiskie:1]]
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
-;; System:1 ends here
+;; Udiskie:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Evil][Evil:1]]
+;; [[file:~/.config/doom/config.org::*[[https://github.com/tarao/evil-plugins\][Evil Plugin\]] provides some nice addons for Evil Mode][[[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode:1]]
 (package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
-;; Evil:1 ends here
+;; [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Evil][Evil:2]]
+;; [[file:~/.config/doom/config.org::*Evil motions][Evil motions:1]]
 (package! evil-replace-with-register)
 (package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
-;; Evil:2 ends here
+;; Evil motions:1 ends here
 
-;; [[file:~/.config/doom/config.org::*UI][UI:1]]
+;; [[file:~/.config/doom/config.org::*Narrow to an indirect buffer][Narrow to an indirect buffer:1]]
 (package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
-;; UI:1 ends here
+;; Narrow to an indirect buffer:1 ends here
 
-;; [[file:~/.config/doom/config.org::*UI][UI:2]]
+;; [[file:~/.config/doom/config.org::*Colorized hex strings][Colorized hex strings:1]]
 (package! rainbow-mode)
-;; UI:2 ends here
+;; Colorized hex strings:1 ends here
 
-;; [[file:~/.config/doom/config.org::*UI][UI:3]]
+;; [[file:~/.config/doom/config.org::*Centered buffers, doom does not support this anymore.][Centered buffers, doom does not support this anymore.:1]]
 (package! visual-fill-column)
-;; UI:3 ends here
+;; Centered buffers, doom does not support this anymore.:1 ends here
 
-;; [[file:~/.config/doom/config.org::*External][External:1]]
+;; [[file:~/.config/doom/config.org::*Edit the current chrome input field directly in emacs][Edit the current chrome input field directly in emacs:1]]
 (package! atomic-chrome)
-;; External:1 ends here
+;; Edit the current chrome input field directly in emacs:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Dired][Dired:1]]
+;; [[file:~/.config/doom/config.org::*Filter dired buffers][Filter dired buffers:1]]
 (package! dired-narrow)
 (package! dired-filter)
-;; Dired:1 ends here
+;; Filter dired buffers:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Dired][Dired:2]]
+;; [[file:~/.config/doom/config.org::*Open subtrees directly in the current view][Open subtrees directly in the current view:1]]
 (package! dired-subtree)
-;; Dired:2 ends here
+;; Open subtrees directly in the current view:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Etc][Etc:1]]
+;; [[file:~/.config/doom/config.org::*Narrow Proced Buffers][Narrow Proced Buffers:1]]
 (package! proced-narrow)
-;; Etc:1 ends here
+;; Narrow Proced Buffers:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Etc][Etc:2]]
+;; [[file:~/.config/doom/config.org::*Transmission Interface][Transmission Interface:1]]
 (package! transmission)
-;; Etc:2 ends here
+;; Transmission Interface:1 ends here
 
 ;; [[file:~/.config/doom/config.org::*Elisp][Elisp:1]]
 (package! symex)
