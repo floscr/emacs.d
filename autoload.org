@@ -186,7 +186,7 @@ I don't want some processes to exit, when I close emacs.
   "Launch a shell command, without opening a message buffer.
 The proram persists when emacs is closed."
   (save-window-excursion
-    (shell-command
+    (call-process-shell-command
      (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args>> &") nil nil)))
 #+END_SRC
 
