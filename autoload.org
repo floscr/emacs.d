@@ -182,12 +182,14 @@ I don't want some processes to exit, when I close emacs.
      (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
 
 ;;;###autoload
-(defun +my/nohup-shell-command (cmd args)
+(defun +my/nohup-shell-command (cmd &optional &rest args)
   "Launch a shell command, without opening a message buffer.
 The proram persists when emacs is closed."
-  (save-window-excursion
+  (let ((args-str (or (-some->> args
+                        (s-join " "))
+                      "")))
     (call-process-shell-command
-     (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args>> &") nil nil)))
+       (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args-str>> &") nil nil)))
 #+END_SRC
 
 ** Map Lines
@@ -226,10 +228,7 @@ The proram persists when emacs is closed."
                                 (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
                               "")))
     (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
-    (+my/start-inferior-process
-     "elfeed-mpv" nil "mpv"
-     quality-arg
-     (s-wrap url "\""))))
+    (+my/nohup-shell-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
 
 * Functional Utils
