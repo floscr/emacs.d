@@ -462,6 +462,7 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (call-interactively it))
     (-some--> (alist-get 'goto-bol item)
       (evil-first-non-blank))))
+      (+workspaces-add-current-buffer-h)
 
 (defun +bookmarks/find-bookmarks-other-window (x)
   "Open bookmark X in other window, used with ivy action 'j'."
