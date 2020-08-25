@@ -399,12 +399,11 @@ Lock a window so the buffer can't be changed or it cant be deleted.
   "Control whether or not Emacs is allowed to display another
 buffer in current window."
   (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window (not (window-dedicated-p window))))
-       "%s: Window locked!"
-     "%s: Window unlocked!")
-   (current-buffer)))
+  (let* ((window (get-buffer-window (current-buffer)))
+         (is-locked (window-dedicated-p window))
+         (txt (if is-locked "Window unlocked" "Window locked")))
+    (set-window-dedicated-p window (not is-locked))
+    (message (template "<<(current-buffer)>>: <<txt>>!"))))
 #+END_SRC
 
 *** Jump to definition for tangled files
