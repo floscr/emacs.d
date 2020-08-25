@@ -453,16 +453,28 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
                              (if (alist-get 'relative item)
                                  (f-join (projectile-project-root) x)
                                x))))))
-    (funcall find-fn file)
-    (-some--> (alist-get 'goto item)
-      (--tap (progn
-               (goto-char (point-min))
-               (search-forward it)) it))
-    (-some--> (alist-get 'action item)
-      (call-interactively it))
-    (-some--> (alist-get 'goto-bol item)
-      (evil-first-non-blank))))
+    (let ((buffer-is-open (get-file-buffer file)))
+      (funcall find-fn file)
       (+workspaces-add-current-buffer-h)
+
+      ;; goto, disable-relocation
+      ;; Go to a location matched by regex
+      ;; Unless disable-relocation is enabled and the file is already visited
+      (-some--> (alist-get 'goto item)
+        (--id-when (or (not buffer-is-open)
+                       (not (alist-get 'disable-relocation item))) it)
+        (--tap (progn
+                 (goto-char (point-min))
+                 (search-forward it)) it))
+      ;; action
+      ;; Execute a function after find file
+      (-some--> (alist-get 'action item)
+        (call-interactively it))
+      ;; goto-bol
+      ;; Go to the beginning, since the regex search
+      ;; will leave the cursor at the end of the search
+      (-some--> (alist-get 'goto-bol item)
+        (evil-first-non-blank)))))
 
 (defun +bookmarks/find-bookmarks-other-window (x)
   "Open bookmark X in other window, used with ivy action 'j'."
