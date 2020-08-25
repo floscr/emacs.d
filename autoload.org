@@ -264,12 +264,18 @@ Log the current input without breaking the pipe.
   (--tap (message "%s" it) x))
 #+END_SRC
 
-** When Forward
+** Id When
 
 #+BEGIN_SRC elisp
 (defun -id-when (fn x)
   "When FN equals t forward X."
   (when (funcall fn x) x))
+
+(defmacro --id-when (form xs)
+  "Anaphoric form of -id-when"
+  (declare (debug (form form)))
+  `(let ((it ,xs))
+     (when ,form ,xs)))
 #+END_SRC
 
 ** String Match
@@ -432,6 +438,7 @@ DISPLAY is a display name, frame or terminal, as in
     (other-window 1)
     (current-buffer)))
 #+END_SRC
+
 * Project Bookmarks
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
