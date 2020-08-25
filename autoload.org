@@ -446,7 +446,6 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 #+BEGIN_SRC elisp
 (defun +bookmarks/find-bookmarks (x &optional &key other-window?)
   "Jump to a X relative to the project root, go to character POS."
-  (-log (alist-get 'file (car x)))
   (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
                (item (car x))
                (file (->> (alist-get 'file item)
