@@ -263,36 +263,6 @@ Set it to =32 MiB=.
     ("Wikipedia"          "https://wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")))
 #+END_SRC
 
-*** Bookmarks
-
-#+BEGIN_SRC elisp
-(setq bookmark-default-file "~/Documents/Temp/bookmarks"
-      bookmark-watch-bookmark-file 'silent
-      bookmark-file bookmark-default-file
-      bookmark-old-default-file bookmark-default-file)
-#+END_SRC
-
-**** Automatically Save Bookmarks
-:PROPERTIES:
-:SOURCE:   [[https://github.com/yangyingchao/tubo-env/blob/b5f61ed6a802af45e461927507de55ed7e527983/.emacs.d/rc/03-fundamental-mode.el#L193][tubo-env/03-fundamental-mode.el at b5f61ed6a802af45e461927507de55ed7e527983 · yangyingchao/tubo-env]]
-:END:
-
-Automatically save bookmarks file after changing bookmarks.
-Also prevent the ~bookmark-save~ function to display the "Saved" message.
-
-#+BEGIN_SRC elisp
-(defun +bookmark/set (func &rest args)
-  "Save bookmark after `bookmark-set'.
-Call FUNC with ARGS."
-  (and (bookmark-time-to-save-p t)
-       (let ((inhibit-message t))
-         (bookmark-save))))
-
-(advice-add 'bookmark-set :after #'+bookmark/set)
-(advice-add 'bookmark-delete :after #'+bookmark/set)
-(advice-add 'bookmark-rename :after #'+bookmark/set)
-#+END_SRC
-
 *** Evil Fine undo
 
 Whether evil actions like =cw= are undone in several steps.
@@ -1088,6 +1058,37 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** Bookmarks
+
+**** Config
+
+My main bookmarks
+
+#+BEGIN_SRC elisp
+(setq
+ +bookmarks:main
+ '(((file . "~/.config/doom/modules/private/work/config.org")
+    (name . "Config: Work")
+    (goto . "* Configuration")
+    (goto-bol . t)
+    (disable-relocation . t))
+   ((file . "~/.config/doom/autoload.org")
+    (name . "Config: Autoloads"))
+   ((file . "~/.config/doom/modules/private/org/config.org")
+    (name . "Config: Org"))
+   ((file . "~/.config/doom/modules/private/org/config.org")
+    (name . "Config: Org"))))
+#+END_SRC
+**** Utils
+
+***** Main Bookmarks Function
+
+#+BEGIN_SRC elisp
+(defun +bookmarks|main ()
+  (interactive)
+  (+bookmarks +bookmarks:main))
+#+END_SRC
+
 *** Transmission
 
 #+BEGIN_SRC elisp
@@ -3482,6 +3483,7 @@ and then do my function.
 #+BEGIN_SRC elisp
 (map!
  :leader
+ "RET"  #'+bookmarks|main
  "'"  #'+popup/toggle
  "au" #'undo-tree-visualize
  "//" #'+default/search-project
