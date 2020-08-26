@@ -1061,10 +1061,8 @@ I mainly changed the function marking helper.
 
 ** Package Config
 *** Bookmarks
-
 **** Config
-
-My main bookmarks
+***** Main Bookmarks
 
 #+BEGIN_SRC elisp
 (setq
@@ -1077,12 +1075,10 @@ My main bookmarks
    ((file . "~/.config/doom/autoload.org")
     (name . "Config: Autoloads"))
    ((file . "~/.config/doom/modules/private/org/config.org")
-    (name . "Config: Org"))
-   ((file . "~/.config/doom/modules/private/org/config.org")
     (name . "Config: Org"))))
 #+END_SRC
+   
 **** Utils
-
 ***** Main Bookmarks Function
 
 #+BEGIN_SRC elisp
