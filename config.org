@@ -2590,14 +2590,24 @@ Universal argument to ignore review branches."
 Loads commit template from ~./git/TEMPLATE~ if the file exist.
 
 #+BEGIN_SRC elisp
+(defun +git/template-file (branch)
+  (when-let* ((dir (+git/find-root-git-dir))
+              (entries (f-entries dir (lambda (x) (s-starts-with? "TEMPLATE" (f-base x)))))
+              (branch-template (template "TEMPLATE-<<branch>>")))
+    (-log entries)
+    (-log branch-template)
+    (or
+     (-find (lambda (x) (string= branch-template (f-base x))) entries)
+     (-find (lambda (x) (string= "TEMPLATE" (f-base x))) entries))))
+
 (defun +git/load-git-template (&rest discard)
   "When a TEMPLATE file in the git directory exists, insert it as a commit template."
   (when (eq (point) (point-at-eol))
-      (-some->> (f-join (projectile-project-root) ".git" "TEMPLATE")
-        (f-read)
-        (s-trim)
-        (s-append " ")
-        (insert)))
+    (-some->> (+git/template-file (magit-get-current-branch))
+      (f-read)
+      (s-trim)
+      (s-append " ")
+      (insert)))
   (evil-insert-state))
 #+END_SRC
 
@@ -2607,6 +2617,25 @@ And the hook
 (add-hook! 'git-commit-setup-hook :append #'+git/load-git-template)
 #+END_SRC
 
+***** Find root directory
+
+Find the root directory of a ~.git~ repository
+This also works for worktrees that are in a nested directory.
+
+#+BEGIN_SRC elisp
+(defun +git/find-root-git-dir ()
+  "Find the root directory of a repository."
+    (-some->> (magit-toplevel)
+      (-f-join ".git")
+      (-id-when #'f-exists?)
+      ((lambda (x)
+         (if (f-file? x)
+             (->> (magit-list-worktrees)
+                  (car)
+                  (car)
+                  (-f-join ".git"))
+           x)))))
+#+END_SRC
 **** Config
 
 #+BEGIN_SRC elisp
