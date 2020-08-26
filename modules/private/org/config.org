@@ -545,6 +545,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                          (:name "Meetings" :tag "MEETING" :order 2)
                                          (:name "Reviews" :tag "REVIEW" :order 4)
                                          (:name "Backlog" :tag "BACKLOG" :order 11)
+                                         (:name "Tasks" :tag "TASK" :order 3)
                                          (:name "GTD (Not Scheduled)" :and (:tag "GTD" :scheduled nil :not (:todo "WAITING")))
                                          (:name "GTD" :and (:tag "GTD"))
                                          (:name "Reading List" :tag "TEXT" :order 10))))))
