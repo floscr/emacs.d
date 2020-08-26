@@ -2599,7 +2599,11 @@ Loads commit template from ~./git/TEMPLATE~ if the file exist.
         (s-append " ")
         (insert)))
   (evil-insert-state))
+#+END_SRC
 
+And the hook
+
+#+BEGIN_SRC elisp
 (add-hook! 'git-commit-setup-hook :append #'+git/load-git-template)
 #+END_SRC
 
