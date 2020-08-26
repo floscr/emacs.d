@@ -339,6 +339,13 @@ shuffling is done in place."
         (length))
       0))
 #+END_SRC
+** -f-join
+
+#+BEGIN_SRC elisp
+(defun -f-join (x path)
+  "Reversed argument order for f-join"
+  (f-join path x))
+#+END_SRC
 
 * Files
 ** File Timestamp
