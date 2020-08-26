@@ -151,7 +151,6 @@ All todo keywords are for general items.
 (setq org-latex-create-formula-image-program 'dvisvgm)
 #+END_SRC
 
-
 **** Disable Spellchecking SRC Regions
 
 #+BEGIN_SRC elisp
