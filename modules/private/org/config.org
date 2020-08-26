@@ -1817,6 +1817,7 @@ Unless I'm looking at a link, than continue like common.
       :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
       :desc  "Schedule"                  "s"  #'org-schedule
       :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
+      :desc  "MPV Link at point"         "v"  #'+org|mpv-link-at-point
       :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
       (:prefix-map ("y" . "Yank")
@@ -1859,6 +1860,7 @@ Unless I'm looking at a link, than continue like common.
       :map org-agenda-mode-map
       :localleader
       "q" #'+org|counsel-org-tag
+      "v" #'+org|mpv-link-at-point
       (:prefix ("f" . "Filter by")
        :desc "Tasks"               "t" (λ! (+org/agenda-set-tag-filter '("+TASK")))
        :desc "Reviews"             "r" (λ! (+org/agenda-set-tag-filter '("+REVIEW"))))
