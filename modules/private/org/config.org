@@ -1926,6 +1926,7 @@ Unless I'm looking at a link, than continue like common.
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Store Link"                 "y" #'org-store-link
    :desc "Store Link"                 "j" #'+private-journal|new-entry
+   :desc "Visit Entry"              "SPC" #'+org|clock-visit-entry
 
    (:prefix-map ("b" . "Bookmarks")
     :desc "Goto Bookmarks File"       "b" (λ! (find-file +org:bookmarks-file))
