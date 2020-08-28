@@ -1553,6 +1553,13 @@ Return the path of the file."
              (counsel-find-file))))
    (+org/attach-file-and-insert-link)))
 #+END_SRC
+*** Insert Checkbox
+
+#+BEGIN_SRC elisp
+ (defun +org|toggle-checkbox ()
+  (interactive)
+  (org-toggle-checkbox '(4)))
+#+END_SRC
 
 ** Package Config
 *** Org Download
