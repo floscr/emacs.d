@@ -597,26 +597,17 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 
 *** Popups
 
+**** Other Popup overrides
+
 #+BEGIN_SRC elisp
-(after! org
-  (set-popup-rule! "^\\*Org Agenda" :side 'right :size 0.55 :select t :modeline t :ttl nil :quit nil)
-  (set-popup-rule! "^\\*Org Src" :ignore t)
-  (set-popup-rule! "^\\*Org QL Search" :side 'bottom :size 0.5 :select t :modeline t :ttl nil))
-
-(after! image-dired
-  (set-popup-rule! "^\\*image-dired" :size 0.38 :select t))
-
-(after! helm
-  (set-popup-rule! "^\\*helm" :vslot -100 :size 0.32 :ttl nil))
-
-(set-popup-rule! "^\\*WoMan " :side 'right :size 0.5 :select t :modeline t :ttl nil :quit nil)
-(set-popup-rule! "^\\*nodejs" :side 'right :size 0.55 :select t :modeline t :ttl nil :quit nil)
-
-(set-popup-rule! "^\\*helpful command" :side 'right :size 0.5 :select t :modeline t :ttl nil :quit nil)
-(set-popup-rule! "^\\*PDF-Occur*" :side 'right :size 0.5 :select t :modeline t)
-
-(set-popup-rule! "^\\*nim-compile" :size 0.5)
-(set-popup-rule! "^\\*transmission" :size 0.5)
+(set-popup-rules!
+  '(("^\\*Org Agenda" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*Org Src" :ignore t)
+    ("^\\*PDF-Occur*" :side right :size 0.5 :select t :modeline t)
+    ("^\\*WoMan " :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*helm" :vslot -100 :size 0.32 :ttl nil)
+    ("^\\*helpful command" :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)))
 #+END_SRC
 
 *** (Visual) Fill Column
@@ -1083,6 +1074,10 @@ I mainly changed the function marking helper.
    ((file . "~/.config/doom/modules/private/work/config.org")
     (name . "Bookmarks: Work")
     (goto . "*** Bookmarks")
+    (goto-bol . t))
+   ((file . "/etc/dotfiles/modules/desktop/common.nix")
+    (name . "Mimeapps")
+    (goto . "### Mimeapps")
     (goto-bol . t))))
 #+END_SRC
    
@@ -2926,7 +2921,7 @@ This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
   (interactive)
   (--> (+workspace-list-names)
        (--reject (string= (+workspace-current-name) it) it)
-       (-each it #'+workspace-delete)))
+       (-each it #'+workspace-delete))) ;
 #+END_SRC
 
 
