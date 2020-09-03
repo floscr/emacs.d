@@ -387,6 +387,12 @@ bookmarks are not helpful since they're not relative.
          (action . #'counsel-imenu))
         ((file . "~/Code/Meisterlabs/kits-2.0/docs/mindmeister/index.mdx")
          (name . "Docs: Command Line Flags")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/redux-geometry/src/Point.js")
+         (name . "Geometry: Point")
+         (action . #'counsel-imenu))
+        ((file . "~/Code/Meisterlabs/kits-2.0/packages/redux-geometry/src/Area.js")
+         (name . "Geometry: Area")
          (action . #'counsel-imenu))))
 #+END_SRC
 
@@ -507,7 +513,6 @@ When universal-argument is passed, just commit the bundle"
             :require-match t
             :action (lambda (x) (goto-char (cdr x)))))
 #+END_SRC
-
 ** Packages
 *** New Worktree
 
