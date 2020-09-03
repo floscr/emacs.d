@@ -1795,7 +1795,6 @@ Set my preferred clipboard paste method to ~xclip~.
 
 ** Bindings
 *** Mode Bindings
-
 **** Org Mode
 
 #+BEGIN_SRC elisp
