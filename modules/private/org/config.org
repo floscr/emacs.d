@@ -414,6 +414,26 @@ Helper to reset the org agenda custom commands.
 #+END_SRC
 
 ***** Helpers
+****** Get topmost todo
+
+#+BEGIN_SRC elisp
+(defun +org/topmost-todo-header ()
+  "Return the topmost TODO item of the current org tree.
+returns a pair with '(TODO-STATE POINT)."
+  (let ((headings '()))
+    (save-excursion
+      (while (org-up-heading-safe)
+        (add-to-list 'headings (list (org-get-todo-state) (point)))))
+    (--last (string= (car it) "TODO") headings)))
+
+(defun +org|org-topmost-todo-element ()
+  "Go to the topmost todo item of an org tre."
+  (interactive)
+  (-some->> (+org/topmost-todo-header)
+    (nth 1)
+    (goto-char)))
+#+END_SRC
+
 ****** Get Parent Project
 
 #+BEGIN_SRC elisp
@@ -1078,7 +1098,7 @@ What I've changed:
       "C-c C-c" #'+org-indirect/save-and-kill-window
       "C-c C-k" #'kill-buffer-and-window)
 
-(defun +org|narrow-subtree-indirect (&optional visit-fn)
+(defun +org|narrow-subtree-indirect (&optional visit-fn goto-parent?)
   "Narrow to an indirect buffer in a popup."
   (interactive)
   ;; Cleanup old indirect buffers
@@ -1094,7 +1114,10 @@ What I've changed:
     (with-current-buffer buffer
       (widen)
       (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
-      (org-narrow-to-subtree)
+      (save-excursion
+        (when goto-parent?
+          (+org|org-topmost-todo-element))
+        (org-narrow-to-subtree))
       (+org-indirect-window-mode 1)
       (pop-to-buffer buffer)
       (rename-buffer (concat
@@ -1115,16 +1138,16 @@ For example when archiving a task, there would be an empty window left over."
   (if-let ((state (org-get-todo-state)))
       (string-match-p (concat "^\\" "[") state)))
 
-(defun +org|clock-visit-entry ()
+(defun +org|clock-visit-entry (&optional arg)
   "Visit currently clocked org entry in a narrowed indirect buffer."
-  (interactive)
+  (interactive "P")
   (let ((org-agenda-follow-indirect t))
-    (+org|narrow-subtree-indirect #'org-clock-goto)))
+    (+org|narrow-subtree-indirect #'org-clock-goto arg)))
 
-(defun +org|agenda-visit-entry ()
+(defun +org|agenda-visit-entry (arg)
   "Visit agenda entry in a narrowed indirect buffer."
-  (interactive)
-  (+org|narrow-subtree-indirect #'org-agenda-switch-to))
+  (interactive "P")
+  (+org|narrow-subtree-indirect #'org-agenda-switch-to arg))
 #+END_SRC
 
 ** Utils
