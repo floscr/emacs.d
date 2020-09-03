@@ -1027,6 +1027,33 @@ Take the host as the base and either the TITLE or the path from the URL."
             (f-join it "Articles")
             (f-mkdir it)))
 #+END_SRC
+*** Searching
+**** Programming Docs
+
+#+BEGIN_SRC elisp
+(defun +org|search-programming-notes ()
+  "Search my programming related notes"
+  (interactive)
+  (let ((entries)
+        (buffers
+         (->>
+          '("Main/programming.org"
+            "Main/system.org"
+            "Main/emacs.org")
+          (+org/expand-org-file-names)
+          (-map #'find-file-noselect))))
+    (dolist (b buffers)
+      (with-current-buffer b
+        (setq entries
+              (nconc entries
+                     (counsel-outline-candidates
+                      (cdr (assq 'org-mode counsel-outline-settings))
+                      (counsel-org-goto-all--outline-path-prefix))))))
+    (ivy-read "Goto: " entries
+              :history 'counsel-org-goto-history
+              :action #'counsel-org-goto-action
+              :caller 'counsel-org-goto-all)))
+#+END_SRC
 
 ** Features
 
