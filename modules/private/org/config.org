@@ -733,6 +733,37 @@ Set the active state when clocking in.
   (save-excursion
     (kill-new (s-trim (org-table-get-field)))))
 #+END_SRC
+*** Org QL
+
+**** Personal Projects
+
+#+BEGIN_SRC elisp
+(defun +org-ql|projects ()
+  "List all work projects."
+  (interactive)
+  (org-ql-search (+org/expand-org-file-names '("Main/projects.org"))
+    '(and (todo)
+          (ancestors
+           (and (todo))))
+    :sort '(todo priority date)
+    :super-groups '((:auto-outline-path))))
+#+END_SRC
+
+
+**** Work Projects
+
+#+BEGIN_SRC elisp
+(defun +org-ql|work-projects ()
+  "List all work projects."
+  (interactive)
+  (org-ql-search (+org/expand-org-file-names '("Work/work.org"))
+    '(and (todo)
+          (ancestors
+           (and (todo))))
+    :sort '(todo priority date)
+    :super-groups '((:auto-outline-path))))
+#+END_SRC
+
 
 ** Modules
 
