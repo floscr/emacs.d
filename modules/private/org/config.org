@@ -1581,7 +1581,7 @@ Return the path of the file."
 #+BEGIN_SRC elisp
  (defun +org|toggle-checkbox ()
   (interactive)
-  (org-toggle-checkbox '(4)))
+  (org-toggle-radio-button '(4)))
 #+END_SRC
 
 ** Package Config
