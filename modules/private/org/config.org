@@ -1154,7 +1154,7 @@ For example when archiving a task, there would be an empty window left over."
 (defun +org|add-created-property ()
   "Add CREATED property with the current time to the current item."
   (interactive)
-  (unless (string= (doom-project-name) "doom")
+  (when (org-get-todo-state)
     (org-set-property +org-created-property (+org/inactive-timestamp))))
 #+END_SRC
 
