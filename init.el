@@ -100,3 +100,12 @@
 
 (setq
  user-full-name "Florian Schrödl")
+
+;; Select popup buffers by default
+(setq +popup-defaults
+  (list :side   'bottom
+        :height 0.45
+        :width  40
+        :quit   t
+        :select t
+        :ttl    5))
