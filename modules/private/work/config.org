@@ -1104,6 +1104,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (defun +MM/setup-keybindings ()
   "Setup Keybindings"
   (map! :map +MM-Web-mode-map
+        :nv "gf" #'lsp-find-definition
         :localleader
         :desc  "Repl"             "R" #'+MM|nodejs-repl
         :desc  "Goto NPM Package" "m" #'+MM|goto-npm-package
