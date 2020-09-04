@@ -748,7 +748,8 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (package (+MM-import/find-package-by-symbol symbol)))
     (if package
         (save-excursion
-          (+MM-import/import-package (car package) symbol nil))
+          (+MM-import/import-package (car package) symbol nil)
+          (flycheck-buffer))
       (user-error "Package not found"))))
 
 (defun +MM-import|import-other-window-file ()
