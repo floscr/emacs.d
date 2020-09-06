@@ -1860,7 +1860,7 @@ Set my preferred clipboard paste method to ~xclip~.
 
 (map! :map evil-org-mode-map
  :mn "gH"    #'+org|org-topmost-todo-element
- :n "C-c C-l" (λ! (+evil-org/normal-mode-paste-fix #'org-insert-link)))
+ :n "C-c C-l" (cmd! (+evil-org/normal-mode-paste-fix #'org-insert-link)))
 
 (map! :map org-mode-map
       :gni [s-return]    #'+org/insert-item-below
@@ -1892,7 +1892,7 @@ Set my preferred clipboard paste method to ~xclip~.
  :leader
  (:prefix-map ("t" . "Toggle")
    :desc "Visal Fill Column"          "o" #'+org|toggle-visual-wrap
-   :desc "Visal Fill Column (Center)" "O" (λ! (+org|toggle-visual-wrap)))
+   :desc "Visal Fill Column (Center)" "O" (cmd! (+org|toggle-visual-wrap)))
 
  (:prefix-map ("n" . "Notes")
    :desc "Save All Org Buffers"       "S" #'org-save-all-org-buffers
@@ -1904,30 +1904,30 @@ Set my preferred clipboard paste method to ~xclip~.
    :desc "Visit Entry"              "SPC" #'+org|clock-visit-entry
 
    (:prefix-map ("b" . "Bookmarks")
-    :desc "Goto Bookmarks File"       "b" (λ! (find-file +org:bookmarks-file))
+    :desc "Goto Bookmarks File"       "b" (cmd! (find-file +org:bookmarks-file))
     :desc "Search bookmarks"          "s" #'helm-org-pinboard)
 
    (:prefix-map ("r" . "Roam")
     ;; Create journal entry, but dont open roam link popup
-    :desc "Journal: New Entry" "j"     (λ! (let ((+org-roam-open-buffer-on-find-file nil))
+    :desc "Journal: New Entry" "j"     (cmd! (let ((+org-roam-open-buffer-on-find-file nil))
                                               (call-interactively #'org-journal-new-entry)))
     :desc "List (Main)" "l" #'org-roam
-    :desc "Insert" "i" (λ! (+evil-org/normal-mode-paste-fix #'org-roam-insert))
+    :desc "Insert" "i" (cmd! (+evil-org/normal-mode-paste-fix #'org-roam-insert))
     :desc "Switch to Buffer" "b" #'org-roam-switch-to-buffer
     :desc "Find File" "f" #'org-roam-find-file
     :desc "Show Graph" "g" #'org-roam-show-graph
     :desc "Capture" "c" #'org-roam-capture)
 
    ;; special goto locations I often visit
-   :desc "Inbox"                      "i" (λ! (+org/find-in-files "Main/inbox.org"))
-   :desc "Work"                       "w" (λ! (+org/find-in-files "Work/work.org"))
+   :desc "Inbox"                      "i" (cmd! (+org/find-in-files "Main/inbox.org"))
+   :desc "Work"                       "w" (cmd! (+org/find-in-files "Work/work.org"))
 
    (:prefix-map ("g" . "Goto")
-    :desc "Goto Bookmarks File"       "b" (λ! (find-file +org:bookmarks-file))
-    :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
-    :desc "Work"                      "w" (λ! (+org/find-in-files "Work/work.org"))
-    :desc "Inbox"                     "i" (λ! (+org/find-in-files "Main/inbox.org"))
-    :desc "Shoppinglist"              "s" (λ! (+org/find-in-files "Main/shoppinglist.org"))
+    :desc "Goto Bookmarks File"       "b" (cmd! (find-file +org:bookmarks-file))
+    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
+    :desc "Work"                      "w" (cmd! (+org/find-in-files "Work/work.org"))
+    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
+    :desc "Shoppinglist"              "s" (cmd! (+org/find-in-files "Main/shoppinglist.org"))
     :desc "Capture Last Stored"       "c" #'org-capture-goto-last-stored
     :desc "Refile Last Stored"        "r" #'org-refile-goto-last-stored)
 
@@ -1935,7 +1935,7 @@ Set my preferred clipboard paste method to ~xclip~.
      :desc "Timestamp Down"           "-"   #'org-clock-timestamps-down
      :desc "Timestamp Up"             "="   #'org-clock-timestamps-up
      :desc "Clock Out"                "C"   #'org-clock-out
-     :desc "Goto Select"              "G"   (λ! (org-clock-goto 'select))
+     :desc "Goto Select"              "G"   (cmd! (org-clock-goto 'select))
      :desc "Clock In"                 "c"   #'org-clock-in
      :desc "Mark Default Task"        "d"   #'org-clock-mark-default-task
      :desc "Modify Effort Estimate"   "e"   #'org-clock-modify-effort-estimate
@@ -1964,7 +1964,7 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Filter"                    "f"  #'org-match-sparse-tree
       :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
       :desc  "Create/Edit Todo"          "o"  #'org-todo
-      :desc  "Paste Chrome Link"         "p"  (λ! (+evil-org/normal-mode-paste-fix #'+org|paste-chrome-link))
+      :desc  "Paste Chrome Link"         "p"  (cmd! (+evil-org/normal-mode-paste-fix #'+org|paste-chrome-link))
       :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
       :desc  "Schedule"                  "s"  #'org-schedule
       :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
@@ -1972,9 +1972,9 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
       (:prefix-map ("y" . "Yank")
-       :desc "Link" "l" (λ! (+my/copy-message (+org|link-from-point)))
-       :desc "Url" "u" (λ! (+my/copy-message (+org|link-url-from-point)))
-       :desc "Title" "t" (λ! (+my/copy-message (+org|link-title-from-point))))
+       :desc "Link" "l" (cmd! (+my/copy-message (+org|link-from-point)))
+       :desc "Url" "u" (cmd! (+my/copy-message (+org|link-url-from-point)))
+       :desc "Title" "t" (cmd! (+my/copy-message (+org|link-title-from-point))))
 
       (:prefix-map ("C" . "Cut")
        :desc "Item" "C" 'org-cut-subtree
@@ -1982,8 +1982,8 @@ Set my preferred clipboard paste method to ~xclip~.
 
       (:prefix-map ("i" . "Insert")
        :desc "Attachment"         "a" #'+org|attach-file
-       :desc "Inavtive Timestamp" "i" (λ! (+evil-org/normal-mode-paste-fix #'org-time-stamp-inactive))
-       :desc "Subheadeing"        "s" (λ!
+       :desc "Inavtive Timestamp" "i" (cmd! (+evil-org/normal-mode-paste-fix #'org-time-stamp-inactive))
+       :desc "Subheadeing"        "s" (cmd!
                                        (call-interactively 'org-insert-subheading)
                                        (evil-insert-state)))
 
@@ -2014,16 +2014,16 @@ Set my preferred clipboard paste method to ~xclip~.
       "v" #'+org|mpv-link-at-point
       "." #'counsel-org-agenda-headlines
       (:prefix ("f" . "Filter by")
-       :desc "Tasks"               "t" (λ! (+org/agenda-set-tag-filter '("+TASK")))
-       :desc "Reviews"             "r" (λ! (+org/agenda-set-tag-filter '("+REVIEW"))))
+       :desc "Tasks"               "t" (cmd! (+org/agenda-set-tag-filter '("+TASK")))
+       :desc "Reviews"             "r" (cmd! (+org/agenda-set-tag-filter '("+REVIEW"))))
       (:prefix ("w" . "Refile")
        :desc "Dynamic"            "w" 'org-agenda-refile
        :desc "Pinboard"           "p" '+org|agenda-refile-to-bookmarks
-       :desc "To GTD Backlog"     "b" (λ! (+org/agenda-refile "Main/gtd.org" "GTD Backlog"))
-       :desc "To GTD"             "g" (λ! (+org/agenda-refile "Main/gtd.org" "GTD"))
-       :desc "To Reading List"    "r" (λ! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
-       :desc "To shoppping list"  "s" (λ! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
-       :desc "To Work"            "W" (λ! (+org/agenda-refile "Work/work.org" "Work Todos"))))
+       :desc "To GTD Backlog"     "b" (cmd! (+org/agenda-refile "Main/gtd.org" "GTD Backlog"))
+       :desc "To GTD"             "g" (cmd! (+org/agenda-refile "Main/gtd.org" "GTD"))
+       :desc "To Reading List"    "r" (cmd! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
+       :desc "To shoppping list"  "s" (cmd! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
+       :desc "To Work"            "W" (cmd! (+org/agenda-refile "Work/work.org" "Work Todos"))))
 #+END_SRC
 
 #+RESULTS:

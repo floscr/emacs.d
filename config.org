@@ -591,8 +591,8 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 (setq scroll-conservatively 10)
 (setq scroll-margin 10)
 
-(add-hook 'term-mode-hook (λ! (setq-local scroll-margin 0)))
-(add-hook 'ivy-mode-hook (λ! (setq-local scroll-margin 0)))
+(add-hook 'term-mode-hook (cmd! (setq-local scroll-margin 0)))
+(add-hook 'ivy-mode-hook (cmd! (setq-local scroll-margin 0)))
 #+END_SRC
 
 *** Popups
@@ -962,7 +962,7 @@ Remove the ~js~ extension for ~company-files~.
 (map!
  :after js2-mode
  :map js2-mode-map
- :desc "Goto parent function" :n "gh" (λ! (js2-beginning-of-defun)))
+ :desc "Goto parent function" :n "gh" (cmd! (js2-beginning-of-defun)))
 
 (map!
  :after rjsx-mode
@@ -1419,9 +1419,9 @@ These don't work if you have a big line-heihgt.
  :map elfeed-search-mode-map
  :gn "r" #'elfeed-update
  (:prefix-map ("g" . "Go")
-  :desc "Youtube" :gn "y" (λ! (elfeed-search-set-filter "@2-week-ago +YOUTUBE +unread"))
-  :desc "Normal"  :gn "n" (λ! (elfeed-search-set-filter "@2-week-ago -YOUTUBE +unread"))
-  :desc "Month"   :gn "m" (λ! (elfeed-search-set-filter "@1-month-ago +unread"))))
+  :desc "Youtube" :gn "y" (cmd! (elfeed-search-set-filter "@2-week-ago +YOUTUBE +unread"))
+  :desc "Normal"  :gn "n" (cmd! (elfeed-search-set-filter "@2-week-ago -YOUTUBE +unread"))
+  :desc "Month"   :gn "m" (cmd! (elfeed-search-set-filter "@1-month-ago +unread"))))
 #+END_SRC
 
 ***** Show Mode Bindings
@@ -1601,7 +1601,7 @@ error in process filter: End of buffer
 (map!
  :after comint
  :map comint-mode-map
- :ni "RET" (λ! (comint-send-input nil t))
+ :ni "RET" (cmd! (comint-send-input nil t))
  :n "<C-backspace>" #'comint-clear-buffer)
 #+END_SRC
 
@@ -1763,7 +1763,7 @@ But at some time I want to purge those buffers"
 
 (map! :after dired
       :map dired-mode-map
-      :n "q" (λ! (kill-buffer))
+      :n "q" (cmd! (kill-buffer))
       :n "Q" #'+dired|kill-dired-buffers)
 #+END_SRC
 
@@ -1930,10 +1930,10 @@ Widen can be restored with ~g~.
   :after dired
   :config
   (evil-define-key 'normal dired-mode-map
-    (kbd "<tab>") (λ! () (dired-subtree-toggle)
+    (kbd "<tab>") (cmd! () (dired-subtree-toggle)
                       ;; Fix for dired-all-the-icons not showing up
                       (dired-revert))
-    (kbd "<backtab>") (λ! () (dired-subtree-cycle)
+    (kbd "<backtab>") (cmd! () (dired-subtree-cycle)
                           (dired-revert))
     (kbd "gh") 'dired-subtree-up))
 #+END_SRC
@@ -2673,8 +2673,8 @@ Then use ~]~ to navigate the sections
 (map!
  (:after evil-magit
    :map (magit-diff-mode-map)
-   :n "}" (λ! (floscr:magit-jumpunfold-section 't))
-   :n "{" (λ! (floscr:magit-jumpunfold-section))))
+   :n "}" (cmd! (floscr:magit-jumpunfold-section 't))
+   :n "{" (cmd! (floscr:magit-jumpunfold-section))))
 #+END_SRC
 
 ***** Time Machine Navigation
@@ -3352,12 +3352,12 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 
 #+BEGIN_SRC elisp
 (map!
- :i "M-`"   (λ! (insert "°"))
- :i "M-."   (λ! (insert "…"))
- :i "M-^"   (λ! (insert "°"))
- :i "M-l"   (λ! (insert "λ"))
- :i "M-w"   (λ! (insert "⚠"))
- :i "M-i"   (λ! (insert "ℹ")))
+ :i "M-`"   (cmd! (insert "°"))
+ :i "M-."   (cmd! (insert "…"))
+ :i "M-^"   (cmd! (insert "°"))
+ :i "M-l"   (cmd! (insert "λ"))
+ :i "M-w"   (cmd! (insert "⚠"))
+ :i "M-i"   (cmd! (insert "ℹ")))
 #+END_SRC
 
 **** Square Bracket Bindings
@@ -3529,20 +3529,20 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("f" . "file")
-   :desc "Open Private Config" "P" (λ! (find-file (f-join doom-private-dir "config.org")))
+   :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
    (:prefix-map ("g" . "goto")
     :desc "Drive"          "/" #'+ivy|counsel-mounted-drives
-    :desc "Desktop"        "D" (λ! (find-file "~/Desktop"))
-    :desc "Code"           "c" (λ! (find-file "~/Code"))
-    :desc "Last captured"  "c" (λ! (org-goto-marker-or-bmk org-capture-last-stored-marker))
-    :desc "Downloads"      "d" (λ! (find-file "~/Downloads"))
-    :desc "Elfeed"         "e" (λ! (find-file (car rmh-elfeed-org-files)))
-    :desc "Music"          "m" (λ! (find-file "~/Media/Music"))
-    :desc "Project Root"   "p" (λ! (find-file (projectile-project-root)))
-    :desc "Last refiled"   "r" (λ! (org-refile-goto-last-stored))
-    :desc "Tmp"            "t" (λ! (find-file "/tmp"))
-    :desc "Home"           "h" (λ! (find-file "~"))
-    :desc "Home"           "h" (λ! (find-file "~")))))
+    :desc "Desktop"        "D" (cmd! (find-file "~/Desktop"))
+    :desc "Code"           "c" (cmd! (find-file "~/Code"))
+    :desc "Last captured"  "c" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
+    :desc "Downloads"      "d" (cmd! (find-file "~/Downloads"))
+    :desc "Elfeed"         "e" (cmd! (find-file (car rmh-elfeed-org-files)))
+    :desc "Music"          "m" (cmd! (find-file "~/Media/Music"))
+    :desc "Project Root"   "p" (cmd! (find-file (projectile-project-root)))
+    :desc "Last refiled"   "r" (cmd! (org-refile-goto-last-stored))
+    :desc "Tmp"            "t" (cmd! (find-file "/tmp"))
+    :desc "Home"           "h" (cmd! (find-file "~"))
+    :desc "Home"           "h" (cmd! (find-file "~")))))
 #+END_SRC
 
 **** Git
@@ -3551,12 +3551,12 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("g" . "git")
-   :desc "Amend Commit (No Message)"           "A" (λ! (magit-commit-amend "--no-edit"))
+   :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
    :desc "Blame"                               "B" #'magit-blame
    :desc "Changed Files"                       "F" #'+git|ivy-changed-files
    :desc "New Branch"                          "N" #'magit-branch-spinoff
    :desc "Show revision original File"         "O" #'magit-revision-show-original-file
-   :desc "Map-editor Changed Files"            "T" (λ! (+git|ivy-changed-files "map-editor"))
+   :desc "Map-editor Changed Files"            "T" (cmd! (+git|ivy-changed-files "map-editor"))
    :desc "Amend Commit"                        "a" #'magit-commit-amend
    :desc "Checkout"                            "b" #'magit-checkout
    :desc "Diff"                                "d" #'magit-diff
@@ -3671,7 +3671,7 @@ and then do my function.
    :desc "Close others"  "o" #'+workspace|close-others
    :desc "Create"        "c" #'+workspace/new-named
    :desc "Rename"        "," #'+workspace/rename
-   :desc "Clone"         "C" (λ!
+   :desc "Clone"         "C" (cmd!
                               (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
                               (message "Cloned current workspace %s" (+workspace-current-name)))
    :desc "Switch to last workspace" "0"   #'+workspace/other))
@@ -3755,9 +3755,9 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map emacs-lisp-mode-map
       ;; Rearrange Sexps
-      :n "s-k"   (λ! (sp-transpose-sexp)
+      :n "s-k"   (cmd! (sp-transpose-sexp)
                      (evil-previous-line))
-      :n "s-j"   (λ! (sp-push-hybrid-sexp)
+      :n "s-j"   (cmd! (sp-push-hybrid-sexp)
                      (evil-next-line))
 
       ;; Eval Buffer
@@ -3803,7 +3803,7 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
       :localleader
-      :g "x" (λ!
+      :g "x" (cmd!
               (require 'org-mu4e)
               (org-mu4e-store-and-capture)))
 #+END_SRC
@@ -3812,7 +3812,7 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
       :localleader
-      :g "x" (λ!
+      :g "x" (cmd!
               (require 'org-mu4e)
               (org-mu4e-store-and-capture)))
 #+END_SRC

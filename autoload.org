@@ -20,13 +20,6 @@ Packages and utilities needed for this config.
 #+END_SRC
 
 * Macros
-** Aliases
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defalias 'λ 'lambda)
-#+END_SRC
-
 ** Without undo
 
 #+BEGIN_SRC elisp

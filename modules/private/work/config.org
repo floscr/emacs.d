@@ -1110,7 +1110,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         :desc  "Goto NPM Package" "m" #'+MM|goto-npm-package
         :desc  "Bookmarks"        "b" #'+MM|bookmarks
         (:prefix ("f" . "file")
-          :desc  "Jump to Entity"               "e"  (λ! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
+          :desc  "Jump to Entity"               "e"  (cmd! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
           :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
           :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
         (:prefix ("g" . "Goto")
@@ -1121,7 +1121,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         :n "]1" #'+MM|alternate-file
         :localleader
         (:prefix-map ("c" . "Create")
-          :desc  "Generate Index"               "I"  (λ! (+js|generate-index nil '("helpers")))
+          :desc  "Generate Index"               "I"  (cmd! (+js|generate-index nil '("helpers")))
           :desc  "Import File"                  "i"  #'+MM:import|ivy-import
           :desc  "Import Symbol"                "s"  #'+MM-import|import-symbol-at-point
           :desc  "Rule"                         "r"  #'+MM|add-rule
