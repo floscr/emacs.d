@@ -479,7 +479,7 @@ When universal-argument is passed, just commit the bundle"
       (progn
         (magit-call-git "commit" "-m" msg)
         (magit-refresh)
-        (+my/copy-message (template "📦 <<msg>>
+        (+my/kill-and-message (template "📦 <<msg>>
 `npm i @meisterlabs/<<name>>@<<v>>`"))
         (magit-push-current-to-upstream nil)
         (let ((default-directory package-path))

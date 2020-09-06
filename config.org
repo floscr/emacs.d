@@ -3690,7 +3690,7 @@ and then do my function.
   (->> (if (eq major-mode 'dired-mode)
            (+yank/dired-path)
          (file-name-nondirectory buffer-file-name))
-       (+my/copy-message)))
+       (+my/kill-and-message)))
 
 (defun +yank|base ()
   (interactive)
@@ -3698,7 +3698,7 @@ and then do my function.
            (+yank/dired-path)
          buffer-file-name)
        (file-name-base)
-       (+my/copy-message)))
+       (+my/kill-and-message)))
 
 (defun +yank|directory ()
   (interactive)
@@ -3706,14 +3706,14 @@ and then do my function.
            (+yank/dired-path)
          buffer-file-name)
        (file-name-directory)
-       (+my/copy-message)))
+       (+my/kill-and-message)))
 
 (defun +yank|path ()
   (interactive)
   (->> (if (eq major-mode 'dired-mode)
            (+yank/dired-path)
          buffer-file-name)
-       (+my/copy-message)))
+       (+my/kill-and-message)))
 
 (defun +yank|relative-to-project ()
   (interactive)
@@ -3722,7 +3722,7 @@ and then do my function.
          buffer-file-name)
        (f-full)
        (s-replace (projectile-project-root) "")
-       (+my/copy-message)))
+       (+my/kill-and-message)))
 
 (map!
   :leader
