@@ -36,7 +36,6 @@ modifications."
        (set-buffer-modified-p modified)) ()))
 #+END_SRC
 
-
 ** Template Literals
 :PROPERTIES:
 :SOURCE:   https://gist.github.com/cbowdon/012d623920bd28453bf8
@@ -62,7 +61,11 @@ modifications."
           (push (match-string 1) matches)
           (replace-match "%s" t t))
         `(format ,(buffer-string) ,@(reverse (mapcar 'read matches)))))))
+
+;;;###autoload
+(defalias 't! 'template)
 #+END_SRC
+
 ** Ignore Arguments
 :PROPERTIES:
 :SOURCE:   https://emacs.stackexchange.com/a/33063
