@@ -156,11 +156,12 @@ The proram persists when emacs is closed."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my/copy-message (x)
+(defun +my/kill-and-message (x)
   "Executes kill-new but with a message log side effect."
   (kill-new x)
   (message "Copied to clipboard: %s" x))
 #+END_SRC
+
 *** Without undo
 
 #+BEGIN_SRC elisp
