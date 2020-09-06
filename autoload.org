@@ -73,10 +73,13 @@ modifications."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defmacro η (fnc)
+(defmacro ignore-args (fnc)
   "Return function that ignores its arguments and invokes FNC."
   `(lambda (&rest _rest)
      (funcall ,fnc)))
+
+;;;###autoload
+(defalias 'η 'ignore-args)
 #+END_SRC
 
 * General Utils
