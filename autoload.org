@@ -20,22 +20,6 @@ Packages and utilities needed for this config.
 #+END_SRC
 
 * Macros
-** Without undo
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defmacro without-undo (&rest forms)
-  "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
-Taken from http://www.emacswiki.org/emacs/UndoCommands with some
-modifications."
-  `(let* ((buffer-undo-list)
-          (modified (buffer-modified-p))
-          (inhibit-read-only t))
-     (unwind-protect
-         (progn ,@forms)
-       (set-buffer-modified-p modified)) ()))
-#+END_SRC
-
 ** Template Literals
 :PROPERTIES:
 :SOURCE:   https://gist.github.com/cbowdon/012d623920bd28453bf8
@@ -64,6 +48,22 @@ modifications."
 
 ;;;###autoload
 (defalias 't! 'template)
+#+END_SRC
+
+** Without undo
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defmacro without-undo (&rest forms)
+  "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
+Taken from http://www.emacswiki.org/emacs/UndoCommands with some
+modifications."
+  `(let* ((buffer-undo-list)
+          (modified (buffer-modified-p))
+          (inhibit-read-only t))
+     (unwind-protect
+         (progn ,@forms)
+       (set-buffer-modified-p modified)) ()))
 #+END_SRC
 
 ** Ignore Arguments
