@@ -1029,7 +1029,7 @@ Take the host as the base and either the TITLE or the path from the URL."
         (s-prepend ".")
         ((lambda (x) (template "[[<<x>>]]\n")))
         ((lambda (x)
-           (delete-current-line)
+           (+my/delete-current-line)
            (insert x)
            x))))))
 #+END_SRC

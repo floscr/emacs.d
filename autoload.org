@@ -50,22 +50,6 @@ Packages and utilities needed for this config.
 (defalias 't! 'template)
 #+END_SRC
 
-** Without undo
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defmacro without-undo (&rest forms)
-  "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
-Taken from http://www.emacswiki.org/emacs/UndoCommands with some
-modifications."
-  `(let* ((buffer-undo-list)
-          (modified (buffer-modified-p))
-          (inhibit-read-only t))
-     (unwind-protect
-         (progn ,@forms)
-       (set-buffer-modified-p modified)) ()))
-#+END_SRC
-
 ** Ignore Arguments
 :PROPERTIES:
 :SOURCE:   https://emacs.stackexchange.com/a/33063
@@ -83,26 +67,6 @@ modifications."
 #+END_SRC
 
 * General Utils
-** Kill and Message
-
-#+BEGIN_SRC elisp
-(defun +my/copy-message (x)
-  "Executes kill-new but with a message log side effect."
-  (kill-new x)
-  (message "Copied to clipboard: %s" x))
-#+END_SRC
-
-** Check current line for regex
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun +my/buffer-line-has (regexp)
-  "Check for REGEXP at current line."
-  (save-excursion
-    (goto-char (point-at-bol))
-    (search-forward-regexp regexp (point-at-eol) t)))
-#+END_SRC
-
 ** Async Command No Window
 :PROPERTIES:
 :SOURCE:   [[https://stackoverflow.com/a/47910509/2298462][How to avoid pop-up of *Async Shell Command* buffer in Emacs?]]
@@ -124,17 +88,6 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 (defun shell-command-to-list (cmd)
   "Split output from shell-command to list"
   (split-string (shell-command-to-string cmd) "\n" t))
-#+END_SRC
-** Delete Current Line
-
-#+BEGIN_SRC elisp
-(defun delete-current-line ()
-  "Delete (not kill) the current line."
-  (interactive)
-  (save-excursion
-    (delete-region
-     (progn (forward-visible-line 0) (point))
-     (progn (forward-visible-line 1) (point)))))
 #+END_SRC
 
 ** Start Process with Nohup
@@ -173,7 +126,205 @@ The proram persists when emacs is closed."
        (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args-str>> &") nil nil)))
 #+END_SRC
 
-** Map Lines
+** Open Link with MPV
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +mpv/play-external-url (url)
+  (-when-let* ((quality-val
+                (-some->> (completing-read
+                            "Max height resolution (0 for unlimited): "
+                            '("720" "0" "480" "1080"))
+                  (string-to-number)))
+               (quality-arg (if (> 0 quality-val)
+                                (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
+                              "")))
+    (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
+    (+my/nohup-shell-command "mpv" quality-arg (s-wrap url "\""))))
+#+END_SRC
+
+* Utils
+** General
+*** Noop
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun noop (&optional args) nil)
+#+END_SRC
+
+*** Kill and Message
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +my/copy-message (x)
+  "Executes kill-new but with a message log side effect."
+  (kill-new x)
+  (message "Copied to clipboard: %s" x))
+#+END_SRC
+*** Without undo
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defmacro without-undo (&rest forms)
+  "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
+Taken from http://www.emacswiki.org/emacs/UndoCommands with some
+modifications."
+  `(let* ((buffer-undo-list)
+          (modified (buffer-modified-p))
+          (inhibit-read-only t))
+     (unwind-protect
+         (progn ,@forms)
+       (set-buffer-modified-p modified)) ()))
+#+END_SRC
+** Dash Extensions
+*** -tap
+
+Run a side effect ~fn~ on the initial input ~x~.
+But Return the original input ~x~.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -tap (fn x)
+  "Function docstring"
+  (funcall fn x)
+  x)
+
+;;;###autoload
+(defmacro --tap (fn it)
+  "Anaphoric form of `-tap'."
+  `(-tap (lambda (it) ,fn) ,it))
+#+END_SRC
+
+*** -log
+
+Log the current input without breaking the pipe.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -log (x)
+  "Function docstring"
+  (--tap (message "%s" it) x))
+#+END_SRC
+
+*** -id-when
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -id-when (fn x)
+  "When FN equals t forward X."
+  (when (funcall fn x) x))
+
+;;;###autoload
+(defmacro --id-when (form xs)
+  "Anaphoric form of -id-when"
+  (declare (debug (form form)))
+  `(let ((it ,xs))
+     (when ,form ,xs)))
+#+END_SRC
+
+*** -append
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -append (elem list)
+  "Append ELEM to the end of list.
+
+This is like -snoc but it takes the ELEM as the first argument for easier composition"
+  (-snoc list elem))
+#+END_SRC
+
+*** -shuffle
+:PROPERTIES:
+:SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun swap-list-items (LIST el1 el2)
+  "in LIST swap indices EL1 and EL2 in place"
+  (let ((tmp (elt LIST el1)))
+    (setf (elt LIST el1) (elt LIST el2))
+    (setf (elt LIST el2) tmp)))
+
+;;;###autoload
+(defun -shuffle (LIST)
+  "Shuffle the elements in LIST.
+shuffling is done in place."
+  (loop for i in (reverse (number-sequence 1 (1- (length LIST))))
+        do (let ((j (random (+ i 1))))
+             (swap-list-items LIST i j)))
+  LIST)
+#+END_SRC
+
+*** -f-join
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -f-join (x path)
+  "Reversed argument order for f-join"
+  (f-join path x))
+#+END_SRC
+
+** String
+*** String Match
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun s-match-or (regex x)
+  "Return match groups or original"
+  (interactive)
+  (-if-let ((match (s-match regex x)))
+      (cdr match)
+    (list x)))
+
+;;;###autoload
+(defun s-match-or-1 (regex x)
+  "Return 1st match group or original."
+  (interactive)
+  (-if-let ((match (s-match regex x)))
+      (car (cdr match))
+    x))
+#+END_SRC
+
+** Buffer
+*** Get the line Indent
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +my/line-indent ()
+  "Get the indent of the current line."
+  (interactive)
+  (or (-some->> (substring-no-properties (thing-at-point 'line))
+        (s-match "^\\(\s*\\).*\n$")
+        (nth 1)
+        (length))
+      0))
+#+END_SRC
+
+*** Check current line for regex
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +my/buffer-line-has (regexp)
+  "Check for REGEXP at current line."
+  (save-excursion
+    (goto-char (point-at-bol))
+    (search-forward-regexp regexp (point-at-eol) t)))
+#+END_SRC
+
+*** Delete Current Line
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +my/delete-current-line ()
+  "Delete (not kill) the current line."
+  (interactive)
+  (save-excursion
+    (delete-region
+     (progn (forward-visible-line 0) (point))
+     (progn (forward-visible-line 1) (point)))))
+#+END_SRC
+
+*** Map Lines
 
 #+BEGIN_SRC elisp
 ;;;###autoload
@@ -193,139 +344,6 @@ The proram persists when emacs is closed."
            reverse
            (s-join "\n")
            insert))))
-#+END_SRC
-
-** Open Link with MPV
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun +mpv/play-external-url (url)
-  (-when-let* ((quality-val
-                (-some->> (completing-read
-                            "Max height resolution (0 for unlimited): "
-                            '("720" "0" "480" "1080"))
-                  (string-to-number)))
-               (quality-arg (if (> 0 quality-val)
-                                (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
-                              "")))
-    (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
-    (+my/nohup-shell-command "mpv" quality-arg (s-wrap url "\""))))
-#+END_SRC
-
-* Functional Utils
-** Noop
-
-#+BEGIN_SRC elisp
-(defun noop (&optional args) nil)
-#+END_SRC
-
-** Tap
-
-Run a side effect ~fn~ on the initial input ~x~.
-But Return the original input ~x~.
-
-#+BEGIN_SRC elisp
-(defun -tap (fn x)
-  "Function docstring"
-  (funcall fn x)
-  x)
-
-(defmacro --tap (fn it)
-  "Anaphoric form of `-tap'."
-  `(-tap (lambda (it) ,fn) ,it))
-#+END_SRC
-
-** Log
-
-Log the current input without breaking the pipe.
-
-#+BEGIN_SRC elisp
-(defun -log (x)
-  "Function docstring"
-  (--tap (message "%s" it) x))
-#+END_SRC
-
-** Id When
-
-#+BEGIN_SRC elisp
-(defun -id-when (fn x)
-  "When FN equals t forward X."
-  (when (funcall fn x) x))
-
-(defmacro --id-when (form xs)
-  "Anaphoric form of -id-when"
-  (declare (debug (form form)))
-  `(let ((it ,xs))
-     (when ,form ,xs)))
-#+END_SRC
-
-** String Match
-
-#+BEGIN_SRC elisp
-(defun s-match-or (regex x)
-  "Return match groups or original"
-  (interactive)
-  (-if-let ((match (s-match regex x)))
-      (cdr match)
-    (list x)))
-
-(defun s-match-or-1 (regex x)
-  "Return 1st match group or original."
-  (interactive)
-  (-if-let ((match (s-match regex x)))
-      (car (cdr match))
-    x))
-#+END_SRC
-
-** Append
-
-#+BEGIN_SRC elisp
-(defun -append (elem list)
-  "Append ELEM to the end of list.
-
-This is like -snoc but it takes the ELEM as the first argument for easier composition"
-  (-snoc list elem))
-#+END_SRC
-
-** Shuffle List
-:PROPERTIES:
-:SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun swap-list-items (LIST el1 el2)
-  "in LIST swap indices EL1 and EL2 in place"
-  (let ((tmp (elt LIST el1)))
-    (setf (elt LIST el1) (elt LIST el2))
-    (setf (elt LIST el2) tmp)))
-
-(defun -shuffle (LIST)
-  "Shuffle the elements in LIST.
-shuffling is done in place."
-  (loop for i in (reverse (number-sequence 1 (1- (length LIST))))
-        do (let ((j (random (+ i 1))))
-             (swap-list-items LIST i j)))
-  LIST)
-#+END_SRC
-
-** Line Indent
-
-#+BEGIN_SRC elisp
-(defun +my/line-indent ()
-  "Function docstring"
-  (interactive)
-  (or (-some->> (substring-no-properties (thing-at-point 'line))
-        (s-match "^\\(\s*\\).*\n$")
-        (nth 1)
-        (length))
-      0))
-#+END_SRC
-** -f-join
-
-#+BEGIN_SRC elisp
-(defun -f-join (x path)
-  "Reversed argument order for f-join"
-  (f-join path x))
 #+END_SRC
 
 * Files
@@ -357,6 +375,7 @@ Get the last created file in a directory.
 ** Chmod this file
 
 #+BEGIN_SRC elisp
+;;;###autoload
 (defun +file|chmod-this-file ()
   "Chmod +x the current file."
   (interactive)
@@ -415,18 +434,6 @@ DISPLAY is a display name, frame or terminal, as in
    ((string= system-name "Florians-MacBook-Air.local")
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
-* Elisp Helpers
-** Get buffer in other window
-
-#+BEGIN_SRC elisp
-(defun +my/buffer-other-window ()
-  "Return the buffer from the next window."
-  (interactive)
-  (save-window-excursion
-    (other-window 1)
-    (current-buffer)))
-#+END_SRC
-
 * Project Bookmarks
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
