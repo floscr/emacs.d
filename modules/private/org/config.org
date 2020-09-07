@@ -1232,6 +1232,11 @@ For example when archiving a task, there would be an empty window left over."
 (defun +org|add-created-property ()
   "Add CREATED property with the current time to the current item."
   (interactive)
+  (org-set-property +org-created-property (+org/inactive-timestamp)))
+
+(defun +org|add-created-property-only-todo ()
+  "Add CREATED property with the current time to the current item."
+  (interactive)
   (when (org-get-todo-state)
     (org-set-property +org-created-property (+org/inactive-timestamp))))
 #+END_SRC
@@ -1239,8 +1244,8 @@ For example when archiving a task, there would be an empty window left over."
 And advice the function to the manual item creation functions:
 
 #+BEGIN_SRC elisp
-(advice-add '+org/insert-item-below :after (η #'+org|add-created-property))
-(advice-add '+org/insert-item-above :after (η #'+org|add-created-property))
+(advice-add '+org/insert-item-below :after (η #'+org|add-created-property-only-todo))
+(advice-add '+org/insert-item-above :after (η #'+org|add-created-property-only-todo))
 #+END_SRC
 
 *** Archive all done tasks
