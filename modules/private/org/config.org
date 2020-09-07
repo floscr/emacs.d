@@ -135,7 +135,8 @@ All todo keywords are for general items.
           ("NOTE" :inherit warning :weight bold)
           ("WAITING" :inherit default :weight bold)
           ("SOMEDAY" :inherit default :weight bold)
-          ("PROJECT" :inherit 'org-todo :weight bold))))
+          ("PROJECT" :inherit 'org-todo :weight bold)))
+  (setq org-done-keywords '("DONE" "[X]" "CANCELLED")))
 #+END_SRC
 
 **** Projectile ignore ~org_archive~
@@ -1203,6 +1204,60 @@ For example when archiving a task, there would be an empty window left over."
   "Visit agenda entry in a narrowed indirect buffer."
   (interactive "P")
   (+org|narrow-subtree-indirect #'org-agenda-switch-to arg))
+#+END_SRC
+
+*** Subtask todo reset
+:PROPERTIES:
+:SOURCE:   [[https://github.com/jezcope/dotfiles/blob/master/emacs.d/lisp/org/org-subtask-reset.el][dotfiles/org-subtask-reset.el at master · jezcope/dotfiles]]
+:END:
+
+Reset nested todo properties when a task gets marked as done and it has the =:RESET_SUBTASKS:= property on it.
+This is useful for repeating habit tasks, that have a list of todos that need to be done every time.
+
+**** Config
+
+#+BEGIN_SRC elisp
+(after! org
+  (setq org-default-properties (cons "RESET_SUBTASKS" org-default-properties)))
+#+END_SRC
+
+**** Autoloads
+:PROPERTIES:
+:header-args: :tangle "./autoload/+reset-subtask.el" :comments link :mkdirp yes
+:END:
+
+#+BEGIN_SRC elisp
+(defun +org|reset-subtask-state-subtree ()
+  "Reset all subtasks in an entry subtree."
+  (interactive "*")
+  (if (org-before-first-heading-p)
+      (error "Not inside a tree")
+    (save-excursion
+      (save-restriction
+        (org-narrow-to-subtree)
+        (org-show-subtree)
+        (goto-char (point-min))
+        (beginning-of-line 2)
+        (narrow-to-region (point) (point-max))
+        (org-map-entries
+         '(when (member (org-get-todo-state) org-done-keywords)
+                (org-todo "TODO")))))))
+
+(defun +org|reset-subtask-state-maybe ()
+  "Reset all subtasks in an entry if the `RESET_SUBTASKS' property is set"
+  (interactive "*")
+  (if (org-entry-get (point) "RESET_SUBTASKS")
+      (+org|reset-subtask-state-subtree)))
+
+;;;###autoload
+(defun +org/subtask-reset ()
+  (-log org-state)
+  (when (member org-state org-done-keywords) ;; org-state dynamically bound in org.el/org-todo
+    (+org|reset-subtask-state-maybe)
+    (org-update-statistics-cookies t)))
+
+;;;###autoload
+(add-hook 'org-after-todo-state-change-hook '+org/subtask-reset)
 #+END_SRC
 
 ** Utils
