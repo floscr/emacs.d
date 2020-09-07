@@ -169,6 +169,14 @@ All todo keywords are for general items.
     (setq ad-return-value rlt)))
 #+END_SRC
 
+**** Habits
+
+***** Log Habits into drawer
+
+#+BEGIN_SRC elisp
+(setq org-log-into-drawer t)
+#+END_SRC
+
 *** Refile targets
 
 #+BEGIN_SRC elisp
