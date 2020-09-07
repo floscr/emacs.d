@@ -581,7 +581,6 @@ Switch the highlight.
                                        :background (doom-lighten "#ff6c6b" 0.1))))
 #+END_SRC
 
-
 *** Scrolloff
 
 Start scrolling X lines before the end of a screen.
@@ -636,7 +635,6 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 #+END_SRC
 
 ** Features
-
 *** Indirect Indent Mode
 
 Adds minor mode for editing indented source code in an indirect buffer,
