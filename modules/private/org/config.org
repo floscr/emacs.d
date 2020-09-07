@@ -1904,6 +1904,7 @@ Set my preferred clipboard paste method to ~xclip~.
    :desc "Store Link"                 "y" #'org-store-link
    :desc "Store Link"                 "j" #'+private-journal|new-entry
    :desc "Visit Entry"              "SPC" #'+org|clock-visit-entry
+   :desc "Docs"                       "d" #'+org|search-programming-docs
 
    (:prefix-map ("b" . "Bookmarks")
     :desc "Goto Bookmarks File"       "b" (cmd! (find-file +org:bookmarks-file))
