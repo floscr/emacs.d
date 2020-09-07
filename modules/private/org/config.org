@@ -1059,7 +1059,7 @@ Take the host as the base and either the TITLE or the path from the URL."
 **** Programming Docs
 
 #+BEGIN_SRC elisp
-(defun +org|search-programming-notes ()
+(defun +org|search-programming-docs ()
   "Search my programming related notes"
   (interactive)
   (let ((entries)
