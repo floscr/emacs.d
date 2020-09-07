@@ -324,58 +324,6 @@ Never blink the cursor, it's too distracting.
 #+END_SRC
 
 ** Utilities
-*** Toggle Window Split
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun +window|toggle-split-direction ()
-  "Toggle current window split between horizontal and vertical."
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
-#+END_SRC
-
-*** Toggle Window Dedicated
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
-:END:
-
-Lock a window so the buffer can't be changed or it cant be deleted.
-
-#+BEGIN_SRC elisp
-(defun +my|toggle-window-dedicated ()
-  "Control whether or not Emacs is allowed to display another
-buffer in current window."
-  (interactive)
-  (let* ((window (get-buffer-window (current-buffer)))
-         (is-locked (window-dedicated-p window))
-         (txt (if is-locked "Window unlocked" "Window locked")))
-    (set-window-dedicated-p window (not is-locked))
-    (message (template "<<(current-buffer)>>: <<txt>>!"))))
-#+END_SRC
-
 *** Jump to definition for tangled files
 
 Take me to the literate source file when using ~find-function~ etc.
@@ -2637,6 +2585,12 @@ This also works for worktrees that are in a nested directory.
                   (-f-join ".git"))
            x)))))
 #+END_SRC
+***** Lock git buffer :ADVICE:
+
+#+BEGIN_SRC elisp
+(advice-add #'magit-toggle-buffer-lock :after (lambda () (+my/bool-state-message 'magit-buffer-locked-p)))
+#+END_SRC
+
 **** Config
 
 #+BEGIN_SRC elisp

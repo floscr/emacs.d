@@ -177,6 +177,26 @@ modifications."
          (progn ,@forms)
        (set-buffer-modified-p modified)) ()))
 #+END_SRC
+*** Convert bool to enabled/disabled string
+
+#+BEGIN_SRC elisp
+(defun +my/bool-to-enabled-string (x)
+  "Convert bool X to string for messaging.
+t   -> \"Enabled\")
+nil -> \"Disabled\""
+  (if x "Enabled" "Disabled"))
+#+END_SRC
+
+*** Variable t/nil toggle message
+
+#+BEGIN_SRC elisp
+(defun +my/bool-state-message (x)
+  "Log message if a bool is enabled or not"
+  (interactive)
+  (message (t! "<<(symbol-name x)>>: <<(+my/bool-to-enabled-string (symbol-value x))>>")))
+#+END_SRC
+
+
 ** Dash Extensions
 *** -tap
 
