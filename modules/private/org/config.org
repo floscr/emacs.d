@@ -567,7 +567,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                  (org-agenda-span 3)
                  (org-agenda-start-on-weekday t)
                  (org-agenda-use-time-grid 'require-timed)
-                 (org-agenda-start-day "-1d")))
+                 (org-agenda-start-day ".")))
     (alltodo ""
              ((org-agenda-sorting-strategy '(priority-down time-up todo-state-up user-defined-down))
               (org-super-agenda-groups '((:discard (:todo ("[ ]" "[|]")))
