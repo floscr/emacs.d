@@ -3835,3 +3835,16 @@ I honestly don't know where this comes from.
  :after org
  :i [return] #'org-return-and-maybe-indent)
 #+END_SRC
+*** Prevent ~woman defvaralias~ error
+
+I'm using ~woman~ for manuals, but it throws this error on first launch
+
+#+BEGIN_QUOTE
+Warning (defvaralias): Overwriting value of ‘woman-topic-history’ by aliasing to ‘Man-topic-history’
+#+END_QUOTE
+
+Solution from here: [[https://discord.com/channels/406534637242810369/406554085794381833/703782241766998067][Doom Discord question]]
+
+#+BEGIN_SRC elisp
+(add-to-list 'warning-suppress-types '(defvaralias))
+#+END_SRC
