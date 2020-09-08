@@ -323,6 +323,11 @@ Never blink the cursor, it's too distracting.
 #+BEGIN_SRC elisp
 (setq uniquify-buffer-name-style 'forward)
 #+END_SRC
+*** Disable bookmarks
+
+#+BEGIN_SRC elisp
+(setq bookmark-file nil)
+#+END_SRC
 
 ** Utilities
 *** Jump to definition for tangled files
