@@ -3212,6 +3212,74 @@ and the line above, skipping empty lines."
     :m "gS" #'+evil/sort))
 #+END_SRC
 
+
+***** Case Conversion
+
+Copied code from [[https://github.com/strickinato/evil-briefcase][strickinato/evil-briefcase]] since it's not maintained anymore.
+Convert case motion via ~Z~.
+
+Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
+
+#+BEGIN_SRC elisp
+(evil-define-operator +evil/case-camel-upper (beg end type)
+  "Convert text to CamelCase with a Capital C"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-upper-camel-case beg end nil)
+    (let ((str (s-upper-camel-case (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-camel-lower (beg end type)
+  "Convert text to camelCase with a small C"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-lower-camel-case beg end nil)
+    (let ((str (s-lower-camel-case (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-snake-lower (beg end type)
+  "Convert text to snake_case, slithering"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-snake-case beg end nil)
+    (let ((str (s-snake-case (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-snake-upper (beg end type)
+  "Convert text to SNAKE_CASE, AKA SCREAMING_SNAKE_CASE"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-snake-case beg end nil)
+    (let ((str (s-upcase (s-snake-case (buffer-substring-no-properties beg end)))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-kebab-upper (beg end type)
+  "Convert text to KEBAB-KASE, mmmm... THICK MEAT"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-dashed-words beg end nil)
+    (let ((str (s-dashed-words (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert (upcase str)))))
+
+(evil-define-operator +evil/case-kebab-lower (beg end type)
+  "Convert text to kebab-kase, mmmm... hyphens"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-dashed-words beg end nil)
+    (let ((str (s-dashed-words (buffer-substring-no-properties beg end))))
+        (delete-region beg end)
+        (insert str))))
+
+(map!
+ (:after evil
+  :m "ZC" #'+evil/case-camel-upper
+  :m "Zc" #'+evil/case-camel-lower
+  :m "ZS" #'+evil/case-snake-upper
+  :m "Zs" #'+evil/case-snake-lower
+  :m "ZK" #'+evil/case-kebab-upper
+  :m "Zk" #'+evil/case-kebab-lower))
+#+END_SRC
+
+
 **** Normal Bindings
 ***** Window navigation
 
