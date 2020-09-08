@@ -2133,7 +2133,7 @@ Set my preferred clipboard paste method to ~xclip~.
       (:prefix-map ("w" . "Refile")
        :desc "Dynamic"            "w" 'org-refile
        :desc "Pinboard"           "p" '+org|refile-to-bookmarks
-       :desc "To GTD Backlog"     "b" (cmd! (+org/refile "Main/gtd.org" "GTD Backlog"))
+       :desc "To GTD Backlog"     "b" (cmd! (+org/refile "Main/gtd.org" "Backlog"))
        :desc "To GTD"             "g" (cmd! (+org/refile "Main/gtd.org" "GTD"))))
 #+END_SRC
 
@@ -2152,7 +2152,7 @@ Set my preferred clipboard paste method to ~xclip~.
       (:prefix ("w" . "Refile")
        :desc "Dynamic"            "w" 'org-agenda-refile
        :desc "Pinboard"           "p" '+org|agenda-refile-to-bookmarks
-       :desc "To GTD Backlog"     "b" (cmd! (+org/agenda-refile "Main/gtd.org" "GTD Backlog"))
+       :desc "To GTD Backlog"     "b" (cmd! (+org/agenda-refile "Main/gtd.org" "Backlog"))
        :desc "To GTD"             "g" (cmd! (+org/agenda-refile "Main/gtd.org" "GTD"))
        :desc "To Reading List"    "r" (cmd! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
        :desc "To shoppping list"  "s" (cmd! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
