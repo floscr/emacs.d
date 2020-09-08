@@ -202,7 +202,7 @@ also it seems it isn't maintained anymore.
 
 ** Disabled Packages
 
-Remove those annoying LSP interface plugins
+*** Remove those annoying LSP interface plugins
 
 #+BEGIN_SRC elisp
 (package! lsp-ui :disable t)
