@@ -473,7 +473,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 (after! org-agenda
 #+END_SRC
 
-***** All TODO items
+***** All todos ~x~
 
 #+BEGIN_SRC elisp
 (+org/add-to-agenda-custom-commands
