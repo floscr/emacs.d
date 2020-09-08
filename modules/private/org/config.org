@@ -1706,10 +1706,10 @@ Return the path of the file."
 
 #+BEGIN_SRC elisp
 (defun +org/refile (file headline &optional arg)
-  (let ((file (+org/expand-org-file-name file))
-        (pos (save-excursion
-               (find-file file)
-               (org-find-exact-headline-in-buffer headline))))
+  (let* ((file (+org/expand-org-file-name file))
+         (pos (save-excursion
+                (find-file file)
+                (org-find-exact-headline-in-buffer headline))))
     (org-refile arg nil (list headline file nil pos))))
 
 (defun +org/agenda-refile (file headline &optional arg)
