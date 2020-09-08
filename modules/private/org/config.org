@@ -353,6 +353,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
   (setq org-agenda-files
         (+org/expand-org-file-names
          '("Main/gtd.org"
+           "Main/gtd-reoccuring-events.org"
            "Main/inbox.org"
            "Main/contacts.org"
            "Main/calendar-family.org"
