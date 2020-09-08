@@ -102,7 +102,7 @@
 (package! org-gcal :disable t)
 ;; Calfw:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Disabled Packages][Disabled Packages:1]]
+;; [[file:~/.config/doom/config.org::*Remove those annoying LSP interface plugins][Remove those annoying LSP interface plugins:1]]
 (package! lsp-ui :disable t)
 (package! merlin-eldoc :disable t)
-;; Disabled Packages:1 ends here
+;; Remove those annoying LSP interface plugins:1 ends here
