@@ -3221,6 +3221,22 @@ Convert case motion via ~Z~.
 Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
 
 #+BEGIN_SRC elisp
+(evil-define-operator +evil/case-upper (beg end type)
+  "Convert text to upper case."
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-upcase beg end nil)
+    (let ((str (s-upcase (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-lower (beg end type)
+  "Convert text to lowercase."
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-downcase beg end nil)
+    (let ((str (s-downcase (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
 (evil-define-operator +evil/case-camel-upper (beg end type)
   "Convert text to CamelCase with a Capital C"
   (if (eq type 'block)
@@ -3271,6 +3287,8 @@ Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
 
 (map!
  (:after evil
+  :m "Zu" #'+evil/case-upper
+  :m "Zl" #'+evil/case-lower
   :m "ZC" #'+evil/case-camel-upper
   :m "Zc" #'+evil/case-camel-lower
   :m "ZS" #'+evil/case-snake-upper
