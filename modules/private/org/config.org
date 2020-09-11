@@ -305,6 +305,9 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                      ("Task (Chrome)"
                       :keys "c"
                       :title "%(+wm/last-chrome-window-org-link-formatted) :TASK:")
+                     ("Job Application (Chrome)"
+                      :keys "j"
+                      :title "%(+wm/last-chrome-window-org-link-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
                      ("Meeting (Chrome)"
                       :keys "m"
                       :title "%(+wm/last-chrome-window-org-link-formatted) :MEETING:")
