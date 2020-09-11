@@ -762,6 +762,7 @@ Set the active state when clocking in.
     '(and (todo)
           (ancestors
            (and (todo))))
+    :title "Projects"
     :sort '(todo priority date)
     :super-groups '((:auto-outline-path))))
 #+END_SRC
@@ -776,6 +777,7 @@ Set the active state when clocking in.
     '(and (todo)
           (ancestors
            (and (todo))))
+    :title "Work Projects"
     :sort '(todo priority date)
     :super-groups '((:auto-outline-path))))
 #+END_SRC

@@ -556,6 +556,7 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 (set-popup-rules!
   '(("^\\*Org Agenda" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
     ("^\\*Org Src" :ignore t)
+    ("^\\*Org QL View: \\(Work \\)?Projects*" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
     ("^\\*PDF-Occur*" :side right :size 0.5 :select t :modeline t)
     ("^\\*WoMan " :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
     ("^\\*helm" :vslot -100 :size 0.32 :ttl nil)
