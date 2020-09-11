@@ -55,6 +55,22 @@ skip exactly those headlines that do not match."
                            (or (outline-next-heading) (point-max)))))
       (if (+org/match-at-point-p match) nil next-headline))))
 #+END_SRC
+*** Dynamic org agenda span for work week
+
+#+BEGIN_SRC elisp
+(defun +org/work-week-agenda-span ()
+  "Returns the remaining number of work days in the current week.
+Except for friday, then return the number of days until next wednesday."
+  (let ((weekday (->> (format-time-string "%u" (current-time))
+                      (string-to-number))))
+    (cond
+     ;; After friday show until wednesday
+     ((eq weekday 4) 2)
+     ((eq weekday 5) 5)
+     ((eq weekday 6) 4)
+     ((eq weekday 7) 3)
+     (t 3))))
+#+END_SRC
 
 ** Org Links
 *** Link context at point
