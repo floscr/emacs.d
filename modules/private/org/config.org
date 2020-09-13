@@ -781,6 +781,34 @@ Set the active state when clocking in.
     :sort '(todo priority date)
     :super-groups '((:auto-outline-path))))
 #+END_SRC
+**** Filter
+
+#+BEGIN_SRC elisp
+(defun +org|search ()
+  (interactive)
+  (let ((files (org-agenda-files)))
+    (ivy-read
+     "Query: "
+     #'(lambda (input)
+         (let ((query (org-ql--plain-query input)))
+           (when query
+             (ignore-errors
+               (org-ql-select files query
+                 :action (lambda ()
+                           (propertize (org-get-heading t)
+                                       'marker (copy-marker (point)))))))))
+     :dynamic-collection t
+     :action #'+org|search-goto)))
+
+(defun +org|search-goto (headline)
+  (interactive)
+  (let ((marker (get-text-property 0 'marker headline)))
+    (when (markerp marker)
+      (switch-to-buffer (marker-buffer marker))
+      (goto-char marker)
+      (org-show-entry))))
+#+END_SRC
+
 
 ** Modules
 
@@ -2039,6 +2067,7 @@ Set my preferred clipboard paste method to ~xclip~.
  (:prefix-map ("n" . "Notes")
    :desc "Save All Org Buffers"       "S" #'org-save-all-org-buffers
    :desc "Save All Org Buffers"       "s" #'+default/org-notes-search
+   :desc "Search"                     "f" #'+org|search
    :desc "Find in notes"              "n" #'+org|search-in-notes
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Store Link"                 "y" #'org-store-link
