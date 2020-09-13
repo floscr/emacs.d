@@ -189,12 +189,9 @@ Offer all links for either file or agenda under the current =point=.
 ;;;###autoload
 (defun +org/expand-org-file-name (x)
   "Expand file name X with org-directory."
-  (expand-file-name x org-directory))
-
-;;;###autoload
-(defun +org/expand-org-file-names (xs)
-  "Expand file names XS with org-directory."
-  (-map #'+org/expand-org-file-name xs))
+  (if (eq (type-of x) 'cons)
+      (-map #'+org/expand-org-file-name x)
+    (expand-file-name x org-directory)))
 #+END_SRC
 
 ** Set agenda command or replace on reload
