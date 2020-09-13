@@ -509,6 +509,7 @@ DISPLAY is a display name, frame or terminal, as in
    ((string= system-name "Florians-MacBook-Air.local")
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
+
 * Project Bookmarks
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
@@ -558,7 +559,7 @@ If found, show an ivy window with the bookmarks"
   (-if-let* ((bookmarks
               (or bookmarks-list
                   (-some->> (doom-project-root)
-                    ((lambda (x) (f-join x "bookmarks.json")))
+                    (-f-join "bookmarks.json")
                     (-id-when #'f-exists?)
                     (json-read-file))))
              (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
