@@ -570,7 +570,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                  (org-agenda-span ,(+org/work-week-agenda-span))
                  (org-agenda-start-on-weekday t)
                  (org-agenda-use-time-grid 'require-timed)
-                 (org-agenda-start-day ".")
+                 (org-agenda-start-day ,(+org/work-start-day))
                  (org-super-agenda-header-separator "")
                  (org-super-agenda-groups '((:name "Tasks" :tag "TASK" :order 1)
                                             (:name "Reviews" :tag "REVIEW" :order 2)

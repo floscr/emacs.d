@@ -58,6 +58,18 @@ skip exactly those headlines that do not match."
 *** Dynamic org agenda span for work week
 
 #+BEGIN_SRC elisp
+(defun +org/work-start-day ()
+  "Get next work week start day"
+  (interactive)
+  (let ((remaining-week-days (->> (format-time-string "%u" (current-time))
+                                  (string-to-number)
+                                  (- 5))))
+    (if (< remaining-week-days 0)
+        (--> (+ remaining-week-days 1)
+             (abs it)
+             (template "+<<it>>d"))
+      ".")))
+
 (defun +org/work-week-agenda-span ()
   "Returns the remaining number of work days in the current week.
 Except for friday, then return the number of days until next wednesday."
