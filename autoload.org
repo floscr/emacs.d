@@ -227,6 +227,26 @@ Log the current input without breaking the pipe.
   (--tap (message "%s" it) x))
 #+END_SRC
 
+*** -when
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -when (pred fn x)
+  "When FN equals t forward X."
+  (if pred
+      (funcall fn x)
+    x))
+
+;;;###autoload
+(defmacro --when (pred form xs)
+  "Anaphoric form of -id-when"
+  (declare (debug (form form)))
+  `(let ((it ,xs))
+     (if ,pred
+         ,form
+       ,xs)))
+#+END_SRC
+
 *** -id-when
 
 #+BEGIN_SRC elisp
