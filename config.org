@@ -1033,7 +1033,9 @@ I mainly changed the function marking helper.
    ((file . "/etc/dotfiles/modules/desktop/common.nix")
     (name . "Mimeapps")
     (goto . "### Mimeapps")
-    (goto-bol . t))))
+    (goto-bol . t))
+   ((fn . org-capture-goto-last-stored)
+    (name . "Capture: Last Stored Marker"))))
 #+END_SRC
    
 **** Utils
