@@ -323,9 +323,11 @@ Never blink the cursor, it's too distracting.
 #+BEGIN_SRC elisp
 (setq uniquify-buffer-name-style 'forward)
 #+END_SRC
+
 *** Disable bookmarks
 
 #+BEGIN_SRC elisp
+(setq bookmark-save-flag nil)
 (setq bookmark-file nil)
 #+END_SRC
 
@@ -3213,7 +3215,6 @@ and the line above, skipping empty lines."
     :m "gS" #'+evil/sort))
 #+END_SRC
 
-
 ***** Case Conversion
 
 Copied code from [[https://github.com/strickinato/evil-briefcase][strickinato/evil-briefcase]] since it's not maintained anymore.
@@ -3297,7 +3298,6 @@ Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
   :m "ZK" #'+evil/case-kebab-upper
   :m "Zk" #'+evil/case-kebab-lower))
 #+END_SRC
-
 
 **** Normal Bindings
 ***** Window navigation
@@ -3799,7 +3799,10 @@ redefines its keys every time `eshell-mode' is enabled."
 
 #+BEGIN_SRC elisp
 (map! :map emacs-lisp-mode-map
+      ;;
       ;; Rearrange Sexps
+
+      :gni "M-;"   #'symex-mode-interface
       :n "s-k"   (cmd! (sp-transpose-sexp)
                      (evil-previous-line))
       :n "s-j"   (cmd! (sp-push-hybrid-sexp)
