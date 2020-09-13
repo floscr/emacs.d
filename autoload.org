@@ -538,15 +538,16 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 (defun +bookmarks/find-bookmarks (x &optional &key other-window?)
   "Jump to a X relative to the project root, go to character POS."
   (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
-               (item (car x))
-               (file (->> (alist-get 'file item)
-                          ((lambda (x)
-                             (if (alist-get 'relative item)
-                                 (f-join (projectile-project-root) x)
-                               x))))))
-    (let ((buffer-is-open (get-file-buffer file)))
-      (funcall find-fn file)
-      (+workspaces-add-current-buffer-h)
+               (item (car x)))
+    (let* ((file (-some->> (alist-get 'file item)
+                   (--when (alist-get 'relative item)
+                           (f-join (projectile-project-root) it))))
+           (buffer-is-open (when file (get-file-buffer file))))
+      (when file
+        (funcall find-fn file)
+        (+workspaces-add-current-buffer-h))
+      (when (alist-get 'fn item)
+        (funcall (alist-get 'fn item)))
 
       ;; goto, disable-relocation
       ;; Go to a location matched by regex
