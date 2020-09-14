@@ -181,7 +181,7 @@ All todo keywords are for general items.
 
 #+BEGIN_SRC elisp
 (setq +org:level-1-refile-targets
-      (+org/expand-org-file-names
+      (+org/expand-org-file-name
        '("Main/reading-list.org"
          "Main/cooking.org"
          "Main/books.org"
@@ -189,7 +189,7 @@ All todo keywords are for general items.
          "Main/shoppinglist.org")))
 
 (setq +org:max-level-2-refile-targets
-      (+org/expand-org-file-names
+      (+org/expand-org-file-name
        '("Main/emacs.org"
          "Main/art.org"
          "Main/diary"
@@ -210,7 +210,7 @@ All todo keywords are for general items.
          "Work/work.org")))
 
 (setq max-level-3-refile-targets
-      (+org/expand-org-file-names
+      (+org/expand-org-file-name
        '("Main/projects.org")))
 
 (defun +org:level-1-refile-targets () +org:level-1-refile-targets)
@@ -354,7 +354,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
 #+BEGIN_SRC elisp
 (after! org-agenda
   (setq org-agenda-files
-        (+org/expand-org-file-names
+        (+org/expand-org-file-name
          '("Main/gtd.org"
            "Main/gtd-reoccuring-events.org"
            "Main/inbox.org"
@@ -758,7 +758,7 @@ Set the active state when clocking in.
 (defun +org-ql|projects ()
   "List all work projects."
   (interactive)
-  (org-ql-search (+org/expand-org-file-names '("Main/projects.org"))
+  (org-ql-search (+org/expand-org-file-name '("Main/projects.org"))
     '(and (todo)
           (ancestors
            (and (todo))))
@@ -773,7 +773,7 @@ Set the active state when clocking in.
 (defun +org-ql|work-projects ()
   "List all work projects."
   (interactive)
-  (org-ql-search (+org/expand-org-file-names '("Work/work.org"))
+  (org-ql-search (+org/expand-org-file-name '("Work/work.org"))
     '(and (todo)
           (ancestors
            (and (todo))))
@@ -1116,7 +1116,7 @@ Take the host as the base and either the TITLE or the path from the URL."
           '("Main/programming.org"
             "Main/system.org"
             "Main/emacs.org")
-          (+org/expand-org-file-names)
+          (+org/expand-org-file-name)
           (-map #'find-file-noselect))))
     (dolist (b buffers)
       (with-current-buffer b
