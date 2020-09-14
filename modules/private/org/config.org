@@ -2204,25 +2204,24 @@ Set my preferred clipboard paste method to ~xclip~.
 **** Link text object
 
 #+BEGIN_SRC elisp
-(after! evil-org-mode
-  (evil-define-text-object +evil/textobj-inner-link
-    (count &optional beg end type)
-    "Select the closest outer quote."
-    (let ((evil-textobj-anyblock-blocks
-           '(("\\[\\]" . "\\]\\]"))))
-      (evil-textobj-anyblock--make-textobj beg end type count nil)))
+(evil-define-text-object +evil/textobj-inner-link
+  (count &optional beg end type)
+  "Select the closest outer quote."
+  (let ((evil-textobj-anyblock-blocks
+         '(("\\[\\]" . "\\]\\]"))))
+    (evil-textobj-anyblock--make-textobj beg end type count nil)))
 
-  (evil-define-text-object +evil/textobj-around-link
-    (count &optional beg end type)
-    "Select the closest outer quote."
-    (let ((evil-textobj-anyblock-blocks
-           '(("\\[\\[" . "\\]\\]"))))
-      (evil-textobj-anyblock--make-textobj beg end type count t)))
+(evil-define-text-object +evil/textobj-around-link
+  (count &optional beg end type)
+  "Select the closest outer quote."
+  (let ((evil-textobj-anyblock-blocks
+         '(("\\[\\[" . "\\]\\]"))))
+    (evil-textobj-anyblock--make-textobj beg end type count t)))
 
-  (evil-define-minor-mode-key '(operator visual) 'evil-org-mode
-    "il" '+evil/textobj-inner-link)
-  (evil-define-minor-mode-key '(operator visual) 'evil-org-mode
-    "al" '+evil/textobj-around-link))
+(evil-define-minor-mode-key '(operator visual) 'evil-org-mode
+  "il" '+evil/textobj-inner-link)
+(evil-define-minor-mode-key '(operator visual) 'evil-org-mode
+  "al" '+evil/textobj-around-link)
 #+END_SRC
 
 
