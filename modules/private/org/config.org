@@ -1192,32 +1192,31 @@ Known Issues:
 - this popup blocks the =org-todo= popup
 - The =C-c C-c= binding overrides the clocking binding
 
-**** Minor Mode
-
-#+BEGIN_SRC elisp
-(defvar +org-indirect-window-mode-map (make-sparse-keymap))
-
-(define-minor-mode +org-indirect-window-mode
-  "Open org headlines in an indirect window buffer."
-  :keymap +org-indirect-window-mode-map)
-
-(map! :map +org-indirect-window-mode-map
-      "C-c C-c" #'+org-indirect/save-and-kill-window
-      "C-c C-k" #'kill-buffer-and-window)
-#+END_SRC
-
 **** Config
 
 #+BEGIN_SRC elisp
 (set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :transient t :ttl t :select t)
 #+END_SRC
 
-**** Utils
+**** Minor Mode
 
+#+BEGIN_SRC elisp
+(defvar +org-indirect:window-mode-map (make-sparse-keymap))
+
+(define-minor-mode +org-indirect-window-mode
+  "Open org headlines in an indirect window buffer."
+  :keymap +org-indirect:window-mode-map)
+
+(map! :map +org-indirect:window-mode-map
+      "C-c C-c" #'+org-indirect/save-and-kill-window
+      "C-c C-k" #'kill-buffer-and-window)
+#+END_SRC
+
+**** Functions
 ***** Main
 
 #+BEGIN_SRC elisp
-(defun +org|narrow-subtree-indirect (&optional visit-fn goto-parent?)
+(defun +org-indirect|narrow-subtree-indirect (&optional visit-fn goto-parent?)
   "Narrow to an indirect buffer in a popup."
   (interactive)
   ;; Cleanup old indirect buffers
@@ -1256,7 +1255,7 @@ Known Issues:
   (save-buffer)
   (kill-buffer-and-window))
 
-(defun +org/kill-indirect-buffer-maybe ()
+(defun +org-indirect/kill-buffer-maybe ()
   "Kill the window/buffer if it's indirect.
 For example when archiving a task, there would be an empty window left over."
   (when (s-match "^\\*Org Indirect" (buffer-name))
@@ -1266,16 +1265,16 @@ For example when archiving a task, there would be an empty window left over."
 ***** Visiting Functions
 
 #+BEGIN_SRC elisp
-(defun +org|clock-visit-entry (&optional arg)
+(defun +org-indirect|clock-visit-entry (&optional arg)
   "Visit currently clocked org entry in a narrowed indirect buffer."
   (interactive "P")
   (let ((org-agenda-follow-indirect t))
-    (+org|narrow-subtree-indirect #'org-clock-goto arg)))
+    (+org-indirect|narrow-subtree-indirect #'org-clock-goto arg)))
 
-(defun +org|agenda-visit-entry (arg)
+(defun +org-indirect|agenda-visit-entry (arg)
   "Visit agenda entry in a narrowed indirect buffer."
   (interactive "P")
-  (+org|narrow-subtree-indirect #'org-agenda-switch-to arg))
+  (+org-indirect|narrow-subtree-indirect #'org-agenda-switch-to arg))
 #+END_SRC
 
 *** Subtask todo reset
@@ -1462,7 +1461,7 @@ And advice the function to the manual item creation functions:
   (interactive)
   (org-todo "DONE")
   (org-archive-subtree)
-  (+org/kill-indirect-buffer-maybe))
+  (+org-indirect/kill-buffer-maybe))
 
 (defun +org|agenda-archive-and-done ()
   "Mark agenda task as done and archive."
@@ -2069,8 +2068,8 @@ Set my preferred clipboard paste method to ~xclip~.
 #+BEGIN_SRC elisp
 (map! :after evil-org-agenda
       :map evil-org-agenda-mode-map
-      :m "RET"    #'+org|agenda-visit-entry
-      :m [return] #'+org|agenda-visit-entry
+      :m "RET"    #'+org-indirect|agenda-visit-entry
+      :m [return] #'+org-indirect|agenda-visit-entry
       :m "K"      #'+org-agenda|prev-super-agenda-group
       :m "J"      #'+org-agenda|next-super-agenda-group
       :m "da"     #'org-agenda-archive
@@ -2097,7 +2096,7 @@ Set my preferred clipboard paste method to ~xclip~.
    :desc "Agenda"                     "a" #'org-agenda
    :desc "Store Link"                 "y" #'org-store-link
    :desc "Store Link"                 "j" #'+private-journal|new-entry
-   :desc "Visit Entry"              "SPC" #'+org|clock-visit-entry
+   :desc "Visit Entry"              "SPC" #'+org-indirect|clock-visit-entry
    :desc "Docs"                       "d" #'+org|search-programming-docs
 
    (:prefix-map ("b" . "Bookmarks")
@@ -2140,8 +2139,8 @@ Set my preferred clipboard paste method to ~xclip~.
      :desc "Resolve"                  "r"   #'org-resolve-clocks
      :desc "Clock In Last"            "l"   #'org-clock-in-last
      :desc "Cancel"                   "x"   #'org-clock-cancel
-     :desc "Visit Entry"              "SPC" #'+org|clock-visit-entry
-     :desc "Visit Entry"              "'"   #'+org|clock-visit-entry)))
+     :desc "Visit Entry"              "SPC" #'+org-indirect|clock-visit-entry
+     :desc "Visit Entry"              "'"   #'+org-indirect|clock-visit-entry)))
 #+END_SRC
 *** Local Leader
 **** Org Mode
