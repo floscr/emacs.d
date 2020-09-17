@@ -781,7 +781,8 @@ Set the active state when clocking in.
     :sort '(todo priority date)
     :super-groups '((:auto-outline-path))))
 #+END_SRC
-**** Filter
+
+**** Search
 
 #+BEGIN_SRC elisp
 (defun +org|search ()
@@ -1115,7 +1116,8 @@ Take the host as the base and either the TITLE or the path from the URL."
          (->>
           '("Main/programming.org"
             "Main/system.org"
-            "Main/emacs.org")
+            "Main/emacs.org"
+            "Work/docs.org")
           (+org/expand-org-file-name)
           (-map #'find-file-noselect))))
     (dolist (b buffers)
