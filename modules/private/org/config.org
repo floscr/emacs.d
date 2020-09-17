@@ -1184,15 +1184,17 @@ What I've changed:
 
 *** Indirect Narrow Buffers
 
+Open org tasks in an indirect popup that can be closed via =C-c C-c=.
+The indirect buffer is narrowed to the current item.
+This makes visiting org tasks much more focused, without having to widen the main buffer every time.
+
+Known Issues:
+- this popup blocks the =org-todo= popup
+- The =C-c C-c= binding overrides the clocking binding
+
+**** Minor Mode
+
 #+BEGIN_SRC elisp
-(set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :transient t :ttl t :select t)
-
-(defun +org-indirect/save-and-kill-window ()
-  "Save the buffer and close the indirect buffer and window."
-  (interactive)
-  (save-buffer)
-  (kill-buffer-and-window))
-
 (defvar +org-indirect-window-mode-map (make-sparse-keymap))
 
 (define-minor-mode +org-indirect-window-mode
@@ -1202,7 +1204,19 @@ What I've changed:
 (map! :map +org-indirect-window-mode-map
       "C-c C-c" #'+org-indirect/save-and-kill-window
       "C-c C-k" #'kill-buffer-and-window)
+#+END_SRC
 
+**** Config
+
+#+BEGIN_SRC elisp
+(set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :transient t :ttl t :select t)
+#+END_SRC
+
+**** Utils
+
+***** Main
+
+#+BEGIN_SRC elisp
 (defun +org|narrow-subtree-indirect (&optional visit-fn goto-parent?)
   "Narrow to an indirect buffer in a popup."
   (interactive)
@@ -1231,18 +1245,27 @@ What I've changed:
                       (int-to-string (point-max))
                       "*"))
       (evil-forward-word-begin 1))))
+#+END_SRC
+
+***** Window Killing
+
+#+BEGIN_SRC elisp
+(defun +org-indirect/save-and-kill-window ()
+  "Save the buffer and close the indirect buffer and window."
+  (interactive)
+  (save-buffer)
+  (kill-buffer-and-window))
 
 (defun +org/kill-indirect-buffer-maybe ()
   "Kill the window/buffer if it's indirect.
 For example when archiving a task, there would be an empty window left over."
   (when (s-match "^\\*Org Indirect" (buffer-name))
     (kill-buffer-and-window)))
+#+END_SRC
 
-(defun +org/todo-state-subtask? ()
-  "If the current taks item is a subtask (which is marked by [ ])."
-  (if-let ((state (org-get-todo-state)))
-      (string-match-p (concat "^\\" "[") state)))
+***** Visiting Functions
 
+#+BEGIN_SRC elisp
 (defun +org|clock-visit-entry (&optional arg)
   "Visit currently clocked org entry in a narrowed indirect buffer."
   (interactive "P")
