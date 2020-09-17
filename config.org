@@ -1002,7 +1002,7 @@ I mainly changed the function marking helper.
   :modes '(nim-mode)
   :when (string= (doom-project-root) "/etc/dotfiles/")
   :on-load
-  (setq-local nim-compile-default-command (-snoc nim-compile-default-command "--outdir:../dst")))
+  (setq-local nim-compile-default-command '("c" "-r" "--verbosity:0" "--hint[Processing]:off" "--excessiveStackTrace:on" "--outdir:../dst")))
 #+END_SRC
 
 ** Package Config
@@ -2631,7 +2631,8 @@ Then use ~]~ to navigate the sections
   (interactive)
   (magit-section-show-level-1-all)
   (call-interactively (if forward #'magit-section-forward-sibling #'magit-section-backward-sibling))
-  (call-interactively #'magit-section-show-children))
+  (call-interactively #'magit-section-show-children)
+  (call-interactively #'evil-scroll-line-to-top))
 
 (map!
  (:after evil-magit
