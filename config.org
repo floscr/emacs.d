@@ -401,9 +401,6 @@ Macro Expansion
   ("q" nil "cancel" :color blue))
 #+END_SRC
 
-#+RESULTS:
-: +line-spacing/step/body
-
 **** Expand Region
 :PROPERTIES:
 :SOURCE:   https://www.reddit.com/r/emacs/comments/also27/second_trial_for_a_weekly_tipstricksetc_thread/efi7pbj/
