@@ -2631,8 +2631,7 @@ Then use ~]~ to navigate the sections
   (interactive)
   (magit-section-show-level-1-all)
   (call-interactively (if forward #'magit-section-forward-sibling #'magit-section-backward-sibling))
-  (call-interactively #'magit-section-show-children)
-  (call-interactively #'evil-scroll-line-to-top))
+  (call-interactively #'magit-section-show-children))
 
 (map!
  (:after evil-magit
