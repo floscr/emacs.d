@@ -810,7 +810,6 @@ Set the active state when clocking in.
       (org-show-entry))))
 #+END_SRC
 
-
 ** Modules
 
 #+BEGIN_SRC elisp
@@ -1209,7 +1208,9 @@ Known Issues:
 
 (map! :map +org-indirect:window-mode-map
       "C-c C-c" #'+org-indirect/save-and-kill-window
-      "C-c C-k" #'kill-buffer-and-window)
+      "C-c C-k" #'kill-buffer-and-window
+      :localleader
+      :desc "Show original" "+" #'+org-indirect/show-original)
 #+END_SRC
 
 **** Functions
@@ -1260,6 +1261,19 @@ Known Issues:
 For example when archiving a task, there would be an empty window left over."
   (when (s-match "^\\*Org Indirect" (buffer-name))
     (kill-buffer-and-window)))
+#+END_SRC
+
+***** Show original
+
+#+BEGIN_SRC elisp
+(defun +org-indirect|show-original ()
+  "Show the original buffer of the indirect window."
+  (interactive)
+  (doom/widen-indirectly-narrowed-buffer)
+  (call-interactively #'+popup/raise)
+  (+org-indirect-window-mode -1)
+  (setq header-line-format nil)
+  (call-interactively #'evil-scroll-line-to-center))
 #+END_SRC
 
 ***** Visiting Functions
