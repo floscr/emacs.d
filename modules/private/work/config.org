@@ -1049,6 +1049,58 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
   (ivy-read "Add Rule: " (ht-keys +MM-Web-Rules)
             :action '+MM|add-prop-for-rule))
 #+END_SRC
+*** Find actions
+
+#+BEGIN_SRC elisp :tangle no
+(defun +MM/global-actions ()
+  "Return list of global actions in the app."
+  (-when-let ((global-actions local-actions)
+              (->> (f-join +MM:mm-web-dir "src/apps/Main/App.js")
+                   (f-read)
+                   (s-split "\n")
+                   (--reduce-from (or (-some->>
+                                          (cond
+                                           ;; Global actions
+                                           ((s-contains? "'actions/" it)
+                                            (-when-let ((original name path) (s-match "\s*'?\\([^']+\\)'?: require('\\(.*\\)'),$" it))
+                                              (list
+                                               :original original
+                                               :name name
+                                               :path path
+                                               :global t)))
+                                           ((s-contains? "/actions'" it)
+                                            (-when-let ((original name path) (s-match "\s*'?\\([^']+\\)'?: require('\\(.*\\)'),$" it))
+                                              (list
+                                               :original original
+                                               :name name
+                                               :path path)))
+                                           (-snoc acc)))
+                                      acc)
+                                  '())
+                   (--partition-by (plist-get it :global))))
+    (->> local-actions
+         ;; Find index files for local actions
+         (--map
+          (->> (plist-get it :path)
+               (f-join +MM:mm-web-dir "src")
+               (f-entries)
+               (--reject (s-contains? "index" it))
+               (-map
+                (lambda (x)
+                  (list
+                   :original (plist-get it :original)
+                   :name (concat (plist-get it :name) "." (f-base x))
+                   :path x)))))
+         (-flatten-n 1)
+         (-concat global-actions))))
+
+(defun +MM|add-action ()
+  "Adds a global action to the controller or action file."
+  (->> (+MM/global-actions)
+       (--map (list (plist-get it :name) it))
+       (ivy-read "Action: ")))
+#+END_SRC
+
 *** Jump to action
 
 #+BEGIN_SRC elisp
