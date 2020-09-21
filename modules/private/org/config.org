@@ -71,7 +71,8 @@ Open the source buffers in the same window.
                         ("PROJECT")
                         ("EMACS")
                         ("NIXOS")
-                        ("TO_BUY"))))
+                        ("TO_BUY")
+                        ("EREADER"))))
 #+END_SRC
 
 **** Load hook
