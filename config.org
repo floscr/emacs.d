@@ -1214,6 +1214,16 @@ Manually add an expense to the Cash Book.
 
 *** RSS with Elfeed
 **** Utils
+***** Open
+
+#+BEGIN_SRC elisp
+(defun +rss|open ()
+  (interactive)
+  (unless (get-buffer "*elfeed-search*")
+    (setq elfeed-search-filter +rss:default-search-filter))
+  (elfeed))
+#+END_SRC
+
 ***** Custom Filters
 ****** All unread
 
@@ -1361,7 +1371,9 @@ These don't work if you have a big line-heihgt.
 ***** Default Search
 
 #+BEGIN_SRC elisp
-(setq-default elfeed-search-filter "@2-week-ago +unread -YOUTUBE")
+(setq +rss:default-search-filter "@2-week-ago +unread -YOUTUBE")
+(setq-default elfeed-search-filter +rss:default-search-filter)
+
 #+END_SRC
 
 **** Bindings
@@ -3634,7 +3646,7 @@ and then do my function.
  (:desc "open" :prefix "o"
    :desc "Calc"         :g "C" #'calc
    :desc "Transmission" :g "D" #'transmission
-   :desc "Eleed"        :g "E" #'elfeed
+   :desc "Elfeed"       :g "E" #'+rss|open
    :desc "Calendar"     :g "c" #'=calendar
    :desc "Irc"          :g "i" #'=irc
    :desc "Mail"         :g "m" #'=mu4e
