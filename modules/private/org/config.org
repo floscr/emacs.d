@@ -392,7 +392,7 @@ The macro is take from [[file:~/.config/doom/autoload.org::*Ignore Arguments][Ig
   (advice-add 'org-agenda-clock-out :after (η #'org-save-all-org-buffers))
   (advice-add 'org-deadline         :after (η #'org-save-all-org-buffers))
   (advice-add 'org-schedule         :after (η #'org-save-all-org-buffers))
-  (advice-add 'org-todo             :after (η #'org-save-all-org-buffers))
+  ;; (advice-add 'org-todo             :after (η #'org-save-all-org-buffers))
   (advice-add 'org-agenda-clock     :after (η #'org-save-all-org-buffers))
   (advice-add '+org|counsel-org-tag :after (η #'org-save-all-org-buffers))
   (advice-add 'org-agenda-kill      :after (η #'org-save-all-org-buffers))
