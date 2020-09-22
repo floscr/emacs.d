@@ -347,6 +347,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
 
 #+BEGIN_SRC elisp
 (after! org-agenda
+  (setq org-agenda-use-time-grid nil)
   (setq org-agenda-block-separator ?—))
 #+END_SRC
 
@@ -485,7 +486,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
    ((agenda
      "a"
      ((org-agenda-span 3)
-      (org-agenda-use-time-grid 'require-timed)
       (org-agenda-start-day ".")
       (org-agenda-show-all-dates nil)
       (org-agenda-prefix-format '((agenda . "%11s%?-t")))
@@ -570,7 +570,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
    ((agenda "a" ((org-agenda-sorting-strategy '(time-up todo-state-up priority-down scheduled-up user-defined-up))
                  (org-agenda-span ,(+org/work-week-agenda-span))
                  (org-agenda-start-on-weekday t)
-                 (org-agenda-use-time-grid nil)
                  (org-agenda-start-day ,(+org/work-start-day))
                  (org-super-agenda-header-separator "")
                  (org-super-agenda-groups '((:name "Tasks" :tag "TASK" :order 1)
