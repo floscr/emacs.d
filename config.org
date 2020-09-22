@@ -1363,6 +1363,35 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
                                 (require 'elfeed)
                                 (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))))
 #+END_SRC
+***** Hydra
+
+#+BEGIN_SRC elisp
+(defun +rss/toggle-filter (tag)
+  "Toggle elfeed filter TAG or append to filters if non-existent."
+  (->> (or (-when-let* (((_ modi) (s-match (t! "\\_<\\([+-]\\)<<tag>>\\_>") elfeed-search-filter))
+                        (new-modi (if (string= modi "+") "-" "+")))
+             (s-replace-regexp (t! "\\_<\\<<modi>><<tag>>\\_>") (t! "<<new-modi>><<tag>>") elfeed-search-filter))
+           (s-append (t! "+<<tag>>") elfeed-search-filter))
+       (--tap (setq elfeed-search-filter it))))
+
+(defun +rss|counsel-filter (&optional arg)
+  "Toggles a filter in elfeed."
+  (interactive "P")
+  (ivy-read (t! "Filter: <<elfeed-search-filter>>") (elfeed-db-get-all-tags)
+            :action #'+rss/toggle-filter
+            :caller #'+rss|counsel-filter))
+
+(defhydra +rss|hydra ()
+   "Elfeed: "
+   ("t" (+rss|counsel-filter) "Tags")
+   ("re" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =emacs") "Reddit: Emacs")
+   ("rn" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =nixos") "Reddit: Nixos")
+   ("y" (elfeed-search-set-filter "@2-weeksago +unread +YOUTUBE") "Youtube")
+   ("f" (elfeed-search-set-filter "@2-weeksago +unread -YOUTUBE -REDDIT") "Feeds")
+   ("u" (elfeed-search-set-filter "@2-weeksago +unread") "Unread")
+   ("U" (elfeed-update) "Update")
+   ("q" nil "Quit" :color blue))
+#+END_SRC
 
 **** Config
 ***** Org Elfeed File
@@ -1415,9 +1444,10 @@ These don't work if you have a big line-heihgt.
 #+BEGIN_SRC elisp
 (map! :map (elfeed-search-mode-map elfeed-show-mode-map)
       :localleader
-      :desc "Capture"   "c" #'+rss|capture
-      :desc "Open Eww"  "o" #'+rss|open-eww
-      :desc "Visit"     "v" #'+rss|visit-dwim
+      :desc "Filter Hydra" "f" #'+rss|hydra/body
+      :desc "Capture"      "c" #'+rss|capture
+      :desc "Open Eww"     "o" #'+rss|open-eww
+      :desc "Visit"        "v" #'+rss|visit-dwim
       (:prefix-map ("s" . "Search")
        :desc "Unread" "u" #'+rss|search-unread))
 #+END_SRC
@@ -1434,6 +1464,8 @@ These don't work if you have a big line-heihgt.
                           :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
                           :channels ("#emacs" "#nixos"))))
 #+End_SRC
+
+#+RESULTS:
 
 *** Literate Calc Mode
 
