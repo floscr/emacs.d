@@ -25,6 +25,10 @@
 (package! visual-fill-column)
 ;; Centered buffers, doom does not support this anymore.:1 ends here
 
+;; [[file:~/.config/doom/config.org::*Ivy Avy][Ivy Avy:1]]
+(package! ivy-avy)
+;; Ivy Avy:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*Edit the current chrome input field directly in emacs][Edit the current chrome input field directly in emacs:1]]
 (package! atomic-chrome)
 ;; Edit the current chrome input field directly in emacs:1 ends here

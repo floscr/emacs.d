@@ -74,6 +74,14 @@ I often use my helper function [[file:autoload.org::*Template Literals][(templat
 #+BEGIN_SRC elisp
 (package! visual-fill-column)
 #+END_SRC
+**** Ivy Avy
+
+Move to ivy candidate with =C-'=
+
+#+BEGIN_SRC elisp
+(package! ivy-avy)
+#+END_SRC
+
 
 *** External
 **** Edit the current chrome input field directly in emacs
