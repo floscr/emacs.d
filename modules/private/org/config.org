@@ -1223,8 +1223,11 @@ Known Issues:
       (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
       (save-excursion
         (when goto-parent?
-          (+org|org-topmost-todo-element))
+          (+org|org-topmost-todo-element)
+          ;; Show CHILDREN without content
+          (org-global-cycle 4))
         (org-narrow-to-subtree))
+      (org-cycle 4)
       (+org-indirect-window-mode 1)
       (pop-to-buffer buffer)
       (rename-buffer (concat
