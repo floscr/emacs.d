@@ -774,6 +774,7 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 (defun +org|search ()
   (interactive)
+  (require 'org-ql)
   (let ((files (org-agenda-files)))
     (ivy-read
      "Query: "
