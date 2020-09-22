@@ -3842,9 +3842,10 @@ redefines its keys every time `eshell-mode' is enabled."
       :n "g["  #'sp-forward-barf-sexp
 
       :localleader
-      :desc "Symex Mode"  "s" #'symex-mode-interface
-      :desc "Raise sexp"  "<" #'raise-sexp
-      :desc "Barf Sexp"   ">" #'barf-sexp)
+      :desc "Jump to tangled source"  "j"  #'org-babel-tangle-jump-to-org
+      :desc "Symex Mode"              "s" #'symex-mode-interface
+      :desc "Raise sexp"              "<" #'raise-sexp
+      :desc "Barf Sexp"               ">" #'barf-sexp)
 #+END_SRC
 
 **** Bash
