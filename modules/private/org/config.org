@@ -301,11 +301,11 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                     :headline "GTD"
                     :children
                     (("Task"
-                      :title "%? :TASK:"
+                      :title "%?"
                       :keys "t")
                      ("Task (Chrome)"
                       :keys "c"
-                      :title "%(+wm/last-chrome-window-org-link-formatted) :TASK:")
+                      :title "%(+wm/last-chrome-window-org-link-formatted)")
                      ("Job Application (Chrome)"
                       :keys "j"
                       :title "%(+wm/last-chrome-window-org-link-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
