@@ -1274,12 +1274,12 @@ For example when archiving a task, there would be an empty window left over."
   "Visit currently clocked org entry in a narrowed indirect buffer."
   (interactive "P")
   (let ((org-agenda-follow-indirect t))
-    (+org-indirect|narrow-subtree-indirect #'org-clock-goto arg)))
+    (+org-indirect|narrow-subtree-indirect #'org-clock-goto (not arg))))
 
 (defun +org-indirect|agenda-visit-entry (arg)
   "Visit agenda entry in a narrowed indirect buffer."
   (interactive "P")
-  (+org-indirect|narrow-subtree-indirect #'org-agenda-switch-to arg))
+  (+org-indirect|narrow-subtree-indirect #'org-agenda-switch-to (not arg)))
 #+END_SRC
 
 *** Subtask todo reset
