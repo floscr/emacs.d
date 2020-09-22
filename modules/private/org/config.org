@@ -2211,6 +2211,9 @@ Set my preferred clipboard paste method to ~xclip~.
       "q" #'+org|counsel-org-tag
       "v" #'+org|mpv-link-at-point
       "." #'counsel-org-agenda-headlines
+      "t" nil ; Overwrite doom binding
+      (:prefix ("t" . "toggle")
+       :desc "Time Grid"           "t" #'org-agenda-toggle-time-grid)
       (:prefix ("f" . "Filter by")
        :desc "Tasks"               "t" (cmd! (+org/agenda-set-tag-filter '("+TASK")))
        :desc "Reviews"             "r" (cmd! (+org/agenda-set-tag-filter '("+REVIEW"))))
