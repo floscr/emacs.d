@@ -2142,7 +2142,11 @@ Set my preferred clipboard paste method to ~xclip~.
      :desc "Clock In Last"            "l"   #'org-clock-in-last
      :desc "Cancel"                   "x"   #'org-clock-cancel
      :desc "Visit Entry"              "SPC" #'+org-indirect|clock-visit-entry
-     :desc "Visit Entry"              "'"   #'+org-indirect|clock-visit-entry)))
+     :desc "Visit Entry"              "'"   #'+org-indirect|clock-visit-entry)
+
+   (:prefix-map ("q" . "Query")
+    :desc "Projects: Work"            "w" #'+org-ql|work-projects
+    :desc "Projects: Personal"        "p" #'+org-ql|projects)))
 #+END_SRC
 *** Local Leader
 **** Org Mode
