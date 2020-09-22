@@ -1623,7 +1623,7 @@ Sort my agenda entries by a ~DATE_CREATED~ property.
          (b-date (or (org-entry-get b-pos +org-created-property)
                      (format "<%s>" (org-read-date t nil "now"))))
          (cmp (compare-strings a-date nil nil b-date nil nil)))
-    (if (eq cmp t) nil (signum cmp))))
+    (if (eq cmp t) nil (cl-signum cmp))))
 #+END_SRC
 
 *** Search in notes
