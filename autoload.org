@@ -546,8 +546,8 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (when file
         (funcall find-fn file)
         (+workspaces-add-current-buffer-h))
-      (when (alist-get 'fn item)
-        (funcall (alist-get 'fn item)))
+      (when-let ((fn (alist-get 'fn item)))
+        (funcall fn))
 
       ;; goto, disable-relocation
       ;; Go to a location matched by regex
