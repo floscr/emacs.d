@@ -2965,7 +2965,11 @@ the projects cwd to find a file.
 #+BEGIN_SRC elisp
 (map!
  :map (wgrep-mode-map ivy-occur-mode-map)
- :n [return] #'compile-goto-error)
+ :n [return] #'compile-goto-error
+
+ :localleader
+ :desc "Remove line" "d" (cmd! (let ((inhibit-read-only t))
+                                 (+my/delete-current-line))))
 #+END_SRC
 
 *** Yasnippet
