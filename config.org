@@ -1232,7 +1232,8 @@ Manually add an expense to the Cash Book.
   (interactive)
   (unless (get-buffer "*elfeed-search*")
     (setq elfeed-search-filter +rss:default-search-filter))
-  (elfeed))
+  (elfeed)
+  (+rss|hydra/body))
 #+END_SRC
 
 ***** Custom Filters
