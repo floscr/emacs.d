@@ -1451,11 +1451,14 @@ And advice the function to the manual item creation functions:
 (defun +org|archive-done-tasks ()
   "Archive tasks with DONE or CANCELED todo state."
   (interactive)
-  (org-map-entries
-   (lambda ()
-     (org-archive-subtree)
-     (setq org-map-continue-from (outline-previous-heading)))
-   "/+{|DONE|CANCELED}" 'tree))
+  (let ((scope (if (eq (org-outline-level) 0)
+                   'file
+                 'tree)))
+    (org-map-entries
+     (lambda ()
+       (org-archive-subtree)
+       (setq org-map-continue-from (outline-previous-heading)))
+     "/+{|DONE|CANCELLED}" scope)))
 #+END_SRC
 
 *** Archive and Done
