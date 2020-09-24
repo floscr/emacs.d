@@ -1372,8 +1372,10 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
   (->> (or (-when-let* (((_ modi) (s-match (t! "\\_<\\([+-]\\)<<tag>>\\_>") elfeed-search-filter))
                         (new-modi (if (string= modi "+") "-" "+")))
              (s-replace-regexp (t! "\\_<\\<<modi>><<tag>>\\_>") (t! "<<new-modi>><<tag>>") elfeed-search-filter))
-           (s-append (t! "+<<tag>>") elfeed-search-filter))
-       (--tap (setq elfeed-search-filter it))))
+           (s-append (t! " +<<tag>>") elfeed-search-filter))
+       (--tap (progn (setq elfeed-search-filter it)
+                     (elfeed-search-update--force)
+                     (-log (t! "Filter changed to: <<it>>"))))))
 
 (defun +rss|counsel-filter (&optional arg)
   "Toggles a filter in elfeed."
@@ -1383,14 +1385,19 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
             :caller #'+rss|counsel-filter))
 
 (defhydra +rss|hydra ()
-   "Elfeed: "
-   ("t" (+rss|counsel-filter) "Tags")
-   ("re" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =emacs") "Reddit: Emacs")
-   ("rn" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =nixos") "Reddit: Nixos")
-   ("y" (elfeed-search-set-filter "@2-weeksago +unread +YOUTUBE") "Youtube")
+   "Elfeed"
+   ("j" (evil-next-line) "Next item" :column "Navigate")
+   ("k" (evil-previous-line) "Previous item")
+   ("t" (+rss|counsel-filter) "Tags" :column "Filter")
+   ("0" (elfeed-search-set-filter "@2-weeksago +unread") "Unread" :column "Favorites")
    ("f" (elfeed-search-set-filter "@2-weeksago +unread -YOUTUBE -REDDIT") "Feeds")
-   ("u" (elfeed-search-set-filter "@2-weeksago +unread") "Unread")
-   ("U" (elfeed-update) "Update")
+   ("y" (elfeed-search-set-filter "@2-weeksago +unread +YOUTUBE") "Youtube")
+   ("e" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =emacs") "Reddit: Emacs")
+   ("n" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =nixos") "Reddit: Nixos")
+   ("U" (elfeed-update) "Update" :column "actions")
+   ("u" (elfeed-search-untag-all-unread) "Mark as unread")
+   ("s" (elfeed-db-save) "Save DB")
+   ("v" (+rss|visit-dwim) "Visit")
    ("q" nil "Quit" :color blue))
 #+END_SRC
 
