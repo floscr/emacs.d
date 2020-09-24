@@ -2738,7 +2738,9 @@ To append something, just state the flag that you see in the transient popup as 
 
   (transient-append-suffix 'magit-commit
     "-D" '("-D" "Override the author date" "--date=" transient-read-date))
-  (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" +magit|checkout-review-branch)))
+
+  (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" +magit|checkout-review-branch))
+  (transient-append-suffix 'magit-branch "l" '("U" "My Branches" +magit|branches-by-user)))
 #+END_SRC
 
 *** Markdown
