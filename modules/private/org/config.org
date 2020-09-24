@@ -1106,6 +1106,8 @@ Take the host as the base and either the TITLE or the path from the URL."
             "Main/emacs.org"
             "Work/docs.org")
           (+org/expand-org-file-name)
+          (-append (f-entries (f-join org-directory "Docs")))
+          (-flatten)
           (-map #'find-file-noselect))))
     (dolist (b buffers)
       (with-current-buffer b
