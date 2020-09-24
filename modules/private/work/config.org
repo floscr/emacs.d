@@ -162,8 +162,12 @@ Create a canvas action
   (let ((str (or str "console.log")))
     (save-excursion
       (end-of-line)
-      (newline-and-indent)
-      (insert (template ".tap(<<str>>)"))
+      (let ((semi (when (eq ?\; (char-before)) ";")))
+        (when semi
+          (delete-char -1))
+        (newline-and-indent)
+        (insert (->> (template ".tap(<<str>>)")
+                     (s-append semi))))
       (call-interactively #'evil-indent-line)
       (when current-prefix-arg
         (progn
