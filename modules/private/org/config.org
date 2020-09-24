@@ -844,7 +844,7 @@ Set the active state when clocking in.
 (setq +org-reading-list:agenda-buffer-name "*Org Agenda: Reading List*")
 #+END_SRC
 
-**** Customize agenda ui
+**** Customize agenda UI
 
 Remove the underline from the links.
 
