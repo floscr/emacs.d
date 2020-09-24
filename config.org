@@ -455,7 +455,7 @@ This will be disabled in terminal mode.
 
 *** Theme Toggle
 
-Toggle between a light and a dak theme.
+Toggle between a light and a dark theme.
 Bound to ~SPC t t~.
 
 #+BEGIN_SRC elisp
@@ -1268,7 +1268,7 @@ Open the current entry:
         (elfeed-show-visit)))))
 #+END_SRC
 
-***** Open with Eww
+***** Open with EWW
 
 #+BEGIN_SRC elisp
 (defun +rss|open-eww ()
@@ -1298,7 +1298,7 @@ Open the current entry:
 
 ***** Elfeed open video with MPV
 
-Play youtube entries via mpv
+Play youtube entries via MPV
 
 #+BEGIN_SRC elisp
 (defvar +rss:mpv-patterns
@@ -1364,6 +1364,7 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
                                 (require 'elfeed)
                                 (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))))
 #+END_SRC
+
 ***** Hydra
 
 #+BEGIN_SRC elisp
@@ -1410,7 +1411,7 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
 
 ***** Disable sliced images
 
-These don't work if you have a big line-heihgt.
+These don't work if you have a big line-height.
 
 #+BEGIN_SRC elisp
 (setq +rss-enable-sliced-images nil)
@@ -1796,7 +1797,7 @@ Stay in normal mode when switching to wdired
   (evil-normal-state))
 #+END_SRC
 
-Map ~\~ to change to wdired mode, like text mode in maggit buffers.
+Map ~\~ to change to wdired mode, like text mode in magit buffers.
 
 #+BEGIN_SRC elisp
 (map!
@@ -2269,7 +2270,7 @@ which is really unacceptable, but works for now.
 
 ***** Insert JSON Key
 
-Insert JSON key in a json document
+Insert JSON key in a JSON document
 This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# --][key]]
 
 #+BEGIN_SRC elisp
@@ -2428,7 +2429,7 @@ Automatically adds ~.projectfile~ and opens a new doom workspace.
 
 ***** Revision show original file
 
-Show the orginal file when visiting a revision buffer.
+Show the original file when visiting a revision buffer.
 E.g.: When showing a diff from a commit, you may want to edit that file.
 
 #+BEGIN_SRC elisp
@@ -2508,7 +2509,7 @@ When no BRANCH is given, take the current one."
 
 ***** Diff range from current branch to ~magit-thing-at-point~
 
-When I'm on the log view, I want to quickliy diff it against the currently checked out branch.
+When I'm on the log view, I want to quickly diff it against the currently checked out branch.
 The transient shortcut for this is ~d R~ define [[*Transient][here]].
 
 #+BEGIN_SRC elisp
@@ -2677,7 +2678,7 @@ This also works for worktrees that are in a nested directory.
 ***** Diff Navigation
 
 My workflow for navigating diffs
-Use ~z1~ to fold all diffs to their file headers and presss ~{~ or ~}~ to
+Use ~z1~ to fold all diffs to their file headers and press's ~{~ or ~}~ to
 
 1. Refold all sections
 2. Go to the next section
@@ -2766,9 +2767,9 @@ Always keep markdown centered, without line numbers.
 #+END_SRC
 *** Open With
 
-*** Nov (Epub Reading Mode)
+*** Nov (EPUB Reading Mode)
 
-Adds epub reading mode
+Adds EPUB reading mode
 [[https://github.com/wasamasa/nov.el][wasamasa/nov.el: Major mode for reading EPUBs in Emacs]]
 
 I want to keep the buffer centered, but let nov take care of breaking the text,
@@ -3368,7 +3369,7 @@ Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
 **** Normal Bindings
 ***** Window navigation
 
-Fix window navigations for various modes.
+Fix window navigation for various modes.
 I don't like pressing ~C-w~ or ~SPC w~ as leader to navigate,
 so I have to work around it:
 
@@ -3922,6 +3923,7 @@ redefines its keys every time `eshell-mode' is enabled."
               (require 'org-mu4e)
               (org-mu4e-store-and-capture)))
 #+END_SRC
+
 **** Beancount
 
 #+BEGIN_SRC elisp
@@ -3945,8 +3947,8 @@ redefines its keys every time `eshell-mode' is enabled."
 
 Since the minibuffer has no evil mode, i've got these bindings to help out:
 - ~M-c~: Copy the minibuffer line
-- ~M-v~: Paste from clippboard to minibuffer (Same as ~C-r 0~)
-         This also removes trailng newlines
+- ~M-v~: Paste from clipboard to minibuffer (Same as ~C-r 0~)
+         This also removes trailing newlines
 
 #+BEGIN_SRC elisp
 (defun evil-get-register-string (REGISTER)
