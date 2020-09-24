@@ -547,7 +547,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 #+BEGIN_SRC elisp
 (after! magit
   (transient-append-suffix 'magit-worktree "b" '("w" "MM: Create Worktree" +MM|magit-create-worktree))
-  (transient-append-suffix 'magit-worktree "b" '("W" "MM: Checkout Worktree" +MM|magit-create-existing-worktree)))
+  (transient-append-suffix 'magit-worktree "b" '("W" "MM: Create Worktree Current Branch" +MM|magit-create-existing-worktree)))
 #+END_SRC
 
 *** Import File
