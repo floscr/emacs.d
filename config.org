@@ -2354,9 +2354,21 @@ All are these are distracting and not helpful.
 
 (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
 
+(setq flycheck-disabled-checkers '(lsp))
+
 (after! lsp-mode
   (remove-hook 'lsp-mode-hook #'+lsp-init-flycheck-or-flymake-h))
 
+(after! flycheck
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode))
+
+(add-hook 'rjsx-mode-local-vars-hook
+          (lambda ()
+            (flycheck-select-checker 'javascript-eslint)))
+
+(add-hook 'js2-mode-local-vars-hook
+          (lambda ()
+            (flycheck-select-checker 'javascript-eslint)))
 #+END_SRC
 
 *** Mail
