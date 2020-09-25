@@ -1897,6 +1897,24 @@ Calendar management using org mode and [[https://github.com/dengste/org-caldav][
 
 To sync the calendars use ~org-caldav-sync~.
 
+**** Utils
+
+***** Remove and sync
+
+#+BEGIN_SRC elisp
+(defun +caldav|remove-and-sync ()
+  "The one way sync doesn't update entries that have been deleted/moved.
+So I make sure to remove all caldav files and just do a fresh sync."
+  (interactive)
+  (ignore-errors (f-delete org-caldav-backup-file))
+  (-some->> (f-entries org-caldav-save-directory)
+    (--find (s-contains? "org-caldav" (f-filename it)))
+    (f-delete))
+  (org-caldav-sync))
+#+END_SRC
+
+**** Config
+
 #+BEGIN_SRC elisp
 (use-package! org-caldav
   :after org
