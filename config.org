@@ -1747,6 +1747,12 @@ Automatically revert dired buffers.
                    (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
           (make-directory directory-name t))))))
 #+END_SRC
+***** Sort by date
+
+#+BEGIN_SRC elisp
+(setq dired-listing-switches "-ahl -t --group-directories-first")
+#+END_SRC
+
 **** Utils
 ***** Dired Paste DWIM
 
