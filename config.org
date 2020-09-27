@@ -3236,7 +3236,7 @@ Press =gr= with a following motion character like =w=.
     (let ((evil-textobj-anyblock-blocks
            '(("'" . "'")
              ("\"" . "\"")
-             ("`" . "'")
+             ("`" . "`")
              ("“" . "”"))))
       (evil-textobj-anyblock--make-textobj beg end type count nil)))
 
@@ -3246,7 +3246,7 @@ Press =gr= with a following motion character like =w=.
     (let ((evil-textobj-anyblock-blocks
            '(("'" . "'")
              ("\"" . "\"")
-             ("`" . "'")
+             ("`" . "`")
              ("“" . "”"))))
       (evil-textobj-anyblock--make-textobj beg end type count t)))
 
