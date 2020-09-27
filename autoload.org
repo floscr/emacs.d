@@ -422,6 +422,15 @@ Get the last created file in a directory.
   (interactive)
   (shell-command (template "chmod +x \"<<(buffer-file-name)>>\"")))
 #+END_SRC
+** Has hidden entry
+
+#+BEGIN_SRC elisp
+(defun f-has-hidden-entry (dir)
+  "Check if a DIR has any hidden entries.
+Return the first found file when one is found."
+  (--find (s-starts-with-p "." (f-filename it)) (f-entries dir)))
+#+END_SRC
+
 * Window management
 ** Toggle split style
 :PROPERTIES:

@@ -1936,11 +1936,17 @@ in that case throw a warning.
 
 #+BEGIN_SRC elisp
 (defun +dired|ungroup-directory ()
-  "Function docstring"
+  "Move the marked files one folder upwards, never overwrite the files."
   (interactive)
-  (message)
   (->> (dired-get-marked-files)
-       (--each (lambda (x) (shell-command-to-string "mv <<x>>/* <<x>>/.* .")))))
+       (-map (lambda (x)
+               (let ((cmd (if (f-has-hidden-entry x)
+                              "mv -n ./* ./.* ../"
+                            "mv -n ./* ../")))
+                 (shell-command (t! "cd \"<<x>>\"; <<cmd>>"))
+                 (when (f-empty? x)
+                   (dired-delete-file x))))))
+  (revert-buffer))
 #+END_SRC
 
 **** Extensions
