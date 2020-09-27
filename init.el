@@ -91,7 +91,6 @@
  reason
  work
  (org
-  +org-web-tools
   +org-reading-list
   +org-tags
   +org-pinboard))

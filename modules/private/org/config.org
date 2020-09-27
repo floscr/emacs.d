@@ -1402,6 +1402,49 @@ With the =:keep-windows= property we can disable this functionality.
   ;; Replace `org-babel-execute:emacs-lisp':
   (advice-add 'org-babel-execute:emacs-lisp :override #'ad-org-babel-execute:emacs-lisp))
 #+END_SRC
+*** Org Web Tools
+
+#+BEGIN_SRC elisp
+(defun +org-web-tools/dwim-at-point ()
+  "Pass url to web tools from either:
+1. An org link under the cursor
+2. An url in the clipboard"
+  (interactive)
+  (let ((org-url (org-element-property :raw-link (org-element-context)))
+        (clipboard-url (current-kill 0)))
+    (if org-url
+        (message "Reading org url from thing at point")
+      (org-web-tools-read-url-as-org org-url)
+      (if (string-match url-handler-regexp clipboard-url)
+          (message "Reading org url from clipboard")
+        (org-web-tools-read-url-as-org clipboard-url)
+        (message "No url found")))))
+
+(defun +org-web-tools/backup ()
+  "Open the url under the cursor"
+  (interactive)
+  (let ((url (org-web-tools--read-url))))
+  (org-web-tools-read-url-as-org))
+
+(defun +org-web-tools/read-url-at-point ()
+  "Open the url under the cursor"
+  (interactive)
+  (org-web-tools-read-url-as-org (org-web-tools--read-url)))
+
+(defun +org-web-tools|read-url-from-chrome ()
+  "Open the url under the cursor"
+  (interactive)
+  (->> (+wm/last-chrome-url)
+       (org-web-tools-read-url-as-org))
+  (visual-line-mode)
+  (visual-fill-column-mode)
+  (setq display-line-numbers nil))
+
+(use-package! org-web-tools
+  :after org
+  :commands (+org-web-tools/read-url-at-point))
+#+END_SRC
+
 
 ** Utils
 *** Get Frontmost chrome url
@@ -1906,6 +1949,8 @@ To sync the calendars use ~org-caldav-sync~.
   "The one way sync doesn't update entries that have been deleted/moved.
 So I make sure to remove all caldav files and just do a fresh sync."
   (interactive)
+  (require 'org-caldav)
+  (setq org-caldav-sync-result nil)
   (ignore-errors (f-delete org-caldav-backup-file))
   (-some->> (f-entries org-caldav-save-directory)
     (--find (s-contains? "org-caldav" (f-filename it)))

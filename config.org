@@ -1698,7 +1698,7 @@ Bindings
 #+BEGIN_SRC elisp
 (use-package! dired
   :init
-  (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$"))
+  (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$\\|flycheck_config.el"))
 #+END_SRC
 
 ***** Enable Async Mode
@@ -1926,6 +1926,21 @@ The dired-line jumps at the end are used to jump the filename again.
                        (buffer-string))))
           (kill-buffer (process-buffer process)))))
      (dired-map-over-marks (dired-get-filename) arg))))
+#+END_SRC
+***** Unparent directory at point
+
+Move all files and directories to the current directory,
+If everything goes well and the directory is empty, safely delete it.
+It might not work out though, when any of the entries has the same name,
+in that case throw a warning.
+
+#+BEGIN_SRC elisp
+(defun +dired|ungroup-directory ()
+  "Function docstring"
+  (interactive)
+  (message)
+  (->> (dired-get-marked-files)
+       (--each (lambda (x) (shell-command-to-string "mv <<x>>/* <<x>>/.* .")))))
 #+END_SRC
 
 **** Extensions
