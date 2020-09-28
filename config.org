@@ -597,6 +597,63 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 #+END_SRC
 
 ** Features
+*** Lisp Navigation =ly=
+
+A navigation system for lisp languages that I'm comfortable with,
+like evil but with a more =sexp= based navigation.
+
+Alternatives I've used:
+
+- [[https://github.com/countvajhula/symex.el][countvajhula/symex.el]]
+  My main inspiration.
+  Too tree based for my taste, I after have to think about the code structure before I can execute actions.
+
+**** Utils
+
+#+BEGIN_SRC elisp
+(setq +ly:sexp-regexp "([^() ]")
+
+(defun +ly|forward-sexp ()
+  "Function docstring"
+  (interactive)
+  (symex-go-up)
+  (search-forward-regexp +ly:sexp-regexp nil t)
+  (backward-char 2))
+
+(defun +ly|backward-sexp ()
+  "Function docstring"
+  (interactive)
+  (unless (eq ?\( (char-after))
+    (symex-go-down))
+  (search-backward-regexp +ly:sexp-regexp nil t))
+
+(defun +ly|forward-line ()
+  "Function docstring"
+  (interactive)
+  (next-line 1)
+  (goto-char (point-at-bol))
+  (search-forward-regexp "\s*[^\s]" nil t)
+  (backward-char 1))
+
+(defun +ly|backward-line ()
+  "Function docstring"
+  (interactive)
+  (previous-line 1)
+  (goto-char (point-at-bol))
+  (search-forward-regexp "\s*[^\s]" nil t)
+  (backward-char 1))
+#+END_SRC
+**** Hydra
+
+#+BEGIN_SRC elisp
+(defhydra +ly|hydra ()
+   "Ly Navigation"
+   ("f" (+ly|forward-sexp) "Forward ()" :column "Navigate")
+   ("b" (+ly|backward-sexp) "Backward ()")
+   ("j" (+ly|forward-line) "Next Line")
+   ("k" (+ly|backward-line) "Backward Line"))
+#+END_SRC
+
 *** Indirect Indent Mode
 
 Adds minor mode for editing indented source code in an indirect buffer,
