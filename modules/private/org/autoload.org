@@ -132,24 +132,20 @@ Offer all links for either file or agenda under the current =point=.
 ;;;###autoload
 (defun +org|link-from-point ()
   (interactive)
-  (-some--> (+org/link-context-at-point)
-            (buffer-substring-no-properties (or (cadr it) (point-min))
-                                            (or (caddr it) (point-max)))
-            (--tap (add-text-properties 0 (length it) '(yank-handler (my-yank-org-link)) it) it)))
+  (progn (org-in-regexp org-link-bracket-re 1)
+         (org-link-unescape (match-string-no-properties 0))))
 
 ;;;###autoload
 (defun +org|link-url-from-point ()
   (interactive)
-  (-some->> (+org|link-from-point)
-    (+org/parse-link)
-    (nth 1)))
+  (progn (org-in-regexp org-link-bracket-re 1)
+         (org-link-unescape (match-string-no-properties 1))))
 
 ;;;###autoload
 (defun +org|link-title-from-point ()
   (interactive)
-  (-some->> (+org|link-from-point)
-    (+org/parse-link)
-    (nth 2)))
+  (progn (org-in-regexp org-link-bracket-re 1)
+         (when (match-end 2) (match-string-no-properties 2))))
 #+END_SRC
 
 *** Open link with mpv
