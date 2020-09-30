@@ -608,7 +608,29 @@ Alternatives I've used:
   My main inspiration.
   Too tree based for my taste, I after have to think about the code structure before I can execute actions.
 
+**** Minor Mode
+
+#+BEGIN_SRC elisp
+(defvar +ly-mode-map (make-sparse-keymap))
+
+(define-minor-mode +ly-mode
+  "Open org headlines in an indirect window buffer."
+  :keymap +ly-mode-map)
+
+(map! :map +ly-mode-map
+      :n "gj" #'evil-next-line
+      :n "gk" #'evil-previous-line
+      :n "j" #'+ly|forward-line
+      :n "k" #'+ly|backward-line
+      :n "f" #'+ly|forward-sexp
+      :n "b" #'+ly|backward-sexp)
+
+;; Mappings only get applied after reinserting normal mode
+(add-hook! +ly-mode-hook :after #'evil-normal-state)
+#+END_SRC
+
 **** Utils
+***** Sexp Navigation
 
 #+BEGIN_SRC elisp
 (setq +ly:sexp-regexp "([^() ]")
@@ -616,6 +638,7 @@ Alternatives I've used:
 (defun +ly|forward-sexp ()
   "Function docstring"
   (interactive)
+  (require 'symex)
   (symex-go-up)
   (search-forward-regexp +ly:sexp-regexp nil t)
   (backward-char 2))
@@ -623,10 +646,15 @@ Alternatives I've used:
 (defun +ly|backward-sexp ()
   "Function docstring"
   (interactive)
+  (require 'symex)
   (unless (eq ?\( (char-after))
     (symex-go-down))
   (search-backward-regexp +ly:sexp-regexp nil t))
+#+END_SRC
 
+***** Line Navigation
+
+#+BEGIN_SRC elisp
 (defun +ly|forward-line ()
   "Function docstring"
   (interactive)
@@ -3981,6 +4009,7 @@ redefines its keys every time `eshell-mode' is enabled."
       :n "g["  #'sp-forward-barf-sexp
 
       :localleader
+      :desc "Ly Mode"                 "l"  #'+ly-mode
       :desc "Jump to tangled source"  "j"  #'org-babel-tangle-jump-to-org
       :desc "Symex Mode"              "s" #'symex-mode-interface
       :desc "Raise sexp"              "<" #'raise-sexp
