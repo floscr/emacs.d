@@ -2039,6 +2039,21 @@ in that case throw a warning.
                    (dired-delete-file x))))))
   (revert-buffer))
 #+END_SRC
+***** Dired go to top
+
+When I do =gg= in dired, I mostly want to go to the first entry.
+This function first goes to the first entry and then to the top of the buffer.
+
+#+BEGIN_SRC elisp
+(defun +dired|goto-top ()
+  "Go to first directory, when already there go to first line."
+  (interactive)
+  (if (<= (line-number-at-pos) 3)
+      (goto-char (point-min))
+    (goto-line 3)
+    (dired-next-dirline 1)
+    (dired-prev-dirline 1)))
+#+END_SRC
 
 **** Extensions
 ***** Narrow
@@ -2093,7 +2108,8 @@ Widen can be restored with ~g~.
       :map dired-mode-map
       :ng "<C-return>" '+dired|open-externally
       :gn "o" '+dired|toggle-sort
-      :n "p" '+dired|paste-dwim)
+      :n "p" '+dired|paste-dwim
+      :n "gg" '+dired|goto-top)
 
 (define-key dired-mode-map (kbd "<down-mouse-1>") 'dired-mouse-find-file)
 #+END_SRC
