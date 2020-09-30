@@ -2236,6 +2236,7 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Deadline"                  "d"  #'org-deadline
       :desc  "Filter"                    "f"  #'org-match-sparse-tree
       :desc  "Set source key to tab"     "k"  #'+org|source-properties-key-from-browser
+      :desc  "Set created property"      "K"  #'+org|add-created-property
       :desc  "Create/Edit Todo"          "o"  #'org-todo
       :desc  "Paste Chrome Link"         "p"  (cmd! (+evil-org/normal-mode-paste-fix #'+org|paste-chrome-link))
       :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
