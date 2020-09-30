@@ -791,11 +791,12 @@ Set the active state when clocking in.
 
 (defun +org|search-goto (headline)
   (interactive)
-  (let ((marker (get-text-property 0 'marker headline)))
-    (when (markerp marker)
-      (switch-to-buffer (marker-buffer marker))
-      (goto-char marker)
-      (org-show-entry))))
+  (+org-indirect|narrow-subtree-indirect (lambda ()
+                                           (let ((marker (get-text-property 0 'marker headline)))
+                                             (when (markerp marker)
+                                               (switch-to-buffer (marker-buffer marker))
+                                               (goto-char marker)
+                                               (org-show-entry))))))
 #+END_SRC
 
 ** Modules
