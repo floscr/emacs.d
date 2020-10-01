@@ -501,6 +501,19 @@ When universal-argument is passed, just commit the bundle"
           (shell-command "npm publish")))
     (user-error "Stage the package.json with a version bump.")))
 #+END_SRC
+*** Split Single Line Chain
+
+#+BEGIN_SRC elisp
+(defun +MM|split-single-line-chain ()
+  "Split a single line chain to multiple characters."
+  (interactive)
+  (save-excursion
+    (goto-char (point-at-bol))
+    (while (search-forward "." (point-at-eol) t nil)
+      (backward-char 1)
+      (newline-and-indent)
+      (forward-char 1))))
+#+END_SRC
 
 ** Packages
 *** New Worktree
