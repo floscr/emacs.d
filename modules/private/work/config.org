@@ -1082,6 +1082,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 
 (defun +MM|add-action ()
   "Adds a global action to the controller or action file."
+  (interactive)
   (->> (+MM/global-actions)
        (--map (list (plist-get it :name) it))
        (ivy-read "Action: ")))
