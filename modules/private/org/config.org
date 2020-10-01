@@ -1953,10 +1953,25 @@ So I make sure to remove all caldav files and just do a fresh sync."
   (require 'org-caldav)
   (setq org-caldav-sync-result nil)
   (ignore-errors (f-delete org-caldav-backup-file))
+
+  ;; Empty the caldav file
+  (save-excursion
+    (find-file (car org-caldav-files))
+    (goto-line 5)
+    (delete-region (point) (point-max))
+    (save-buffer (current-buffer))
+    (kill-buffer (current-buffer)))
+
+  ;; Remove cache files
   (-some->> (f-entries org-caldav-save-directory)
     (--find (s-contains? "org-caldav" (f-filename it)))
     (f-delete))
-  (org-caldav-sync))
+
+  (let ((org-caldav-debug-level 0))
+    (org-caldav-sync)
+
+    ;; Remove the result buffer
+    (kill-buffer (get-buffer "*org caldav sync result*"))))
 #+END_SRC
 
 **** Config
