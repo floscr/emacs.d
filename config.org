@@ -82,7 +82,6 @@ Move to ivy candidate with =C-'=
 (package! ivy-avy)
 #+END_SRC
 
-
 *** External
 **** Edit the current chrome input field directly in emacs
 
@@ -3842,10 +3841,11 @@ and then do my function.
 (map!
  :leader
  (:desc "open" :prefix "o"
-   :desc "Calc"         :g "C" #'calc
+   :desc "Calc"         :g "c" #'calc
+   :desc "Calc"         :g "C" #'=calendar
    :desc "Transmission" :g "D" #'transmission
-   :desc "Elfeed"       :g "E" #'+rss|open
-   :desc "Calendar"     :g "c" #'=calendar
+   :desc "Elfeed"       :g "e" #'+eshell/toggle
+   :desc "Eshell"       :g "E" #'+rss|open
    :desc "Irc"          :g "i" #'=irc
    :desc "Mail"         :g "m" #'=mu4e
    :desc "Proced"       :g "p" #'proced
