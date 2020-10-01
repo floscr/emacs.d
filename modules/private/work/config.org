@@ -181,8 +181,11 @@ Create a canvas action
 (defun +MM|chain-tap-log-state ()
   "Adds a tap method to a chain."
   (interactive)
-  (+MM|chain-tap-log "x => console.log(x.state)"))
+  (+MM|chain-tap-log "x => console.log('', x.state)")
+  (search-forward "'")
+  (evil-insert-state))
 #+END_SRC
+
 *** Insert debugger
 
 #+BEGIN_SRC elisp
