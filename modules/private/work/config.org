@@ -37,28 +37,31 @@
   "Find the alternate file for the current buffer."
   (interactive)
   (let* ((file-name (file-name-nondirectory buffer-file-name))
-         (file-dir-path (file-name-directory buffer-file-name))
-         (alternate-file
-          (-some-->
-              (or
-               ;; Regular alternate files
-               (-some--> +MM-alternate-file-rules
-                 (--first (-contains? it file-name) it)
-                 (--first (not (string= file-name it)) it))
+         (file-dir-path (file-name-directory buffer-file-name)))
+    (or (-some->>
+            (or
+             ;; Regular alternate files
+             (-some--> +MM-alternate-file-rules
+               (--first (-contains? it file-name) it)
+               (--first (not (string= file-name it)) it))
 
-               (-some--> (s-split "\\." file-name)
-                 (car it)
-                 (f-entries file-dir-path (lambda (file)
-                                            (let ((entry-file-name (f-filename file)))
-                                              (and
-                                               (not (string= entry-file-name file-name))
-                                               (s-contains? it entry-file-name)))))
-                 (-map 'f-filename it)
-                 (if (eq (length it) 1)
-                     (car it)
-                   (ivy-read "File: " it))))
+             ;; Try finding file with same base name
+             (-some--> (s-split "\\." file-name)
+               (car it)
+               (f-entries file-dir-path (lambda (file)
+                                          (let ((entry-file-name (f-filename file)))
+                                            (and
+                                             (not (string= entry-file-name file-name))
+                                             (s-contains? it entry-file-name)))))
+               (-map 'f-filename it)
+               (if (eq (length it) 1)
+                   (car it)
+                 (ivy-read "File: " it))))
 
-            (find-file (f-join file-dir-path it)))))))
+          (f-join file-dir-path)
+          (-id-when 'f-exists?)
+          (find-file))
+        (user-error "No alternate file found!"))))
 #+END_SRC
 
 *** Convert to new Redux style
