@@ -199,6 +199,7 @@ Create a canvas action
     (insert "debugger;")
     (call-interactively #'evil-indent-line)))
 #+END_SRC
+
 *** NodeJs Repl
 
 #+BEGIN_SRC elisp
@@ -320,6 +321,7 @@ Create a canvas action
               :action (lambda (x)
                         (npm-mode-npm-run (template "start <<x>> -- --port 3008"))))))
 #+END_SRC
+
 *** Dynamic Bookmarks
 
 Since I have multiple git worktrees open at the same time for PRs,

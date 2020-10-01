@@ -1446,7 +1446,6 @@ With the =:keep-windows= property we can disable this functionality.
   :commands (+org-web-tools/read-url-at-point))
 #+END_SRC
 
-
 ** Utils
 *** Get Frontmost chrome url
 
