@@ -494,32 +494,6 @@ When universal-argument is passed, just commit the bundle"
     (user-error "Stage the package.json with a version bump.")))
 #+END_SRC
 
-*** Counsel Branches
-
-#+BEGIN_SRC elisp
-(defun +MM/counsel-branch-menu--collect-matches (regexp &optional match-number buffer)
-  "return a list of matches of REGEXP in BUFFER or the current buffer if not given."
-  (let ((matches))
-    (save-match-data
-      (save-excursion
-        (with-current-buffer (or buffer (current-buffer))
-          (save-restriction
-            (widen)
-            (goto-char 1)
-            (while (search-forward-regexp regexp nil t 1)
-              (push (cons (match-string-no-properties (or match-number 0)) (point)) matches)))))
-      matches)))
-
-(defun +MM/counsel-branch-menu--matches ()
-  (+MM/counsel-branch-menu--collect-matches "\\.\\(map\\|mapMerge\\|chain\\|tap\\)Branche?s?('?\\(.+\\)'?,.*$"))
-
-(defun +MM/counsel-branch-menu ()
-  "Jump to a buffer position indexed by imenu."
-  (interactive)
-  (ivy-read "imenu items: " (+MM/counsel-branch-menu--matches)
-            :require-match t
-            :action (lambda (x) (goto-char (cdr x)))))
-#+END_SRC
 ** Packages
 *** New Worktree
 
@@ -1155,6 +1129,56 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (message "No such file: %s" it)))
 
     (message "No action found!")))
+#+END_SRC
+*** Branches Utils
+**** Utils
+
+#+BEGIN_SRC elisp
+(defun +MM/collect-matches (regexp &optional match-number buffer)
+  "Return a list of matches of REGEXP in BUFFER or the current buffer if not given."
+  (let ((matches))
+    (save-match-data
+      (save-excursion
+        (with-current-buffer (or buffer (current-buffer))
+          (save-restriction
+            (widen)
+            (goto-char 1)
+            (while (search-forward-regexp regexp nil t 1)
+              (push (cons (match-string-no-properties (or match-number 0)) (point)) matches)))))
+      matches)))
+
+(defun +MM/js-collect-branches ()
+  (+MM/collect-matches "\\.\\(map\\|mapMerge\\|chain\\|tap\\)Branche?s?('?\\(.+\\)'?,.*$"))
+#+END_SRC
+
+**** Toggle Branches
+
+#+BEGIN_SRC elisp
+(defun +MM|js-toggle-branches ()
+  "Toggle visibility of each branch in the file."
+  (interactive)
+  (save-excursion
+    (--each (+MM/js-collect-branches) (progn (goto-char (cdr it))
+                                             (js2-mode-toggle-element)))))
+#+END_SRC
+
+**** Counsel Branches
+
+#+BEGIN_SRC elisp
+(defun +MM/counsel-branch-menu ()
+  "Navigate buffer branches."
+  (interactive)
+  (ivy-read "imenu items: " (+MM/js-collect-branches)
+            :require-match t
+            :action (lambda (x) (goto-char (cdr x)))))
+#+END_SRC
+
+*** Meistertask Mode
+
+#+BEGIN_SRC elisp
+(-some->> "~/Code/Meisterlabs/meistertask-mode/meistertask.el"
+  (-id-when 'f-file?)
+  (load-library))
 #+END_SRC
 
 ** Bindings
