@@ -477,12 +477,18 @@ When universal-argument is passed, just commit the bundle"
                                            (user-error "Please define \"+MM:deploy-url\""))))))))))
 #+END_SRC
 
-*** Shared Packages Commit
+*** Build kits package
 
 #+BEGIN_SRC elisp
 (defun +MM|kits-package-update ()
   "Update kits package by bumped version in package.json diff"
   (interactive)
+
+  ;; Check for merge conflicts
+  (call-interactively #'magit-fetch-all)
+  (when (+git|check-branch-for-merge-conflict)
+    (user-error "This branch has merge conflicts, resolve them before publishing!"))
+
   (let* ((package-json (car (magit-staged-files)))
          (json (json-read-file package-json))
          (package-path (->> package-json
@@ -501,6 +507,7 @@ When universal-argument is passed, just commit the bundle"
           (shell-command "npm publish")))
     (user-error "Stage the package.json with a version bump.")))
 #+END_SRC
+
 *** Split Single Line Chain
 
 #+BEGIN_SRC elisp

@@ -2801,6 +2801,25 @@ This also works for worktrees that are in a nested directory.
 #+BEGIN_SRC elisp
 (advice-add #'magit-toggle-buffer-lock :after (lambda () (+my/bool-state-message 'magit-buffer-locked-p)))
 #+END_SRC
+***** Check for merge conflicts
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/questions/501407/is-there-a-git-merge-dry-run-option][Is there a git-merge --dry-run option? - Stack Overflow]]
+:END:
+
+Try two merge two branches in memory, to determine if there would be merge conflicts.
+
+#+BEGIN_SRC elisp
+(defun +git|check-branch-for-merge-conflict (&optional source-branch target-branch)
+  "Try to merge SOURCE-BRANCH into TARGET-BRANCH, return list of conflicting files when there are any.
+This will try to merge in memory, so no index files will be created.
+SOURCE-BRANCH defaults to the current branch.
+TARGET-BRANCH defaults to origin/master."
+  (interactive)
+  (let* ((source-branch (or source-branch (magit-get-current-branch)))
+         (target-branch (or target-branch "origin/master"))
+         (merge-base (shell-command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
+    (shell-command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
+#+END_SRC
 
 **** Config
 
