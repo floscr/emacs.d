@@ -1141,6 +1141,8 @@ I mainly changed the function marking helper.
     (name . "Mimeapps")
     (goto . "### Mimeapps")
     (goto-bol . t))
+   ((file . "~/.config/.weechat/xfer")
+    (name . "Weechat Xfer"))
    ((fn . org-capture-goto-last-stored)
     (name . "Capture: Last Stored Marker"))))
 #+END_SRC
