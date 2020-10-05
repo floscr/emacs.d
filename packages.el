@@ -58,21 +58,25 @@
 (package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
 ;; Beancount:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Javascript][Javascript:1]]
+;; [[file:~/.config/doom/config.org::*Indium: Javascript debugging environment][Indium: Javascript debugging environment:1]]
 (package! indium)
-;; Javascript:1 ends here
+;; Indium: Javascript debugging environment:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Javascript][Javascript:2]]
+;; [[file:~/.config/doom/config.org::*Impatient Mode: Live editing of html][Impatient Mode: Live editing of html:1]]
 (package! impatient-mode)
-;; Javascript:2 ends here
+;; Impatient Mode: Live editing of html:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Javascript][Javascript:3]]
+;; [[file:~/.config/doom/config.org::*Eslintd Fix: Autofixing that isn't slow][Eslintd Fix: Autofixing that isn't slow:1]]
 (package! eslintd-fix)
-;; Javascript:3 ends here
+;; Eslintd Fix: Autofixing that isn't slow:1 ends here
 
-;; [[file:~/.config/doom/config.org::*Javascript][Javascript:4]]
+;; [[file:~/.config/doom/config.org::*JS Import: Package importing][JS Import: Package importing:1]]
 (package! js-import :recipe (:host github :repo "floscr/js-import"))
-;; Javascript:4 ends here
+;; JS Import: Package importing:1 ends here
+
+;; [[file:~/.config/doom/config.org::*Jest: Test Runner][Jest: Test Runner:1]]
+(package! jest :recipe (:host github :repo "floscr/emacs-jest"))
+;; Jest: Test Runner:1 ends here
 
 ;; [[file:~/.config/doom/config.org::*Graphql][Graphql:1]]
 (package! graphql)

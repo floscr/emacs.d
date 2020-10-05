@@ -130,27 +130,27 @@ Move to ivy candidate with =C-'=
 #+BEGIN_SRC elisp
 (package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
 #+END_SRC
-*** Javascript
 
-Javascript debugging environment
+*** Javascript
+**** Indium: Javascript debugging environment
 
 #+BEGIN_SRC elisp
 (package! indium)
 #+END_SRC
 
-Live editing of html
+**** Impatient Mode: Live editing of html
 
 #+BEGIN_SRC elisp
 (package! impatient-mode)
 #+END_SRC
 
-Autofixing that isn't slow
+**** Eslintd Fix: Autofixing that isn't slow
 
 #+BEGIN_SRC elisp
 (package! eslintd-fix)
 #+END_SRC
 
-Package importing
+**** JS Import: Package importing
 
 #+BEGIN_SRC elisp
 (package! js-import :recipe (:host github :repo "floscr/js-import"))
