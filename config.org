@@ -2521,6 +2521,8 @@ All are these are distracting and not helpful.
 (add-hook 'js2-mode-local-vars-hook
           (lambda ()
             (flycheck-select-checker 'javascript-eslint)))
+
+(setq lsp-on-idle-hook nil)
 #+END_SRC
 
 *** Mail
