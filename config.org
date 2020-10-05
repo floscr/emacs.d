@@ -534,9 +534,18 @@ Switch the highlight.
 #+END_SRC
 **** Hooks
 
-***** Magit Diff
+***** Diff Highlighting
 
 #+BEGIN_SRC elisp
+(add-hook! '(diff-hl-margin-minor-mode-hook)
+  (progn
+    (set-face-attribute 'smerge-refined-added nil
+                        :foreground (doom-blend "#98be65" "#3e493d" 0.15)
+                        :background (doom-lighten "#98bb5d" 0.2))
+    (set-face-attribute 'smerge-refined-removed nil
+                        :foreground (doom-blend "#ff6c6b" "#4f343a" 0.2)
+                        :background (doom-lighten "#ff6c6b" 0.1))))
+
 (add-hook! '(magit-status-mode-hook magit-diff-mode-hook)
            (progn
                    (set-face-attribute 'diff-refine-added nil
