@@ -156,6 +156,12 @@ Move to ivy candidate with =C-'=
 (package! js-import :recipe (:host github :repo "floscr/js-import"))
 #+END_SRC
 
+**** Jest: Test Runner
+
+#+BEGIN_SRC elisp
+(package! jest :recipe (:host github :repo "floscr/emacs-jest"))
+#+END_SRC
+
 *** Graphql
 
 #+BEGIN_SRC elisp
@@ -2183,6 +2189,14 @@ Custom eshell aliases.
 #+BEGIN_SRC elisp
 (setq shr-width 100)
 #+END_SRC
+*** Jest
+
+#+BEGIN_SRC elisp
+(use-package! jest
+  :after (js2-mode)
+  :hook (js2-mode . jest-minor-mode))
+#+END_SRC
+
 
 *** Git Lens
 
