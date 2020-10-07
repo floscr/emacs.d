@@ -1,4 +1,6 @@
-;; -*- no-byte-compile: t; -*-
+;; [[file:~/.config/doom/config.org::*noflet][noflet:1]]
+(package! noflet)
+;; noflet:1 ends here
 
 ;; [[file:~/.config/doom/config.org::*Udiskie][Udiskie:1]]
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
