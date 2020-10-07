@@ -35,6 +35,17 @@ I often use my helper function [[file:autoload.org::*Template Literals][(templat
 #+END_SRC
 
 ** General Packages
+*** Libraries
+
+**** noflet
+
+Since ~flet~ was deprecated, I'm using this for now.
+Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
+
+#+BEGIN_SRC elisp
+(package! noflet)
+#+END_SRC
+
 *** System
 **** Udiskie
 
@@ -3221,15 +3232,17 @@ the projects cwd to find a file.
 
 #+BEGIN_SRC elisp
 (defun yas/insert-by-name (name)
-  (flet ((dummy-prompt
-          (prompt choices &optional display-fn)
-          (declare (ignore prompt))
-          (or (find name choices :key display-fn :test #'string=)
-              (throw 'notfound nil))))
-    (let ((yas/prompt-functions '(dummy-prompt)))
+  (require 'noflet)
+  (noflet ((dummy-prompt
+            (prompt choices &optional display-fn)
+            (declare (ignore prompt))
+            (or (cl-find name choices :key display-fn :test #'string=)
+                (throw 'notfound nil))))
+    (let ((yas-prompt-functions '(dummy-prompt)))
       (catch 'notfound
-        (yas/insert-snippet t)))))
+        (yas-insert-snippet t)))))
 #+END_SRC
+
 **** Load custom snippets
 
 #+BEGIN_SRC elisp
