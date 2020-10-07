@@ -3823,7 +3823,6 @@ and then do my function.
  "RET"  #'+bookmarks|main
  "'"  #'+popup/toggle
  "au" #'undo-tree-visualize
- "//" #'+default/search-project
  "-"  #'quick-calc)
 #+END_SRC
 
