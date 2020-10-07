@@ -1478,9 +1478,10 @@ With the =:keep-windows= property we can disable this functionality.
 (defun +org/add-created-property-automatically ()
   "Add CREATED property with the current time to the current item."
   (interactive)
-  (when (or (org-get-todo-state)
-            (+org-get-global-property "ADD_CREATED"))
-    (org-set-property +org-created-property (+org/inactive-timestamp))))
+  (let ((global-property (+org-get-global-property "ADD_CREATED")))
+    (unless (string= global-property "nil")
+      (when (+org-get-global-property "ADD_CREATED")
+        (org-set-property +org-created-property (+org/inactive-timestamp))))))
 #+END_SRC
 
 And advice the function to the manual item creation functions:
