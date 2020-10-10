@@ -439,7 +439,7 @@ returns a pair with '(TODO-STATE POINT)."
     (save-excursion
       (while (org-up-heading-safe)
         (add-to-list 'headings (list (org-get-todo-state) (point)))))
-    (--last (string= (car it) "TODO") headings)))
+    (--last (-contains? '("TODO" "ACTIVE") (car it)) headings)))
 
 (defun +org|org-topmost-todo-element ()
   "Go to the topmost todo item of an org tre."
