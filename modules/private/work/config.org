@@ -486,8 +486,8 @@ When universal-argument is passed, just commit the bundle"
 
   ;; Check for merge conflicts
   (call-interactively #'magit-fetch-all)
-  (when (+git|check-branch-for-merge-conflict)
-    (user-error "This branch has merge conflicts, resolve them before publishing!"))
+  ;; (when (+git|check-branch-for-merge-conflict)
+  ;;   (user-error "This branch has merge conflicts, resolve them before publishing!"))
 
   (let* ((package-json (car (magit-staged-files)))
          (json (json-read-file package-json))
