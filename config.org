@@ -2362,6 +2362,26 @@ Adds general bindings to ivy.
   "M-m" 'ivy-mark)
 #+END_SRC
 
+***** Actions
+
+****** Describe variable
+
+#+BEGIN_SRC elisp
+(after! ivy
+  (ivy-set-actions
+   'counsel-describe-variable
+   '(("d" (lambda (x) (or (-some->> (symbol-value (intern-soft x))
+                            (-id-when #'f-exists?)
+                            (dired))))
+      "Open in dired")
+     ("y" (lambda (x) (or (-some->> (symbol-value (intern-soft x))
+                            (format "%s")
+                            (kill-new))))
+      "Yank value"))))
+
+#+END_SRC
+
+
 **** Functions
 ***** Counsel Project File Jump
 
