@@ -594,7 +594,8 @@ Disable for certain modes (terminal & ivy) where the window is to small.
     ("^\\*helm" :vslot -100 :size 0.32 :ttl nil)
     ("^\\*helpful command" :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
     ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
-    ("^\\*jest" :select nil)))
+    ("^\\*jest" :select nil)
+    ("^\\*elfeed-entry" :modeline t :ttl nil)))
 #+END_SRC
 
 *** (Visual) Fill Column
