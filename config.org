@@ -647,36 +647,70 @@ Alternatives I've used:
 (map! :map +ly-mode-map
       :n "gj" #'evil-next-line
       :n "gk" #'evil-previous-line
-      :n "j" #'+ly|forward-line
-      :n "k" #'+ly|backward-line
-      :n "f" #'+ly|forward-sexp
-      :n "b" #'+ly|backward-sexp)
+      :n "M-j" #'+ly|forward-line
+      :n "M-k" #'+ly|backward-line
+      :n "M-f" #'+ly|forward-atom
+      :n "M-b" #'+ly|backward-atom
+      :n "M-l" #'+ly|forward-brace
+      :n "M-h" #'+ly|backward-brace
+      :n "M-o" #'symex-open-line-after
+      :n "M-RET" (cmd!
+                  (parinfer-toggle-mode)
+                  (parinfer-lispy:newline)
+                  (parinfer-toggle-mode))
+      :n "M-Y" (cmd!
+                (symex-yank)
+                (symex-paste-after)
+                (symex-insert-newline)))
+
+;; HACK: map not working intially
+(defun +ly/activate-mode-hook ()
+  (require 'symex)
+  (evil-insert-state)
+  (evil-normal-state))
 
 ;; Mappings only get applied after reinserting normal mode
-(add-hook! +ly-mode-hook :after #'evil-normal-state)
+(add-hook '+ly-mode-hook #'+ly/activate-mode-hook)
 #+END_SRC
 
 **** Utils
 ***** Sexp Navigation
 
 #+BEGIN_SRC elisp
-(setq +ly:sexp-regexp "([^() ]")
+(setq +ly:brace-regexp "([^() ]")
+(setq +ly:atom-regexp "[^() ]")
 
-(defun +ly|forward-sexp ()
-  "Function docstring"
+(defun +ly|forward-atom ()
+  "Go to next atom."
+  (interactive)
+  (require 'symex)
+  (symex-traverse-forward)
+  (while (or (eq ?\( (char-after)))
+    (symex-traverse-forward)))
+
+(defun +ly|backward-atom ()
+  "Go to next atom."
+  (interactive)
+  (require 'symex)
+  (symex-traverse-backward)
+  (while (or (eq ?\( (char-after)))
+    (symex-traverse-backward)))
+
+(defun +ly|forward-brace ()
+  "Go to next sexp brace."
   (interactive)
   (require 'symex)
   (symex-go-up)
-  (search-forward-regexp +ly:sexp-regexp nil t)
+  (search-forward-regexp +ly:brace-regexp nil t)
   (backward-char 2))
 
-(defun +ly|backward-sexp ()
-  "Function docstring"
+(defun +ly|backward-brace ()
+  "Go to previous sexp brace."
   (interactive)
   (require 'symex)
   (unless (eq ?\( (char-after))
     (symex-go-down))
-  (search-backward-regexp +ly:sexp-regexp nil t))
+  (search-backward-regexp +ly:brace-regexp nil t))
 #+END_SRC
 
 ***** Line Navigation
@@ -703,8 +737,10 @@ Alternatives I've used:
 #+BEGIN_SRC elisp
 (defhydra +ly|hydra ()
    "Ly Navigation"
-   ("f" (+ly|forward-sexp) "Forward ()" :column "Navigate")
-   ("b" (+ly|backward-sexp) "Backward ()")
+   ("f" (+ly|forward-brace) "Forward ()" :column "Navigate")
+   ("b" (+ly|backward-brace) "Backward ()")
+   ("f" (+ly|forward-brace) "forward ()" :column "Navigate")
+   ("b" (+ly|backward-brace) "Backward ()")
    ("j" (+ly|forward-line) "Next Line")
    ("k" (+ly|backward-line) "Backward Line"))
 #+END_SRC
