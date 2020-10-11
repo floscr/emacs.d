@@ -1,3 +1,5 @@
+;; -*- no-byte-compile: t; -*-
+
 ;; [[file:~/.config/doom/config.org::*noflet][noflet:1]]
 (package! noflet)
 ;; noflet:1 ends here
