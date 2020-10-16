@@ -2548,7 +2548,7 @@ npm i -g json-fix
 #+END_SRC
 
 *** LSP
-**** Disable Annoying LSP Presets
+**** Disable presets
 
 All are these are distracting and not helpful.
 
@@ -2573,25 +2573,28 @@ All are these are distracting and not helpful.
       ;; Disable make error highlighting
       lsp-prefer-flymake nil)
 
-(setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
+;; (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
 
-(setq flycheck-disabled-checkers '(lsp))
+(setq lsp-on-idle-hook nil)
+#+END_SRC
 
+**** Fix flycheck for js buffers
+
+LSP manually disables all checkers and chooses it's own.
+This way you can't add checkers after your regular hooks like ~js2-hook~.
+So I fix the checker manually for each mode after lsp was loaded.
+
+#+BEGIN_SRC elisp
 (after! lsp-mode
   (remove-hook 'lsp-mode-hook #'+lsp-init-flycheck-or-flymake-h))
 
-(after! flycheck
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode))
+(defun +js/fix-checker ()
+  "Fix LSP overwritten checkers."
+  (interactive)
+  (when (-contains? '(js2-mode rjsx-mode) major-mode)
+    (flycheck-select-checker 'javascript-eslint)))
 
-(add-hook 'rjsx-mode-local-vars-hook
-          (lambda ()
-            (flycheck-select-checker 'javascript-eslint)))
-
-(add-hook 'js2-mode-local-vars-hook
-          (lambda ()
-            (flycheck-select-checker 'javascript-eslint)))
-
-(setq lsp-on-idle-hook nil)
+(add-hook 'lsp-mode-hook #'+js/fix-checker)
 #+END_SRC
 
 *** Mail
