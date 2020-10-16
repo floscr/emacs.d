@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Jest.test
+# uuid: jest.test
+# key: jt                 
+# --
+test('$1', function() {
+    const test = $2;
+    expect(test).toEqual($3);
+});
