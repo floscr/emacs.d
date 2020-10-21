@@ -731,7 +731,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 
 (setq +MM-import:package-exports
       (ht ("@meisterlabs/common"
-           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch"))
+           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color"))
           ("@meisterlabs/knightrider"
            '("View" "Text"))
           ("@meisterlabs/react-hide"
