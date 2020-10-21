@@ -313,7 +313,7 @@ Create a canvas action
 (defun +MM|npm-start-kits-app ()
   (interactive)
   (npm-mode)
-  (let* ((dir (f-join (projectile-project-root) "src/apps/"))
+  (let* ((dir (f-join (doom-project-root) "src/apps/"))
          (apps (--> dir
                     (f-entries it)
                     (--map (s-replace dir "" it) it))))
