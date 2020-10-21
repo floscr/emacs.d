@@ -652,7 +652,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         (insert (concat "/** " header " **/"))
         (insert "\n\n\n")))))
 
-(defun +MM:import|insert-local-import (import)
+(defun +MM:import|insert-local-import (import &optional no-destruct)
   (let* ((replacement-char "$$0")
          (import-file-or-dir (--> import
                                   (replace-regexp-in-string "/index\.js$" "" it)
@@ -660,18 +660,25 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (current-dir-prefix (if (f-exists? import)
                                  "./"
                                "")))
-    (insert (template "import { <<replacement-char>> } from '<<current-dir-prefix>><<import-file-or-dir>>';\n"))
+    (if no-destruct
+        (insert (template "import <<replacement-char>> from '<<current-dir-prefix>><<import-file-or-dir>>';\n"))
+      (insert (template "import { <<replacement-char>> } from '<<current-dir-prefix>><<import-file-or-dir>>';\n")))
     (search-backward "$$0")
     (delete-forward-char 3)
     (evil-insert-state)))
 
-(defun +MM:import|insert-package-import (package &optional export)
+(defun +MM:import|insert-package-import (package &optional export no-destruct)
+  (message "Is Redux no-destruct: %s" no-destruct)
   (let* ((replacement-char "$$0")
-         (line (template "import { <<replacement-char>> } from '<<package>>';\n")))
+         (line (if no-destruct
+                   (template "import <<replacement-char>> from '<<package>>';\n")
+                 (template "import { <<replacement-char>> } from '<<package>>';\n"))))
     (if export
         (insert (s-replace "\$\$0" export line))
       (progn
-        (insert (template "import { <<replacement-char>> } from '<<package>>';\n"))
+        (if no-destruct
+            (insert (template "import <<replacement-char>> from '<<package>>';\n"))
+          (insert (template "import { <<replacement-char>> } from '<<package>>';\n")))
         (search-backward replacement-char)
         (delete-forward-char 3)
         (evil-insert-state)))))
@@ -718,20 +725,22 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
            (s-repeat it "\n")
            (insert it))))))
 
-(defun +MM-import/import-package (package &optional export is-local?)
+(defun +MM-import/import-package (package &optional export is-local? no-destruct)
   (goto-char (point-min))
   (if (search-forward-regexp (template "from '.*<<package>>.*';") nil t)
       (+MM-import/update-import export)
     (progn
       (+MM:import/buffer-goto-or-create-header (if is-local? "LOCALS" "EXTERNALS"))
       (if is-local?
-          (+MM:import|insert-local-import package)
-        (+MM:import|insert-package-import package export))
+          (+MM:import|insert-local-import package no-destruct)
+        (+MM:import|insert-package-import package export no-destruct))
       (+MM:import/fix-empty-lines))))
 
 (setq +MM-import:package-exports
       (ht ("@meisterlabs/common"
            '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color"))
+          ("@meisterlabs/redux"
+           '("Redux"))
           ("@meisterlabs/knightrider"
            '("View" "Text"))
           ("@meisterlabs/react-hide"
@@ -757,7 +766,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (package (+MM-import/find-package-by-symbol symbol)))
     (if package
         (save-excursion
-          (+MM-import/import-package (car package) symbol nil)
+          (+MM-import/import-package (car package) symbol nil (string= (car package) "@meisterlabs/redux"))
           (flycheck-buffer))
       (user-error "Package not found"))))
 
