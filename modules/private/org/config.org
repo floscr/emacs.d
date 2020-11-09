@@ -578,7 +578,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
     (alltodo ""
              ((org-agenda-todo-list-sublevels nil)
               (org-agenda-sorting-strategy '(priority-down time-up todo-state-up user-defined-down))
-              (org-super-agenda-groups '((:discard (:todo ("[ ]" "[|]")))
+              (org-super-agenda-groups '((:discard (:todo ("[ ]" "[|]") :tag "HIDE_FROM_AGENDA"))
                                          (:name "Inbox" :category "Inbox" :order 5)
                                          (:name "Meetings" :tag "MEETING" :order 2)
                                          (:name "Reviews" :tag "REVIEW" :order 4)
