@@ -72,8 +72,7 @@
  ;; haskell
  (org
   +dragndrop
-  +present
-  +roam)
+  +present)
  sh
 
  :app
