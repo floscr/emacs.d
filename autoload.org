@@ -587,7 +587,7 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 
 (defun +bookmarks/find-bookmarks-other-window (x)
   "Open bookmark X in other window, used with ivy action 'j'."
-  (+bookmarks/find-bookmarks x :other-window? t))
+  (+bookmarks/find-bookmarks (cdr x) :other-window? t))
 
 (defun +bookmarks/local|save ()
   (interactive)
