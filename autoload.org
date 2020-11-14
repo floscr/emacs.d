@@ -539,11 +539,14 @@ DISPLAY is a display name, frame or terminal, as in
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
 
-* Project Bookmarks
+* Bookmarks
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
 
 #+BEGIN_SRC elisp
+(defvar +bookmarks:local-bookmarks-file nil)
+(setq +bookmarks:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
+
 (defun +bookmarks/find-bookmarks (x &optional &key other-window?)
   "Jump to a X relative to the project root, go to character POS."
   (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
@@ -566,7 +569,12 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
                        (not (alist-get 'disable-relocation item))) it)
         (--tap (progn
                  (goto-char (point-min))
-                 (search-forward it)) it))
+                 (cond
+                  ((eq 'int (type-of it))
+                   (goto-line it))
+                  ((eq 'string (type-of it))
+                   (search-forward it))))
+               it))
       ;; action
       ;; Execute a function after find file
       (-some--> (alist-get 'action item)
@@ -581,18 +589,32 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
   "Open bookmark X in other window, used with ivy action 'j'."
   (+bookmarks/find-bookmarks x :other-window? t))
 
+(defun +bookmarks/local|save ()
+  (interactive)
+  (let ((entry `((file . ,(buffer-file-name))
+                 (goto . ,(line-number-at-pos))
+                 (name . ,(read-string "Bookmark Name: ")))))
+    (-some->> (+bookmarks/local/list)
+      (-append entry)
+      (json-encode)
+      ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file))))))
+
+(defun +bookmarks/local/list ()
+  (-some->> +bookmarks:local-bookmarks-file
+    (-id-when #'f-exists?)
+    (json-read-file)
+    (-map 'identity)))
+
 ;;;###autoload
 (defun +bookmarks (&optional bookmarks-list)
   "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
 If found, show an ivy window with the bookmarks"
   (interactive)
-  (-if-let* ((bookmarks
-              (or bookmarks-list
-                  (-some->> (doom-project-root)
-                    (-f-join "bookmarks.json")
-                    (-id-when #'f-exists?)
-                    (json-read-file))))
-             (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
+  (-if-let*
+      ((bookmarks
+        (or bookmarks-list
+            (+bookmarks/local-bookmarks-list)))
+       (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
       (ivy-read "Bookmark: " bookmarks
                 :action (lambda (x) (+bookmarks/find-bookmarks (cdr x)))
                 :caller #'+bookmarks|find-bookmarks)
