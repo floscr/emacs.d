@@ -570,7 +570,7 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
         (--tap (progn
                  (goto-char (point-min))
                  (cond
-                  ((eq 'int (type-of it))
+                  ((eq 'integer (type-of it))
                    (goto-line it))
                   ((eq 'string (type-of it))
                    (search-forward it))))
@@ -599,6 +599,12 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (json-encode)
       ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file))))))
 
+(defun +bookmarks/local/kill (x)
+  (->>
+   (--remove (equalp (car (cdr x)) it) (+bookmarks/local/list))
+   (json-encode)
+   ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file)))))
+
 (defun +bookmarks/local/list ()
   (-some->> +bookmarks:local-bookmarks-file
     (-id-when #'f-exists?)
@@ -623,5 +629,6 @@ If found, show an ivy window with the bookmarks"
 (after! ivy
   (ivy-set-actions
    '+bookmarks|find-bookmarks
-   '(("j" +bookmarks/find-bookmarks-other-window "open in other window"))))
+   '(("j" +bookmarks/find-bookmarks-other-window "open in other window")
+     ("k" +bookmarks/local/kill "Remove"))))
 #+END_SRC
