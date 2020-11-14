@@ -619,7 +619,7 @@ If found, show an ivy window with the bookmarks"
   (-if-let*
       ((bookmarks
         (or bookmarks-list
-            (+bookmarks/local-bookmarks-list)))
+            (+bookmarks/local/list)))
        (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
       (ivy-read "Bookmark: " bookmarks
                 :action (lambda (x) (+bookmarks/find-bookmarks (cdr x)))

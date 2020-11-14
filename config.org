@@ -1202,7 +1202,7 @@ I mainly changed the function marking helper.
 #+BEGIN_SRC elisp
 (defun +bookmarks|main ()
   (interactive)
-  (+bookmarks (-concat +bookmarks:main (+bookmarks/local-bookmarks-list))))
+  (+bookmarks (-concat +bookmarks:main (+bookmarks/local/list))))
 #+END_SRC
 
 *** Transmission
