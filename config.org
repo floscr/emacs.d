@@ -760,6 +760,9 @@ Saving and committing keeps the indentation in the source buffer.
   "Editing indented source code without the indent in an indirect buffer."
   :keymap +indirect-indent-mode-map)
 
+(map! :map +indirect-indent-mode-map
+      :gni "s-s" #'edit-indirect-save)
+
 (advice-add #'edit-indirect-commit :before #'+indirect-indent/restore-indentation)
 (advice-add #'edit-indirect-save :before #'+indirect-indent/remove-indentation)
 (advice-add #'edit-indirect-save :after #'+indirect-indent/restore-indentation)
