@@ -763,6 +763,11 @@ Saving and committing keeps the indentation in the source buffer.
 (map! :map +indirect-indent-mode-map
       :gni "s-s" #'edit-indirect-save)
 
+(add-hook! +indirect-indent-mode
+           (defun +indirect-indent/init-hook ()
+             (setq header-line-format
+                   "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")))
+
 (advice-add #'edit-indirect-commit :before #'+indirect-indent/restore-indentation)
 (advice-add #'edit-indirect-save :after #'+indirect-indent/remove-indentation)
 (advice-add #'edit-indirect-save :before #'+indirect-indent/restore-indentation)
