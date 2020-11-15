@@ -764,8 +764,8 @@ Saving and committing keeps the indentation in the source buffer.
       :gni "s-s" #'edit-indirect-save)
 
 (advice-add #'edit-indirect-commit :before #'+indirect-indent/restore-indentation)
-(advice-add #'edit-indirect-save :before #'+indirect-indent/remove-indentation)
-(advice-add #'edit-indirect-save :after #'+indirect-indent/restore-indentation)
+(advice-add #'edit-indirect-save :after #'+indirect-indent/remove-indentation)
+(advice-add #'edit-indirect-save :before #'+indirect-indent/restore-indentation)
 
 (defun +indirect-indent/restore-indentation ()
   (when (and (bound-and-true-p +indirect-indent-mode)
