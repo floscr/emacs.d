@@ -81,7 +81,7 @@ Create an action from a controller and import directly
 (defun +MM|create-action ()
   "Create an action file from a controller file"
   (interactive)
-  (let* ((action-name (read-string "Action Name: "))
+  (let* ((action-name (f-no-ext (read-string "Action Name: ")))
          (root-dir (file-name-directory (buffer-file-name)))
          (actions-dir (concat root-dir "actions/"))
          (actions-index-file (concat actions-dir "index.js"))
