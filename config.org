@@ -1167,6 +1167,17 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** Pass
+
+**** Disable ~dcl~ mode for password files
+
+Since it has the regex matching ~.com~ it's enabled for all my password files,
+which I name after the matching url.
+
+#+BEGIN_SRC elisp
+(setq auto-mode-alist (rassq-delete-all 'dcl-mode auto-mode-alist))
+#+END_SRC
+
 *** Bookmarks
 **** Config
 ***** Main Bookmarks
