@@ -43,6 +43,7 @@
 
  :checkers
  (syntax +childframe)
+ grammar
  spell
 
  :tools
