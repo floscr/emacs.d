@@ -2381,23 +2381,11 @@ Adds general bindings to ivy.
   "M-m" 'ivy-mark)
 #+END_SRC
 
-***** Actions
-
-****** Describe variable
+Find file on enter press for ~ivy-occur-mode~
 
 #+BEGIN_SRC elisp
-(after! ivy
-  (ivy-set-actions
-   'counsel-describe-variable
-   '(("d" (lambda (x) (or (-some->> (symbol-value (intern-soft x))
-                            (-id-when #'f-exists?)
-                            (dired))))
-      "Open in dired")
-     ("y" (lambda (x) (or (-some->> (symbol-value (intern-soft x))
-                            (format "%s")
-                            (kill-new))))
-      "Yank value"))))
-
+(map! :map ivy-occur-mode-map
+      :gni "RET" #'ivy-occur-press-and-switch)
 #+END_SRC
 
 
@@ -3294,7 +3282,7 @@ the projects cwd to find a file.
 
 #+BEGIN_SRC elisp
 (map!
- :map (wgrep-mode-map ivy-occur-mode-map)
+ :map (wgrep-mode-map ivy-occur-grep-mode-map)
  :n [return] #'compile-goto-error
 
  :localleader
