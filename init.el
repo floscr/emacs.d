@@ -46,6 +46,7 @@
  spell
 
  :tools
+ direnv
  (lookup
   +devdocs
   +docsets
