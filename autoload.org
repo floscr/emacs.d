@@ -327,6 +327,17 @@ shuffling is done in place."
 #+END_SRC
 
 ** Buffer
+*** Check if buffer has line
+
+#+BEGIN_SRC elisp
+(defun +my/buffer-contains-line (string)
+  (save-excursion
+    (save-match-data
+      (goto-char (point-min))
+      (search-forward string nil t))))
+#+END_SRC
+
+
 *** Get the line Indent
 
 #+BEGIN_SRC elisp
