@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: Html Boilerplate
+# key: bp
+# --
+<html>
+  <head>
+    <link rel="stylesheet" href="./index.css" type="text/css" media="screen" />
+  </head>
+  <body>
+    $0
+    <script type="text/javascript" src="./index.js"></script>
+  </body>
+</html>
