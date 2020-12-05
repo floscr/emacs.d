@@ -1290,6 +1290,19 @@ For example when archiving a task, there would be an empty window left over."
   (interactive "P")
   (+org-indirect|narrow-subtree-indirect #'org-agenda-switch-to (not arg)))
 #+END_SRC
+***** Inserting New Items
+
+I want to create items directly from the org agenda.
+For this I will visit the current item, move to the header and add a new child at the bottom.
+
+#+BEGIN_SRC elisp
+(defun +org-indirect|add-entry ()
+  (interactive)
+  (with-current-buffer (+org-indirect|narrow-subtree-indirect #'org-agenda-switch-to t)
+    (widen)
+    (call-interactively #'+org/insert-item-below)
+    (org-narrow-to-element)))
+#+END_SRC
 
 *** Subtask todo reset
 :PROPERTIES:
