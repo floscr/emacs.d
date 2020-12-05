@@ -1243,7 +1243,8 @@ Known Issues:
                       (int-to-string (point-min))
                       (int-to-string (point-max))
                       "*"))
-      (evil-forward-word-begin 1))))
+      (evil-forward-word-begin 1)
+      buffer)))
 #+END_SRC
 
 ***** Window Killing
