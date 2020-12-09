@@ -1245,27 +1245,33 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         (:prefix ("g" . "Goto")
           :desc  "Branch"                       "b"  #'+MM/counsel-branch-menu))
 
-  (map! :map js2-mode-map
+  (map! :map +MM-Web-mode-map
         :n "[1" #'+MM|alternate-file
         :n "]1" #'+MM|alternate-file
         :localleader
         (:prefix-map ("c" . "Create")
-          :desc  "Generate Index"               "I"  (cmd! (+js|generate-index nil '("helpers")))
-          :desc  "Import File"                  "i"  #'+MM:import|ivy-import
-          :desc  "Import Symbol"                "s"  #'+MM-import|import-symbol-at-point
-          :desc  "Rule"                         "r"  #'+MM|add-rule
-          :desc  "Container Action"             "a"  #'+MM|create-action
-          :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
-          :desc  "Container"                    "c"  #'+MM|canvas-create-action)
+         :desc  "Generate Index"               "I"  (cmd! (+js|generate-index nil '("helpers")))
+         :desc  "Import File"                  "i"  #'+MM:import|ivy-import
+         :desc  "Import Symbol"                "s"  #'+MM-import|import-symbol-at-point
+         :desc  "Rule"                         "r"  #'+MM|add-rule
+         :desc  "Container Action"             "a"  #'+MM|create-action
+         :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
+         :desc  "Container"                    "c"  #'+MM|canvas-create-action)
         (:prefix-map ("d" . "Debug")
-          :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
-          :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state
-          :desc  "Debugger"                     "d"  #'+js|insert-debugger)
+         :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
+         :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state
+         :desc  "Debugger"                     "d"  #'+js|insert-debugger)
         (:prefix-map ("r" . "Refactor")
-          :desc  "Update props header"           "U"  #'+MM|update-schema-props
-          :desc  "Style function into object"   "rs" #'+MM|turn-style-object-into-function
-          :desc  "Extract Props"                 "x"  #'+js|extract-props
-          :desc  "Convert into new Redux Style"  "X"  #'+MM|turn-style-object-into-function)))
+         :desc  "Update props header"           "U"  #'+MM|update-schema-props
+         :desc  "Style function into object"   "rs" #'+MM|turn-style-object-into-function
+         :desc  "Extract Props"                 "x"  #'+js|extract-props
+         :desc  "Convert into new Redux Style"  "X"  #'+MM|turn-style-object-into-function)))
+
+
+(add-hook!
+ 'rjsx-mode-local-vars-hook
+ :after (defun check+MM-mode ()
+          (when +MM-Web-mode (+MM/setup-keybindings))))
 #+END_SRC
 
 ** Minor Mode
