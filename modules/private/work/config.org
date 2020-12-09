@@ -1283,8 +1283,7 @@ this mode is enabled.
 #+BEGIN_SRC elisp
 (def-project-mode! +MM-Web-mode
   :add-hooks (+MM/setup-keybindings)
-  :on-enter (setq sgml-basic-offset 4)
-  :on-load)
+  :on-enter (setq sgml-basic-offset 4))
 #+END_SRC
 
 #+BEGIN_SRC elisp
