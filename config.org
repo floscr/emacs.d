@@ -1078,7 +1078,10 @@ Remove the ~js~ extension for ~company-files~.
 (map!
  :after js2-mode
  :map js2-mode-map
- :desc "Goto parent function" :n "gh" (cmd! (js2-beginning-of-defun)))
+ :desc "Goto parent function" :n "gh" (cmd! (js2-beginning-of-defun))
+ :localleader
+ (:prefix-map ("c" . "Create")
+          :desc  "Import File"                  "i"  #'js-import))
 
 (map!
  :after rjsx-mode
