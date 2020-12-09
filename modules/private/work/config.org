@@ -91,7 +91,11 @@ Create an action from a controller and import directly
      (concat (projectile-project-root) "snippets/Core/Action.js")
      action-file)
     (with-temp-file actions-index-file
-      (+js|generate-index actions-dir))
+      (+js|generate-index actions-dir)
+      (progn
+        (goto-char (point-max))
+        (newline 1)))
+
     (find-file action-file)))
 #+END_SRC
 
