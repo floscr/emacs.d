@@ -126,6 +126,48 @@ Move to ivy candidate with =C-'=
 #+BEGIN_SRC elisp
 (package! transmission)
 #+END_SRC
+**** Evil edit register
+
+Edit registers with ~+evil-edit-register|counsel~.
+Mostly used to edit the macro registers ~q~.
+
+#+BEGIN_SRC elisp
+(defvar +evil-edit-register:register "")
+(defvar +evil-edit-register-mode-map (make-sparse-keymap))
+
+(define-minor-mode +evil-edit-register-mode
+  "Edit evil register and save it back to the register."
+  :keymap +evil-edit-register-mode-map)
+
+(map! :map +evil-edit-register-mode-map
+      "C-c C-c" #'+evil-edit-register|save-and-exit
+      "C-c C-k" #'kill-buffer-and-window)
+
+(defun +evil-edit-register|save-and-exit (&optional arg)
+  "Save the buffer content back to the register register"
+  (interactive)
+  (evil-set-register
+   (string-to-char +evil-edit-register:register)
+   (buffer-substring-no-properties (point-min) (point-max)))
+  (kill-buffer-and-window))
+
+(defun +evil-edit-register|counsel (register-string)
+  "Edit evil register in register"
+  (require 'noflet)
+  (interactive (noflet ((counsel-evil-registers-action (x) x))
+                 (list (counsel-evil-registers))))
+  (-when-let* ((register-string (substring-no-properties register-string))
+               (buffer (generate-new-buffer (t! "*Evil Register Edit: <<register-string>>*")))
+               ((_ reg register) (s-match "^\\[\\(.\\)\\]: \\(.*\\)$" register-string)))
+    (pop-to-buffer buffer)
+    (with-current-buffer buffer
+      (+evil-edit-register-mode 1)
+      (setq-local +evil-edit-register:register reg)
+      (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
+      (save-excursion
+        (insert register)))))
+#+END_SRC
+
 
 ** Language Packages
 *** Elisp
