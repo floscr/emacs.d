@@ -355,6 +355,18 @@ Never blink the cursor, it's too distracting.
 #+END_SRC
 
 ** Custom Functions & Modes
+*** Unfill Paragraph
+
+Fix a paragraph that was formatted to a fill column.
+
+#+BEGIN_SRC elisp
+(defun +my|unfill-paragraph ()
+  "Fix a paragraph that was formatted to a fill column."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil)))
+#+END_SRC
+
 *** Jump to definition for tangled files
 
 Take me to the literate source file when using ~find-function~ etc.
