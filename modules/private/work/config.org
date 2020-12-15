@@ -533,7 +533,9 @@ To commit call +MM|kits-package-update."
       (progn
         (magit-call-git "commit" "-m" msg)
         (magit-refresh)
-        (+my/kill-and-message (template "📦 <<msg>>
+        ;; Kill with install message just for my purposes
+        (kill-new (t! "npm i @meisterlabs/<<name>>@<<v>>"))
+        (+my/kill-and-message (t! "📦 <<msg>>
 `npm i @meisterlabs/<<name>>@<<v>>`"))
         (magit-push-current-to-upstream nil)
         (let ((default-directory package-path))
