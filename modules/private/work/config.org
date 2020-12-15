@@ -485,6 +485,31 @@ When universal-argument is passed, just commit the bundle"
                                            (user-error "Please define \"+MM:deploy-url\""))))))))))
 #+END_SRC
 
+*** Bump beta package.json
+
+#+BEGIN_SRC elisp
+(defun +MM|kits-package-beta-convert ()
+  "Find package.json with beta id and bump it to a real version.
+To commit call +MM|kits-package-update."
+  (interactive)
+  (-when-let* ((json-encoding-pretty-print t)
+               (file (->> (+git/modfied-files)
+                          (--filter (string= (f-filename it) "package.json"))
+                          (--map (f-join (doom-project-root) it))
+                          (--map (list it (json-read-file it)))
+                          (--find (->> (nth 1 it)
+                                       (alist-get 'version)
+                                       (s-contains? "beta")))))
+               ((path json-alist) file))
+    ;; Can't use a-assoc here because it resorts the list
+    (setf
+     (alist-get 'version json-alist)
+     (s-replace-regexp "-beta.*$" "" (alist-get 'version json-alist)))
+    (f-write (concat (json-encode-alist json-alist) "\n") 'utf-8 path)
+    (magit-stage-file path)))
+#+END_SRC
+
+
 *** Build kits package
 
 #+BEGIN_SRC elisp
