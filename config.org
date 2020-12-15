@@ -2596,8 +2596,8 @@ npm i -g json-fix
 (map!
  :after json-mode
  :map json-mode-map
- :gni [s-return] #'+json/insert-key-below
- :gni [s-S-return] #'+json/insert-key-above)
+ :gni "<C-return>" #'+json|insert-key-below
+ :gni "<C-S-return>" #'+json|insert-key-above)
 #+END_SRC
 
 *** LSP
