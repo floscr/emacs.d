@@ -286,32 +286,6 @@ Create a canvas action
       (goto-char (point-min)))))
 #+END_SRC
 
-*** Go to node modules package
-
-#+BEGIN_SRC elisp
-(after! ivy
-  (ivy-set-actions
-   '+MM|goto-npm-package
-   '(("j" +MM|goto-npm-package/find-file-other-window "open in other window"))))
-
-(defun +MM|goto-npm-package/find-file (item &optional other-window?)
-  (let ((find-fn (if other-window? 'find-file-other-window 'find-file))
-        (dir (f-join (projectile-project-root) "node_modules" item)))
-    (funcall find-fn dir)))
-
-(defun +MM|goto-npm-package/find-file-other-window (item)
-  (+MM|goto-npm-package/find-file item t))
-
-(defun +MM|goto-npm-package ()
-  (interactive)
-  (let ((node-packages
-          (-->
-           (concat "jq -r '.dependencies | keys | .[]' " (f-join (projectile-project-root) "package.json"))
-           shell-command-to-string
-           split-string)))
-    (ivy-read "Go to package directory: " node-packages
-              :action #'+MM|goto-npm-package/find-file)))
-#+END_SRC
 *** Start kits app
 
 #+BEGIN_SRC elisp
@@ -1264,7 +1238,6 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         :nv "gf" #'lsp-find-definition
         :localleader
         :desc  "Repl"             "R" #'+MM|nodejs-repl
-        :desc  "Goto NPM Package" "m" #'+MM|goto-npm-package
         :desc  "Bookmarks"        "b" #'+MM|bookmarks
         (:prefix ("f" . "file")
           :desc  "Jump to Entity"               "e"  (cmd! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))

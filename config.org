@@ -846,7 +846,6 @@ Saving and committing keeps the indentation in the source buffer.
       (+indirect-indent-mode 1)
       (setq +indirect-indent indent))))
 #+END_SRC
-
 ** Language Config
 *** Javascript
 **** Config
@@ -1119,6 +1118,31 @@ Remove the ~js~ extension for ~company-files~.
       (newline-and-indent)
       (insert (template "// eslint-disable-next-line <<error-id>>")))))
 #+END_SRC
+***** Find node_modules package
+
+Go to a package from the node_modules directory.
+
+#+BEGIN_SRC elisp
+(defun +javascript/find-npm-package-goto (package)
+  "Go to directory by package name"
+  (-some->> (f-join (projectile-project-root) "node_modules")
+    (-id-when #'f-exists?)
+    (-f-join package)
+    (find-file)))
+
+(defun +javascript|find-npm-package ()
+  "Find package in node_modules directory."
+  (interactive)
+  (-when-let* ((json (-some->> (f-join (projectile-project-root) "package.json")
+                       (-id-when #'f-exists?)
+                       (json-read-file)))
+               ((&alist 'dependencies dependencies
+                        'devDependencies devDependencies) json)
+               (packages (->> (-concat dependencies devDependencies)
+                              (-map #'car))))
+    (ivy-read "Go to package directory: " packages
+              :action #'+javascript/find-npm-package-goto)))
+#+END_SRC
 
 **** Bindings
 
@@ -1128,8 +1152,9 @@ Remove the ~js~ extension for ~company-files~.
  :map js2-mode-map
  :desc "Goto parent function" :n "gh" (cmd! (js2-beginning-of-defun))
  :localleader
+ :desc "Goto NPM Package" "m" #'+javascript|find-npm-package
  (:prefix-map ("c" . "Create")
-          :desc  "Import File"                  "i"  #'js-import))
+  :desc "Import File" "i" #'js-import))
 
 (map!
  :after rjsx-mode
