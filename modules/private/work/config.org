@@ -61,6 +61,7 @@
           (f-join file-dir-path)
           (-id-when 'f-exists?)
           (find-file))
+        (projectile-toggle-between-implementation-and-test)
         (user-error "No alternate file found!"))))
 #+END_SRC
 
