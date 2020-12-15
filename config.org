@@ -2972,6 +2972,20 @@ TARGET-BRANCH defaults to origin/master."
          (merge-base (shell-command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
     (shell-command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
 #+END_SRC
+***** Copy over changes from diff
+
+#+BEGIN_SRC elisp
+(defun +magit/diff-copy-file-changes ()
+  "Copies over contents of diff at point to the curent file system."
+  (interactive)
+  (save-excursion
+    (let ((buffer (call-interactively #'magit-diff-visit-file)))
+      (with-current-buffer buffer
+        (make-directory (f-dirname magit-buffer-file-name) t)
+        (f-write (substring-no-properties (buffer-string)) 'utf-8 magit-buffer-file-name)))
+    (kill-buffer)))
+#+END_SRC
+
 
 **** Config
 ***** Copy over changes
