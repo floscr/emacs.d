@@ -2985,10 +2985,22 @@ TARGET-BRANCH defaults to origin/master."
         (f-write (substring-no-properties (buffer-string)) 'utf-8 magit-buffer-file-name)))
     (kill-buffer)))
 #+END_SRC
+***** Text Mode
 
+Restores functionality when editing magit buffers as text.
+For now only the toggle functionality is needed.
+
+#+BEGIN_SRC elisp
+(defvar +magit-evil-edit-mode-map (make-sparse-keymap))
+
+(define-minor-mode +magit-evil-edit-mode ""
+  :keymap +magit-evil-edit-mode-map)
+
+(map! :map +magit-evil-edit-mode-map
+      :n [tab] #'magit-section-toggle)
+#+END_SRC
 
 **** Config
-***** Copy over changes
 
 #+BEGIN_SRC elisp
 (after! magit
