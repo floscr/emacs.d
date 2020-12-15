@@ -6,7 +6,7 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
-* Required Packages
+* Required Package
 
 Packages and utilities needed for this config.
 
@@ -196,7 +196,6 @@ nil -> \"Disabled\""
   (interactive)
   (message (t! "<<(symbol-name x)>>: <<(+my/bool-to-enabled-string (symbol-value x))>>")))
 #+END_SRC
-
 
 ** Dash Extensions
 *** -tap
