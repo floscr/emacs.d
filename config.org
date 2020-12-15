@@ -690,6 +690,7 @@ Alternatives I've used:
       :n "gk" #'evil-previous-line
       :n "M-j" #'+ly|forward-line
       :n "M-k" #'+ly|backward-line
+      :n "M-u" #'+ly|up-atom
       :n "M-f" #'+ly|forward-atom
       :n "M-b" #'+ly|backward-atom
       :n "M-l" #'+ly|forward-brace
@@ -752,6 +753,12 @@ Alternatives I've used:
   (unless (eq ?\( (char-after))
     (symex-go-down))
   (search-backward-regexp +ly:brace-regexp nil t))
+
+(defun +ly|up-atom ()
+  "Go up the tree"
+  (interactive)
+  (require 'symex)
+  (symex-go-down))
 #+END_SRC
 
 ***** Line Navigation
