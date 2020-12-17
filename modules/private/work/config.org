@@ -540,9 +540,12 @@ To commit call +MM|kits-package-update."
   "New worktree with the devpanel files and an node modules.
 When SAME-BRANCH? is t use the current branch instead of creating a new one."
   (let* ((origin-path (projectile-project-root))
-         (path (call-interactively (if same-branch?
-                                       'magit-worktree-branch-checkout
-                                     'magit-worktree-branch-project-worktree)))
+         (path (if same-branch?
+                   (-if-let (branch (magit-get-current-branch))
+                       (progn (magit-checkout (magit-rev-parse "HEAD"))
+                              (magit-worktree-branch-project-worktree branch branch t))
+                     (user-error "Error: No branch checked out!"))
+                   (call-interactively #'magit-worktree-branch-project-worktree)))
          (local-devutil-file (f-join origin-path "src/apps/Main/DevPlugin.local.js"))
          (worktree-devutil-file (f-join path "src/apps/Main/DevPlugin.local.js")))
     (when (file-exists-p local-devutil-file)
