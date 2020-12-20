@@ -3751,6 +3751,43 @@ Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
   :m "Zk" #'+evil/case-kebab-lower))
 #+END_SRC
 
+***** Org Src Block
+
+Matches any block with ~BEGIN_~, e.g.: SRC blocks.
+
+#+BEGIN_SRC elisp
+(defun +evil-org/src-block ()
+  "Matches src blocks using org-element-context."
+  (-when-let* ((ctx (org-element-context))
+               (type (car ctx))
+               (ctx (cond
+                     ((equal type 'src-block) ctx)
+                     ((equal type 'example-block) ctx)
+                     ((equal type 'quote-block) ctx)
+                     ;; Inside quote blocks org-element-context matches the paragraphs
+                     ;; So we have to take the parent block to get the quote-block
+                     ((equal type 'paragraph)
+                      (-some->> ctx
+                        (nth 1)
+                        ((lambda (x) (doom-plist-get x :parent)))
+                        (--id-when (equal (car it) 'quote-block)))))))
+    ctx))
+
+(evil-define-text-object +evil-org-inner-src-block (count &optional beg end type)
+  "Select an org src/quote/example block object."
+  (evil-org-select-inner-element (+evil-org/src-block)))
+
+(evil-define-text-object +evil-org-an-src-block (count beg end type)
+  "An org object.
+Matches urls and table cells."
+  (evil-org-select-an-element (+evil-org/src-block)))
+
+(after! evil-org
+  (evil-define-key '(visual operator) evil-org-mode-map
+    "ib" #'+evil-org-inner-src-block
+    "ab" #'+evil-org-an-src-block))
+#+END_SRC
+
 **** Normal Bindings
 ***** Window navigation
 
