@@ -468,7 +468,7 @@ When universal-argument is passed, just commit the bundle"
 To commit call +MM|kits-package-update."
   (interactive)
   (-when-let* ((json-encoding-pretty-print t)
-               (file (->> (+git/modfied-files)
+               (file (->> (+git/modfied-files "master")
                           (--filter (string= (f-filename it) "package.json"))
                           (--map (f-join (doom-project-root) it))
                           (--map (list it (json-read-file it)))
