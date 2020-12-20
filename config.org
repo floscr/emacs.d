@@ -36,7 +36,6 @@ I often use my helper function [[file:autoload.org::*Template Literals][(templat
 
 ** General Packages
 *** Libraries
-
 **** noflet
 
 Since ~flet~ was deprecated, I'm using this for now.
@@ -112,6 +111,11 @@ Move to ivy candidate with =C-'=
 
 #+BEGIN_SRC elisp
 (package! dired-subtree)
+#+END_SRC
+*** Programming
+
+#+BEGIN_SRC elisp
+(package! edbi)
 #+END_SRC
 
 *** Etc
@@ -198,7 +202,6 @@ Inline Calculation
 #+BEGIN_SRC elisp
 (package! literate-calc-mode)
 #+END_SRC
-
 ** Overrides
 *** Doom Snippets
 
