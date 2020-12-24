@@ -50,7 +50,9 @@
  direnv
  (lookup
   +devdocs
-  +dictionary)
+  +docsets
+  +dictionary
+  +offline)
  eval
  editorconfig
  (magit +forge)
