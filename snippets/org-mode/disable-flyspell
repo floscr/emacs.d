@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Disable spelling mode header
+# key: dfs
+# --
+# -*- eval: (spell-fu-mode -1); -*-
