@@ -50,7 +50,6 @@
  direnv
  (lookup
   +devdocs
-  +docsets
   +dictionary)
  eval
  editorconfig
