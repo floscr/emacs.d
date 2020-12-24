@@ -1,3 +1,4 @@
+# -*- eval: (spell-fu-mode -1); -*-
 #+TITLE: Doom Emacs configuration
 #+AUTHOR: floscr
 #+PROPERTY: header-args :emacs-lisp :tangle yes :comments link
