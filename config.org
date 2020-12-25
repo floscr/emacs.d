@@ -3057,6 +3057,10 @@ For now only the toggle functionality is needed.
    magit-save-repository-buffers 'dontask
    magithub-clone-default-directory "~/Code/Repositories"
    git-commit-summary-max-length 120))
+
+(after! forge
+  :config
+  (setq forge-database-file (f-join doom-local-dir "forge-database.sqlite")))
 #+END_SRC
 
 **** Bindings
@@ -3175,6 +3179,7 @@ since this is much nicer then ~visual-line-mode~.
   :init
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   (setq nov-text-width 75)
+  (setq nov-save-place-file (f-join doom-local-dir "nov-places"))
   :config
   (progn
     (add-hook 'nov-mode-hook 'my-nov-config)))
