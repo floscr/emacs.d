@@ -50,6 +50,10 @@
 (package! edbi)
 ;; Programming:1 ends here
 
+;; [[file:~/.config/doom/config.org::*Cheat.sh][Cheat.sh:1]]
+(package! cheat-sh)
+;; Cheat.sh:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*Narrow Proced Buffers][Narrow Proced Buffers:1]]
 (package! proced-narrow)
 ;; Narrow Proced Buffers:1 ends here

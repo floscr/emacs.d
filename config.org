@@ -120,6 +120,12 @@ Move to ivy candidate with =C-'=
 #+END_SRC
 
 *** Etc
+**** Cheat.sh
+
+#+BEGIN_SRC elisp
+(package! cheat-sh)
+#+END_SRC
+
 **** Narrow Proced Buffers
 
 #+BEGIN_SRC elisp
@@ -1259,6 +1265,71 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** Cheat.sh
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package cheat-sh
+  :commands (cheat-sh)
+  :config
+  (setq cheat-sh-topic-mode-map
+        '((awk-mode . "awk")
+          (c++-mode . "cpp")
+          (c-mode . "c")
+          (clojure-mode . "clojure")
+          (clojurescript-mode . "clojure")
+          (dockerfile-mode . "docker")
+          (emacs-lisp-mode . "elisp")
+          (fish-mode . "fish")
+          (go-mode . "go")
+          (haskell-mode . "haskell")
+          (hy-mode . "hy")
+          (java-mode . "java")
+          (js-jsx-mode . "javascript")
+          (js-mode . "javascript")
+          (js-mode . "js")
+          (lisp-interaction-mode . "elisp")
+          (lisp-mode . "lisp")
+          (objc-mode . "objectivec")
+          (pike-mode . "pike")
+          (powershell-mode . "powershell")
+          (python-mode . "python")
+          (rust-mode . "rust")
+          (sh-mode . "bash")
+          (nim-mode . "nim"))))
+#+END_SRC
+**** Set Mode Hook
+
+#+BEGIN_SRC elisp
+(defun cheat-sh (thing)
+  "Look up THING on cheat.sh and display the result."
+  (interactive (list (cheat-sh-read "Lookup: ")))
+  (let ((result (cheat-sh-get thing)))
+    (if result
+        (let ((temp-buffer-window-setup-hook
+               (cons 'cheat-sh-mode-setup temp-buffer-window-show-hook)))
+          (with-temp-buffer-window "*cheat.sh*" nil 'help-window-setup
+            (with-current-buffer "*cheat.sh*"
+              (+cheat-sh/set-mode thing))
+            (princ result)))
+      (error "Can't find anything for %s on cheat.sh" thing))))
+
+(defun cheat-sh-mode-setup ()
+  "Set up the cheat mode for the current buffer."
+  (setq buffer-read-only nil))
+
+(defun +cheat-sh/set-mode (x)
+  (-when-let* ((lang
+                (-some->> x
+                  (s-split "/")
+                  (nth 0)))
+               (mode (--find (string= lang (cdr it)) cheat-sh-topic-mode-map))
+               (mode (car mode)))
+    (funcall mode)))
+#+END_SRC
+
+
 *** Edbi
 **** Bridge
 
