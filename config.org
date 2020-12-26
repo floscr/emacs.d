@@ -2570,7 +2570,13 @@ Widen can be restored with ~g~.
                 ("archives"
                  (extension "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
                 ("documents"
-                 (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub"))))))
+                 (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub")))))
+  (dired-filter-define created-today
+      "Show only files that are newer than today."
+    (:description "created-today")
+    (let ((case-fold-search nil))
+      (time-less-p (time-subtract (current-time) (* 60 60 24))
+                   (file-attribute-modification-time (file-attributes file-name))))))
 
 #+END_SRC
 
