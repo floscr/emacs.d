@@ -10,3 +10,4 @@ tmp/
 *.elc
 /modules/private/dired/+sidebar.el
 flycheck_config.el
+edbi-bridge.pl
