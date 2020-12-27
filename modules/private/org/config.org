@@ -178,6 +178,13 @@ All todo keywords are for general items.
 (setq org-log-into-drawer t)
 #+END_SRC
 
+**** Keep plain lists also folded
+
+#+BEGIN_SRC elisp
+(after! org
+  (setq org-cycle-include-plain-lists 'integrate))
+#+END_SRC
+
 *** Refile targets
 
 #+BEGIN_SRC elisp
