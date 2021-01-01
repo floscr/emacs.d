@@ -33,7 +33,7 @@
  :term
  eshell
  term
- vterm
+ ;; vterm
 
  :emacs
  (dired +icons)
