@@ -4548,57 +4548,81 @@ and then do my function.
 
 #+BEGIN_SRC elisp
 (defun +yank/dired-path ()
-  (if (--none? (eq (line-number-at-pos) it) '(1 2))
-      (dired-file-name-at-point)
-    dired-directory))
+  "Returns the current dired entry or the buffer directory."
+  (or (dired-file-name-at-point) dired-directory))
+
+(defun +yank/buffer-filename ()
+  "Returns the current buffers file name if possible."
+  (cond ((doom-dired-buffer-p (current-buffer)) (+yank/dired-path))
+        (buffer-file-name buffer-file-name)
+        (org-src-source-file-name org-src-source-file-name)
+        (t nil)))
+
+(defun +yank/buffer-path ()
+  "Returns the current buffers path."
+  (or (+yank/buffer-filename) default-directory))
 
 (defun +yank|filename ()
+  "Yank the buffer file name."
   (interactive)
-  (->> (if (eq major-mode 'dired-mode)
-           (+yank/dired-path)
-         (file-name-nondirectory buffer-file-name))
-       (+my/kill-and-message)))
+  (or
+   (-some->> (+yank/buffer-filename)
+     ;; When pointing at a directory at dired, I still take the directory
+     ((lambda (x) (if (f-file? x)
+                      (file-name-directory x)
+                    x)))
+     (+my/kill-and-message))
+   (user-error "Error: Not a file bufer!")))
 
 (defun +yank|base ()
+  "Yank the buffer files base name."
   (interactive)
-  (->> (if (eq major-mode 'dired-mode)
-           (+yank/dired-path)
-         buffer-file-name)
-       (file-name-base)
-       (+my/kill-and-message)))
+  (or
+   (-some->> (+yank/buffer-filename)
+     (file-name-base)
+     (+my/kill-and-message))
+   (user-error "Error: Not a file bufer!")))
 
 (defun +yank|directory ()
+  "Yank the buffer files directory."
   (interactive)
-  (->> (if (eq major-mode 'dired-mode)
-           (+yank/dired-path)
-         buffer-file-name)
-       (file-name-directory)
-       (+my/kill-and-message)))
+  (or
+   (-some->> (+yank/buffer-path)
+     (file-name-directory)
+     (+my/kill-and-message))
+   (user-error "Error: Not a file bufer!")))
 
 (defun +yank|path ()
+  "Yank the buffer files path."
   (interactive)
-  (->> (if (eq major-mode 'dired-mode)
-           (+yank/dired-path)
-         buffer-file-name)
-       (+my/kill-and-message)))
+  (or
+   (-some->> (+yank/buffer-path)
+     (+my/kill-and-message))
+   (user-error "Error: Not a file bufer!")))
 
 (defun +yank|relative-to-project ()
+  "Yank the buffer path relative to the projectile-project-root."
   (interactive)
-  (->> (if (eq major-mode 'dired-mode)
-           (+yank/dired-path)
-         buffer-file-name)
-       (f-full)
-       (s-replace (projectile-project-root) "")
-       (+my/kill-and-message)))
+  (or
+   (-some->> (+yank/buffer-path)
+     (f-full)
+     ((lambda (x)
+        (or
+         (->> (s-replace (projectile-project-root) "" x)
+              (-id-when #'s-present?))
+         x)))
+     (+my/kill-and-message))
+   (user-error "Error: Not a file bufer!")))
 
 (map!
-  :leader
-  (:prefix-map ("y" . "Yank")
-    :desc "filename"                        "f" #'+yank|filename
-    :desc "base"                            "b" #'+yank|base
-    :desc "directory"                       "d" #'+yank|directory
-    :desc "path"                            "p" #'+yank|path
-    :desc "relative to project"             "r" #'+yank|relative-to-project))
+ :leader
+ (:prefix-map ("y" . "Yank")
+  :desc "filename"            "f" #'+yank|filename
+  :desc "base"                "b" #'+yank|base
+  :desc "directory"           "d" #'+yank|directory
+  :desc "path"                "p" #'+yank|path
+  :desc "path"                "y" #'+yank|path
+  :desc "relative to project" "r" #'+yank|relative-to-project))
 #+END_SRC
 
 *** Local-Leader
