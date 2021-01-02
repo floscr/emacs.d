@@ -1265,6 +1265,29 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** writegood mode
+
+**** Config
+
+***** Disable doom defined hooks for writegood mode
+
+#+BEGIN_SRC elisp
+(use-package! writegood-mode
+  :hook 'nil)
+#+END_SRC
+
+**** Disable ~writegood-mode~ with ~spell-fu~ mode
+
+#+BEGIN_SRC elisp
+(defun +spell-fu/activate-writegood-mode-hook ()
+  "Toggle writegood mode with spell-fu mode."
+  (cond
+   (spell-fu-mode (writegood-mode 1))
+   (t (writegood-mode -1))))
+
+(add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
+#+END_SRC
+
 *** Cheat.sh
 
 **** Config
