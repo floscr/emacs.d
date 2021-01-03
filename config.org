@@ -53,6 +53,14 @@ Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
 #+END_SRC
 
+**** Systemd daemons
+
+Manage systemd from emacs
+
+#+BEGIN_SRC elisp
+(package! daemons)
+#+END_SRC
+
 *** Evil
 **** [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
 
@@ -1265,6 +1273,13 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** daemon
+
+#+BEGIN_SRC elisp
+(use-package daemons
+  :commands (daemons))
+#+END_SRC
+
 *** writegood mode
 
 **** Config

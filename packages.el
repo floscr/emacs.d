@@ -8,6 +8,10 @@
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
 ;; Udiskie:1 ends here
 
+;; [[file:~/.config/doom/config.org::*Systemd daemons][Systemd daemons:1]]
+(package! daemons)
+;; Systemd daemons:1 ends here
+
 ;; [[file:~/.config/doom/config.org::*[[https://github.com/tarao/evil-plugins\][Evil Plugin\]] provides some nice addons for Evil Mode][[[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode:1]]
 (package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
 ;; [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode:1 ends here
