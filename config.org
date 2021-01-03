@@ -2328,10 +2328,14 @@ Automatically revert dired buffers.
                    (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
           (make-directory directory-name t))))))
 #+END_SRC
-***** Sort by date
+***** Listing Switches / Sorting
+
+Adds ~+dired-default-listing-switches~ to reset the value.
 
 #+BEGIN_SRC elisp
-(setq dired-listing-switches "-ahl -t --group-directories-first")
+(defconst +dired-default-listing-switches
+  "-ahl -t --group-directories-first")
+(setq dired-listing-switches +dired-default-listing-switches)
 #+END_SRC
 
 **** Utils
@@ -2457,21 +2461,28 @@ The dired-line jumps at the end are used to jump the filename again.
 
 #+BEGIN_SRC elisp
 (defun +dired|toggle-sort (&optional arg)
-  "Toggle sorting but stay on the same line"
+  "Change sorting but stay on the same line."
   (interactive "P")
   (let ((pos (point)))
     (cond
+     ((eq arg 3)
+      (setq dired-listing-switches (symbol-value '+dired-default-listing-switches))
+      (setq dired-actual-switches (symbol-value '+dired-default-listing-switches))
+      (dired-sort-set-mode-line)
+      (revert-buffer))
      ((eq arg 2)
       (setq dired-listing-switches
-            (read-string "ls switches (must contain -l): " dired-listing-switches)))
+            (read-string "Global ls switches (must contain -l): " dired-listing-switches))
+      (setq dired-actual-switches (symbol-value 'dired-listing-switches))
+      (dired-sort-set-mode-line)
+      (revert-buffer))
      (arg
       (setq dired-actual-switches
-            (read-string "ls switches (must contain -l): " dired-actual-switches)))
-     (t
-      (goto-char pos)
-      (dired-sort-toggle-or-edit)
-      (dired-next-line 1)
-      (dired-previous-line 1)))))
+            (read-string "Buffer ls switches (must contain -l): " dired-actual-switches)))
+     (t (dired-sort-toggle-or-edit)))
+    (goto-char pos)
+    (dired-next-line 1)
+    (dired-previous-line 1)))
 #+END_SRC
 ***** Convert Images
 :PROPERTIES:
