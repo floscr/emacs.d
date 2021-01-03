@@ -1924,6 +1924,18 @@ Return the path of the file."
 (setq org-download-screenshot-method "flameshot gui --raw > %s")
 #+END_SRC
 
+**** Download image from clipboard
+
+#+BEGIN_SRC elisp
+(defun +org|attach-yank-image ()
+  "Instert the image from the clipboard as an attachment."
+  (interactive)
+  (let ((path (concat (make-temp-file "screenshot") ".png")))
+    (shell-command-to-string (t! "xclip -selection clipboard -target image/png -out > <<path>>"))
+    (+org/attach-file-and-insert-link path)))
+#+END_SRC
+
+
 *** Roam
 **** Config
 
@@ -2406,4 +2418,17 @@ I've mapped ~gr~ with ~evil-replace-with-register~ and doom tries to override th
   (map! :map evil-org-mode-map
         :n "gr" nil
         :n "gR" nil))
+#+END_SRC
+** Hacks
+*** Fix smart panes for org
+
+Doom [[file:~/.emacs.d/modules/lang/org/config.el::provide 'smartparens-org)][disables smartparens]] initial load, which breaks it entirely.
+For some reason ~(require 'smartparens-org)~ is not enough, so I hack around it by eval the file again.
+I also did not know how to find the package file, so I made it so it wont crash when the file doesn't exist.
+
+#+BEGIN_SRC elisp
+(after! (org smartparens)
+  (->> (f-join doom-local-dir "straight/repos/smartparens/smartparens-org.el")
+       (-id-when #'f-exists?)
+       (load)))
 #+END_SRC

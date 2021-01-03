@@ -606,7 +606,7 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
   (let ((entry `((file . ,(buffer-file-name))
                  (goto . ,(line-number-at-pos))
                  (name . ,(read-string "Bookmark Name: ")))))
-    (-some->> (+bookmarks/local/list)
+    (->> (+bookmarks/local/list)
       (-append entry)
       (json-encode)
       ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file))))))
