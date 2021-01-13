@@ -3434,10 +3434,9 @@ Then use ~]~ to navigate the sections
   (call-interactively #'magit-section-show-children))
 
 (map!
- (:after evil-magit
-   :map (magit-diff-mode-map)
-   :n "}" (cmd! (floscr:magit-jumpunfold-section 't))
-   :n "{" (cmd! (floscr:magit-jumpunfold-section))))
+ (:map magit-diff-mode-map
+  :nv "}" (cmd! (floscr:magit-jumpunfold-section 't))
+  :nv "{" (cmd! (floscr:magit-jumpunfold-section))))
 #+END_SRC
 
 ***** Time Machine Navigation
