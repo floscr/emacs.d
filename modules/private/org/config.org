@@ -1472,6 +1472,29 @@ With the =:keep-windows= property we can disable this functionality.
   :commands (+org-web-tools/read-url-at-point))
 #+END_SRC
 
+*** Archive Work Org Files in specific format
+
+For work it makes more sense to keep a monthly file with all the tasks.
+This way creating reports needs less processing power.
+
+#+BEGIN_SRC elisp
+(defadvice! +org/custom-archive-check (orig-fn &rest args)
+  "Archive work org files on a monthly basis"
+  :around '(org-archive-subtree
+            +org|archive-done-tasks
+            +org|visit-archive-file)
+  (let ((path
+         (cond ((eq buffer-name org-agenda-buffer-name)
+                (-some->> (org-get-at-bol 'org-marker)
+                  (marker-buffer)
+                  (buffer-file-name)))
+               (t buffer-file-name)))))
+  (if (f-ancestor-of? (f-join org-directory "Work") buffer-file-name)
+      (let ((org-archive-location (+org/custom-archive-dir-str)))
+        (apply orig-fn args))
+    (apply orig-fn args)))
+#+END_SRC
+
 ** Utils
 *** Get Frontmost chrome url
 
