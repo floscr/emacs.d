@@ -1484,15 +1484,18 @@ This way creating reports needs less processing power.
             +org|archive-done-tasks
             +org|visit-archive-file)
   (let ((path
-         (cond ((eq buffer-name org-agenda-buffer-name)
-                (-some->> (org-get-at-bol 'org-marker)
-                  (marker-buffer)
-                  (buffer-file-name)))
-               (t buffer-file-name)))))
-  (if (f-ancestor-of? (f-join org-directory "Work") buffer-file-name)
+         (cond
+          ((buffer-base-buffer) (buffer-file-name (buffer-base-buffer)))
+          ((string= (buffer-name) org-agenda-buffer-name)
+           (-some->> (org-get-at-bol 'org-marker)
+             (marker-buffer)
+             (buffer-file-name)))
+          (t buffer-file-name)))))
+  (if (f-ancestor-of? (f-join org-directory "Work") path)
       (let ((org-archive-location (+org/custom-archive-dir-str)))
         (apply orig-fn args))
     (apply orig-fn args)))
+
 #+END_SRC
 
 ** Utils
