@@ -483,7 +483,25 @@ To commit call +MM|kits-package-update."
     (f-write (concat (json-encode-alist json-alist) "\n") 'utf-8 path)
     (magit-stage-file path)))
 #+END_SRC
+*** Package Bump Commit
 
+#+BEGIN_SRC elisp
+(defun +magit|auto-commit-package-json ()
+  "Auto commit package json updates"
+  (interactive)
+  (-when-let ((package . version)
+              (-some->> '("git --no-pager show :package.json" "git --no-pager show HEAD:package.json")
+                (-map #'shell-command-to-string)
+                (-map
+                 (lambda (x)
+                   (let* ((json (json-read-from-string x))
+                          (deps (alist-get 'dependencies json))
+                          (dev-deps (alist-get 'devDependencies json)))
+                     (-concat deps dev-deps))))
+                (funcall (-applify '-difference))
+                (car)))
+    (magit-commit-create `("-m" ,(t! "Bump: <<package>>@<<version>>")))))
+#+END_SRC
 
 *** Build kits package
 
