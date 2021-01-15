@@ -1480,6 +1480,11 @@ For work it makes more sense to keep a monthly file with all the tasks.
 This way creating reports needs less processing power.
 
 #+BEGIN_SRC elisp
+(defun +org/month-archive-dir ()
+  "Path for an monthly archive location to be used with org-archive-location."
+  (interactive)
+  (concat ".archive/%s_archive-" (format-time-string "%Y%m" (current-time)) ".org_archive::"))
+
 (defadvice! +org/custom-archive-check (orig-fn &rest args)
   "Archive work org files on a monthly basis"
   :around '(org-archive-subtree
@@ -1492,11 +1497,11 @@ This way creating reports needs less processing power.
            (-some->> (org-get-at-bol 'org-marker)
              (marker-buffer)
              (buffer-file-name)))
-          (t buffer-file-name)))))
-  (if (f-ancestor-of? (f-join org-directory "Work") path)
-      (let ((org-archive-location (+org/custom-archive-dir-str)))
-        (apply orig-fn args))
-    (apply orig-fn args)))
+          (t buffer-file-name))))
+    (if (f-ancestor-of? (f-join org-directory "Work") path)
+        (let ((org-archive-location (+org/month-archive-dir)))
+          (apply orig-fn args))
+      (apply orig-fn args))))
 
 #+END_SRC
 
