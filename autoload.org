@@ -600,6 +600,12 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (-some--> (alist-get 'goto-bol item)
         (evil-first-non-blank)))))
 
+(defun +bookmarks/local/save (xs)
+  "Save an alist as json to the +bookmarks:local-bookmarks-file"
+  (->> xs
+       (json-encode)
+       ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file)))))
+
 (defun +bookmarks/find-bookmarks-other-window (x)
   "Open bookmark X in other window, used with ivy action 'j'."
   (+bookmarks/find-bookmarks (cdr x) :other-window? t))
@@ -611,14 +617,13 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
                  (name . ,(read-string "Bookmark Name: ")))))
     (->> (+bookmarks/local/list)
       (-append entry)
-      (json-encode)
-      ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file))))))
+      (+bookmarks/local/save))))
 
 (defun +bookmarks/local/kill (x)
   (->>
    (--remove (equalp (car (cdr x)) it) (+bookmarks/local/list))
-   (json-encode)
-   ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file)))))
+   (+bookmarks/local/save)))
+
 
 (defun +bookmarks/local/list ()
   (-some->> +bookmarks:local-bookmarks-file
