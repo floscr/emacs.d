@@ -624,6 +624,14 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
    (--remove (equalp (car (cdr x)) it) (+bookmarks/local/list))
    (+bookmarks/local/save)))
 
+(defun +bookmarks/local/rename (x)
+  (require 'a)
+  (-let ((item (car (cdr x))))
+    (-log (a-get (cdr item) :name))
+    (->>
+     (+bookmarks/local/list)
+     (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
+     (+bookmarks/local/save))))
 
 (defun +bookmarks/local/list ()
   (-some->> +bookmarks:local-bookmarks-file
@@ -650,5 +658,6 @@ If found, show an ivy window with the bookmarks"
   (ivy-set-actions
    '+bookmarks|find-bookmarks
    '(("j" +bookmarks/find-bookmarks-other-window "open in other window")
-     ("k" +bookmarks/local/kill "Remove"))))
+     ("k" +bookmarks/local/kill "Remove")
+     ("r" +bookmarks/local/rename "Rename"))))
 #+END_SRC
