@@ -369,7 +369,20 @@ Never blink the cursor, it's too distracting.
 
 #+BEGIN_SRC elisp
 (setq bookmark-save-flag nil)
-(setq bookmark-file nil)
+
+;; Can't set to nil as bookmarks are still set up to hooks
+;; Instead I'll keep it in this file which will be trashed on every reboot
+(setq bookmark-file "/tmp/emacs-bookmarks-file")
+#+END_SRC
+
+*** Default Browser
+
+Why does this not work out of the box?
+
+#+BEGIN_SRC elisp
+(pcase (getenv "BROWSER")
+    ("chromium" (setq browse-url-browser-function 'browse-url-chromium))
+    ("firefox" (setq browse-url-browser-function 'browse-url-firefox)))
 #+END_SRC
 
 ** Custom Functions & Modes
