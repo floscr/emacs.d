@@ -3715,10 +3715,16 @@ the projects cwd to find a file.
   (--find (s-match (concat (+workspace-current-name) "/$") it) projectile-known-projects))
 
 (defun +workspace|find-workspace-project-file ()
-"Projectile find file for the project named after the current workspace."
+  "Projectile find file for the project named after the current workspace."
   (interactive)
   (cl-letf (((symbol-function 'projectile-project-root) #'+workspace/workspace-project-root))
-      (projectile-find-file)))
+    (projectile-find-file)))
+
+(defun +workspace|workspace-project-vc ()
+  "Projectile find file for the project named after the current workspace."
+  (interactive)
+  (cl-letf (((symbol-function 'projectile-project-root) #'+workspace/workspace-project-root))
+    (magit-status)))
 #+END_SRC
 
 ***** New named workspace
@@ -4509,8 +4515,9 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("p" . "project")
-   :desc "Workspace Project Files" "P" #'+workspace|find-workspace-project-file
-   :desc "Project Bookmarks"       "RET" #'+bookmarks))
+  :desc "Workspace Project Files" "P" #'+workspace|find-workspace-project-file
+  :desc "Project VC"              "v" #'+workspace|workspace-project-vc
+  :desc "Project Bookmarks"       "RET" #'+bookmarks))
 #+END_SRC
 
 **** Search
@@ -4572,14 +4579,16 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("TAB" . "workspace")
-   :desc "Switch to"     "." #'+workspace/my-switch-to
-   :desc "Close others"  "o" #'+workspace|close-others
-   :desc "Create"        "c" #'+workspace/new-named
-   :desc "Rename"        "," #'+workspace/rename
-   :desc "Clone"         "C" (cmd!
-                              (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
-                              (message "Cloned current workspace %s" (+workspace-current-name)))
-   :desc "Switch to last workspace" "0"   #'+workspace/other))
+  :desc "Switch to"     "." #'+workspace/my-switch-to
+  :desc "Close others"  "o" #'+workspace|close-others
+  :desc "Create"        "c" #'+workspace/new-named
+  :desc "Rename"        "," #'+workspace/rename
+  :desc "Project Files" "p" #'+workspace|find-workspace-project-file
+  :desc "Project VC"    "v" #'+workspace|workspace-project-vc
+  :desc "Clone"         "C" (cmd!
+                             (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
+                             (message "Cloned current workspace %s" (+workspace-current-name)))
+  :desc "Switch to last workspace" "0"   #'+workspace/other))
 #+END_SRC
 
 **** Yank
