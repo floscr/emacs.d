@@ -1654,7 +1654,7 @@ which I name after the matching url.
    ((fn . org-capture-goto-last-stored)
     (name . "Capture: Last Stored Marker"))))
 #+END_SRC
-   
+
 **** Utils
 ***** Main Bookmarks Function
 
@@ -1735,7 +1735,7 @@ The setup function
 
 and the hooks:
 
-#+BEGIN_SRC elisp 
+#+BEGIN_SRC elisp
 (add-hook! 'writeroom-mode-hook #'+writeroom/writeroom-setup)
 #+END_SRC
 
