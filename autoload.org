@@ -306,6 +306,15 @@ shuffling is done in place."
   (f-join path x))
 #+END_SRC
 
+*** -f-tildify
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun f-tildify (path)
+  "Replace the HOME directory in path"
+  (s-replace-regexp (t! "^<<(getenv \"HOME\")>>") "~" path))
+#+END_SRC
+
 ** String
 *** String Match
 
