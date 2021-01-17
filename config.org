@@ -1436,7 +1436,6 @@ but I dont want them added to my ~projectile-known-projects~.
     (funcall mode)))
 #+END_SRC
 
-
 *** Edbi
 **** Bridge
 
@@ -2788,7 +2787,6 @@ Custom eshell aliases.
   :after (js2-mode)
   :hook (js2-mode . jest-minor-mode))
 #+END_SRC
-
 
 *** Git Lens
 
