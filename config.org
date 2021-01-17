@@ -729,16 +729,17 @@ Alternatives I've used:
   :keymap +ly-mode-map)
 
 (map! :map +ly-mode-map
-      :n "gj" #'evil-next-line
-      :n "gk" #'evil-previous-line
-      :n "M-j" #'+ly|forward-line
-      :n "M-k" #'+ly|backward-line
-      :n "M-u" #'+ly|up-atom
-      :n "M-f" #'+ly|forward-atom
-      :n "M-b" #'+ly|backward-atom
-      :n "M-l" #'+ly|forward-brace
-      :n "M-h" #'+ly|backward-brace
-      :n "M-o" #'symex-open-line-after
+      :n "gj"     #'evil-next-line
+      :n "gk"     #'evil-previous-line
+      :n "M-j"    #'+ly|forward-line
+      :n "M-k"    #'+ly|backward-line
+      :n "M-u"    #'+ly|up-atom
+      :n "M-f"    #'+ly|forward-atom
+      :n "M-b"    #'+ly|backward-atom
+      :n "M-l"    #'+ly|forward-brace
+      :n "M-h"    #'+ly|backward-brace
+      :n "M-o"    #'symex-open-line-after
+      :ni "<C-return>" #'+ly|add-atom
       :n "M-RET" (cmd!
                   (parinfer-toggle-mode)
                   (parinfer-lispy:newline)
@@ -823,6 +824,30 @@ Alternatives I've used:
   (search-forward-regexp "\s*[^\s]" nil t)
   (backward-char 1))
 #+END_SRC
+***** List Modification
+
+****** Add to list
+
+#+BEGIN_SRC elisp
+(defun +ly/inside-string? ()
+  "Returns non-nil if inside string, else nil.
+Result depends on syntax table's string quote character."
+  (nth 3 (syntax-ppss)))
+
+(defun +ly|add-atom (&optional same-line?)
+  "Add atom in the current sexp. If the cursor is under a string match the type and insert another string."
+  (interactive "P")
+  (let ((was-parinfer-list-mode (eq 'paren parinfer--mode)))
+    (up-list 1 t)
+    (unless same-line?
+      (parinfer-lispy:newline))
+    (when same-line? (insert " "))
+    (cond ((+ly/inside-string?)
+           (insert (t! "\"\""))
+           (backward-char 1)))
+    (evil-insert-state)))
+#+END_SRC
+
 **** Hydra
 
 #+BEGIN_SRC elisp
