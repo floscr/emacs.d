@@ -1311,6 +1311,20 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** projectile
+**** Ignored Projects
+
+Dont add packages inside ~~.emacs.d~ to projectile, as I often browse the source for a package,
+but I dont want them added to my ~projectile-known-projects~.
+
+#+BEGIN_SRC elisp
+(use-package! projectile
+  :init
+  (setq projectile-ignored-projects '("~/"
+                                      "/tmp"
+                                      "~/.emacs.d/.local/straight/repos/")))
+#+END_SRC
+
 *** daemon
 
 #+BEGIN_SRC elisp
