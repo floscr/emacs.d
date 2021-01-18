@@ -722,6 +722,7 @@ Alternatives I've used:
 **** Minor Mode
 
 #+BEGIN_SRC elisp
+(set-frame-parameter nil 'internal-border-width 15)
 (defvar +ly-mode-map (make-sparse-keymap))
 
 (define-minor-mode +ly-mode
@@ -1334,7 +1335,8 @@ but I dont want them added to my ~projectile-known-projects~.
                                          "~/Code/Repositories"
                                          "~/Code/Projects"
                                          "~/Code/Tools"
-                                         "~/Code/Meisterlabs"))
+                                         "~/Code/Meisterlabs"
+                                         "~/Code/Meisterlabs/mindmeister-web/.worktrees"))
   :config
   ;; Auto discover when running switch project for the first time
   (add-transient-hook! 'counsel-projectile-switch-project
