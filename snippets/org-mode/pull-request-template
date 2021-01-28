@@ -18,15 +18,6 @@ $0
 
 *Describe technical (nontrivial / non-obvious) parts of your code*
 
-*Side effects*
-
-# Server deploy required?
-# Desktop apps?
-# MS Teams app?
-# Onboarding?
-# Backwards compatibility?
-# Performance sensitive changes?
-
 ** Testing
 
 *How to test this branch? What to consider when testing the branch, eg.
@@ -36,11 +27,10 @@ browser/OS?*
 
 ** Resources
 
-[Include the link to related Task if available.]
-
-[Include links to Zeplin, Google Doc specs, or other resources to
-provide context.]
+Task:
 
 ** Assets
 
-[Include screenshots/videos if it makes reviewing easier.]
+*Before*
+
+*After*
