@@ -384,6 +384,11 @@ Why does this not work out of the box?
     ("chromium" (setq browse-url-browser-function 'browse-url-chromium))
     ("firefox" (setq browse-url-browser-function 'browse-url-firefox)))
 #+END_SRC
+*** Authentication
+
+#+BEGIN_SRC elisp
+(add-to-list 'auth-sources "~/.config/gnupg/.authinfo.gpg")
+#+END_SRC
 
 ** Custom Functions & Modes
 *** Unfill Paragraph
