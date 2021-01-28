@@ -689,6 +689,7 @@ Disable for certain modes (terminal & ivy) where the window is to small.
     ("^\\*helpful command" :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
     ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
     ("^\\*jest" :select nil)
+    ("^\\*projectile-files-errors" :ignore t)
     ("^\\*elfeed-entry" :modeline t :ttl nil)))
 #+END_SRC
 
