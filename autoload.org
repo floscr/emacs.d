@@ -548,18 +548,18 @@ DISPLAY is a display name, frame or terminal, as in
   "Adjust the UI to the current attached display."
   (interactive)
   (cond
-   ((string= system-name "mbair")
+   ((string= (system-name) "mbair")
     ;; Not actually a retina display, but this looks best
     (+ui/adjust-font 13 5 "Fira Code Retina"))
-   ((string= system-name "Florians-iMac.local")
+   ((string= (system-name) "Florians-iMac.local")
     (+ui/adjust-font 14 10 "Menlo"))
-   ((string= system-name "thinknix")
+   ((string= (system-name) "thinknix")
     (if (string= (+ui/active-display-name) "eDP1")
         ;; Internal Screen
         (+ui/adjust-font 15 7 "Fira Code")
       ;; HiDPI External
       (+ui/adjust-font 18 8 "Fira Code Retina")))
-   ((string= system-name "Florians-MacBook-Air.local")
+   ((string= (system-name) "Florians-MacBook-Air.local")
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
 
