@@ -738,6 +738,19 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 )
 #+END_SRC
+**** Polybar clock display
+
+#+BEGIN_SRC elisp
+(defun +org/org-clock-polybar-status ()
+  "Status for the polybar org clock module."
+  (if (org-clocking-p)
+      (->>
+       (org-clock-get-clock-string)
+       (substring-no-properties)
+       (s-prepend ""))
+    -1))
+#+END_SRC
+
 *** Tables
 **** Copy Table Field
 
