@@ -541,7 +541,12 @@ Mostly used to edit the macro registers ~q~.
 *** Frame padding
 
 #+BEGIN_SRC elisp
-(set-frame-parameter nil 'internal-border-width 15)
+(add-hook! '(window-setup-hook after-make-frame-functions)
+  (defun +ui/init-frame-ui (&optional frame)
+    "Re-enable menu-bar-lines in GUI frames."
+    (when-let (frame (or frame (selected-frame)))
+      (when (display-graphic-p frame)
+        (set-frame-parameter frame 'internal-border-width 15)))))
 #+END_SRC
 
 *** System specific window modifications
