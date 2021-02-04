@@ -221,7 +221,7 @@ Inline Calculation
 *** Doom Snippets
 
 #+BEGIN_SRC elisp
-(package! doom-snippets :disable t)
+(package! doom-snippets :ignore t)
 (package! my-doom-snippets
   :recipe (:host github
            :repo "floscr/doom-snippets"
