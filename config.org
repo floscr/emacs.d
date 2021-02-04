@@ -928,6 +928,43 @@ Saving and committing keeps the indentation in the source buffer.
       (+indirect-indent-mode 1)
       (setq +indirect-indent indent))))
 #+END_SRC
+*** Scanning
+
+#+BEGIN_SRC elisp :tangle no
+(defvar +scan:scan-file nil
+  "The main file to store all scans")
+(setq +scan:scan-file "~/Documents/Scans/Scans.org")
+
+(defun +scan|scan-document ()
+  "Scan Document"
+  (interactive)
+  (let ((org-scan-path (f-expand +scan:scan-file)))
+    (find-file org-scan-path)
+    (goto-char (point-max))
+    (newline)
+    (goto-char (point-max))
+    (yas/insert-by-name "Scan Template")
+    (+org|add-created-property)
+    (let ((marker (point))
+          (org-attach-id-dir "./.attach")
+          (org-attach-directory "./.attach")
+          (org-attach-dir-relative t))
+      (deferred:$
+        (deferred:process "scan")
+        (deferred:nextc it
+          `(lambda (x)
+             (save-excursion
+               (find-file ,org-scan-path)
+               (goto-char ,marker)
+               (let* ((old-path
+                       (->> x
+                            (s-split "\n")
+                            (-butlast)
+                            (-last-item)))
+                      (new-path (expand-file-name (org-download--fullname old))))))))))))
+#+END_SRC
+
+
 ** Language Config
 *** Javascript
 **** Config
