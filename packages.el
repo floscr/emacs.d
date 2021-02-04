@@ -111,7 +111,7 @@
 ;; Literate Calc Mode:1 ends here
 
 ;; [[file:config.org::*Doom Snippets][Doom Snippets:1]]
-(package! doom-snippets :disable t)
+(package! doom-snippets :ignore t)
 (package! my-doom-snippets
   :recipe (:host github
            :repo "floscr/doom-snippets"
