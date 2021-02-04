@@ -750,6 +750,8 @@ Alternatives I've used:
       :n "M-b"    #'+ly|backward-atom
       :n "M-l"    #'+ly|forward-brace
       :n "M-h"    #'+ly|backward-brace
+      :n "M-,"    #' symex-shift-backward
+      :n "M-."    #'symex-shift-forward
       :n "M-o"    #'symex-open-line-after
       :ni "<C-return>" #'+ly|add-atom
       :n "M-RET" (cmd!
