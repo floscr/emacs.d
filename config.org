@@ -718,7 +718,7 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 (setq x-underline-at-descent-line nil)
 #+END_SRC
 
-** Features
+** Features / Custom Packages
 *** Lisp Navigation =ly=
 
 A navigation system for lisp languages that I'm comfortable with,
