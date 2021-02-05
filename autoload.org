@@ -630,7 +630,7 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 
 (defun +bookmarks/local/kill (x)
   (->>
-   (--remove (equalp (car (cdr x)) it) (+bookmarks/local/list))
+   (--remove (cl-equalp (car (cdr x)) it) (+bookmarks/local/list))
    (+bookmarks/local/save)))
 
 (defun +bookmarks/local/rename (x)
