@@ -267,14 +267,18 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                  :children
                  (("Task"
                    :keys "t")
+                  ("Backlog Task"
+                   :file ,(+org/expand-org-file-name "Main/gtd.org")
+                   :headline "GTD"
+                   :keys "b")
                   ("Chrome Window"
-                    :keys "c"
-                    :title "%(+wm/last-chrome-window-org-link)")
+                   :keys "c"
+                   :title "%(+wm/last-chrome-window-org-link)")
                   ("Reading List"
-                    :keys "r"
-                    :title "%(+wm/last-chrome-window-org-link)"
-                    :headline "Reading List"
-                    :file +org:reading-list-file)
+                   :keys "r"
+                   :title "%(+wm/last-chrome-window-org-link)"
+                   :headline "Reading List"
+                   :file +org:reading-list-file)
                   ("Elfeed"
                    :keys "e"
                    :children
@@ -304,27 +308,27 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                               "%?"
                               "** Ingredients"))
                   ("Work:"
-                    :keys "w"
-                    :file ,(f-join org-directory "Work/work.org")
-                    :headline "GTD"
-                    :children
-                    (("Task"
-                      :title "%?"
-                      :keys "t")
-                     ("Task (Chrome)"
-                      :keys "c"
-                      :title "%(+wm/last-chrome-window-org-link-formatted)")
-                     ("Job Application (Chrome)"
-                      :keys "j"
-                      :title "%(+wm/last-chrome-window-org-link-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
-                     ("Meeting (Chrome)"
-                      :keys "m"
-                      :title "%(+wm/last-chrome-window-org-link-formatted) :MEETING:")
-                     ("Review (Chrome)"
-                      :keys "r"
-                      :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
+                   :keys "w"
+                   :file ,(f-join org-directory "Work/work.org")
+                   :headline "GTD"
+                   :children
+                   (("Task"
+                     :title "%?"
+                     :keys "t")
+                    ("Task (Chrome)"
+                     :keys "c"
+                     :title "%(+wm/last-chrome-window-org-link-formatted)")
+                    ("Job Application (Chrome)"
+                     :keys "j"
+                     :title "%(+wm/last-chrome-window-org-link-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
+                    ("Meeting (Chrome)"
+                     :keys "m"
+                     :title "%(+wm/last-chrome-window-org-link-formatted) :MEETING:")
+                    ("Review (Chrome)"
+                     :keys "r"
+                     :title "%(+wm/last-chrome-window-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
                 ("Bookmarks"
-                 :keys "b"
+                 :keys "p"
                  :file +org:bookmarks-file
                  :headline "Bookmarks"
                  :template ("* %(nth 0 (+wm/last-chrome-window-url-title))"
