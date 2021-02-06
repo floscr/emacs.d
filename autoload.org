@@ -539,10 +539,10 @@ DISPLAY is a display name, frame or terminal, as in
 
 (defun +ui/active-display-name ()
   (interactive)
-  (-some-->
-   (shell-command-to-string "xrandr | grep \"connected primary\"")
-   (s-match "^\\w+" it)
-   car))
+  (-some->> (shell-command-to-string "xrandr | grep \"connected primary\"")
+    (s-split " ")
+    (nth 0)
+    (s-replace "-" "")))
 
 (defun +ui|adjust-ui-to-display ()
   "Adjust the UI to the current attached display."
