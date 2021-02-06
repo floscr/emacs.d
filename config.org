@@ -1535,9 +1535,7 @@ I mainly changed the function marking helper.
 *** js-import
 
 #+BEGIN_SRC elisp
-(use-package! js-import
-  :config
-  (put 'js-import-alias-map 'safe-local-variable #'listp))
+(put 'js-import-alias-map 'safe-local-variable (lambda (x) t))
 #+END_SRC
 
 *** projectile
