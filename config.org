@@ -1113,7 +1113,7 @@ console.log(`${foo}`)
 Stolen from the vscode extension: [[https://github.com/dannyconnell/vscode-split-html-attributes][dannyconnell/vscode-split-html-attributes]]
 I don't want to translate this to elisp, and js works as well.
 
-#+BEGIN_SRC js :tangle "split-join-tag.js"
+#+BEGIN_SRC js :tangle "./.cache/split-join-tag.js"
 const useSpacesForTabs = true;
 const tabSize = 4;
 const sortOrder = [];
@@ -1261,7 +1261,7 @@ console.log(result)
           (buffer-substring-no-properties (region-beginning) (region-end))
           (s-replace "\n" "\\n"))))
     (->>
-     (shell-command-to-string (t! "node <<doom-private-dir>>/split-join-tag.js  $'<<input>>'"))
+     (shell-command-to-string (t! "node <<doom-private-dir>>/.cache/split-join-tag.js  $'<<input>>'"))
      (insert))))
 #+END_SRC
 
