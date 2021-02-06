@@ -4753,20 +4753,21 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("f" . "file")
-   :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
-   (:prefix-map ("g" . "goto")
-    :desc "Drive"          "/" #'+ivy|counsel-mounted-drives
-    :desc "Desktop"        "D" (cmd! (find-file "~/Desktop"))
-    :desc "Code"           "c" (cmd! (find-file "~/Code"))
-    :desc "Last captured"  "c" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
-    :desc "Downloads"      "d" (cmd! (find-file "~/Downloads"))
-    :desc "Elfeed"         "e" (cmd! (find-file (car rmh-elfeed-org-files)))
-    :desc "Music"          "m" (cmd! (find-file "~/Media/Music"))
-    :desc "Project Root"   "p" (cmd! (find-file (projectile-project-root)))
-    :desc "Last refiled"   "r" (cmd! (org-refile-goto-last-stored))
-    :desc "Tmp"            "t" (cmd! (find-file "/tmp"))
-    :desc "Home"           "h" (cmd! (find-file "~"))
-    :desc "Home"           "h" (cmd! (find-file "~")))))
+  :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
+  (:prefix-map ("g" . "goto")
+   :desc "Drive"          "/" #'+ivy|counsel-mounted-drives
+   :desc "Desktop"        "D" (cmd! (find-file "~/Desktop"))
+   :desc "Code"           "c" (cmd! (find-file "~/Code"))
+   :desc "Last captured"  "c" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
+   :desc "Downloads"      "d" (cmd! (find-file "~/Downloads"))
+   :desc "Elfeed"         "e" (cmd! (find-file (car rmh-elfeed-org-files)))
+   :desc "Scans"          "s" (cmd! (find-file (f-dirname (f-expand +scan:scan-file))))
+   :desc "Music"          "m" (cmd! (find-file "~/Media/Music"))
+   :desc "Project Root"   "p" (cmd! (find-file (projectile-project-root)))
+   :desc "Last refiled"   "r" (cmd! (org-refile-goto-last-stored))
+   :desc "Tmp"            "t" (cmd! (find-file "/tmp"))
+   :desc "Home"           "h" (cmd! (find-file "~"))
+   :desc "Home"           "h" (cmd! (find-file "~")))))
 #+END_SRC
 
 **** Git
