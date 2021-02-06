@@ -1,3 +1,5 @@
+;; -*- no-byte-compile: t; -*-
+
 ;; [[file:config.org::*noflet][noflet:1]]
 (package! noflet)
 ;; noflet:1 ends here
@@ -128,5 +130,3 @@
 (package! lsp-ui :disable t)
 (package! merlin-eldoc :disable t)
 ;; Remove those annoying LSP interface plugins:1 ends here
-
-;; -*- no-byte-compile: t; -*-
