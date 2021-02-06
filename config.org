@@ -930,21 +930,27 @@ Saving and committing keeps the indentation in the source buffer.
 #+END_SRC
 *** Scanning
 
-#+BEGIN_SRC elisp :tangle no
+#+BEGIN_SRC elisp
 (defvar +scan:scan-file nil
   "The main file to store all scans")
 (setq +scan:scan-file "~/Documents/Scans/Scans.org")
 
+(defun +scan/open-file ()
+  "Function docstring"
+  (interactive)
+  (find-file (f-expand +scan:scan-file))
+  (goto-char (point-max))
+  (newline)
+  (goto-char (point-max))
+  (yas/insert-by-name "Scan Template")
+  (+org|add-created-property))
+
 (defun +scan|scan-document ()
   "Scan Document"
   (interactive)
+  (require 'org-download)
   (let ((org-scan-path (f-expand +scan:scan-file)))
-    (find-file org-scan-path)
-    (goto-char (point-max))
-    (newline)
-    (goto-char (point-max))
-    (yas/insert-by-name "Scan Template")
-    (+org|add-created-property)
+    (+scan/open-file)
     (let ((marker (point))
           (org-attach-id-dir "./.attach")
           (org-attach-directory "./.attach")
@@ -961,7 +967,15 @@ Saving and committing keeps the indentation in the source buffer.
                             (s-split "\n")
                             (-butlast)
                             (-last-item)))
-                      (new-path (expand-file-name (org-download--fullname old))))))))))))
+                      (new-path (expand-file-name (org-download--fullname old-path))))
+                 (copy-file old-path new-path)
+                 (org-set-property "DOCUMENT" (funcall org-download-link-format-function new-path))))))))))
+
+(defun +scan|dired-attach-document ()
+  "Function docstring"
+  (interactive)
+  (let ((old-path (->> (dired-file-name-at-point)
+                       (f-expand))))))
 #+END_SRC
 
 
