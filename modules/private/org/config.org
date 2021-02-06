@@ -2352,9 +2352,9 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
       (:prefix-map ("y" . "Yank")
-       :desc "Link" "l" (cmd! (+my/kill-and-message (+org|link-from-point)))
-       :desc "Url" "u" (cmd! (+my/kill-and-message (+org|link-url-from-point)))
-       :desc "Title" "t" (cmd! (+my/kill-and-message (+org|link-title-from-point))))
+       :desc "Link" "l" #'+org|copy-entire-link
+       :desc "Url" "u" #'+org|copy-link-url
+       :desc "Title" "t" #'+org|copy-link-title)
 
       (:prefix-map ("C" . "Cut")
        :desc "Item" "C" 'org-cut-subtree
