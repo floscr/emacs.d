@@ -931,26 +931,30 @@ Saving and committing keeps the indentation in the source buffer.
 *** Scanning
 
 #+BEGIN_SRC elisp
-(defvar +scan:scan-file nil
-  "The main file to store all scans")
-(setq +scan:scan-file "~/Documents/Scans/Scans.org")
+(defvar +docs:dir nil
+  "The main directory to store the docs in.")
+(defvar +docs:index-file nil
+  "The main file to store all scans.")
 
-(defun +scan/open-file ()
-  "Function docstring"
+(setq +docs:dir (f-expand "~/Documents/Scans"))
+(setq +docs:index-file (f-join +docs:dir "Scans.org"))
+
+(defun +docs/add-entry ()
+  "Adds an entry in the main index file."
   (interactive)
-  (find-file (f-expand +scan:scan-file))
+  (find-file (f-expand +docs:index-file))
   (goto-char (point-max))
   (newline)
   (goto-char (point-max))
   (yas/insert-by-name "Scan Template")
   (+org|add-created-property))
 
-(defun +scan|scan-document ()
-  "Scan Document"
+(defun +docs|scan-document ()
+  "Scan a document and attach it to a new entry in the main docs file."
   (interactive)
   (require 'org-download)
-  (let ((org-scan-path (f-expand +scan:scan-file)))
-    (+scan/open-file)
+  (let ((org-scan-path (f-expand +docs:index-file)))
+    (+docs/add-entry)
     (let ((marker (point))
           (org-attach-id-dir "./.attach")
           (org-attach-directory "./.attach")
@@ -971,7 +975,7 @@ Saving and committing keeps the indentation in the source buffer.
                  (copy-file old-path new-path)
                  (org-set-property "DOCUMENT" (funcall org-download-link-format-function new-path))))))))))
 
-(defun +scan|dired-attach-document ()
+(defun +docs|dired-attach-document ()
   "Function docstring"
   (interactive)
   (let ((old-path (->> (dired-file-name-at-point)
@@ -4761,7 +4765,7 @@ and then do my function.
    :desc "Last captured"  "c" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
    :desc "Downloads"      "d" (cmd! (find-file "~/Downloads"))
    :desc "Elfeed"         "e" (cmd! (find-file (car rmh-elfeed-org-files)))
-   :desc "Scans"          "s" (cmd! (find-file (f-dirname (f-expand +scan:scan-file))))
+   :desc "Scans"          "s" (cmd! (find-file (f-dirname (f-expand +docs:index-file))))
    :desc "Music"          "m" (cmd! (find-file "~/Media/Music"))
    :desc "Project Root"   "p" (cmd! (find-file (projectile-project-root)))
    :desc "Last refiled"   "r" (cmd! (org-refile-goto-last-stored))
