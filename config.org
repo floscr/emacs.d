@@ -1518,6 +1518,14 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** js-import
+
+#+BEGIN_SRC elisp
+(use-package! js-import
+  :config
+  (put 'js-import-alias-map 'safe-local-variable #'listp))
+#+END_SRC
+
 *** projectile
 **** Ignored Projects
 
