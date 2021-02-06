@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Scan Template
+# --
+** $0
+:PROPERTIES:
+:END:
