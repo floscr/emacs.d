@@ -3049,7 +3049,11 @@ Custom eshell aliases.
 #+BEGIN_SRC elisp
 (use-package! jest
   :after (js2-mode)
-  :hook (js2-mode . jest-minor-mode))
+  :hook (js2-mode . jest-minor-mode)
+  :config
+  (set-popup-rule! "^\\*jest\\*"
+    :side 'right
+    :select nil :quit 'current :ttl nil))
 #+END_SRC
 
 *** Git Lens
