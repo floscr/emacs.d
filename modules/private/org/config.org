@@ -806,7 +806,7 @@ Set the active state when clocking in.
     (ivy-read
      "Query: "
      #'(lambda (input)
-         (let ((query (org-ql--plain-query input)))
+         (let ((query (org-ql--query-string-to-sexp input)))
            (when query
              (ignore-errors
                (org-ql-select files query
