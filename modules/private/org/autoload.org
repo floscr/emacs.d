@@ -243,9 +243,13 @@ I disable posframe, since it doesn't go beyond the X Window.
 (defun +org-capture|my-open-frame ()
   "Open capture, adjust display, disable posframe."
   (interactive)
-  (+ui|adjust-ui-to-display)
   (+org-capture/open-frame)
   (ivy-posframe-mode -1))
+
+(add-hook! 'org-capture-after-finalize-hook
+  (defun +org-capture/cleanup ()
+    "Reenable posframe when quitting the capture window"
+    (ivy-posframe-mode 1)))
 #+END_SRC
 
 ** Create timestamp
