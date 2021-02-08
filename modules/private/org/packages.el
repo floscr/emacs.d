@@ -12,7 +12,7 @@
 ;; Edit Comments in Org Src Buffers
 (package! poporg)
 ;; Query org items
-(package! org-ql :recipe (:host github :repo "alphapapa/org-ql"))
+(package! org-ql)
 ;; Async execute src blocks
 (package! ob-async)
 ;; Query graphql
