@@ -194,6 +194,11 @@ e.g.: Agenda + Splits
 (after! org
   (setq org-cycle-include-plain-lists 'integrate))
 #+END_SRC
+**** Effort
+
+#+BEGIN_SRC elisp
+(setq org-columns-default-format "%60ITEM(Task) %TODO %6Effort(Estim){:}  %6CLOCKSUM(Clock) %TAGS")
+#+END_SRC
 
 *** Refile targets
 
