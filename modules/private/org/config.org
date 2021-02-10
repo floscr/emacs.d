@@ -1278,6 +1278,17 @@ Known Issues:
       :desc "Show original" "+" #'+org-indirect/show-original)
 #+END_SRC
 
+**** Advices
+***** Close window after refiling
+
+#+BEGIN_SRC elisp
+(defadvice! +org/org-refile-close-indirect-window (&rest _)
+  "Close indirect buffer windows after refiling them."
+  :after '(org-refile)
+  (when (+org-indirect-window-mode)
+    (kill-buffer-and-window)))
+#+END_SRC
+
 **** Functions
 ***** Main
 
@@ -1363,6 +1374,7 @@ For example when archiving a task, there would be an empty window left over."
   (interactive "P")
   (+org-indirect|narrow-subtree-indirect #'org-agenda-switch-to (not arg)))
 #+END_SRC
+
 ***** Inserting New Items
 
 I want to create items directly from the org agenda.
