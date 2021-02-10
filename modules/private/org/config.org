@@ -2426,7 +2426,7 @@ Set my preferred clipboard paste method to ~xclip~.
        :desc "To GTD"             "g" (cmd! (+org/agenda-refile "Main/gtd.org" "GTD"))
        :desc "To Reading List"    "r" (cmd! (+org/agenda-refile "Main/reading-list.org" "Reading List"))
        :desc "To shoppping list"  "s" (cmd! (+org/agenda-refile "Main/shoppinglist.org" "Supermarket"))
-       :desc "To Work"            "W" (cmd! (+org/agenda-refile "Work/work.org" "Work Todos"))))
+       :desc "To Work"            "W" (cmd! (+org/agenda-refile "Work/work.org" "GTD"))))
 #+END_SRC
 
 #+RESULTS:
