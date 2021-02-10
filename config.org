@@ -632,6 +632,14 @@ Switch the highlight.
 '(mu4e-highlight-face :inherit mu4e-unread-face)
 #+END_SRC
 
+***** Org Mode
+
+Remove the ugly grey background
+
+#+BEGIN_SRC elisp
+'(org-column :background nil)
+#+END_SRC
+
 ***** Function End
 
 #+BEGIN_SRC elisp
