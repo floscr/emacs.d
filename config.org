@@ -3901,7 +3901,7 @@ brew cask install font-liberation-sans
   :commands (rainbow-mode))
 #+END_SRC
 
-*** Smerge Mode
+*** Magit Smerge Mode
 **** Fix Colors
 
 #+BEGIN_SRC elisp
