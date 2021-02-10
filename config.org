@@ -3053,6 +3053,7 @@ Custom eshell aliases.
   :config
   (set-popup-rule! "^\\*jest\\*"
     :side 'right
+    :size 0.5
     :select nil :quit 'current :ttl nil))
 #+END_SRC
 
