@@ -623,7 +623,6 @@ Remove the rainbow colors from dired.
 `(diredfl-dir-name :foreground "#2DADF2")
 #+END_SRC
 
-
 ***** Mu4E
 
 Switch the highlight.
