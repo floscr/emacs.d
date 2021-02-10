@@ -754,6 +754,26 @@ Set the active state when clocking in.
        (s-prepend ""))
     -1))
 #+END_SRC
+**** Open Link
+
+#+BEGIN_SRC elisp
+(defun +org|clocked-visit-link ()
+  "Visit a link in the currently clocked task."
+  (interactive)
+  (let* ((buffer (save-window-excursion (+org-indirect|narrow-subtree-indirect #'org-clock-goto nil)))
+         (content (with-current-buffer buffer (buffer-substring-no-properties (point-min) (point-max))))
+         (links (s-match-strings-all org-bracket-link-regexp content))
+         (items (-map (lambda (x)
+                        (-let* (((_ title link) x)
+                                (item (if (string= title link)
+                                          link
+                                        (t! "<<title>>\n<<link>>"))))
+                          (list (t! "<<item>>\n") link))) links)))
+    (kill-buffer buffer)
+    (ivy-read "Open Link: " items
+              :action (lambda (x)
+                        (browse-url (car x))))))
+#+END_SRC
 
 *** Tables
 **** Copy Table Field
@@ -2335,6 +2355,7 @@ Set my preferred clipboard paste method to ~xclip~.
    :desc "Goto Current"             "g"   #'counsel-org-clock-history
    :desc "Resolve"                  "r"   #'org-resolve-clocks
    :desc "Clock In Last"            "l"   #'org-clock-in-last
+   :desc "Clock In Last"            "o"   #'+org|clocked-visit-link
    :desc "Cancel"                   "x"   #'org-clock-cancel
    :desc "Visit Entry"              "SPC" #'+org-indirect|clock-visit-entry
    :desc "Visit Entry"              "'"   #'+org-indirect|clock-visit-entry)
