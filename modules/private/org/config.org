@@ -140,6 +140,15 @@ All todo keywords are for general items.
           ("PROJECT" :inherit 'org-todo :weight bold)))
   (setq org-done-keywords '("DONE" "[X]" "CANCELLED")))
 #+END_SRC
+**** Todo-Popup
+
+Don't show the ~todo~ selection in a popup,
+I know my keys, and the popup is problemating when displaying with certain windows,
+e.g.: Agenda + Splits
+
+#+BEGIN_SRC elisp
+(setq org-use-fast-todo-selection 'expert)
+#+END_SRC
 
 **** Projectile ignore ~org_archive~
 
