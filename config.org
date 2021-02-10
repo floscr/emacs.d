@@ -675,7 +675,6 @@ Disable for certain modes (terminal & ivy) where the window is to small.
 #+END_SRC
 
 *** Popups
-
 **** Other Popup overrides
 
 #+BEGIN_SRC elisp
