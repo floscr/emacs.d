@@ -83,7 +83,6 @@
    'reason-mode-hook
    (lambda ()
      (merlin-mode)
-     (merlin-eldoc-disable)
      (setq utop-command "opam config exec -- rtop -emacs")
      (add-hook 'before-save-hook 'refmt-before-save)
      (add-hook 'reason-mode-hook 'merlin-mode)
