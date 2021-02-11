@@ -599,6 +599,27 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (defconst +MM-comment-headers '("EXTERNALS" "LOCALS" "HELPERS" "MAIN"))
 #+END_SRC
 
+**** Imports Table
+
+#+BEGIN_SRC elisp
+(require 'ht)
+(setq +MM-import:package-exports
+      (ht ("@meisterlabs/common"
+           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color" "tap"))
+          ("@meisterlabs/redux-geometry"
+           '("Point" "Area" "Line"))
+          ("@meisterlabs/redux"
+           '("Redux"))
+          ("@meisterlabs/knightrider"
+           '("View" "Text" "HoverView"))
+          ("@meisterlabs/react-hide"
+           '("Show" "Hide"))
+          ("@meisterlabs/ui"
+           '("animations" "animationHelpers" "colors" "rgba" "shadows" "gradients" "planColors" "fonts"
+             "Line" "Badge" "Input" "Button" "Toggle" "Select" "Message" "Spinner" "Checkbox" "IconButton" "CommentReply" "DiagonalLine" "IconTextButton" "RadioButton" "PopoverHeader" "UpgradeButton" "TextBlockPlaceholder" "TextBlockPlaceholders" "I18nHtml" "LinkShare"
+             "Grid" "GridCore" "GridConfig" "MixedGrid" "GridHelpers"))))
+#+END_SRC
+
 **** Main
 
 #+BEGIN_SRC elisp
@@ -771,21 +792,6 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         (+MM:import|insert-package-import package export no-destruct))
       (+MM:import/fix-empty-lines))))
 
-(setq +MM-import:package-exports
-      (ht ("@meisterlabs/common"
-           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color" "tap"))
-          ("@meisterlabs/redux-geometry"
-           '("Point" "Area" "Line"))
-          ("@meisterlabs/redux"
-           '("Redux"))
-          ("@meisterlabs/knightrider"
-           '("View" "Text"))
-          ("@meisterlabs/react-hide"
-           '("Show" "Hide"))
-          ("@meisterlabs/ui"
-           '("animations" "animationHelpers" "colors" "rgba" "shadows" "gradients" "planColors" "fonts"
-             "Line" "Badge" "Input" "Button" "Toggle" "Select" "Message" "Spinner" "Checkbox" "IconButton" "CommentReply" "DiagonalLine" "IconTextButton" "RadioButton" "PopoverHeader" "UpgradeButton" "TextBlockPlaceholder" "TextBlockPlaceholders" "I18nHtml" "LinkShare"
-             "Grid" "GridCore" "GridConfig" "MixedGrid" "GridHelpers"))))
 
 (defun +MM-import/find-package-by-symbol (symbol)
   "Find a package by the passed symbol X."
