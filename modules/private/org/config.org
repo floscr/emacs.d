@@ -779,9 +779,9 @@ Set the active state when clocking in.
          (links (s-match-strings-all org-bracket-link-regexp content))
          (items (-map (lambda (x)
                         (-let* (((_ title link) x)
-                                (item (if (string= title link)
-                                          link
-                                        (t! "<<title>>\n<<link>>"))))
+                                (item (if (and title link)
+                                          (t! "<<title>>\n<<link>>")
+                                        (or link title))))
                           (list (t! "<<item>>\n") link))) links)))
     (kill-buffer buffer)
     (ivy-read "Open Link: " items
