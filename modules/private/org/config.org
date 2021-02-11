@@ -756,6 +756,7 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp
 )
 #+END_SRC
+
 **** Polybar clock display
 
 #+BEGIN_SRC elisp
@@ -768,6 +769,7 @@ Set the active state when clocking in.
        (s-prepend ""))
     -1))
 #+END_SRC
+
 **** Open Link
 
 #+BEGIN_SRC elisp
