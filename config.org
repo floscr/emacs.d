@@ -205,6 +205,12 @@ Show changes in current branch
 (package! git-lens)
 #+END_SRC
 
+Quickly download and browser repositories from github
+
+#+BEGIN_SRC elisp
+(package! elescope)
+#+END_SRC
+
 *** Ebooks
 
 #+BEGIN_SRC elisp
@@ -1578,6 +1584,15 @@ but I dont want them added to my ~projectile-known-projects~.
   (add-transient-hook! 'counsel-projectile-switch-project
     (projectile-cleanup-known-projects)
     (projectile-discover-projects-in-search-path)))
+#+END_SRC
+
+*** elescope
+
+#+BEGIN_SRC elisp
+(use-package elescope
+  :commands (elescope-checkout)
+  :config
+  (setq elescope-root-folder "~/Code/Repositories"))
 #+END_SRC
 
 *** daemon

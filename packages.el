@@ -102,6 +102,10 @@
 (package! git-lens)
 ;; Git:1 ends here
 
+;; [[file:config.org::*Git][Git:2]]
+(package! elescope)
+;; Git:2 ends here
+
 ;; [[file:config.org::*Ebooks][Ebooks:1]]
 (package! nov)
 ;; Ebooks:1 ends here
