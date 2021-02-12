@@ -1592,7 +1592,9 @@ but I dont want them added to my ~projectile-known-projects~.
 (use-package elescope
   :commands (elescope-checkout)
   :config
-  (setq elescope-root-folder "~/Code/Repositories"))
+  (setq elescope-root-folder "~/Code/Repositories")
+  :init
+  (defalias '+git|clone 'elescope-checkout))
 #+END_SRC
 
 *** daemon
