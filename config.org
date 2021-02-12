@@ -4150,6 +4150,47 @@ the projects cwd to find a file.
         (yas-insert-snippet t)))))
 #+END_SRC
 
+***** Use last src language
+:PROPERTIES:
+:SOURCE:   [[https://github.com/tecosaur/emacs-config/blob/0c50e2a651e8903a922a60acf701d4a6ba0e1d29/config.org][emacs-config/config.org at 0c50e2a651e8903a922a60acf701d4a6ba0e1d29 · tecosaur/emacs-config]]
+:END:
+
+Used with [[file:snippets/org-mode/src::`%`$0][src snippet]] to auto fill the language from the previously used src language.
+
+#+BEGIN_SRC elisp
+(defun +yas/org-src-lang ()
+  "Try to find the current language of the src/header at point.
+Return nil otherwise."
+  (save-excursion
+    (pcase
+        (downcase
+         (buffer-substring-no-properties
+          (goto-char (line-beginning-position))
+          (or (ignore-errors (1- (search-forward " " (line-end-position))))
+              (1+ (point)))))
+      ("#+property:"
+       (when (re-search-forward "header-args:")
+         (buffer-substring-no-properties
+          (point)
+          (or (and (forward-symbol 1) (point))
+              (1+ (point))))))
+      ("#+begin_src"
+       (buffer-substring-no-properties
+        (point)
+        (or (and (forward-symbol 1) (point))
+            (1+ (point)))))
+      ("#+header:"
+       (search-forward "#+begin_src")
+       (+yas/org-src-lang))
+      (_ nil))))
+
+(defun +yas/org-last-src-lang ()
+  (save-excursion
+    (beginning-of-line)
+    (when (search-backward "#+begin_src" nil t)
+      (+yas/org-src-lang))))
+#+END_SRC
+
 **** Load custom snippets
 
 #+BEGIN_SRC elisp
