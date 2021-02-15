@@ -1253,6 +1253,25 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
             :require-match t
             :action (lambda (x) (goto-char (cdr x)))))
 #+END_SRC
+*** Evil Find File
+
+#+BEGIN_SRC elisp
+(defun +MM|evil-find-file-at-point-with-line ()
+  "Opens the file at point and goes to line-number."
+  (interactive)
+  (require 'ffap)
+  (require 'f)
+  (-if-let* ((fname (ffap-string-at-point))
+             (root (projectile-project-root))
+             (resolved (->> (f-join root "src" fname)
+                            (s-append ".js")))
+             (relative (->> (f-join default-directory fname)
+                            (s-append ".js"))))
+      (cond ((f-exists? resolved) (find-file resolved))
+            ((f-exists? relative) (find-file relative))
+            (t (user-error "Can't find file %s." fname)))
+    (user-error "No filename under the cursor.")))
+#+END_SRC
 
 *** Meistertask Mode
 
@@ -1268,16 +1287,16 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (defun +MM/setup-keybindings ()
   "Setup Keybindings"
   (map! :map +MM-Web-mode-map
-        :nv "gf" #'lsp-find-definition
+        :nv "gf" #'+MM|evil-find-file-at-point-with-line
         :localleader
         :desc  "Repl"             "R" #'+MM|nodejs-repl
         :desc  "Bookmarks"        "b" #'+MM|bookmarks
         (:prefix ("f" . "file")
-          :desc  "Jump to Entity"               "e"  (cmd! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
-          :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
-          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
+         :desc  "Jump to Entity"               "e"  (cmd! (+ivy/counsel-project-file-jump "src/containers/MapEditor/Entities"))
+         :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
+         :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
         (:prefix ("g" . "Goto")
-          :desc  "Branch"                       "b"  #'+MM/counsel-branch-menu))
+         :desc  "Branch"                       "b"  #'+MM/counsel-branch-menu))
 
   (map! :map +MM-Web-mode-map
         :n "[1" #'+MM|alternate-file
