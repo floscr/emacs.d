@@ -3567,6 +3567,17 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
   (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
 #+END_SRC
 
+***** Diff range from current pull request
+
+#+BEGIN_SRC elisp
+(defun +magit|diff-range-from-pullreq ()
+  "Ranged diff from the pull request under point."
+  (interactive)
+  (-some->> (forge-current-topic)
+    (forge--pullreq-range)
+    (magit-diff-range)))
+#+END_SRC
+
 ***** Review branch
 
 #+BEGIN_SRC elisp
@@ -3831,6 +3842,7 @@ To append something, just state the flag that you see in the transient popup as 
   (transient-append-suffix 'magit-push "p" '("d" "dated" +git|push-dated))
 
   (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" +magit|diff-range-from-current-branch))
+  (transient-append-suffix 'magit-diff "d" '("P" "Pullrequest Range" +magit|diff-range-from-pullreq))
   (transient-append-suffix 'magit-diff "d" '("f" "File" magit-diff-buffer-file))
 
   (transient-append-suffix 'magit-commit
