@@ -961,6 +961,19 @@ Saving and committing keeps the indentation in the source buffer.
   (yas/insert-by-name "Scan Template")
   (+org|add-created-property))
 
+(defun +docs/get-attachment-path ()
+  "Get the attachment path from the current entry."
+  (require 'org-ml)
+  (->>
+   (org-ml-parse-this-headline)
+   (org-ml-headline-get-node-property "DOCUMENT")
+   (+org/link-url-or-original)
+   (s-replace-regexp "^attachment:" "")))
+
+(defun +docs/join-attachment-pdfs (original add)
+  "Foo"
+  (shell-command-to-string (t! "concat-pdfs <<original>> <<add>>")))
+
 (defun +docs|scan-document ()
   "Scan a document and attach it to a new entry in the main docs file."
   (interactive)
@@ -984,8 +997,33 @@ Saving and committing keeps the indentation in the source buffer.
                             (-butlast)
                             (-last-item)))
                       (new-path (expand-file-name (org-download--fullname old-path))))
-                 (copy-file old-path new-path)
-                 (org-set-property "DOCUMENT" (funcall org-download-link-format-function new-path))))))))))
+                 (progn
+                     (copy-file old-path new-path)
+                     (org-set-property "DOCUMENT" (funcall org-download-link-format-function new-path)))))))))))
+
+(defun +docs|scan-document-append ()
+  "Scan a document and attach it to a new entry in the main docs file."
+  (interactive)
+  (require 'org-download)
+  (let ((org-scan-path (f-expand +docs:index-file)))
+    (let ((marker (point))
+          (org-attach-id-dir "./.attach")
+          (org-attach-directory "./.attach")
+          (org-attach-dir-relative t))
+      (deferred:$
+        (deferred:process "scan")
+        (deferred:nextc it
+          `(lambda (x)
+             (save-excursion
+               (find-file ,org-scan-path)
+               (goto-char ,marker)
+               (let* ((old-path
+                       (->> x
+                            (s-split "\n")
+                            (-butlast)
+                            (-last-item))))
+                 (+docs/join-attachment-pdfs (f-join +docs:dir (+docs/get-attachment-path)) old-path)
+                 (-log "Merging scanned documents finished.")))))))))
 
 (defun +docs|dired-attach-document ()
   "Function docstring"
