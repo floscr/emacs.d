@@ -1867,14 +1867,6 @@ Projectile search is not fast reliable enough."
               :caller 'counsel-dired-jump)))
 #+END_SRC
 
-*** Find in files
-
-#+BEGIN_SRC elisp
-(defun +org/find-in-files (file)
-  "Find file in org directory."
-  (find-file (f-join org-directory file)))
-#+END_SRC
-
 *** Visual Fill Column
 
 #+BEGIN_SRC elisp

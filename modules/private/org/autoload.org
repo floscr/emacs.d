@@ -217,6 +217,16 @@ POS to match:
     (expand-file-name x org-directory)))
 #+END_SRC
 
+** Find in files
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +org/find-in-files (file)
+  "Find file in org directory."
+  (->> (+org/expand-org-file-name file)
+       (find-file)))
+#+END_SRC
+
 ** Set agenda command or replace on reload
 
 When configuring agenda commands I often eval them for testing.
