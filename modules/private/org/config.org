@@ -1288,7 +1288,7 @@ Known Issues:
 **** Advices
 ***** Close window after refiling
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defadvice! +org/org-refile-close-indirect-window (&rest _)
   "Close indirect buffer windows after refiling them."
   :after '(org-refile)
@@ -2113,7 +2113,6 @@ Alert me only once for any event in the next 10 minutes.
     (shell-command-to-string (t! "xclip -selection clipboard -target image/png -out > <<path>>"))
     (+org/attach-file-and-insert-link path)))
 #+END_SRC
-
 
 *** Roam
 **** Config
