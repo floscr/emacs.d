@@ -1256,18 +1256,28 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 *** Evil Find File
 
 #+BEGIN_SRC elisp
+(defun +MM/find-file-resolver (x)
+  "Resolve."
+  (if (f-dir? x)
+      (f-join x "index.js")
+    (s-append ".js" x)))
+
 (defun +MM|evil-find-file-at-point-with-line ()
   "Opens the file at point and goes to line-number."
   (interactive)
   (require 'ffap)
   (require 'f)
-  (or (lsp-find-definition)
-      (-if-let* ((fname (ffap-string-at-point))
+  (or (ignore-error (lsp-find-definition))
+      (-if-let* ((resolver (lambda (x)
+                             (if (f-dir? x)
+                                 (f-join x "index.js")
+                               (s-append ".js"))))
+                 (fname (ffap-string-at-point))
                  (root (projectile-project-root))
                  (resolved (->> (f-join root "src" fname)
-                                (s-append ".js")))
+                                (+MM/find-file-resolver)))
                  (relative (->> (f-join default-directory fname)
-                                (s-append ".js"))))
+                                (+MM/find-file-resolver))))
           (cond ((f-exists? resolved) (find-file resolved))
                 ((f-exists? relative) (find-file relative))
                 (t (user-error "Can't find file %s." fname)))
