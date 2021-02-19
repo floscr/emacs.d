@@ -2047,9 +2047,16 @@ Return the path of the file."
       (setq alert-default-style 'libnotify)))
 #+END_SRC
 
-**** Overwrite agenda function
+**** Custom headline checker
 
-Alert me only once for any event in the next 10 minutes.
+Bit of a dumb function...
+But hey, the whole agenda parsing for times is kinda simple, right?
+But if it works...
+
+Overwrite ~org-alert~ headline checker to show notifications only when:
+- Any upcoming items that have the ~:NOTIFY_ME:~ tag.
+- Has a time range in the next 15 minutes
+- Has not notified me already (is not in ~+org-alert:seen-notifications~ cache)
 
 #+BEGIN_SRC elisp :tangle no
 (defvar +org-alert:seen-notifications '())
