@@ -26,6 +26,7 @@
 ;; Sync caldav with org
 (package! org-caldav :recipe (:host github :repo "floscr/org-caldav"))
 (package! org-journal)
+(package! org-alert)
 
 
 ;;; Agenda

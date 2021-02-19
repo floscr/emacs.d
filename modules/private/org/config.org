@@ -1587,6 +1587,13 @@ This way creating reports needs less processing power.
       (apply orig-fn args))))
 
 #+END_SRC
+*** Notifications
+
+Copied from [[https://github.com/spegoraro/org-alert][spegoraro/org-alert: System notifications of org agenda items]].
+
+#+BEGIN_SRC elisp
+
+#+END_SRC
 
 ** Utils
 *** Get Frontmost chrome url
@@ -2026,6 +2033,70 @@ Return the path of the file."
 #+END_SRC
 
 ** Package Config
+*** Org Alert
+
+#+BEGIN_SRC elisp
+(use-package! org-alert
+  :after org
+  :config
+  (setq org-alert-headline-regexp "\\(Sched.+:.+\\|Sched:.+\\):NOTIFY_ME:.*$"))
+
+(use-package! alert
+  :config
+  (if (executable-find "notify-send")
+      (setq alert-default-style 'libnotify)))
+#+END_SRC
+
+**** Overwrite agenda function
+
+Alert me only once for any event in the next 10 minutes.
+
+#+BEGIN_SRC elisp :tangle no
+(defvar +org-alert:seen-notifications '())
+
+(defvar +org-alert:alert-range-seconds 600)
+(setq +org-alert:alert-range-seconds (* 15 60))
+
+(defun +org-alert/agenda-parse-time-string (str)
+  "Parse an org agenda line STR for the hours and minutes."
+  (-when-let ((_ hh mm)
+              (s-match "^ \\([0-9][0-9]\\):\\([0-9][0-9]\\).*" str))
+    (list (string-to-number hh) (string-to-number mm))))
+
+(defun +org-alert/agenda-str-seconds-until (str)
+  (-when-let* (((hh mm) (+org-alert/agenda-parse-time-string str))
+               (now (ts-now))
+               (then (ts-apply :hour hh
+                               :minute mm
+                               :second 0
+                               now)))
+    (when (ts> then now)
+      (ts-difference then now))))
+
+(defun org-alert--get-headlines ()
+  "Return the current org agenda as text only."
+  (with-temp-buffer
+    (let ((org-agenda-sticky nil)
+          (org-agenda-buffer-tmp-name (buffer-name)))
+      (ignore-errors
+        (let ((org-agenda-files (+org/expand-org-file-name '("Main/inbox.org" "Work/work.org")))
+              (org-agenda-tag-filter-preset '("+NOTIFY_ME"))
+              (org-agenda-start-day nil)
+              (org-agenda-prefix-format
+               '((agenda  . " %?-12t% s"))))
+          (org-agenda-list 1)))
+      (->>
+       (buffer-substring-no-properties (point-min) (point-max))
+       (s-split "\n")
+       (-map #'s-collapse-whitespace)
+       (--filter (or (-some->> (+org-alert/agenda-str-seconds-until it)
+                       (> +org-alert:alert-range-seconds))))
+       ((lambda (xs)
+          (let ((to-alert (-difference xs +org-alert:seen-notifications)))
+            (setq +org-alert:seen-notifications (-concat +org-alert:seen-notifications to-alert))
+            to-alert)))))))
+#+END_SRC
+
 *** Org Download
 
 #+BEGIN_SRC elisp
