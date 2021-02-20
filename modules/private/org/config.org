@@ -2080,28 +2080,41 @@ Overwrite ~org-alert~ headline checker to show notifications only when:
     (when (ts> then now)
       (ts-difference then now))))
 
+(defun +org-alert/reset-buffer-names ()
+  (let ((prev-org-agenda-buffer-name org-agenda-buffer-name)
+        (prev-org-agenda-this-buffer-name org-agenda-this-buffer-name))))
+
 (defun org-alert--get-headlines ()
   "Return the current org agenda as text only."
-  (with-temp-buffer
-    (let ((org-agenda-sticky nil)
-          (org-agenda-buffer-tmp-name (buffer-name)))
-      (ignore-errors
-        (let ((org-agenda-files (+org/expand-org-file-name '("Main/inbox.org" "Work/work.org")))
-              (org-agenda-tag-filter-preset '("+NOTIFY_ME"))
-              (org-agenda-start-day nil)
-              (org-agenda-prefix-format
-               '((agenda  . " %?-12t% s"))))
-          (org-agenda-list 1)))
-      (->>
-       (buffer-substring-no-properties (point-min) (point-max))
-       (s-split "\n")
-       (-map #'s-collapse-whitespace)
-       (--filter (or (-some->> (+org-alert/agenda-str-seconds-until it)
-                       (> +org-alert:alert-range-seconds))))
-       ((lambda (xs)
-          (let ((to-alert (-difference xs +org-alert:seen-notifications)))
-            (setq +org-alert:seen-notifications (-concat +org-alert:seen-notifications to-alert))
-            to-alert)))))))
+  ;; Cache buffer name, when setting org-agenda-buffer-tmp-name org-agenda saves it
+  ;; Which leads to a faulty buffer name for any following agenda buffers
+  ;; So we reset it after calling the agenda
+  (let ((prev-org-agenda-buffer-name org-agenda-buffer-name)
+        (str
+         (with-temp-buffer
+           (let ((org-agenda-sticky nil)
+                 (org-agenda-buffer-tmp-name (buffer-name)))
+             (ignore-errors
+               (let ((org-agenda-files (+org/expand-org-file-name '("Main/inbox.org" "Work/work.org")))
+                     (org-agenda-tag-filter-preset '("+NOTIFY_ME"))
+                     (org-agenda-start-day nil)
+                     (org-agenda-prefix-format
+                      '((agenda  . " %?-12t% s"))))
+                 (org-agenda-list 1)))
+             (->>
+              (buffer-substring-no-properties (point-min) (point-max))
+              (s-split "\n")
+              (-map #'s-collapse-whitespace)
+              (--filter (or (-some->> (+org-alert/agenda-str-seconds-until it)
+                              (> +org-alert:alert-range-seconds))))
+              ((lambda (xs)
+                 (let ((to-alert (-difference xs +org-alert:seen-notifications)))
+                   (setq +org-alert:seen-notifications (-concat +org-alert:seen-notifications to-alert))
+                   (kill-buffer org-agenda-buffer-tmp-name)
+                   to-alert))))))))
+    (setq org-agenda-buffer-name prev-org-agenda-buffer-name)
+    (setq org-agenda-this-buffer-name prev-org-agenda-buffer-name)
+    str))
 #+END_SRC
 
 *** Org Download
