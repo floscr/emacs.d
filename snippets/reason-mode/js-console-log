@@ -2,4 +2,4 @@
 # name: Js.Console.log
 # key: log
 # --
-Js.Console.log($0)
+Js.log($0)
