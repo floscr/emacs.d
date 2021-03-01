@@ -814,7 +814,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
       (user-error "Package not found"))))
 
 (defun +MM-import|import-other-window-file ()
-  "Function docstring"
+  "Import from the other file."
   (interactive)
   (let ((file
          (save-window-excursion
@@ -1317,6 +1317,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          :desc  "Generate Index"               "I"  (cmd! (+js|generate-index nil '("helpers")))
          :desc  "Import File"                  "i"  #'+MM:import|ivy-import
          :desc  "Import Symbol"                "s"  #'+MM-import|import-symbol-at-point
+         :desc  "Import Other Window"          "o"  #'+MM-import|import-other-window-file
          :desc  "Rule"                         "r"  #'+MM|add-rule
          :desc  "Container Action"             "a"  #'+MM|create-action
          :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
