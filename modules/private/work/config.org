@@ -1341,10 +1341,6 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 
 ** Minor Mode
 
-Custom minor mode for work,
-When the variable ~+MM-Web-mode~ is enabled,
-this mode is enabled.
-
 #+BEGIN_SRC elisp
 (def-project-mode! +MM-Web-mode
   :add-hooks (+MM/setup-keybindings)
