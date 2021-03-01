@@ -1348,6 +1348,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 #+END_SRC
 
 #+BEGIN_SRC elisp
-(after! yasnippet
-  (push (f-expand "~/Code/Meisterlabs/Snippets") yas-snippet-dirs))
+(use-package! yasnippet
+  :init
+  (add-to-list 'yas-snippet-dirs (f-expand "~/Code/Meisterlabs/Snippets")))
 #+END_SRC
