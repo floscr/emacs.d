@@ -611,7 +611,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
           ("@meisterlabs/redux"
            '("Redux"))
           ("@meisterlabs/knightrider"
-           '("View" "Text" "HoverView"))
+           '("View" "Text" "HoverView" "Icon"))
           ("@meisterlabs/react-hide"
            '("Show" "Hide"))
           ("@meisterlabs/ui"
