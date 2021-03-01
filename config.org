@@ -2231,8 +2231,11 @@ Open the current entry:
 (defun +rss|open-eww ()
   "Open the current entry with eww."
   (interactive)
-  (eww (elfeed-entry-link elfeed-show-entry))
-  (add-hook 'eww-after-render-hook 'eww-readable nil t))
+  (add-hook 'eww-after-render-hook 'eww-readable nil t)
+  (let ((buffer (save-window-excursion
+                  (eww (elfeed-entry-link elfeed-show-entry))
+                  (current-buffer))))
+    (switch-to-buffer buffer)))
 #+END_SRC
 
 ***** Wrap Elfeed
