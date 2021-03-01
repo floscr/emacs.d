@@ -37,6 +37,12 @@
 (package! ivy-avy)
 ;; Ivy Avy:1 ends here
 
+;; [[file:config.org::*Doom Themes][Doom Themes:1]]
+(package! doom-themes
+  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
+  :pin nil)
+;; Doom Themes:1 ends here
+
 ;; [[file:config.org::*Edit the current chrome input field directly in emacs][Edit the current chrome input field directly in emacs:1]]
 (package! atomic-chrome)
 ;; Edit the current chrome input field directly in emacs:1 ends here

@@ -100,6 +100,13 @@ Move to ivy candidate with =C-'=
 #+BEGIN_SRC elisp
 (package! ivy-avy)
 #+END_SRC
+**** Doom Themes
+
+#+BEGIN_SRC elisp
+(package! doom-themes
+  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
+  :pin nil)
+#+END_SRC
 
 *** External
 **** Edit the current chrome input field directly in emacs
