@@ -532,7 +532,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "Inbox Links" :regexp "TODO \\(\\[\\[\\\|https?:\\)" :order 2)
                                  (:name "Inbox" :file-path ".*inbox.org$" :order 2)
                                  (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
-                                 (:name "Backlog" :tag "BACKLOG" :order 3)
                                  (:name "Overdue" :scheduled past))))))))
 #+END_SRC
 
