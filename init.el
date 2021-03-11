@@ -63,6 +63,7 @@
  lsp
 
  :lang
+ lua
  nix
  rust
  rest
