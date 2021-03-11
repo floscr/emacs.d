@@ -164,7 +164,7 @@ Create a canvas action
 *** Insert tap
 
 #+BEGIN_SRC elisp
-(defun +MM|chain-tap-log (&optional str)
+(defun +MM|chain-tap-log (&optional str is-bitap)
   "Adds a tap method to a chain."
   (interactive)
   (let ((str (or str "console.log")))
@@ -174,8 +174,10 @@ Create a canvas action
         (when semi
           (delete-char -1))
         (newline-and-indent)
-        (insert (->> (template ".tap(<<str>>)")
-                     (s-append semi))))
+        (insert (->> (if is-bitap
+                         (template ".bitap(<<str>>, <<str>>)")
+                       (template ".tap(<<str>>)"))
+                  (s-append semi))))
       (call-interactively #'evil-indent-line)
       (when current-prefix-arg
         (progn
@@ -605,7 +607,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (require 'ht)
 (setq +MM-import:package-exports
       (ht ("@meisterlabs/common"
-           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color" "tap"))
+           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color" "tap" "anyPass" "allPass"))
           ("@meisterlabs/redux-geometry"
            '("Point" "Area" "Line"))
           ("@meisterlabs/redux"
@@ -1323,6 +1325,8 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
          :desc  "Container"                    "c"  #'+MM|canvas-create-action)
         (:prefix-map ("d" . "Debug")
+         :desc  "Tap Log"                      "b"  (cmd! (+MM|chain-tap-log nil t))
+         :desc  "Tap Log"                      "B"  (cmd! (+MM|chain-tap-log t t))
          :desc  "Tap Log"                      "t"  #'+MM|chain-tap-log
          :desc  "Tap Log State"                "T"  #'+MM|chain-tap-log-state
          :desc  "Debugger"                     "d"  #'+js|insert-debugger)
