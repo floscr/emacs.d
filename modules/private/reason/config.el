@@ -76,6 +76,7 @@
       (setq refmt-command refmt-bin))
     (add-hook! reason-mode
       (merlin-mode)
+      (merlin-use-merlin-imenu)
       (add-hook 'before-save-hook #'refmt-before-save nil t)))
 
   :config
