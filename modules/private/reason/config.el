@@ -61,7 +61,12 @@
     :definition #'merlin-locate
     :references #'merlin-occurrences
     :documentation #'merlin-document)
-  (setq-hook! reason-mode indent-region-function #'apply-refmt)
+
+  ;; Don't use refmt indentation, it can be horribly slow
+  ;; and files get autofixed on save anyway
+  (setq-hook! reason-mode indent-region-function #'indent-region-line-by-line)
+  (setq-hook! reason-mode indent-line-function #'indent-relative)
+
   (set-electric! 'some-mode :chars '(?|))
   (set-company-backend! 'reason-mode 'merlin-company-backend)
 
