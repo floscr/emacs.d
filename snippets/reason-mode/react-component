@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: React Component
+# key: c
+# condition: t
+# --
+module ${1:Component} = {
+    [@react.component]
+    let make = (children) => {
+        children;
+    };
+};
