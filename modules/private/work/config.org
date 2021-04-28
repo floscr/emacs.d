@@ -209,17 +209,35 @@ Create a canvas action
 
 *** NodeJs Repl
 
+Start a repl with some functions preloaded and modules added to the global instance.
+
+#+BEGIN_SRC javascript :tangle "./.cache/measure.js"
+const measure = function(fn) {
+    console.time('Measure');
+    const res = fn();
+    console.timeEnd('Measure');
+    res;
+}
+
+module.exports = measure;
+#+END_SRC
+
 #+BEGIN_SRC elisp
 (defun +MM|nodejs-repl ()
   "Start a repl with the standard library already loaded."
+  (require 'noflet)
   (interactive)
   (if (not (get-buffer "*nodejs*"))
       (progn
         (nodejs-repl)
-        (insert (concat
-                 "const __T = require('@meisterlabs/common/node');"
-                 "Object.keys(__T).forEach(x => { global[x] = __T[x]; });"))
-        (comint-send-input nil t))
+        (let ((measure-script-path (f-join doom-private-dir "modules/private/work/.cache/measure.js")))
+          (insert (concat
+                   (t! "const measure = require('<<measure-script-path>>');")
+                   "const __T = require('@meisterlabs/common/node');"
+                   "Object.keys(__T).forEach(x => { global[x] = __T[x]; });")))
+        ;; Don't write the module load to the command history
+        (noflet ((comint-add-to-input-history (&args) nil))
+          (comint-send-input nil t)))
     (nodejs-repl)))
 #+END_SRC
 
