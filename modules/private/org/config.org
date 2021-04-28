@@ -2131,6 +2131,22 @@ Overwrite ~org-alert~ headline checker to show notifications only when:
   (let ((path (concat (make-temp-file "screenshot") ".png")))
     (shell-command-to-string (t! "xclip -selection clipboard -target image/png -out > <<path>>"))
     (+org/attach-file-and-insert-link path)))
+
+(defun +org-attach|dwim ()
+  "Function docstring"
+  (interactive)
+  (let ((targets
+         (->> (shell-command-to-string "xclip -selection clipboard -t TARGETS -o")
+           (s-trim)
+           (s-split "\n"))))
+    (cond ((--find (s-contains? "image/png" it) targets)
+           (+org|attach-yank-image))
+          (t (let ((txt (shell-command-to-string "xclip -o -selection clipboard")))
+               (message txt)
+               (if (s-matches-p url-handler-regexp txt)
+                   (+org/attach-file-and-insert-link txt)
+                 (user-error "Could not save clipboard contents:\n%s" txt)))))))
+
 #+END_SRC
 
 *** Roam
