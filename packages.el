@@ -4,9 +4,10 @@
 (package! noflet)
 ;; noflet:1 ends here
 
-;; [[file:config.org::*Udiskie][Udiskie:1]]
+;; [[file:config.org::*Disk][Disk:1]]
+(package! disk-usage)
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
-;; Udiskie:1 ends here
+;; Disk:1 ends here
 
 ;; [[file:config.org::*Systemd daemons][Systemd daemons:1]]
 (package! daemons)
@@ -36,12 +37,6 @@
 ;; [[file:config.org::*Ivy Avy][Ivy Avy:1]]
 (package! ivy-avy)
 ;; Ivy Avy:1 ends here
-
-;; [[file:config.org::*Doom Themes][Doom Themes:1]]
-(package! doom-themes
-  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
-  :pin nil)
-;; Doom Themes:1 ends here
 
 ;; [[file:config.org::*Edit the current chrome input field directly in emacs][Edit the current chrome input field directly in emacs:1]]
 (package! atomic-chrome)
