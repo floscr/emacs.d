@@ -9,6 +9,14 @@
 * Org Mode
 ** Config
 *** General config
+**** Attachment
+
+Disable displaying all images after attaching
+
+#+begin_src emacs-lisp
+(setq org-download-display-inline-images nil)
+#+end_src
+
 **** Directories
 
 #+BEGIN_SRC elisp
