@@ -1,11 +1,11 @@
 # -*- mode: snippet -*-
-# name: Binding List
-# key: mb
+# name: Binding
+# key: b
 # --
-my.bindings = [
+modules.bindings.items = [
   {
-      binding = "$0";
-      description = "$1";
-      command = "$2";
+    description = "$0";
+    binding = "$1";
+    command = "$2";
   }
 ];

@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: Binding
-# key: b
-# --
-{
-binding = "$0";
-description = "$1";
-command = "$2";
-}
