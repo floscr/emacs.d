@@ -47,9 +47,10 @@ Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
 #+END_SRC
 
 *** System
-**** Udiskie
+**** Disk
 
 #+BEGIN_SRC elisp
+(package! disk-usage)
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
 #+END_SRC
 
@@ -100,9 +101,10 @@ Move to ivy candidate with =C-'=
 #+BEGIN_SRC elisp
 (package! ivy-avy)
 #+END_SRC
+
 **** Doom Themes
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (package! doom-themes
   :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
   :pin nil)
@@ -1039,7 +1041,6 @@ Saving and committing keeps the indentation in the source buffer.
                        (f-expand))))))
 #+END_SRC
 
-
 ** Language Config
 *** Javascript
 **** Config
@@ -1183,7 +1184,8 @@ console.log(`${foo}`)
       (when (= (char-after) ?\s)
         (delete-char 1)))))
 #+END_SRC
-***** Slit / Join Tag Node
+
+***** Split / Join Tag Node
 
 Stolen from the vscode extension: [[https://github.com/dannyconnell/vscode-split-html-attributes][dannyconnell/vscode-split-html-attributes]]
 I don't want to translate this to elisp, and js works as well.
@@ -1593,6 +1595,16 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** disk-usage
+
+#+BEGIN_SRC elisp
+(use-package disk-usage
+  :commands (disk-usage)
+  :config
+  (map! :map disk-usage-mode-map
+        :n "-" #'disk-usage-up))
+#+END_SRC
+
 *** js-import
 
 #+BEGIN_SRC elisp
