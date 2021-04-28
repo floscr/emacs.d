@@ -820,7 +820,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
   "Import from the other file."
   (interactive)
   (let* ((current-file (buffer-file-name))
-         (other-window-file (save-window-excursion (other-window 1) (buffer-file-name)))
+         (other-window-file (save-window-excursion (other-window -1) (buffer-file-name)))
          (file (if (string= (f-dirname current-file)
                             (f-dirname other-window-file))
                    (->> (f-base other-window-file)
