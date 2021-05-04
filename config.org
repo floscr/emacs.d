@@ -1470,6 +1470,19 @@ Remove the ~js~ extension for ~company-files~.
       (newline-and-indent)
       (insert (template "// eslint-disable-next-line <<error-id>>")))))
 #+END_SRC
+***** Find file from package.json root
+
+#+BEGIN_SRC elisp
+(defun +javscript|package-root-files ()
+  "Find any file relative to the upmost package.json,
+useful for repos that contain multiple packages."
+  (interactive)
+  (let ((default-directory
+          (f--traverse-upwards (f-exists? (f-expand "package.json" it)))))
+    (+default/find-file-under-here)))
+#+END_SRC
+
+
 ***** Find node_modules package
 
 Go to a package from the node_modules directory.
@@ -1505,6 +1518,7 @@ Go to a package from the node_modules directory.
  :desc "Goto parent function" :n "gh" (cmd! (js2-beginning-of-defun))
  :localleader
  :desc "Goto NPM Package" "m" #'+javascript|find-npm-package
+ :desc "Package Root Files" "SPC" #'+javscript|package-root-files
  (:prefix-map ("c" . "Create")
   :desc "Import File" "i" #'js-import))
 
