@@ -451,6 +451,17 @@ Get the last created file in a directory.
 Return the first found file when one is found."
   (--find (s-starts-with-p "." (f-filename it)) (f-entries dir)))
 #+END_SRC
+** Find Git Root
+
+#+BEGIN_SRC elisp
+(defun +my/project-root ()
+  "Find the project root either via projectile (not available in certain buffers like dired)
+or manually traverse upwards until the .git directory is found."
+  (interactive)
+  (or
+   projectile-project-root
+   (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
+#+END_SRC
 
 * Window management
 ** Toggle split style
