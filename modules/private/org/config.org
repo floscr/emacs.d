@@ -2038,6 +2038,20 @@ Return the path of the file."
   (interactive)
   (org-toggle-radio-button '(4)))
 #+END_SRC
+*** Insert links for all attachments
+
+Attach files from dired via ~org-attach-dired-to-subtree~
+
+#+begin_src elisp
+(defun +org|attach-dir-files ()
+  "Take all entries from the current attachment id directory and insert them."
+  (interactive)
+  (->> (org-attach-dir-get-create)
+    (f-entries)
+    (--map (template "[[attachment:<<(f-filename it)>>]]"))
+    (--reduce-from (concat acc "\n\n" it) "")
+    (insert)))
+#+end_src
 
 ** Package Config
 *** Org Alert
