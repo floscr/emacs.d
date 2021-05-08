@@ -71,10 +71,12 @@
 ** Chrome Window Listing
 
 #+BEGIN_SRC elisp
-(setq wmctrl:chrome-window-title-re "^\\(.*?\\)? ?\\(:: \\)?\\(https?.*\\) - Chromium$")
+(setq wmctrl:chrome-window-title-re "^\\(.*?\\)? ?\\(:: \\)?\\(https?.*\\) - \\(Chromium\\|Brave\\)$")
 
 (defun +wm/-is-chromium? (x)
-  (+wm/-proccess-eq? "chromium-browser" x))
+  (or
+   (+wm/-proccess-eq? "chromium-browser" x)
+   (+wm/-proccess-eq? "brave-browser" x)))
 
 (defun +wm/list-chromium-windows ()
   (->> (+wm/list-windows)
