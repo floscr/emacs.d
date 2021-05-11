@@ -540,24 +540,25 @@ To commit call +MM|kits-package-update."
   ;; (when (+git|check-branch-for-merge-conflict)
   ;;   (user-error "This branch has merge conflicts, resolve them before publishing!"))
 
-  (let* ((package-json (car (magit-staged-files)))
-         (json (json-read-file package-json))
-         (package-path (->> package-json
-                            (f-parent)
-                            (f-join (projectile-project-root))))
-         (v (alist-get 'version json))
-         (name (s-replace "@meisterlabs/" "" (alist-get 'name json)))
-         (msg (template "<<name>> - <<v>>")))
-      (progn
-        (magit-call-git "commit" "-m" msg)
-        (magit-refresh)
-        ;; Kill with install message just for my purposes
-        (kill-new (t! "npm i @meisterlabs/<<name>>@<<v>>"))
-        (+my/kill-and-message (t! "📦 <<msg>>
+  (-when-let* ((package-json (or (car (magit-staged-files))
+                                 (user-error "No staged files!")))
+               (json (json-read-file package-json))
+               (package-path (->> package-json
+                               (f-parent)
+                               (f-join (projectile-project-root))))
+               (v (alist-get 'version json))
+               (name (s-replace "@meisterlabs/" "" (alist-get 'name json)))
+               (msg (template "<<name>> - <<v>>")))
+    (progn
+      (magit-call-git "commit" "-m" msg)
+      (magit-refresh)
+      ;; Kill with install message just for my purposes
+      (kill-new (t! "npm i @meisterlabs/<<name>>@<<v>>"))
+      (+my/kill-and-message (t! "📦 <<msg>>
 `npm i @meisterlabs/<<name>>@<<v>>`"))
-        (magit-push-current-to-upstream nil)
-        (let ((default-directory package-path))
-          (shell-command "npm publish")))
+      (magit-push-current-to-upstream nil)
+      (let ((default-directory package-path))
+        (shell-command "npm publish")))
     (user-error "Stage the package.json with a version bump.")))
 #+END_SRC
 
