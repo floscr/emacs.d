@@ -839,13 +839,21 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
   "Import from the other file."
   (interactive)
   (let* ((current-file (buffer-file-name))
-         (other-window-file (save-window-excursion (other-window -1) (buffer-file-name)))
-         (file (if (string= (f-dirname current-file)
-                            (f-dirname other-window-file))
-                   (->> (f-base other-window-file)
-                     (s-concat "./"))
-                 (+MM/relative-file-name (buffer-file-name)))))
-    (+MM-import/import-package file nil t)))
+         (other-window-file (save-window-excursion
+                              (other-window 1)
+                              (buffer-file-name)))
+         (is-local-import (string=
+                           (f-dirname current-file)
+                           (f-dirname other-window-file)))
+         (path (if is-local-import
+                   (->> other-window-file
+                     (f-base)
+                     (s-concat "./")
+                     (+MM/relative-file-name))
+                 (->> other-window-file
+                   (+MM/relative-file-name)))))
+    (-log is-local-import)
+    (+MM-import/import-package path nil t)))
 
 (defun +MM:import|ivy-import ()
   (interactive)
