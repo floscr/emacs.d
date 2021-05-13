@@ -4938,11 +4938,11 @@ and then do my function.
    :desc "Downloads"      "d" (cmd! (find-file "~/Downloads"))
    :desc "Elfeed"         "e" (cmd! (find-file (car rmh-elfeed-org-files)))
    :desc "Scans"          "s" (cmd! (find-file (f-dirname (f-expand +docs:index-file))))
-   :desc "Music"          "m" (cmd! (find-file "~/Media/Music"))
+   :desc "Music"          "m" (cmd! (find-file "~/Media"))
+   :desc "Music"          "M" (cmd! (find-file "~/Media/Music"))
    :desc "Project Root"   "p" (cmd! (find-file (projectile-project-root)))
    :desc "Last refiled"   "r" (cmd! (org-refile-goto-last-stored))
    :desc "Tmp"            "t" (cmd! (find-file "/tmp"))
-   :desc "Home"           "h" (cmd! (find-file "~"))
    :desc "Home"           "h" (cmd! (find-file "~")))))
 #+END_SRC
 
