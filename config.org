@@ -2049,6 +2049,8 @@ which I name after the matching url.
     (name . "Weechat Xfer"))
    ((file . "/run/media/floscr/tolino")
     (name . "Tolino"))
+   ((file . "~/Documents/Scans/Scans.org")
+    (name . "Scans"))
    ((fn . org-capture-goto-last-stored)
     (name . "Capture: Last Stored Marker"))))
 #+END_SRC
