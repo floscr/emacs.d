@@ -5106,6 +5106,14 @@ and then do my function.
 **** Yank
 
 #+BEGIN_SRC elisp
+(defun +yank/execute-action (x &optional insert)
+  "Copy the the yank or insert it during insert mode."
+  (interactive)
+  (cond
+   ((or (evil-insert-state-p) insert) (insert x))
+   (t (+my/kill-and-message x)))
+  x)
+
 (defun +yank/dired-path ()
   "Returns the current dired entry or the buffer directory."
   (or (dired-file-name-at-point) dired-directory))
@@ -5121,47 +5129,47 @@ and then do my function.
   "Returns the current buffers path."
   (or (+yank/buffer-filename) default-directory))
 
-(defun +yank|filename ()
+(defun +yank|filename (&optional insert)
   "Yank the buffer file name."
-  (interactive)
+  (interactive "P")
   (or
    (-some->> (+yank/buffer-filename)
      ;; When pointing at a directory at dired, I still take the directory
      ((lambda (x) (if (f-file? x)
                       (file-name-directory x)
                     x)))
-     (+my/kill-and-message))
+     ((lambda (x) (+yank/execute-action x insert))))
    (user-error "Error: Not a file bufer!")))
 
-(defun +yank|base ()
+(defun +yank|base (&optional insert)
   "Yank the buffer files base name."
-  (interactive)
+  (interactive "P")
   (or
    (-some->> (+yank/buffer-filename)
      (file-name-base)
-     (+my/kill-and-message))
+     ((lambda (x) (+yank/execute-action x insert))))
    (user-error "Error: Not a file bufer!")))
 
-(defun +yank|directory ()
+(defun +yank|directory (&optional insert)
   "Yank the buffer files directory."
-  (interactive)
+  (interactive "P")
   (or
    (-some->> (+yank/buffer-path)
      (file-name-directory)
-     (+my/kill-and-message))
+     ((lambda (x) (+yank/execute-action x insert))))
    (user-error "Error: Not a file bufer!")))
 
-(defun +yank|path ()
+(defun +yank|path (&optional insert)
   "Yank the buffer files path."
-  (interactive)
+  (interactive "P")
   (or
    (-some->> (+yank/buffer-path)
-     (+my/kill-and-message))
+     ((lambda (x) (+yank/execute-action x insert))))
    (user-error "Error: Not a file bufer!")))
 
-(defun +yank|relative-to-project ()
+(defun +yank|relative-to-project (&optional insert)
   "Yank the buffer path relative to the projectile-project-root."
-  (interactive)
+  (interactive "P")
   (or
    (-some->> (+yank/buffer-path)
      (f-full)
@@ -5170,7 +5178,7 @@ and then do my function.
          (->> (s-replace (projectile-project-root) "" x)
               (-id-when #'s-present?))
          x)))
-     (+my/kill-and-message))
+     ((lambda (x) (+yank/execute-action x insert))))
    (user-error "Error: Not a file bufer!")))
 
 (map!
