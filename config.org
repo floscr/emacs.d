@@ -1634,6 +1634,16 @@ I mainly changed the function marking helper.
   (setq eslintd-fix-portfile "~/.eslint_d"))
 #+END_SRC
 
+*** rainbow-mode
+
+#+BEGIN_SRC elisp
+(use-package rainbow-mode
+  :commands (rainbow-mode)
+  :config
+  ;; Always enable rgb, etc colors
+  (setq rainbow-html-colors t))
+#+END_SRC
+
 *** disk-usage
 
 #+BEGIN_SRC elisp
