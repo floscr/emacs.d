@@ -4953,8 +4953,9 @@ and then do my function.
   (:prefix-map ("g" . "goto")
    :desc "Drive"          "/" #'+ivy|counsel-mounted-drives
    :desc "Desktop"        "D" (cmd! (find-file "~/Desktop"))
+   :desc "Config"         "." (cmd! (find-file "~/.config"))
    :desc "Code"           "c" (cmd! (find-file "~/Code"))
-   :desc "Last captured"  "c" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
+   :desc "Last captured"  "C" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
    :desc "Downloads"      "d" (cmd! (find-file "~/Downloads"))
    :desc "Elfeed"         "e" (cmd! (find-file (car rmh-elfeed-org-files)))
    :desc "Scans"          "s" (cmd! (find-file (f-dirname (f-expand +docs:index-file))))
