@@ -41,6 +41,7 @@
    merlin-error-after-save nil
    merlin-command (executable-find "ocamlmerlin"))
   :config
+  ;; (flycheck-add-mode 'ocaml-merlin 'reason-mode)
   (add-to-list 'company-backends 'merlin-company-backend))
 
 (use-package flycheck-ocaml
