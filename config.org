@@ -1626,6 +1626,14 @@ I mainly changed the function marking helper.
 #+END_SRC
 
 ** Package Config
+*** eslintd-fix
+
+#+BEGIN_SRC elisp
+(use-package eslintd-fix
+  :config
+  (setq eslintd-fix-portfile "~/.eslint_d"))
+#+END_SRC
+
 *** disk-usage
 
 #+BEGIN_SRC elisp
