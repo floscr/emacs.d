@@ -1134,11 +1134,11 @@ Pass IGNORE-LIST for a list of files "
   (interactive)
   (erase-buffer)
   (let* ((dir (or dir default-directory))
-         (fs (-->
+         (fs (->>
               (+js/index-file-names dir)
-              (if ignore-list
-                  (--remove (-contains? ignore-list it) it)
-                it))))
+              (-log)
+              (--reject (s-ends-with-p ".test" it))
+              (--when ignore-list (--remove (-contains? ignore-list it) it)))))
     (message "%s" fs)
     (mapc (lambda (f) (insert "import " f " from './" f "';\n")) fs)
     (insert "\n")
