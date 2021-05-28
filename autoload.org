@@ -596,6 +596,9 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (when-let ((fn (alist-get 'fn item)))
         (funcall fn))
 
+      ;; org item
+      (-some--> (alist-get 'org item)
+        (link-hint--open-org-link it))
       ;; goto, disable-relocation
       ;; Go to a location matched by regex
       ;; Unless disable-relocation is enabled and the file is already visited
