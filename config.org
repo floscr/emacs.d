@@ -3735,9 +3735,11 @@ So I fix the checker manually for each mode after lsp was loaded.
 *** Mail
 **** Config
 ***** Accounts
+****** Work
+
 ****** COMMENT Work
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (setq smtpmail-default-smtp-server "smtp.gmail.com")
 (setq smtpmail-smtp-service 587)
 (setq smtpmail-debug-info t)
@@ -3745,7 +3747,7 @@ So I fix the checker manually for each mode after lsp was loaded.
 
 ***** Bookmarks
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (setq mu4e-bookmarks
   `(("flag:unread AND NOT flag:trashed AND NOT maildir:/Spam" "Unread messages"      ?u)
     ("date:today..now AND NOT maildir:/Spam"                  "Today's messages"     ?T)))
@@ -3753,13 +3755,13 @@ So I fix the checker manually for each mode after lsp was loaded.
 
 ***** Disable Background Color
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (setq shr-use-colors nil)
 #+END_SRC
 
 ***** Shortcuts
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (setq mu4e-maildir-shortcuts
       '(("/mailbox/work/INBOX"     . ?i)
         ("/mailbox/work/Sent Mail" . ?s)
@@ -3769,7 +3771,7 @@ So I fix the checker manually for each mode after lsp was loaded.
 
 ***** Automatically apply Section without asking
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (setq mu4e-headers-leave-behavior 'apply)
 #+END_SRC
 
