@@ -729,7 +729,8 @@ Disable for certain modes (terminal & ivy) where the window is to small.
     ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
     ("^\\*jest" :select nil)
     ("^\\*projectile-files-errors" :ignore t)
-    ("^\\*elfeed-entry" :modeline t :ttl nil)))
+    ("^\\*elfeed-entry" :modeline t :ttl nil)
+    ("^\\*Flycheck checker" :size 0.2 :select nil)))
 #+END_SRC
 
 *** (Visual) Fill Column
