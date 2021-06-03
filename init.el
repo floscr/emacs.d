@@ -93,6 +93,7 @@
  literate
  reason
  work
+ (email +org +gmail)
  (org
   +org-reading-list
   +org-tags
