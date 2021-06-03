@@ -580,6 +580,7 @@ Mostly used to edit the macro registers ~q~.
 #+BEGIN_SRC elisp
 (add-hook! '(window-setup-hook after-make-frame-functions)
   (defun +ui/init-frame-ui (&optional frame)
+    (interactive)
     "Re-enable menu-bar-lines in GUI frames."
     (when-let (frame (or frame (selected-frame)))
       (when (display-graphic-p frame)
