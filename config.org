@@ -1617,6 +1617,15 @@ I mainly changed the function marking helper.
       (evil-range beg end type))))
 #+END_SRC
 *** Nim
+**** Config
+
+#+begin_src elisp
+(use-package nim-mode
+  :ensure t
+  :hook
+  (nim-mode . lsp))
+#+end_src
+
 **** Dotfiles compilation command
 
 #+BEGIN_SRC elisp
