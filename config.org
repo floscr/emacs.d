@@ -3144,6 +3144,24 @@ respectively."
   (let ((file-list (or file (dired-get-marked-files)))
         (process-connection-type nil))
     (--map (+my/nohup-shell-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
+
+(setq +dired:open-external-extensions '("mov"
+                                        "mpv"
+                                        "mp4"
+                                        "mp3"
+                                        "ogg"))
+
+(defun +dired|open-dwim (&optional file)
+  (interactive)
+  (let ((file-list (or file (dired-get-marked-files)))
+        (process-connection-type nil))
+    (-each file-list (lambda (x)
+                       (message "%s" x)
+                       (let* ((path (expand-file-name x))
+                              (ext (f-ext path)))
+                         (if (-contains? +dired:open-external-extensions ext)
+                             (+my/nohup-shell-command "xdg-open" (s-wrap path "\""))
+                           (dired-find-file)))))))
 #+END_SRC
 
 ***** Toggle Sorting
@@ -3313,7 +3331,7 @@ Widen can be restored with ~g~.
 #+BEGIN_SRC elisp
 (map! :after dired
       :map dired-mode-map
-      :ng "<C-return>" '+dired|open-externally
+      :ng "RET" '+dired|open-dwim
       :ng (kbd "<mouse-2>") '+dired|open-externally
       :gn "o" '+dired|toggle-sort
       :n "p" '+dired|paste-dwim
