@@ -123,6 +123,10 @@
            :files ("*.el" "*")))
 ;; Doom Snippets:1 ends here
 
+;; [[file:config.org::*Posframe][Posframe:1]]
+(package! flycheck-posframe :pin "6eea204138721f511051af5138326fecaad237b7")
+;; Posframe:1 ends here
+
 ;; [[file:config.org::*Calfw][Calfw:1]]
 (package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
 (package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")

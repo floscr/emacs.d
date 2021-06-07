@@ -243,6 +243,12 @@ Inline Calculation
            :files ("*.el" "*")))
 #+END_SRC
 
+*** Posframe
+
+#+BEGIN_SRC elisp
+(package! flycheck-posframe :pin "6eea204138721f511051af5138326fecaad237b7")
+#+END_SRC
+
 *** Calfw
 Continuous events are broken in the current calfw source,
 also it seems it isn't maintained anymore.
@@ -5587,12 +5593,6 @@ Solution from here: [[https://discord.com/channels/406534637242810369/4065540857
 
 #+BEGIN_SRC elisp
 (add-to-list 'warning-suppress-types '(defvaralias))
-#+END_SRC
-
-*** Fix flycheck posframe not hiding
-
-#+BEGIN_SRC elisp
-(add-hook 'post-command-hook #'flycheck-posframe-hide-posframe)
 #+END_SRC
 
 *** Stupid workaround where splitting a window with evil-ex-results breaks emacs...
