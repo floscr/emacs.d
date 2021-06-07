@@ -1844,14 +1844,6 @@ arguments can be set as a list via ‘nimpretty-args’."
 
 
 ** Package Config
-*** eslintd-fix
-
-#+BEGIN_SRC elisp
-(use-package eslintd-fix
-  :config
-  (setq eslintd-fix-portfile "~/.eslint_d"))
-#+END_SRC
-
 *** rainbow-mode
 
 #+BEGIN_SRC elisp
