@@ -1351,6 +1351,8 @@ console.log(result)
 (defun +rjsx/split-join ()
   "Function docstring"
   (interactive)
+  (when (eq ?> (char-after))
+    (backward-char 1))
   (-let* ((bounds (cond
                    ((use-region-p) (cons (region-beginning) (region-end)))
                    (t (+rjsx/find-opening-closing-tag))))
