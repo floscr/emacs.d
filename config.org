@@ -1329,7 +1329,12 @@ console.log(result)
   (interactive)
   (let* ((bounds (cond
                   ((use-region-p) (cons (region-beginning) (region-end)))
-                  (t (cons (js2-node-abs-pos (rjsx--tag-at-point)) (save-excursion (search-forward ">"))))))
+                  (t (cons
+                      (or (-some->>
+                              (rjsx--tag-at-point)
+                              (js2-node-abs-pos))
+                          (save-excursion (search-backward "<")))
+                      (save-excursion (search-forward ">"))))))
          (input (->> (buffer-substring-no-properties (car bounds) (cdr bounds))
                   (s-replace "\n" "\\n")
                   (s-replace "'" "\\'")))
