@@ -1324,17 +1324,36 @@ console.log(result)
 #+END_SRC
 
 #+BEGIN_SRC elisp
+(defun +rjsx/find-opening-closing-tag ()
+  "Return the opening and closing carent character positions for a tag under the cursor."
+  (save-excursion
+    (let* ((is-evil-normal-state (evil-normal-state-p))
+           (opening
+            (or (-some->> (rjsx--tag-at-point)
+                  (js2-node-abs-pos))
+                ;; Fallback when js2-node-abs-pos parser fails
+                (save-excursion (search-backward "<"))))
+           (closing (progn
+                      (when is-evil-normal-state
+                        (evil-insert-state))
+                      (while (and
+                              (re-search-forward "[^=]>" (point-max) t nil)
+                              (progn (backward-char 1) t)
+                              (rjsx--tag-at-point)
+                              (not (eq (js2-node-abs-pos (rjsx--tag-at-point)) opening))
+                              (progn (forward-char 1) t)))
+                      (when is-evil-normal-state
+                        (evil-normal-state))
+                      (forward-char)
+                      (point))))
+      (cons opening closing))))
+
 (defun +rjsx/split-join ()
   "Function docstring"
   (interactive)
   (-let* ((bounds (cond
                    ((use-region-p) (cons (region-beginning) (region-end)))
-                   (t (cons
-                       (or (-some->> (rjsx--tag-at-point)
-                             (js2-node-abs-pos))
-                           ;; Fallback when js2-node-abs-pos parser fails
-                           (save-excursion (search-backward "<")))
-                       (save-excursion (search-forward ">"))))))
+                   (t (+rjsx/find-opening-closing-tag))))
           ((beg . end) bounds)
           (input (->> (buffer-substring-no-properties beg end)
                    (s-replace "\n" "\\n")
@@ -1346,7 +1365,7 @@ console.log(result)
     (indent-region beg
                    ;; End position might be filled by whitespace, so we search again for the ending carent
                    (save-excursion (progn
-                                     (goto-char (search-forward ">")))))))
+                                     (goto-char (cdr (+rjsx/find-opening-closing-tag))))))))
 #+END_SRC
 
 ***** Expand self closing tag
@@ -1534,7 +1553,8 @@ Go to a package from the node_modules directory.
  :map rjsx-mode-map
  :localleader
  (:desc "Open Self-Closing Tag" :n ">" #'+rjsx|expand-insert-self-closing-tag)
- (:desc "Open Self-Closing Tag" :n "<" #'rjsx-rename-tag-at-point))
+ (:desc "Rename Tag" :n "," #'rjsx-rename-tag-at-point)
+ (:desc "Collapse/Expand Tag" :n "<" #'+rjsx/split-join))
 #+END_SRC
 
 ***** Evil Function Text Object Motion
