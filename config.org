@@ -1327,20 +1327,23 @@ console.log(result)
 (defun +rjsx/split-join ()
   "Function docstring"
   (interactive)
-  (let* ((bounds (cond
-                  ((use-region-p) (cons (region-beginning) (region-end)))
-                  (t (cons
-                      (or (-some->>
-                              (rjsx--tag-at-point)
-                              (js2-node-abs-pos))
-                          (save-excursion (search-backward "<")))
-                      (save-excursion (search-forward ">"))))))
-         (input (->> (buffer-substring-no-properties (car bounds) (cdr bounds))
-                  (s-replace "\n" "\\n")
-                  (s-replace "'" "\\'")))
-         (output (->> (shell-command-to-string (t! "node <<doom-private-dir>>/.cache/split-join-tag.js  $'<<input>>'")))))
-    (delete-region (car bounds) (cdr bounds))
-    (insert output)))
+  (-let* ((bounds (cond
+                   ((use-region-p) (cons (region-beginning) (region-end)))
+                   (t (cons
+                       (or (-some->> (rjsx--tag-at-point)
+                             (js2-node-abs-pos))
+                           ;; Fallback when js2-node-abs-pos parser fails
+                           (save-excursion (search-backward "<")))
+                       (save-excursion (search-forward ">"))))))
+          ((beg . end) bounds)
+          (input (->> (buffer-substring-no-properties beg end)
+                   (s-replace "\n" "\\n")
+                   (s-replace "'" "\\'")))
+          (output (->> (shell-command-to-string (t! "node <<doom-private-dir>>/.cache/split-join-tag.js  $'<<input>>'"))
+                    (s-trim-right))))
+    (delete-region beg end)
+    (insert output)
+    (indent-region beg end)))
 #+END_SRC
 
 ***** Expand self closing tag
