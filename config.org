@@ -1210,10 +1210,12 @@ console.log(`${foo}`)
         (delete-char 1)))))
 #+END_SRC
 
-***** Split / Join Tag Node
+***** Split / Join JSX Tag Node
 
 Stolen from the vscode extension: [[https://github.com/dannyconnell/vscode-split-html-attributes][dannyconnell/vscode-split-html-attributes]]
 I don't want to translate this to elisp, and js works as well.
+
+Split/Joins a JSX tags by seperating the attributes
 
 #+BEGIN_SRC js :tangle "./.cache/split-join-tag.js"
 const useSpacesForTabs = true;
@@ -1358,13 +1360,15 @@ console.log(result)
 (defun +rjsx/split-join ()
   "Function docstring"
   (interactive)
-  (let ((input
-         (->>
-          (buffer-substring-no-properties (region-beginning) (region-end))
-          (s-replace "\n" "\\n"))))
-    (->>
-     (shell-command-to-string (t! "node <<doom-private-dir>>/.cache/split-join-tag.js  $'<<input>>'"))
-     (insert))))
+  (let* ((bounds (cond
+                  ((use-region-p) (cons (region-beginning) (region-end)))
+                  (t (cons (js2-node-abs-pos (rjsx--tag-at-point)) (save-excursion (search-forward ">"))))))
+         (input (->> (buffer-substring-no-properties (car bounds) (cdr bounds))
+                  (s-replace "\n" "\\n")
+                  (s-replace "'" "\\'")))
+         (output (->> (shell-command-to-string (t! "node <<doom-private-dir>>/.cache/split-join-tag.js  $'<<input>>'")))))
+    (delete-region (car bounds) (cdr bounds))
+    (insert output)))
 #+END_SRC
 
 ***** Expand self closing tag
