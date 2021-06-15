@@ -325,7 +325,7 @@ module.exports = measure;
                         (let ((cmd (t! "start <<x>> -- --port 3008"))
                               (default-directory root))
                           (if arg
-                              (async-shell-command-no-window (t! "termite -d <<root>> -e \"npm run <<cmd>>\""))
+                              (async-shell-command-no-window (t! "termite --hold -d <<root>> -e \"npm run <<cmd>>\""))
                             (npm-mode-npm-run cmd)))))))
 #+END_SRC
 
