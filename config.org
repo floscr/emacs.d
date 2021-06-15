@@ -1177,39 +1177,6 @@ console.log(`${foo}`)
   (pop kill-ring))
 #+END_SRC
 
-***** Split / Join Tag Elisp
-
-#+BEGIN_SRC elisp
-(defvar +rjsx:closing-tag-regexp nil)
-(setq +rjsx:closing-tag-regexp "[^=]\\\\?>")
-
-(defun +rjsx|split-join-tag ()
-  "Split or join the xml attributes list in the current tag."
-  (interactive)
-  (if-let ((closing-tag (save-excursion
-                          (rjsx-jump-opening-tag)
-                          (re-search-forward +rjsx:closing-tag-regexp (point-at-eol) t))))
-      (save-excursion
-        (rjsx-jump-opening-tag)
-        (evil-forward-WORD-begin 1)
-        (while (< (point) closing-tag)
-          (newline-and-indent)
-          (evil-forward-WORD-begin 1))
-        (previous-line)
-        (re-search-forward +rjsx:closing-tag-regexp (point-at-eol) t)
-        (backward-char 1)
-        (newline-and-indent))
-    (save-excursion
-      (rjsx-jump-opening-tag)
-      (while (not (re-search-forward +rjsx:closing-tag-regexp (point-at-eol) t))
-        (next-line)
-        (join-line))
-      (search-forward-regexp +rjsx:closing-tag-regexp (point-at-eol) t)
-      (backward-char 2)
-      (when (= (char-after) ?\s)
-        (delete-char 1)))))
-#+END_SRC
-
 ***** Split / Join JSX Tag Node
 
 Stolen from the vscode extension: [[https://github.com/dannyconnell/vscode-split-html-attributes][dannyconnell/vscode-split-html-attributes]]
