@@ -1344,7 +1344,7 @@ console.log(result)
                               (progn (forward-char 1) t)))
                       (when is-evil-normal-state
                         (evil-normal-state))
-                      (forward-char)
+                      (forward-char 2)
                       (point))))
       (cons opening closing))))
 
