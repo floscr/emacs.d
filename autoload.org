@@ -197,7 +197,6 @@ nil -> \"Disabled\""
   (message (t! "<<(symbol-name x)>>: <<(+my/bool-to-enabled-string (symbol-value x))>>")))
 #+END_SRC
 
-
 ** Dash Extensions
 *** -tap
 
@@ -346,7 +345,6 @@ shuffling is done in place."
       (goto-char (point-min))
       (search-forward string nil t))))
 #+END_SRC
-
 
 *** Get the line Indent
 
