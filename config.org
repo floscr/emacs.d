@@ -1343,7 +1343,10 @@ console.log(result)
                     (s-trim-right))))
     (delete-region beg end)
     (insert output)
-    (indent-region beg end)))
+    (indent-region beg
+                   ;; End position might be filled by whitespace, so we search again for the ending carent
+                   (save-excursion (progn
+                                     (goto-char (search-forward ">")))))))
 #+END_SRC
 
 ***** Expand self closing tag
