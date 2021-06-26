@@ -974,6 +974,7 @@ Saving and committing keeps the indentation in the source buffer.
       (+indirect-indent-mode 1)
       (setq +indirect-indent indent))))
 #+END_SRC
+
 *** Scanning
 
 #+BEGIN_SRC elisp
