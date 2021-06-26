@@ -122,13 +122,6 @@ Customize org mode to:
 
 All todo keywords are for general items.
 
-~[ ]~ style keywords are for subtasks, that I might want to filter out from certain views.
-#+BEGIN_EXAMPLE
-- [!] Stands for active
-- [?] Stands for waiting
-- [|] Stands for cancelled
-#+END_EXAMPLE
-
 #+BEGIN_SRC elisp
 (after! org
   :config
@@ -136,7 +129,6 @@ All todo keywords are for general items.
         '((sequence "ACTIVE(a)" "NEXT(n)" "|" "DONE")
           (sequence "TODO(t)" "|" "DONE(x)")
           (sequence "WAITING(w)"  "SOMEDAY(s)" "|" "DONE" "CANCELLED(c)")
-          (sequence "[ ]([)" "[!](!)" "[-](-)" "|" "[X](])" "[|](|)")
           (sequence "PROJECT(p)" "|" "DONE")
           (sequence "NOTE(N)")))
   (setq org-todo-keyword-faces
