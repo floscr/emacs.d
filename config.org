@@ -5294,7 +5294,8 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("t" . "toggle")
-   :desc "Theme Dark/Light"     "t" #'+doom|toggle-theme))
+   :desc "Theme Dark/Light" "t" #'+doom|toggle-theme
+   :desc "Auto Completion" "c" #'+company/toggle-auto-completion))
 #+END_SRC
 
 **** Window
