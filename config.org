@@ -1847,8 +1847,18 @@ arguments can be set as a list via ‘nimpretty-args’."
     "p" #'nimpretty))
 #+end_src
 
-
 ** Package Config
+*** atomic chrome
+
+**** Major mode
+
+[[https://github.com/alpha22jp/atomic-chrome#set-major-mode-for-editing-buffer][alpha22jp/atomic-chrome: Edit text area on Chrome with Emacs using Atomic Chrome]]
+
+#+begin_src elisp
+(setq atomic-chrome-url-major-mode-alist
+      '(("github\\.com" . gfm-mode)))
+#+end_src
+
 *** rainbow-mode
 
 #+BEGIN_SRC elisp
