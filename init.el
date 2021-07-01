@@ -68,6 +68,7 @@
  rust
  rest
  data
+ haskell
  emacs-lisp
  markdown
  ocaml
