@@ -1209,6 +1209,32 @@ Take the host as the base and either the TITLE or the path from the URL."
               :caller 'counsel-org-goto-all)))
 #+END_SRC
 
+**** Projects
+
+#+BEGIN_SRC elisp
+(defun +org|search-projects ()
+  "Search my programming related notes"
+  (interactive)
+  (let ((entries)
+        (buffers
+         (->> '("Main/projects.org")
+           (+org/expand-org-file-name)
+           (-append (f-entries (f-join org-directory "Docs")))
+           (-flatten)
+           (-map #'find-file-noselect))))
+    (dolist (b buffers)
+      (with-current-buffer b
+        (setq entries
+              (nconc entries
+                     (counsel-outline-candidates
+                      (cdr (assq 'org-mode counsel-outline-settings))
+                      (counsel-org-goto-all--outline-path-prefix))))))
+    (ivy-read "Goto: " entries
+              :history 'counsel-org-goto-history
+              :action #'counsel-org-goto-action
+              :caller 'counsel-org-goto-all)))
+#+END_SRC
+
 ** Features
 
 Stuff that doesn't belong into modules, but is too big to put into a simple util section.
@@ -2459,6 +2485,7 @@ Set my preferred clipboard paste method to ~xclip~.
   :desc "Store Link"                 "j" #'+private-journal|new-entry
   :desc "Visit Entry"              "SPC" #'+org-indirect|clock-visit-entry
   :desc "Docs"                       "d" #'+org|search-programming-docs
+  :desc "Projects"                   "p" #'+org|search-projects
 
   (:prefix-map ("b" . "Bookmarks")
    :desc "Goto Bookmarks File"       "b" (cmd! (find-file +org:bookmarks-file))
