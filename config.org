@@ -232,6 +232,13 @@ Inline Calculation
 #+BEGIN_SRC elisp
 (package! literate-calc-mode)
 #+END_SRC
+
+*** Nix
+
+#+BEGIN_SRC elisp
+(package! nixpkgs-fmt)
+#+END_SRC
+
 ** Overrides
 *** Doom Snippets
 
@@ -1848,6 +1855,15 @@ arguments can be set as a list via ‘nimpretty-args’."
 #+end_src
 
 ** Package Config
+*** Nixpkgs Fmt
+
+#+begin_src elisp
+(use-package nixpkgs-fmt
+  :after nix-mode
+  :config
+  (setq nixpkgs-fmt-on-save-mode t))
+#+end_src
+
 *** atomic chrome
 
 **** Major mode
