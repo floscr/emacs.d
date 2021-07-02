@@ -100,6 +100,25 @@ Create an action from a controller and import directly
     (find-file action-file)))
 #+END_SRC
 
+*** Create store
+
+Create a store from a controller and import directly
+
+#+BEGIN_SRC elisp
+(defun +MM|create-store ()
+  "Create an action file from a controller file"
+  (interactive)
+  (let* ((store-name (f-no-ext (read-string "Action Name: " "Config")))
+         (root-dir (file-name-directory (buffer-file-name)))
+         (store-dir (concat root-dir "stores/"))
+         (store-file (concat store-dir (concat store-name ".js"))))
+    (f-mkdir store-dir)
+    (copy-file
+     (concat (projectile-project-root) "snippets/Core/Store.js")
+     store-file)
+    (find-file store-file)))
+#+END_SRC
+
 *** Create canvas action
 
 Create a canvas action
@@ -1361,6 +1380,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          :desc  "Import Other Window"          "o"  #'+MM-import|import-other-window-file
          :desc  "Rule"                         "r"  #'+MM|add-rule
          :desc  "Container Action"             "a"  #'+MM|create-action
+         :desc  "Container Action"             "S"  #'+MM|create-store
          :desc  "Canvas Action"                "A"  #'+MM|canvas-create-action
          :desc  "Container"                    "c"  #'+MM|canvas-create-action)
         (:prefix-map ("d" . "Debug")
