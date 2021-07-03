@@ -4668,6 +4668,24 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 #+BEGIN_SRC elisp
 (map! :nm "C-z" nil)
 #+END_SRC
+**** Auto indent bracket openings
+:PROPERTIES:
+:SOURCE:   [[https://xenodium.com/emacs-smartparens-auto-indent/][Emacs smartparens auto-indent]]
+:END:
+
+Automatically indent and format when opening area betwen to delimiters.
+
+#+begin_src elisp
+(defun indent-between-pair (&rest _ignored)
+  (newline)
+  (indent-according-to-mode)
+  (forward-line -1)
+  (indent-according-to-mode))
+
+(sp-local-pair 'prog-mode "{" nil :post-handlers '((indent-between-pair "RET")))
+(sp-local-pair 'prog-mode "[" nil :post-handlers '((indent-between-pair "RET")))
+(sp-local-pair 'prog-mode "(" nil :post-handlers '((indent-between-pair "RET")))
+#+end_src
 
 *** Super
 
