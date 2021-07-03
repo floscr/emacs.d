@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: ReludeReact.Reducer
+# key: rreducer
+# --
+type state = {${1:prop}: ${2:bool}};
+
+let initialState = {$1: ${3:true}};
+
+type action =
+  | NoOp;
+
+let reducer =
+    (state: state, action: action): ReludeReact.Reducer.update(action, state) =>
+  switch (action) {
+  | NoOp => NoUpdate
+  };
+
+// Move to component
+let (state, send) = ReludeReact.Reducer.useReducer(reducer, initialState);
