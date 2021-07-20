@@ -1001,7 +1001,8 @@ Saving and committing keeps the indentation in the source buffer.
   (newline)
   (goto-char (point-max))
   (yas/insert-by-name "Scan Template")
-  (+org|add-created-property))
+  (+org|add-created-property)
+  (current-buffer))
 
 (defun +docs/get-attachment-path ()
   "Get the attachment path from the current entry."
