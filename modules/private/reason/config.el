@@ -37,11 +37,11 @@
   :init
   ;; Disable merlin's own error checking
   ;; We'll use flycheck-ocaml for that
+  (add-hook! merlin-mode (flycheck-add-mode 'ocaml-merlin 'reason-mode))
   (setq
    merlin-error-after-save nil
    merlin-command (executable-find "ocamlmerlin"))
   :config
-  ;; (flycheck-add-mode 'ocaml-merlin 'reason-mode)
   (add-to-list 'company-backends 'merlin-company-backend))
 
 (use-package flycheck-ocaml
