@@ -79,6 +79,7 @@
   +dragndrop
   +present)
  sh
+ yaml
 
  :app
  irc
