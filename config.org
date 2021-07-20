@@ -3565,7 +3565,6 @@ Find file on enter press for ~ivy-occur-mode~
       :gni "RET" #'ivy-occur-press-and-switch)
 #+END_SRC
 
-
 **** Functions
 ***** Counsel Project File Jump
 
