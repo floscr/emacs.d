@@ -597,7 +597,11 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 
       ;; org item
       (-some--> (alist-get 'org item)
-        (link-hint--open-org-link it))
+        (link-hint--open-org-link it)
+        ((lambda ()
+           (when (alist-get 'narrow item)
+             (org-narrow-to-element)))))
+
       ;; goto, disable-relocation
       ;; Go to a location matched by regex
       ;; Unless disable-relocation is enabled and the file is already visited
