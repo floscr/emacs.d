@@ -115,6 +115,10 @@
 (package! literate-calc-mode)
 ;; Literate Calc Mode:1 ends here
 
+;; [[file:config.org::*Nix][Nix:1]]
+(package! nixpkgs-fmt)
+;; Nix:1 ends here
+
 ;; [[file:config.org::*Doom Snippets][Doom Snippets:1]]
 (package! doom-snippets :ignore t)
 (package! my-doom-snippets
