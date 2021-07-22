@@ -5322,7 +5322,10 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("s" . "search")
-   :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point))
+  :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point
+  :desc "Occur" "o" #'occur
+  :desc "Web Lookup" "P" #'+lookup/online
+  :desc "Web Lookup with prompt" "P" #'+lookup/online-select))
 #+END_SRC
 
 **** Toggle
