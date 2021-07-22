@@ -5223,7 +5223,8 @@ and then do my function.
 (map!
  :leader
  (:prefix-map ("b" . "buffer")
-   :desc "Rename Buffer"  "r" #'rename-buffer))
+  :desc "Rename Buffer"  "r" #'rename-buffer
+  :desc "Rename Buffer"  "+" #'persp-add-buffer))
 #+END_SRC
 
 **** File
