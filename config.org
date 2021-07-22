@@ -2281,7 +2281,7 @@ which I name after the matching url.
 #+BEGIN_SRC elisp
 (setq
  +bookmarks:main
- `(((file . "~/.config/doom/modules/private/work/config.org")
+ '(((file . "~/.config/doom/modules/private/work/config.org")
     (name . "Config: Work")
     (goto . "* Configuration")
     (goto-bol . t)
@@ -2290,7 +2290,7 @@ which I name after the matching url.
     (name . "Config: Autoloads"))
    ((file . "~/.config/doom/modules/private/org/config.org")
     (name . "Config: Org"))
-   ((file . ,+bookmarks:local-bookmarks-file)
+   ((fn . (lambda () (find-file +bookmarks:local-bookmarks-file)))
     (name . "Bookmarks: Local"))
    ((file . "~/.config/doom/config.org")
     (name . "Bookmarks: Main")
