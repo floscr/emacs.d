@@ -3367,7 +3367,10 @@ Widen can be restored with ~g~.
       :ng (kbd "<mouse-2>") '+dired|open-externally
       :gn "o" '+dired|toggle-sort
       :n "p" '+dired|paste-dwim
-      :n "gg" '+dired|goto-top)
+      :n "gg" '+dired|goto-top
+      :localleader
+      (:prefix ("s" . "search")
+       "i"  #'dired-goto-subdir))
 
 (define-key dired-mode-map (kbd "<down-mouse-1>") 'dired-mouse-find-file)
 #+END_SRC
