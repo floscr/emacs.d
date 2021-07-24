@@ -5324,8 +5324,8 @@ and then do my function.
  (:prefix-map ("s" . "search")
   :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point
   :desc "Occur" "o" #'occur
-  :desc "Web Lookup" "P" #'+lookup/online
-  :desc "Web Lookup with prompt" "P" #'+lookup/online-select))
+  :desc "Web Lookup" "w" #'+lookup/online
+  :desc "Web Lookup with prompt" "W" #'+lookup/online-select))
 #+END_SRC
 
 **** Toggle
