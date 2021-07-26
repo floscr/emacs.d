@@ -3336,7 +3336,7 @@ Allows to click on the header bar to got to navigate tree breadcrumbs in the dir
     (define-key map [mouse-2] 'dired-follow-link)
     (define-key map [return] 'dired-follow-link)
     (define-key map [follow-link] 'mouse-face)
-      map)
+    map)
   "Keymap for mouse when in `dired-mode'.")
 
 ;; Author:  Drew Adams -- http://emacs.stackexchange.com/a/13411/2287
@@ -3350,11 +3350,11 @@ dired buffer to be opened."
       (dired path))))
 
 (defun dired-propertize-directory-heading ()
-(interactive)
+  (interactive)
   (unless (buffer-narrowed-p)
     (let* (
-        p beg end path peol
-        (inhibit-read-only t) )
+           p beg end path peol
+           (inhibit-read-only t))
       (save-excursion
         (goto-char (point-min))
         (setq peol (point-at-eol))
@@ -3364,25 +3364,25 @@ dired buffer to be opened."
           (setq p (match-end 1))
           (setq path (if (match-string 2) (concat (match-string 2) "/") "/"))
           (add-text-properties (point-min) (1- (match-end 0)) (list
-            'breadcrumb path
-            'mouse-face 'dired-mouseover-face
-            'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
-            'keymap dired-mouse-map)))
+                                                               'breadcrumb path
+                                                               'mouse-face 'dired-mouseover-face
+                                                               'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
+                                                               'keymap dired-mouse-map)))
         (while (re-search-forward "\\([^/\\]+\\)[/\\]" peol t)
           (setq beg (match-beginning 1))
           (setq end (match-end 1))
           (setq path (buffer-substring-no-properties p end))
           (add-text-properties beg end (list
-            'breadcrumb path
-            'mouse-face 'dired-mouseover-face
-            'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
-            'keymap dired-mouse-map)))
+                                        'breadcrumb path
+                                        'mouse-face 'dired-mouseover-face
+                                        'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
+                                        'keymap dired-mouse-map)))
         (setq path (buffer-substring-no-properties p (1- peol)))
         (add-text-properties (point) (1- peol) (list
-          'breadcrumb path
-          'mouse-face 'dired-mouseover-face
-          'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
-          'keymap dired-mouse-map))))))
+                                                'breadcrumb path
+                                                'mouse-face 'dired-mouseover-face
+                                                'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
+                                                'keymap dired-mouse-map))))))
 
 (add-hook 'dired-after-readin-hook 'dired-propertize-directory-heading)
 #+end_src
