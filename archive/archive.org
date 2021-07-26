@@ -1,0 +1,32 @@
+#+TITLE: Archive
+:header-args: :tangle no
+
+This is where I keep functions and config that I don't use at the moment, but am not ready to discard (or loose it in git history).
+
+* Packages & Config
+
+** Treesitter
+
+Tree sitter looks awesome, but it's too early to really use it for now.
+
+It adds some extra syntax highlighting, but wont be of any use, until we can completely replace emacs syntax highlighting. (Otherwise you load 2 syntax highlighters).
+
+There's also no real information how to do ~AST~ transforms with functions (which would be my main reason to use it).
+
+*** Package
+
+#+begin_src elisp :tangle packages.el
+(package! tree-sitter)
+(package! tree-sitter-langs)
+#+end_src
+
+*** Config
+
+#+begin_src elisp
+;; config for tree-sitter
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
