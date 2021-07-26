@@ -2170,6 +2170,15 @@ Overwrite ~org-alert~ headline checker to show notifications only when:
 
 **** Download image from clipboard
 
+Trying to find out why this still displays inline images.
+Cant remove them with:
+
+#+begin_src elisp :tangle no
+                      (let ((org-download-display-inline-images nil))
+                        (+org/attach-file-and-insert-link txt)
+                        (org-remove-inline-images))
+#+end_src
+
 #+BEGIN_SRC elisp
 (defun +org|attach-yank-image ()
   "Instert the image from the clipboard as an attachment."
