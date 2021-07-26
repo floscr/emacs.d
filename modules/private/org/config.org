@@ -1677,6 +1677,7 @@ And advice the function to the manual item creation functions:
 (defun +org|archive-done-tasks ()
   "Archive tasks with DONE or CANCELED todo state."
   (interactive)
+  (require 'org-archive)
   (let ((scope (if (eq (org-outline-level) 0)
                    'file
                  'tree)))
