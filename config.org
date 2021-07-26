@@ -3445,8 +3445,11 @@ Widen can be restored with ~g~.
 #+BEGIN_SRC elisp
 (map! :after dired
       :map dired-mode-map
+      ;; Mouse controls
+      :ng (kbd "<mouse-2>") '+dired|open-dwim
+      :ng (kbd "<mouse-8>") 'dired-up-directory
+
       :ng "RET" '+dired|open-dwim
-      :ng (kbd "<mouse-2>") '+dired|open-externally
       :gn "o" '+dired|toggle-sort
       :n "p" '+dired|paste-dwim
       :n "gg" '+dired|goto-top
