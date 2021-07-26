@@ -3341,13 +3341,16 @@ Allows to click on the header bar to got to navigate tree breadcrumbs in the dir
 
 ;; Author:  Drew Adams -- http://emacs.stackexchange.com/a/13411/2287
 (defun dired-follow-link (event)
-"Follow the link in the dired directory heading, causing a new
-dired buffer to be opened."
+  "Follow the link in the dired directory heading, causing a new
+dired buffer to be opened.
+When clicking on the current directory always go one directory upwards."
   (interactive (list last-nonmenu-event))
   (run-hooks 'mouse-leave-buffer-hook)
   (with-current-buffer (window-buffer (posn-window (event-start event)))
     (let ((path  (get-text-property (posn-point (event-start event)) 'breadcrumb)))
-      (dired path))))
+      (if (f-equal? dired-directory path)
+          (dired-up-directory)
+        (dired path)))))
 
 (defun dired-propertize-directory-heading ()
   (interactive)
