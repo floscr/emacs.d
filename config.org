@@ -279,6 +279,8 @@ also it seems it isn't maintained anymore.
 (package! merlin-eldoc :disable t)
 #+END_SRC
 
+* Packages & Config
+
 * Configuration
 ** External Files
 *** Secrets
