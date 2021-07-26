@@ -3141,6 +3141,22 @@ I undo this option with the interactive prefix argument, which can be accessed v
 :SOURCE:   https://www.reddit.com/r/emacs/comments/cgbpvl/opening_media_files_straight_from_gnu_emacs_dired/eufxc9j/
 :END:
 
+****** Extensions
+
+#+begin_src elisp
+(defvar +dired:open-external-extensions nil
+  "Which files to open externally by default when pressing enter.")
+
+(setq +dired:open-external-extensions
+      '(
+        ;; Video
+        "mov" "mpv" "mkv"
+        ;; Audio
+        "mp4" "mp3" "ogg"))
+#+end_src
+
+****** Function
+
 #+BEGIN_SRC elisp
 (defun +dired/mouse-open-externally (event)
   "Open marked dired file(s) at point with an external application. Open directories normally"
@@ -3179,12 +3195,6 @@ respectively."
   (let ((file-list (or file (dired-get-marked-files)))
         (process-connection-type nil))
     (--map (+my/nohup-shell-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
-
-(setq +dired:open-external-extensions '("mov"
-                                        "mpv"
-                                        "mp4"
-                                        "mp3"
-                                        "ogg"))
 
 (defun +dired|open-dwim (&optional file)
   (interactive)
