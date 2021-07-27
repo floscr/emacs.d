@@ -1859,6 +1859,35 @@ arguments can be set as a list via ‘nimpretty-args’."
 #+end_src
 
 ** Package Config
+*** Flyspell
+
+**** Defer flyspell until first ~evil-insert-state~
+
+Flyspell most of the time is an annoyance when opening a file just for reading.
+I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
+
+So I defer it until the first text change has been done (or the first insert state).
+I've tried it on the ~first-change-hook~, but that is also affected by changing todo states for example in ~org-mode~.
+
+#+begin_src elisp
+(defun +flyspell/load-after-first-insert--activate ()
+  "Turns on flyspell after the first buffer change or evil-insert state."
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert)
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate)
+  (spell-fu-mode 1))
+
+(defun +flyspell/load-after-first-insert ()
+  "Turns on flyspell after the first buffer evil-insert state."
+  (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))
+
+(use-package! flyspell
+  :init
+  (remove-hook! '(org-mode-hook markdown-mode-hook) #'flyspell-mode)
+  (remove-hook! '(org-mode-hook markdown-mode-hook text-mode-hook) #'spell-fu-mode)
+  (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
+#+end_src
+
+
 *** Nixpkgs Fmt
 
 #+begin_src elisp
