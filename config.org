@@ -1,8 +1,8 @@
-# -*- eval: (spell-fu-mode -1); -*-
 #+TITLE: Doom Emacs configuration
 #+AUTHOR: floscr
 #+PROPERTY: header-args :emacs-lisp :tangle yes :comments link
 #+STARTUP: org-startup-folded: showall
+#+DISABLE_SPELLCHECKER: t
 #+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t -*-
 #+END_SRC
@@ -1877,8 +1877,10 @@ I've tried it on the ~first-change-hook~, but that is also affected by changing 
   (spell-fu-mode 1))
 
 (defun +flyspell/load-after-first-insert ()
-  "Turns on flyspell after the first buffer evil-insert state."
-  (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))
+  "Turns on flyspell after the first buffer evil-insert state.
+Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set."
+  (cond ((and (equal major-mode 'org-mode) (+org-get-global-property "DISABLE_SPELLCHECKER")) nil)
+        (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
 
 (use-package! flyspell
   :init
