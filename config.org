@@ -156,6 +156,7 @@ Move to ivy candidate with =C-'=
 #+END_SRC
 
 ** Language Packages
+
 *** Elisp
 
 [[https://github.com/countvajhula/symex.el][Symex]] for editing emacs lisp by structure.
@@ -1079,6 +1080,19 @@ Saving and committing keeps the indentation in the source buffer.
 #+END_SRC
 
 ** Language Config
+*** Haskell
+**** Formatter
+
+#+begin_src elisp
+(defun format-haskell-with-brittany-and-stylish-haskell ()
+  "Function formats haskell buffer with brittany on save."
+  (interactive)
+  (when (eq major-mode 'haskell-mode)
+    (shell-command-to-string (format "brittany --write-mode inplace %s" buffer-file-name))
+    (revert-buffer :ignore-auto :noconfirm)
+    (haskell-mode-stylish-buffer)
+    (save-buffer)))
+#+end_src
 *** Javascript
 **** Config
 
