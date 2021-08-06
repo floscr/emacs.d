@@ -5304,7 +5304,7 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 (map! :nv "C-M-d" #'evil-multiedit-match-all)
 #+END_SRC
 
-**** Evil Jump with =tab=
+**** Jump with =tab=
 
 #+BEGIN_SRC elisp
 (map! :n [tab] (general-predicate-dispatch nil
@@ -5321,13 +5321,13 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
                  (fboundp 'evil-jump-item)
                  #'evil-jump-item))
 #+END_SRC
-**** Evil Paste Fix
+**** TODO Paste Fix
 
 Evil pastes at the current cursor, which I don't expect it to do.
 Most of the time it requires me to move into insert mode, move one character,
 and then do my function.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun +evil/normal-mode-paste-fix (fn &optional insert-char)
   "Move forward one character and then paste."
   (interactive)
