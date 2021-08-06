@@ -1910,7 +1910,9 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 (use-package nixpkgs-fmt
   :after nix-mode
   :config
-  (setq nixpkgs-fmt-on-save-mode t))
+  (setq nixpkgs-fmt-on-save-mode t)
+  :init
+  (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
 #+end_src
 
 *** atomic chrome
