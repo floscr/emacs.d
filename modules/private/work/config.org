@@ -332,19 +332,19 @@ module.exports = measure;
   (interactive "P")
   (npm-mode)
   (let* ((dir (or (->> (f-join (+my/project-root) "src/apps/")
-                    (-id-when #'f-exists?))
+                       (-id-when #'f-exists?))
                   (f-expand "~/Code/Meisterlabs/kits-2.0/src/apps/")))
          (root (doom-project-root dir))
          (apps (->> dir
-                 (f-entries)
-                 (--map (s-replace dir "" it))))
+                    (f-entries)
+                    (--map (s-replace dir "" it))))
          (default-directory dir))
     (ivy-read "Start App: " apps
               :action (lambda (x)
                         (let ((cmd (t! "start <<x>> -- --port 3008"))
                               (default-directory root))
                           (if arg
-                              (async-shell-command-no-window (t! "termite --hold -d <<root>> -e \"npm run <<cmd>>\""))
+                              (async-shell-command-no-window (t! "alacritty --hold --working-directory <<root>> -e \"npm run <<cmd>>\""))
                             (npm-mode-npm-run cmd)))))))
 #+END_SRC
 
