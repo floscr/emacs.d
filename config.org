@@ -5344,6 +5344,25 @@ and then do my function.
     (call-interactively fn)))
 #+END_SRC
 
+**** TODO Store all yanks in extra register
+
+#+begin_src elisp :tangle no
+(defvar +evil:last-yank nil)
+
+(defun +evil/save-to-yank-register (&rest _rest)
+  "Save the last yank to a specific register that only gets overwritten by yanks.
+So deletes wont affect this register."
+  (setq +evil:last-yank (evil-get-register ?\")))
+
+(defun +evil/insert-from-yank-register ()
+  "Save the last yank to a specific register that only gets overwritten by yanks.
+So deletes wont affect this register."
+  (-some->> +evil:last-yank
+    (insert)))
+
+;; (advice-add 'evil-yank :after #'+evil/save-to-yank-register)
+#+end_src
+
 *** Leader
 
 #+BEGIN_SRC elisp
