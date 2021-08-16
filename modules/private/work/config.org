@@ -653,7 +653,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
 (require 'ht)
 (setq +MM-import:package-exports
       (ht ("@meisterlabs/common"
-           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color" "tap" "anyPass" "allPass"))
+           '("Try" "Maybe" "Either" "Box" "Switch" "Num" "Obj" "Arr" "Str" "Branch" "Color" "tap" "anyPass" "allPass" "equals"))
           ("@meisterlabs/redux-geometry"
            '("Point" "Area" "Line"))
           ("@meisterlabs/redux"
