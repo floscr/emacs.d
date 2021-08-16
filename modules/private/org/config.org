@@ -2191,20 +2191,27 @@ Cant remove them with:
 (defun +org-attach|dwim ()
   "Function docstring"
   (interactive)
-  (let ((targets
+  (let ((timeout "timeout 0.05") ;; Wrap command in timeout to prevent emacs from freezing when xclip hangs
+        (targets
          (->> (shell-command-to-string "xclip -selection clipboard -t TARGETS -o")
-           (s-trim)
-           (s-split "\n"))))
-    (cond ((--find (s-contains? "image/png" it) targets)
-           (+org|attach-yank-image))
-          (t (let* ((timeout "timeout 0.05") ;; Wrap command in timeout to prevent emacs from freezing when xclip hangs
-                    (txt (shell-command-to-string (t! "<<timeout>> xclip -o -selection clipboard"))))
+              (s-trim)
+              (s-split "\n"))))
+    (cond ((--find (s-contains? "text/plain" it) targets)
+           (let* ((txt (substring-no-properties (current-kill 0))))
+             (-some->> txt
+               (s-trim)
+               (f-expand)
+               (-id-when #'f-exists?)
+               (+org/attach-file-and-insert-link))))
+          ((--find (s-contains? "image/png" it) targets)
+           (+org/attach-file-and-insert-link))
+          (t (let* ((txt (shell-command-to-string (t! "<<timeout>> xclip -o -selection clipboard"))))
                (cond ((or (string= "End of file during parsing" txt)
                           (string= "" txt))
                       (-log "xclip timed out"))
                      ((s-matches-p url-handler-regexp txt)
                       (+org/attach-file-and-insert-link txt))
-                    (t (user-error "Could not save clipboard contents:\n%s" txt))))))))
+                     (t (user-error "Could not save clipboard contents:\n%s" txt))))))))
 #+END_SRC
 
 *** Roam
