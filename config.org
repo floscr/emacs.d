@@ -282,6 +282,29 @@ also it seems it isn't maintained anymore.
 
 * Packages & Config
 
+** Tree Sitter
+:PROPERTIES:
+:header-args:    :tangle no
+:END:
+
+*** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! tree-sitter)
+(package! tree-sitter-langs)
+#+end_src
+
+*** Config
+
+#+begin_src emacs-lisp
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
+
+
 * Configuration
 ** External Files
 *** Secrets
