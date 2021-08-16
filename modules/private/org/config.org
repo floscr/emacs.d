@@ -1234,6 +1234,21 @@ Take the host as the base and either the TITLE or the path from the URL."
               :action #'counsel-org-goto-action
               :caller 'counsel-org-goto-all)))
 #+END_SRC
+**** Grep Search
+
+#+begin_src elisp
+(defun +org/rg-notes (&optional arg)
+  "Search notes.
+
+If ARG is passed, include archives."
+  (interactive "P")
+  (require 'noflet)
+  ;; Override shell quoting function, it turns ! into \\! which doesn't work for inverse flag "!"
+  (let ((args (-concat (unless arg '("-g!/Archives/*" "-g!.archive/"))
+                       '("-g!Docs/" "-g!/Roam"))))
+    (noflet ((shell-quote-argument (x) x))
+      (+ivy-file-search :prompt "Search Org Notes: " :in org-directory :args args))))
+#+end_src
 
 ** Features
 
@@ -2496,7 +2511,7 @@ Set my preferred clipboard paste method to ~xclip~.
 
  (:prefix-map ("n" . "Notes")
   :desc "Save All Org Buffers"       "S" #'org-save-all-org-buffers
-  :desc "Save All Org Buffers"       "s" #'+default/org-notes-search
+  :desc "Save All Org Buffers"       "s" #'+org/rg-notes
   :desc "Search"                     "f" #'+org|search
   :desc "Find in notes"              "n" #'+org|search-in-notes
   :desc "Agenda"                     "a" #'org-agenda
