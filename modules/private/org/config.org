@@ -552,7 +552,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
       (org-agenda-sorting-strategy '(priority-down todo-state-up user-defined-down timestamp-down))
       (org-super-agenda-groups '((:discard (:scheduled t))
                                  (:name "Emacs" :tag ("EMACS"))
-                                 (:name "Nixos" :tag ("NIXOS"))
+                                 (:name "Linux" :tag ("LINUX"))
                                  (:name "Digital" :tag ("DIGITAL"))
                                  (:name "Personal" :tag ("PERSONAL") :order 1)
                                  (:name "Home" :tag ("HOME") :order -1)
