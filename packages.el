@@ -60,10 +60,6 @@
 (package! edbi)
 ;; Programming:1 ends here
 
-;; [[file:config.org::*Cheat.sh][Cheat.sh:1]]
-(package! cheat-sh)
-;; Cheat.sh:1 ends here
-
 ;; [[file:config.org::*Narrow Proced Buffers][Narrow Proced Buffers:1]]
 (package! proced-narrow)
 ;; Narrow Proced Buffers:1 ends here
@@ -148,3 +144,7 @@
 (package! lsp-ui :disable t)
 (package! merlin-eldoc :disable t)
 ;; Remove those annoying LSP interface plugins:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! cheat-sh)
+;; Package:1 ends here
