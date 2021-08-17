@@ -1,5 +1,10 @@
 ;; -*- no-byte-compile: t; -*-
 
+;; [[file:config.org::*Package][Package:1]]
+(package! tree-sitter)
+(package! tree-sitter-langs)
+;; Package:1 ends here
+
 ;; [[file:config.org::*noflet][noflet:1]]
 (package! noflet)
 ;; noflet:1 ends here

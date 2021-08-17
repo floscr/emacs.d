@@ -300,7 +300,7 @@ also it seems it isn't maintained anymore.
 (use-package! tree-sitter
   :config
   (require 'tree-sitter-langs)
-  (global-tree-sitter-mode)
+  ;; (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
 
