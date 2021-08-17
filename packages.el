@@ -84,10 +84,6 @@
 (package! impatient-mode)
 ;; Impatient Mode: Live editing of html:1 ends here
 
-;; [[file:config.org::*Eslintd Fix: Autofixing that isn't slow][Eslintd Fix: Autofixing that isn't slow:1]]
-(package! eslintd-fix)
-;; Eslintd Fix: Autofixing that isn't slow:1 ends here
-
 ;; [[file:config.org::*JS Import: Package importing][JS Import: Package importing:1]]
 (package! js-import :recipe (:host github :repo "floscr/js-import"))
 ;; JS Import: Package importing:1 ends here
@@ -144,6 +140,10 @@
 (package! lsp-ui :disable t)
 (package! merlin-eldoc :disable t)
 ;; Remove those annoying LSP interface plugins:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! eslintd-fix)
+;; Package:1 ends here
 
 ;; [[file:config.org::*Package][Package:1]]
 (package! cheat-sh)
