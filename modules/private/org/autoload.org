@@ -286,3 +286,24 @@ Create org timestamps by passing a string like you would in the date picker.
          (encoded-time (apply #'encode-time analyzed-time)))
     (format-time-string (org-time-stamp-format t t) encoded-time)))
 #+END_SRC
+** Get properties
+
+#+begin_src elisp
+(defun +org--get-property (name &optional bound)
+  (save-excursion
+    (let ((re (format "^#\\+%s:[ \t]*\\([^\n]+\\)" (upcase name))))
+      (goto-char (point-min))
+      (when (re-search-forward re bound t)
+        (buffer-substring-no-properties (match-beginning 1) (match-end 1))))))
+
+(defun +org/get-global-property (name &optional file bound)
+  "Get a document property named NAME (string) from an org FILE (defaults to
+current file). Only scans first 2048 bytes of the document."
+  (unless bound
+    (setq bound 256))
+  (if file
+      (with-temp-buffer
+        (insert-file-contents-literally file nil 0 bound)
+        (+org--get-property name))
+    (+org--get-property name bound)))
+#+end_src
