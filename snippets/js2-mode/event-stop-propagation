@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Event.stopPropagation()
+# key: es
+# --
+event.stopPropagation();
