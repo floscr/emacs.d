@@ -150,7 +150,6 @@ Move to ivy candidate with =C-'=
 #+END_SRC
 
 ** Language Packages
-
 *** Elisp
 
 [[https://github.com/countvajhula/symex.el][Symex]] for editing emacs lisp by structure.
@@ -260,7 +259,6 @@ also it seems it isn't maintained anymore.
 #+END_SRC
 
 ** Disabled Packages
-
 *** Remove those annoying LSP interface plugins
 
 #+BEGIN_SRC elisp
@@ -269,7 +267,6 @@ also it seems it isn't maintained anymore.
 #+END_SRC
 
 * Packages & Config
-
 ** eslintd-fix :JAVASCRIPT:
 
 A javascript autofixing that isn't slow.
@@ -303,7 +300,6 @@ When enabling on read-only buffers it will throw an error."
   (unless buffer-read-only
     (eslintd-fix-mode)))
 #+end_src
-
 
 ** cheat-sh
 
@@ -398,7 +394,6 @@ Unified access to the best community driven cheat sheets repositories of the wor
   ;; (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
-
 
 * Configuration
 ** External Files
@@ -5370,7 +5365,7 @@ Evil pastes at the current cursor, which I don't expect it to do.
 Most of the time it requires me to move into insert mode, move one character,
 and then do my function.
 
-#+BEGIN_SRC elisp :tangle no
+#+BEGIN_SRC elisp
 (defun +evil/normal-mode-paste-fix (fn &optional insert-char)
   "Move forward one character and then paste."
   (interactive)
