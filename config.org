@@ -3474,6 +3474,21 @@ When clicking on the current directory always go one directory upwards."
 
 (add-hook 'dired-after-readin-hook 'dired-propertize-directory-heading)
 #+end_src
+***** Find file mounted drive
+
+#+begin_src elisp
+(defun +dired/find-file-mounted-drives ()
+  "Browse mounted disk.
+When the mounted drive has only 1 partition, select this one otherwise show listing of disks."
+  (interactive)
+  (let ((dir (f-join "/run/media/" user-login-name)))
+    (counsel-find-file
+     (-some->> dir
+       (f-directories)
+       (--id-when (eq 1 (length it)))
+       (car))
+     (f-join "/run/media/" user-login-name))))
+#+end_src
 
 
 **** Extensions
@@ -5430,20 +5445,21 @@ So deletes wont affect this register."
  (:prefix-map ("f" . "file")
   :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
   (:prefix-map ("g" . "goto")
-   :desc "Drive"          "/" #'+ivy|counsel-mounted-drives
-   :desc "Desktop"        "D" (cmd! (find-file "~/Desktop"))
-   :desc "Config"         "." (cmd! (find-file "~/.config"))
-   :desc "Code"           "c" (cmd! (find-file "~/Code"))
-   :desc "Last captured"  "C" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
-   :desc "Downloads"      "d" (cmd! (find-file "~/Downloads"))
-   :desc "Elfeed"         "e" (cmd! (find-file (car rmh-elfeed-org-files)))
-   :desc "Scans"          "s" (cmd! (find-file (f-dirname (f-expand +docs:index-file))))
-   :desc "Music"          "m" (cmd! (find-file "~/Media"))
-   :desc "Music"          "M" (cmd! (find-file "~/Media/Music"))
-   :desc "Project Root"   "p" (cmd! (find-file (projectile-project-root)))
-   :desc "Last refiled"   "r" (cmd! (org-refile-goto-last-stored))
-   :desc "Tmp"            "t" (cmd! (find-file "/tmp"))
-   :desc "Home"           "h" (cmd! (find-file "~")))))
+   :desc "Drive"                 "/" #'+ivy|counsel-mounted-drives
+   :desc "Desktop"               "D" (cmd! (find-file "~/Desktop"))
+   :desc "Config"                "." (cmd! (find-file "~/.config"))
+   :desc "Code"                  "c" (cmd! (find-file "~/Code"))
+   :desc "Last captured"         "C" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
+   :desc "Downloads"             "d" (cmd! (find-file "~/Downloads"))
+   :desc "Elfeed"                "e" (cmd! (find-file (car rmh-elfeed-org-files)))
+   :desc "Scans"                 "s" (cmd! (find-file (f-dirname (f-expand +docs:index-file))))
+   :desc "Music"                 "m" (cmd! (find-file "~/Media"))
+   :desc "Music"                 "M" (cmd! (find-file "~/Media/Music"))
+   :desc "Project Root"          "p" (cmd! (find-file (projectile-project-root)))
+   :desc "Last refiled"          "r" (cmd! (org-refile-goto-last-stored))
+   :desc "Tmp"                   "t" (cmd! (find-file "/tmp"))
+   :desc "Home"                  "h" (cmd! (find-file "~"))
+   :desc "Run (Mounted Drives)"  "r" #'+dired/find-file-mounted-drives)))
 #+END_SRC
 
 **** Git
