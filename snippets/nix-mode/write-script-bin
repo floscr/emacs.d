@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: pkgs.writeScriptBin
+# key: bin
+# condition: t
+# --
+(pkgs.writeScriptBin "${1:script-name}" ''
+    #!\${stdenv.shell}
+    $0
+'')
