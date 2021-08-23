@@ -28,6 +28,23 @@
 #+END_SRC
 
 ** Utils
+*** Container Variant
+
+#+begin_src elisp
+(defun +MM|find-file-container-variation ()
+  "Switch to any container variation file."
+  (interactive)
+  (or
+   (-some->>
+       (f-traverse-upwards (lambda (path)
+                             (or
+                              (f-dir? (f-join path "Default"))
+                              (f-equal? path (projectile-project-root)))))
+     (--id-when (not (f-equal? it (projectile-project-root))))
+     (doom-project-find-file))
+   (user-error "Error: No container variation found!")))
+#+end_src
+
 *** Alternate File
 
 #+BEGIN_SRC elisp
@@ -1372,6 +1389,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
   (map! :map +MM-Web-mode-map
         :n "[1" #'+MM|alternate-file
         :n "]1" #'+MM|alternate-file
+        :n "]2" #'+MM|find-file-container-variation
         :localleader
         (:prefix-map ("c" . "Create")
          :desc  "Generate Index"               "I"  (cmd! (+js|generate-index nil '("helpers")))
