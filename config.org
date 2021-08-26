@@ -5739,6 +5739,14 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Barf Sexp"               ">" #'barf-sexp)
 #+END_SRC
 
+**** Haskell
+
+#+BEGIN_SRC elisp
+(map! :map haskell-mode-map
+      :localleader
+      :desc "Stylish" "s" #'format-haskell-with-brittany-and-stylish-haskell)
+#+END_SRC
+
 **** Bash
 
 #+BEGIN_SRC elisp
