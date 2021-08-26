@@ -2401,6 +2401,8 @@ which I name after the matching url.
     (name . "Tolino"))
    ((org . "[[orgit:/ssh:mm-web-vagrant:/home/vagrant/mindmeister/][/ssh:mm-web-vagrant:/home/vagrant/mindmeister/ (magit-status)]]")
     (name . "Vagrant: mindmeister magit status"))
+   ((org . "[[orgit:/ssh:mm-web-vagrant:/home/vagrant/mindmeister-web/][/ssh:mm-web-vagrant:/home/vagrant/mindmeister-web/ (magit-status)]]")
+    (name . "Vagrant: mindmeister-web magit status"))
    ((file . "~/Documents/Scans/Scans.org")
     (name . "Scans"))
    ((fn . org-capture-goto-last-stored)
