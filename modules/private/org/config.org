@@ -1563,6 +1563,31 @@ With the =:keep-windows= property we can disable this functionality.
 *** Org Web Tools
 
 #+BEGIN_SRC elisp
+(defun +org-web-tools|fix-code-blocks (lang)
+  "Pandoc doesn't correctly convert the code blocks in documents.
+So we replace them all with the code block TYPE"
+  (interactive (list (read-string "Language Block: ")))
+  (save-excursion
+    (goto-char (point-min))
+    (let ((start nil)
+          (stop nil))
+      (while (re-search-forward "#\\+begin_example" nil t nil)
+        (let ((beg (match-beginning 1))
+              (end (match-end 1)))
+          (+my/delete-current-line)
+          (save-excursion
+            (insert "#+begin_src " lang "\n"))
+          (setq start (point))
+          (re-search-forward "#\\+end_example")
+          (let ((beg (match-beginning 1))
+                (end (match-end 1)))
+            (+my/delete-current-line)
+            (save-excursion
+              (insert "#+end_src\n"))
+            (setq stop (point))))
+        (indent-rigidly-left start stop)
+        (indent-rigidly-left start stop)))))
+
 (defun +org-web-tools/dwim-at-point ()
   "Pass url to web tools from either:
 1. An org link under the cursor
