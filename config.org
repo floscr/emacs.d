@@ -5470,25 +5470,27 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("g" . "git")
-   :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
-   :desc "Blame"                               "B" #'magit-blame
-   :desc "Changed Files"                       "F" #'+git|ivy-changed-files
-   :desc "New Branch"                          "N" #'magit-branch-spinoff
-   :desc "Show revision original File"         "O" #'magit-revision-show-original-file
-   :desc "Map-editor Changed Files"            "T" (cmd! (+git|ivy-changed-files "map-editor"))
-   :desc "Amend Commit"                        "a" #'magit-commit-amend
-   :desc "Checkout"                            "b" #'magit-checkout
-   :desc "Diff"                                "d" #'magit-diff
-   :desc "Push"                                "p" #'magit-push
-   :desc "Undo"                                "u" #'+git|undo
-   :desc "Worktree Popup"                      "w" #'magit-worktree
-   (:prefix ("l" . "list")
-    :desc "List gists"                         "g" #'+gist:list
-    :desc "List submodules"                    "n" #'magit-list-submodules
-    :desc "List issues"                        "p" #'forge-list-issues
-    :desc "List pull requests"                 "r" #'forge-list-pullreqs
-    :desc "List pull awaiting review requests" "R" #'forge-list-requested-reviews
-    :desc "List notifications"                 "s" #'forge-list-notifications)))
+  :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
+  :desc "Blame"                               "B" #'magit-blame
+  :desc "Changed Files"                       "F" #'+git|ivy-changed-files
+  :desc "New Branch"                          "N" #'magit-branch-spinoff
+  :desc "Show revision original File"         "O" #'magit-revision-show-original-file
+  :desc "Map-editor Changed Files"            "T" (cmd! (+git|ivy-changed-files "map-editor"))
+  :desc "Amend Commit"                        "a" #'magit-commit-amend
+  :desc "Checkout"                            "b" #'magit-checkout
+  :desc "Diff"                                "d" #'magit-diff
+  :desc "Push"                                "p" #'magit-push
+  :desc "Undo"                                "u" #'+git|undo
+  :desc "Worktree Popup"                      "w" #'magit-worktree
+  (:prefix ("f" . "file")
+   :desc "VC file"                            "F" #'vc-revision-other-window)
+  (:prefix ("l" . "list")
+   :desc "List gists"                         "g" #'+gist:list
+   :desc "List submodules"                    "n" #'magit-list-submodules
+   :desc "List issues"                        "p" #'forge-list-issues
+   :desc "List pull requests"                 "r" #'forge-list-pullreqs
+   :desc "List pull awaiting review requests" "R" #'forge-list-requested-reviews
+   :desc "List notifications"                 "s" #'forge-list-notifications)))
 #+END_SRC
 
 **** Insert
