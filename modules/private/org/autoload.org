@@ -306,4 +306,31 @@ current file). Only scans first 2048 bytes of the document."
         (insert-file-contents-literally file nil 0 bound)
         (+org--get-property name))
     (+org--get-property name bound)))
+
+;;;###autoload
+(defun +org-get-global-property (name &optional file bound)
+  "Get a document property named NAME (string) from an org FILE (defaults to
+current file). Only scans first 2048 bytes of the document."
+  (unless bound
+    (setq bound 256))
+  (if file
+      (with-temp-buffer
+        (insert-file-contents-literally file nil 0 bound)
+        (+org--get-property name))
+    (+org--get-property name bound)))
+
+;;;###autoload
+(defun +org-get-todo-keywords-for (&optional keyword)
+  "Returns the list of todo keywords that KEYWORD belongs to."
+  (when keyword
+    (cl-loop for (type . keyword-spec)
+             in (cl-remove-if-not #'listp org-todo-keywords)
+             for keywords =
+             (mapcar (lambda (x) (if (string-match "^\\([^(]+\\)(" x)
+                                     (match-string 1 x)
+                                   x))
+                     keyword-spec)
+             if (eq type 'sequence)
+             if (member keyword keywords)
+             return keywords)))
 #+end_src
