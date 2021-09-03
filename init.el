@@ -27,7 +27,7 @@
  fold
  rotate-text
  multiple-cursors
- parinfer
+ (parinfer +rust)
  snippets
 
  :term
