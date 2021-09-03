@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: while regex search forward
+# key: wre
+# --
+(while (re-search-forward "\\\\($1\\\\)" nil t)
+  (let ((beg (match-beginning 1))
+        (end (match-end 1)))))
