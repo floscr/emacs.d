@@ -531,7 +531,7 @@ buffer in current window."
 
 (defun +ui/active-display-name ()
   (interactive)
-  (-some->> (shell-command-to-string "xrandr | grep \"connected primary\"")
+  (-some->> (shell-command-to-string "xrandr | grep \"connected\"")
     (s-split " ")
     (nth 0)
     (s-replace "-" "")))
