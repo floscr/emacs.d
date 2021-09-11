@@ -210,6 +210,7 @@ e.g.: Agenda + Splits
       (+org/expand-org-file-name
        '("Main/reading-list.org"
          "Main/cooking.org"
+         "Main/notes.org"
          "Main/books.org"
          "Main/programming.org"
          "Main/shoppinglist.org")))
