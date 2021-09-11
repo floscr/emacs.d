@@ -548,7 +548,7 @@ buffer in current window."
    ((string= (system-name) "thinknix")
     (if (string= (+ui/active-display-name) "eDP1")
         ;; Internal Screen
-        (+ui/adjust-font 15 7 "Fira Code")
+        (+ui/adjust-font 15 3 "Fira Code")
       ;; HiDPI External
       (+ui/adjust-font 18 8 "Fira Code")))
    ((string= (system-name) "Florians-MacBook-Air.local")
