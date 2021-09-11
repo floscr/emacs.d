@@ -3826,8 +3826,7 @@ Find file on enter press for ~ivy-occur-mode~
 (defun +ivy|counsel-mounted-drives ()
   "Counsel of mounted drives from udiskie."
   (interactive)
-  (let ((default-directory (concat "/run/media/" (user-login-name) "/")))
-    (counsel-find-file)))
+  (counsel-find-file (concat "/run/media/" (user-login-name) "/")))
 #+END_SRC
 
 **** Hacks
