@@ -3083,7 +3083,15 @@ Bindings
   (setq dired-omit-files
         (concat dired-omit-files
                 ;; Reason Compiled Files
-                "\\|\\.bs.js$")))
+                "\\|\\.bs.js$"
+                ;; Apple Stuff
+                "\\|\\.com.apple.timemachine.donotpresent$"
+                "\\|\\.Spotlight-V100$"
+                "\\|\\.fseventsd$"
+                "\\|\\.DocumentRevisions-V100$"
+                "\\|\\.TemporaryItems$"
+                ;; Windows Stuff
+                "\\|\\System Volume Information$")))
 #+END_SRC
 
 ***** Auto Refresh
