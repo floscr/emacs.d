@@ -2374,6 +2374,8 @@ which I name after the matching url.
     (goto . "* Configuration")
     (goto-bol . t)
     (disable-relocation . t))
+   ((file . "~/.config/dotfiles/config/xmonad/xmonad.hs")
+    (name . "Xmonad"))
    ((file . "~/.config/doom/autoload.org")
     (name . "Config: Autoloads"))
    ((file . "~/.config/doom/modules/private/org/config.org")
