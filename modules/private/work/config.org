@@ -459,6 +459,9 @@ bookmarks are not helpful since they're not relative.
          (action . #'counsel-imenu))
         ((name . "Geometry: Area")
          (file . "~/Code/Meisterlabs/kits-2.0/packages/redux-geometry/src/Area.js")
+         (action . #'counsel-imenu))
+        ((name . "Geometry: Line")
+         (file . "~/Code/Meisterlabs/kits-2.0/packages/redux-geometry/src/Line.js")
          (action . #'counsel-imenu))))
 #+END_SRC
 
