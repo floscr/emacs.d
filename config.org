@@ -766,6 +766,13 @@ Bound to ~SPC t t~.
   (custom-set-faces!
 #+END_SRC
 
+***** Bookmarks
+
+#+BEGIN_SRC elisp
+'(bookmark-face :background nil)
+#+END_SRC
+
+
 ***** Dired Output
 
 Remove the rainbow colors from dired.
