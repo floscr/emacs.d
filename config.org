@@ -4757,7 +4757,9 @@ the projects cwd to find a file.
 (defun +workspace|workspace-project-vc ()
   "Projectile find file for the project named after the current workspace."
   (interactive)
-  (let ((default-directory (+workspace/workspace-project-root)))
+  (let ((default-directory
+          (or (+workspace/workspace-project-root)
+              (+my/project-root))))
     (magit-status)))
 #+END_SRC
 
