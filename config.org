@@ -4400,8 +4400,9 @@ Then use ~]~ to navigate the sections
 (map!
  :after git-timemachine
  :map git-timemachine-mode-map
- :n "[[" #'git-timemachine-show-previous-revision
- :n "]]" #'git-timemachine-show-previous-revision)
+ :n "[" #'git-timemachine-show-previous-revision
+ :n "]" #'git-timemachine-show-next-revision
+ :n "b" #'git-timemachine-blame)
 #+END_SRC
 
 ***** Disable quit for locked buffers
