@@ -530,6 +530,7 @@ Create a new one: ") "bundle-")
                (item (ivy-read "Build Package: " scripts))
                (command (--> (--find (string= (car it) item) scripts)
                              (plist-get (cdr it) :command))))
+    (-log "Building Test Package: item")
     (deferred:$
           (deferred:process "mm-build-bundle" command item)
           (deferred:nextc it `(lambda () (let ((default-directory "/ssh:mm-web-vagrant:/home/vagrant/mindmeister/"))
