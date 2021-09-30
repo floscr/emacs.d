@@ -517,7 +517,8 @@ When universal-argument is passed, just commit the bundle"
       (magit-status)
       (error "Error: The backend repo has unstaged files, clear them out first!"))
 
-    (when (not (s-starts-with? "bundle-" (magit-get-current-branch)))
+    (when (and (not no-deploy)
+               (not (s-starts-with? "bundle-" (magit-get-current-branch))))
       (->> (read-string (t! "The current branch '<<vagrant-branch-name>>' is not bundle branch.
 Create a new one: ") "bundle-")
            (magit-branch-spinoff)
