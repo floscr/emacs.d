@@ -531,12 +531,12 @@ Create a new one: ") "bundle-")
                (command (--> (--find (string= (car it) item) scripts)
                              (plist-get (cdr it) :command))))
     (deferred:$
-      (deferred:process "mm-build-bundle" command item)
-      (deferred:nextc it `(lambda () (let ((default-directory "/ssh:mm-web-vagrant:/home/vagrant/mindmeister/"))
-                                       (magit-push-current-to-upstream nil)
-                                       (if +MM:deploy-url
-                                           (browse-url (template "<<+MM:deploy-url>>/<<deploy-url-directory>>/deploys/new?reference=<<branch>>"))
-                                         (user-error "Please define \"+MM:deploy-url\""))))))))
+          (deferred:process "mm-build-bundle" command item)
+          (deferred:nextc it `(lambda () (let ((default-directory "/ssh:mm-web-vagrant:/home/vagrant/mindmeister/"))
+                                           (magit-push-current-to-upstream nil)
+                                           (if +MM:deploy-url
+                                               (browse-url (template "<<+MM:deploy-url>>/<<deploy-url-directory>>/deploys/new?reference=<<branch>>"))
+                                             (user-error "Please define \"+MM:deploy-url\""))))))))
 #+END_SRC
 
 *** Bump beta package.json
