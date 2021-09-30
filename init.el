@@ -66,6 +66,7 @@
  lua
  nix
  rust
+ (ruby +rails)
  rest
  data
  (haskell +lsp)
