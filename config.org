@@ -301,7 +301,7 @@ When enabling on read-only buffers it will throw an error."
     (eslintd-fix-mode)))
 #+end_src
 
-** cheat-sh
+** cheat-sh :CLI:
 
 [[https://github.com/chubin/cheat.sh][chubin/cheat.sh]]
 Unified access to the best community driven cheat sheets repositories of the world.
@@ -376,11 +376,11 @@ Unified access to the best community driven cheat sheets repositories of the wor
     (funcall mode)))
 #+END_SRC
 
-** tree-sitter
+** tree-sitter :EMACS:
 
 *** Package
 
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+#+BEGIN_SRC emacs-lisp :tangle no
 (package! tree-sitter)
 (package! tree-sitter-langs)
 #+end_src
@@ -5455,7 +5455,7 @@ So deletes wont affect this register."
   :desc "Rename Buffer"  "+" #'persp-add-buffer))
 #+END_SRC
 
-**** File
+**** File / Goto
 
 #+BEGIN_SRC elisp
 (map!
