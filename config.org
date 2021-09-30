@@ -394,6 +394,21 @@ Unified access to the best community driven cheat sheets repositories of the wor
   ;; (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
+** atomic-chrome :BROWSER:
+
+Edit browser input fields with emacs
+
+*** Functions
+
+**** Start Editing
+
+#+begin_src emacs-lisp
+(defun +atomic-chrome|start ()
+  "Function docstring"
+  (interactive)
+  (make-frame '((name . "atomic-chrome") (width . 300)))
+  (atomic-chrome-start-server))
+#+end_src
 ** company-prescient :EMACS:
 
 Better sorting for company
