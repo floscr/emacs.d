@@ -640,7 +640,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
     (org-agenda-files (list (f-join org-directory "Work/work.org"))))))
 #+END_SRC
 
-****** Meistermacs
+****** Meistertask Meistermacs
 
 #+BEGIN_SRC elisp
 (setq +MM:my-meistertask-name-tag "+@FLORIAN_SCHROEDL")
@@ -675,6 +675,18 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
    ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_platform_backlog.org")))
     (org-agenda-hide-tags-regexp "meistertask_platform_backlog"))
    ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
+
+(+org/add-to-agenda-custom-commands
+ '("ya" "Assigned Tasks"
+   ((alltodo ""
+             ((org-agenda-tag-filter `(,+MM:my-meistertask-name-tag))
+              (org-super-agenda-groups '((:discard (:category "Done"
+                                                    :category "Live (deployed)"
+                                                    :not (:tag "@FLORIAN_SCHRODL")))
+                                         (:auto-category)
+                                         (:discard (:anything t)))))))
+   ((org-agenda-files (--map (f-join doom-cache-dir "meistertask" it)
+                             '("meistertask_mind_meister_sprint.org" "meistertask_mm_core_sprint.org"))))))
 #+END_SRC
 
 ***** Personal projects
