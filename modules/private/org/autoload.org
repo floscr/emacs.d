@@ -253,6 +253,8 @@ I disable posframe, since it doesn't go beyond the X Window.
 (defun +org-capture|my-open-frame ()
   "Open capture, adjust display, disable posframe."
   (interactive)
+  (make-frame +org-capture-frame-parameters)
+  (async-shell-command-no-window "xmonadctl toggle-float &")
   (+org-capture/open-frame)
   (ivy-posframe-mode -1))
 
