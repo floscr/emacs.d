@@ -387,7 +387,7 @@ Unified access to the best community driven cheat sheets repositories of the wor
 
 *** Config
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package! tree-sitter
   :config
   (require 'tree-sitter-langs)
