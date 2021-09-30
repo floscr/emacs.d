@@ -394,6 +394,58 @@ Unified access to the best community driven cheat sheets repositories of the wor
   ;; (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
+** emmet-mode :CSS:
+
+*** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! emmet-mode)
+#+end_src
+
+*** Functions
+
+**** Indent or Yase Emmet Expand
+
+Source: [[file:~/.emacs.d/modules/lang/web/autoload/html.el::defun +web/indent-or-yas-or-emmet-expand (][Doom: modules/lang/web/autoload/html.el]]
+
+#+begin_src emacs-lisp
+(defun +web/indent-or-yas-or-emmet-expand ()
+  "Do-what-I-mean on TAB.
+
+Invokes `indent-for-tab-command' if at or before text bol, `yas-expand' if on a
+snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
+`yas-minor-mode' is enabled or not."
+  (interactive)
+  (call-interactively
+   (cond ((or (<= (current-column) (current-indentation))
+              (not (eolp))
+              (not (or (memq (char-after) (list ?\n ?\s ?\t))
+                       (eobp))))
+          #'indent-for-tab-command)
+         ((featurep! :editor snippets)
+          (require 'yasnippet)
+          (if (yas--templates-for-key-at-point)
+              #'yas-expand
+            #'emmet-expand-yas))
+         (#'emmet-expand-line))))
+#+end_src
+
+
+*** Config
+
+#+BEGIN_SRC elisp
+(use-package! emmet-mode
+  :preface (defvar emmet-mode-keymap (make-sparse-keymap))
+  :hook (css-mode web-mode html-mode haml-mode nxml-mode)
+  :config
+  (when (require 'yasnippet nil t)
+    (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
+  (setq emmet-move-cursor-between-quotes t)
+  (map! :map emmet-mode-keymap
+        :v [tab] #'emmet-wrap-with-markup
+        [tab] #'+web/indent-or-yas-or-emmet-expand
+        "M-E" #'emmet-expand-line))
+#+END_SRC
 
 * Configuration
 ** External Files
