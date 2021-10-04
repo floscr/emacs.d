@@ -1382,10 +1382,11 @@ Known Issues:
           (org-global-cycle 4))
         (org-narrow-to-subtree))
       ;; When the item has subtrees show only the subtrees
-      (if (save-excursion (search-forward-regexp "^\\*" nil t))
-          (org-global-cycle 10)
-        ;; Otherwise show contents but not the drawers
-        (org-cycle 4))
+      (ignore-errors
+        (if (save-excursion (search-forward-regexp "^\\*" nil t))
+            (org-global-cycle 10)
+          ;; Otherwise show contents but not the drawers
+          (org-cycle 4)))
       (+org-indirect-window-mode 1)
       (pop-to-buffer buffer)
       (rename-buffer (concat
