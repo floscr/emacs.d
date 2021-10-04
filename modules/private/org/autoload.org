@@ -253,9 +253,24 @@ I disable posframe, since it doesn't go beyond the X Window.
 (defun +org-capture|my-open-frame ()
   "Open capture, adjust display, disable posframe."
   (interactive)
-  (make-frame +org-capture-frame-parameters)
-  (async-shell-command-no-window "xmonadctl toggle-float &")
+  (let* ((display ":0")
+         (height (* (/ (display-pixel-height display) 4) 2))
+         (width (* (/ (display-pixel-width display) 4) 2))
+         (frame (make-frame `((name . "doom-capture")
+                              (transient . t)
+                              (height . (text-pixels . ,height))
+                              (width . (text-pixels . ,width))))))
+    (select-frame frame)
+    ;; HACK: workaround for emacs setting the title correctly and xmonad recognizing it as a window rule
+    ;; Generally emacs sets the name way to late for any tiling window manager to recognize it
+    (set-frame-name "doom-capture1")
+    (set-frame-name "doom-capture")
+    ;; HACK: Emacs sets frame dimensions in number of charters / lines
+    ;; This can be worked around with text-pixels, but that would round the next character cell
+    ;; So we force the window to the dimensions the tiling wm would have given it
+    (set-frame-size (selected-frame) width height t))
   (+org-capture/open-frame)
+
   (ivy-posframe-mode -1))
 
 (add-hook! 'org-capture-after-finalize-hook
