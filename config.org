@@ -495,6 +495,17 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
         [tab] #'+web/indent-or-yas-or-emmet-expand
         "M-E" #'emmet-expand-line))
 #+END_SRC
+** browse-at-remote :FORK:GIT:
+
+Package override that fixes multiple remotes:
+[[https://github.com/floscr/browse-at-remote/commit/9294ed82398457d2af5fcbf9090132f4693e4068][Add option to define preferred remote [*] · floscr/browse-at-remote@9294ed8]]
+
+*** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
+#+end_src
+
 
 * Configuration
 ** External Files
