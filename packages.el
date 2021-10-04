@@ -1,8 +1,12 @@
 ;; -*- no-byte-compile: t; -*-
 
 ;; [[file:config.org::*Package][Package:1]]
-(package! tree-sitter)
-(package! tree-sitter-langs)
+(package! prescient)
+(package! company-prescient)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! emmet-mode)
 ;; Package:1 ends here
 
 ;; [[file:config.org::*noflet][noflet:1]]
@@ -135,6 +139,12 @@
 (package! calfw-cal :disable t)
 (package! org-gcal :disable t)
 ;; Calfw:1 ends here
+
+;; [[file:config.org::*json-proces-client][json-proces-client:1]]
+(package! json-process-client
+  :recipe (:host github :repo "emacsmirror/json-process-client")
+  :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
+;; json-proces-client:1 ends here
 
 ;; [[file:config.org::*Remove those annoying LSP interface plugins][Remove those annoying LSP interface plugins:1]]
 (package! lsp-ui :disable t)

@@ -258,6 +258,17 @@ also it seems it isn't maintained anymore.
 (package! org-gcal :disable t)
 #+END_SRC
 
+*** json-proces-client
+
+This package is originally hosted on https://gitea.petton.fr/nico/json-process-client.git/
+But this private repository host went down a few times, so I'll stick to github.
+
+#+BEGIN_SRC elisp
+(package! json-process-client
+  :recipe (:host github :repo "emacsmirror/json-process-client")
+  :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
+#+END_SRC
+
 ** Disabled Packages
 *** Remove those annoying LSP interface plugins
 
