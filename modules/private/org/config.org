@@ -1367,7 +1367,7 @@ Known Issues:
   (let ((buffer
          (save-window-excursion
            (when visit-fn (funcall visit-fn))
-           ;; Why do i need this message?
+           ;; HACK: If this is not executed the previous visited buffer is shown...
            (message "%s" (buffer-name))
            (clone-indirect-buffer
             (generate-new-buffer-name (template "*Org Indirect <<(buffer-name)>> "))
