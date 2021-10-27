@@ -5385,6 +5385,7 @@ Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
 
 #+BEGIN_SRC elisp
 (map!
+ :i "C-y"   #'helm-show-kill-ring
  :i "M-`"   (cmd! (insert "°"))
  :i "M-."   (cmd! (insert "…"))
  :i "M-^"   (cmd! (insert "°"))
