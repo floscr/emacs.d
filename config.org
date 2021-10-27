@@ -6010,3 +6010,33 @@ Solution from here: [[https://discord.com/channels/406534637242810369/4065540857
 (advice-add 'evil-window-vsplit :after #'evil-force-normal-state)
 (advice-add 'evil-window-split :after #'evil-force-normal-state)
 #+END_SRC
+*** Emacs 28 Head Workaround
+
+#+begin_src elisp
+(with-no-warnings
+      (defclass xref-location () ()
+        :documentation "(Obsolete) location represents a position in a file or buffer."))
+#+end_src
+*** Make optional
+
+#+begin_src elisp
+(defmacro define-obsolete-function-alias ( obsolete-name current-name &optional when
+                                           docstring)
+  "Set OBSOLETE-NAME's function definition to CURRENT-NAME and mark it obsolete.
+
+\(define-obsolete-function-alias \\='old-fun \\='new-fun \"22.1\" \"old-fun's doc.\")
+
+is equivalent to the following two lines of code:
+
+\(defalias \\='old-fun \\='new-fun \"old-fun's doc.\")
+\(make-obsolete \\='old-fun \\='new-fun \"22.1\")
+
+WHEN should be a string indicating when the function was first
+made obsolete, for example a date or a release number.
+
+See the docstrings of `defalias' and `make-obsolete' for more details."
+  (declare (doc-string 4))
+  `(progn
+     (defalias ,obsolete-name ,current-name ,docstring)
+     (make-obsolete ,obsolete-name ,current-name ,when)))
+#+end_src
