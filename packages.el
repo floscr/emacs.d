@@ -9,6 +9,10 @@
 (package! emmet-mode)
 ;; Package:1 ends here
 
+;; [[file:config.org::*Package][Package:1]]
+(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
+;; Package:1 ends here
+
 ;; [[file:config.org::*noflet][noflet:1]]
 (package! noflet)
 ;; noflet:1 ends here
@@ -145,6 +149,10 @@
   :recipe (:host github :repo "emacsmirror/json-process-client")
   :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
 ;; json-proces-client:1 ends here
+
+;; [[file:config.org::*merlin][merlin:1]]
+(package! merlin :pin "e4791e22986993c36c3f5c91e8dff93494cc232e")
+;; merlin:1 ends here
 
 ;; [[file:config.org::*Remove those annoying LSP interface plugins][Remove those annoying LSP interface plugins:1]]
 (package! lsp-ui :disable t)
