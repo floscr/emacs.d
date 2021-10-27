@@ -74,9 +74,10 @@
  markdown
  ocaml
  nim
+ (clojure +lsp)
  (javascript +lsp)
- ;; haskell
  (org
+  +roam2
   +dragndrop
   +present)
  sh
