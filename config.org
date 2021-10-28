@@ -1387,10 +1387,11 @@ Generate a file index in the current file for every other file in the current di
     (mapcar 'f-no-ext
             (remove "index.js" fs))))
 
-(defun +js|generate-index (&optional dir ignore-list)
+(defun +js|generate-index (&optional dir ignore-list is-old-es-style)
   "Generate an index import file for files in directory.
 Pass DIR for directory, falls back to default-directory
-Pass IGNORE-LIST for a list of files "
+Pass IGNORE-LIST for a list of files
+Pass IS-OLD-ES-STYLE for using the non-esm style exports"
   (interactive)
   (erase-buffer)
   (let* ((dir (or dir default-directory))
@@ -1400,11 +1401,15 @@ Pass IGNORE-LIST for a list of files "
               (--reject (s-ends-with-p ".test" it))
               (--when ignore-list (--remove (-contains? ignore-list it) it)))))
     (message "%s" fs)
-    (mapc (lambda (f) (insert "import " f " from './" f "';\n")) fs)
-    (insert "\n")
-    (insert "export default {\n")
-    (mapc (lambda (f) (insert "    " f ",\n")) fs)
-    (insert "};")))
+    (cond (is-old-es-style
+           (progn
+             (mapc (lambda (f) (insert "import " f " from './" f "';\n")) fs)
+             (insert "\n")
+             (insert "export default {\n")
+             (mapc (lambda (f) (insert "    " f ",\n")) fs)
+             (insert "};")))
+          (t
+           (mapc (lambda (f) (insert "export { default as " f " } from './" f "';\n")) fs)))))
 #+END_SRC
 
 ***** Convert expression into template string
