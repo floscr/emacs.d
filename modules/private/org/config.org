@@ -1367,8 +1367,10 @@ Known Issues:
   (let ((buffer
          (save-window-excursion
            (when visit-fn (funcall visit-fn))
-           ;; HACK: If this is not executed the previous visited buffer is shown...
-           (message "%s" (buffer-name))
+           ;; save-window-excursion cancels org-mode being fully loaded
+           ;; this leads to the indirect buffer not knowing where the source comes frome
+           ;; and the org cycle methods not working
+           (org-mode)
            (clone-indirect-buffer
             (generate-new-buffer-name (template "*Org Indirect <<(buffer-name)>> "))
             nil))))
