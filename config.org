@@ -4063,6 +4063,15 @@ npm i -g json-fix
 #+END_SRC
 
 *** LSP
+**** Guess root
+
+When working in nested git worktrees, lsp should infer the root by using projectile, by finding the closest ~.projectile~ file.
+This file is always created when [[*Create worktree workspace][creating a worktree]].
+
+#+begin_src elisp
+(setq lsp-auto-guess-root t)
+#+end_src
+
 **** Disable presets
 
 All are these are distracting and not helpful.
