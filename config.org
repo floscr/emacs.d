@@ -5634,6 +5634,7 @@ So deletes wont affect this register."
   :desc "Push"                                "p" #'magit-push
   :desc "Undo"                                "u" #'+git|undo
   :desc "Worktree Popup"                      "w" #'magit-worktree
+  :desc "New Org Pr"                          "!" #'+MM|new-pr-from-branch
   (:prefix ("f" . "file")
    :desc "VC file"                            "F" #'vc-revision-other-window)
   (:prefix ("l" . "list")
