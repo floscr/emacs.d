@@ -511,7 +511,6 @@ Package override that fixes multiple remotes:
 (package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
 #+end_src
 
-
 * Configuration
 ** External Files
 *** Secrets
@@ -2101,6 +2100,55 @@ arguments can be set as a list via ‘nimpretty-args’."
     :localleader
     :map nim-mode-map
     "p" #'nimpretty))
+#+end_src
+**** Flycheck for ~v.1.6.0~
+
+Nim has different output for v1.6.0 for linting, so this broke flycheck
+
+The error output for 1.6.0 is
+
+#+BEGIN_QUOTE
+FILENAME:3:8 Hint: duplicate import of 'osproc'; previous import here: FILENAME:1:8 [DuplicateModuleImport]
+FILENAME:73:14 Error: expression 'getCacheDir()' is of type 'string' and has to be used (or discarded)
+#+END_QUOTE
+
+
+#+begin_src elisp
+(after! nim-mode
+  (flycheck-define-checker nim-1-6-0
+    "A syntax checker for the nim programming language.
+v1.6.0 has a different output style than previously
+
+See http://nim-lang.org"
+    :command ("nim" "check"
+              (option-flag "--experimental" flycheck-nim-experimental)
+              (option-flag "--threads:on" flycheck-nim-threads)
+              (option "--hints:" flycheck-nim-hints concat)
+              (option "--warnings:" flycheck-nim-warnings concat)
+              (eval (--map (format "--hint[%s]:%s" (car it) (cadr it))
+                           flycheck-nim-specific-hints))
+              (eval (--map (format "--warning[%s]:%s" (car it) (cadr it))
+                           flycheck-nim-specific-warnings))
+              (eval flycheck-nim-args)
+              ;; Must use source-inplace so relative imports and
+              ;; qualified references to local variables resolve correctly
+              source-inplace)
+    :error-patterns
+    ((error line-start (file-name) ":" line ":"
+            column " Error:"
+            (message (one-or-more not-newline)
+                     (optional
+                      (and "\nbut expected one of:"
+                           (minimal-match (one-or-more anything)) "\n\n"))))
+     (warning line-start (file-name) ":" line ":"
+              column " " (or "Hint:" "Warning:") (message) line-end))
+    :error-filter
+    (lambda (errors)
+      (flycheck-sanitize-errors (flycheck-increment-error-columns errors)))
+    :modes (nim-mode nimrod-mode)
+    :predicate (lambda () (not org-src-mode)))
+
+  (add-to-list 'flycheck-checkers 'nim-1-6-0))
 #+end_src
 
 ** Package Config
