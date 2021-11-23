@@ -732,19 +732,19 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 
 Clock in when the todo state has been changed to ~ACTIVE~
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun +org/org-clock-in-if-starting ()
   "Clock in when the task is marked ACTIVE."
   (when (and (string= org-state "ACTIVE")
              (not (string= org-last-state org-state)))
     (org-clock-in)))
 
-(add-hook 'org-after-todo-state-change-hook '+org/org-clock-in-if-starting)
+(remove-hook 'org-after-todo-state-change-hook '+org/org-clock-in-if-starting)
 #+END_SRC
 
 Clock out when the todo state is set to a delay state.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun +org/org-clock-out-if-waiting ()
   "Clock out when the task is marked WAITING."
   (when (and (-contains? '("WAITING" "SOMEDAY" "CANCELLED") org-state)
