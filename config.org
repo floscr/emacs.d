@@ -4039,6 +4039,21 @@ which is really unacceptable, but works for now.
                    (`t " -i ")
                    (`nil " -s ")))))
 #+END_SRC
+**** Actions
+
+***** Search from ~counsel-find-file~
+
+#+begin_src elisp
+(defun +counsel/search-from-find-file (x)
+  "Function docstring"
+  (let ((default-directory (if (f-dir? x) x (f-dirname x))))
+    (+default/search-cwd)))
+
+(after! ivy
+ (setq +counsel:search-from-find-file-action
+  '(("s" +counsel/search-from-find-file "Search in directory")))
+ (ivy-add-actions 'counsel-find-file +counsel:search-from-find-file-action))
+#+end_src
 
 *** JSON
 **** Utils
