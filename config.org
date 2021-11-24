@@ -2631,7 +2631,7 @@ which I name after the matching url.
 #+BEGIN_SRC elisp
 (add-hook! 'nim-mode-hook :append
   (setq flycheck-disabled-checkers '(nim-nimsuggest))
-  (flycheck-select-checker 'nim))
+  (flycheck-select-checker 'nim-1-6-0))
 #+END_SRC
 
 *** Writeroom
