@@ -520,10 +520,10 @@ buffer in current window."
 * UI
 
 #+BEGIN_SRC elisp
-(defun +ui/adjust-font (size line-space &optional font-family)
+(defun +ui/adjust-font (size line-space &optional font-family weight)
   (let* ((font-family (or font-family)))
     (setq-default line-spacing line-space)
-    (setq-default doom-font (font-spec :family font-family :size size))
+    (setq-default doom-font (font-spec :family font-family :size size :weight weight))
     (setq-default doom--font-scale nil)
     (set-frame-font doom-font 'keep-size t)
     (doom/reload-font)
