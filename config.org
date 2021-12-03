@@ -369,38 +369,7 @@ Unified access to the best community driven cheat sheets repositories of the wor
           (nim-mode . "nim"))))
 #+END_SRC
 
-*** Functions
-**** Set Mode Hook
-
-#+BEGIN_SRC elisp
-(defun cheat-sh (thing)
-  "Look up THING on cheat.sh and display the result."
-  (interactive (list (cheat-sh-read "Lookup: ")))
-  (let ((result (cheat-sh-get thing)))
-    (if result
-        (let ((temp-buffer-window-setup-hook
-               (cons 'cheat-sh-mode-setup temp-buffer-window-show-hook)))
-          (with-temp-buffer-window "*cheat.sh*" nil 'help-window-setup
-            (with-current-buffer "*cheat.sh*"
-              (+cheat-sh/set-mode thing))
-            (princ result)))
-      (error "Can't find anything for %s on cheat.sh" thing))))
-
-(defun cheat-sh-mode-setup ()
-  "Set up the cheat mode for the current buffer."
-  (setq buffer-read-only nil))
-
-(defun +cheat-sh/set-mode (x)
-  (-when-let* ((lang
-                (-some->> x
-                  (s-split "/")
-                  (nth 0)))
-               (mode (--find (string= lang (cdr it)) cheat-sh-topic-mode-map))
-               (mode (car mode)))
-    (funcall mode)))
-#+END_SRC
-
-** tree-sitter :EMACS:
+** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
 
 *** Package
 
