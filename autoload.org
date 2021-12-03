@@ -557,10 +557,8 @@ buffer in current window."
     (+ui/adjust-font 14 10 "Menlo"))
    ((string= (system-name) "thinknix")
     (if (+ui/has-screen-connected? "DP2")
-        ;; Internal Screen
-        (+ui/adjust-font 18 8 "Fira Code")
-      ;; HiDPI External
-      (+ui/adjust-font 15 3 "Fira Code")))
+        (+ui/adjust-font 18 7 "Fira Code" 'medium)
+      (+ui/adjust-font 15 4 "Fira Code" 'medium)))
    ((string= (system-name) "Florians-MacBook-Air.local")
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
