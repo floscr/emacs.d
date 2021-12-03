@@ -5582,6 +5582,14 @@ Global ~[~ & ~]~ combinator bindings
  :n "]e" #'flycheck-next-error
  :n "[e" #'flycheck-previous-error)
 #+END_SRC
+***** Projectile Alternate file finding
+
+#+BEGIN_SRC elisp
+(map!
+ :n "]1" #'projectile-toggle-between-implementation-and-test
+ :n "[1" #'projectile-toggle-between-implementation-and-test)
+#+END_SRC
+
 **** Text Objects
 
 Custom evil text objects mostly stolen from [[https://github.com/jerryxgh/lambda-x/blob/master/lambda-evil.el#L236][Spacemacs|define-text-object-regexp]].
