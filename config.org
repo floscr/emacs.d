@@ -2150,6 +2150,72 @@ See http://nim-lang.org"
 
   (add-to-list 'flycheck-checkers 'nim-1-6-0))
 #+end_src
+**** Import Nim Package
+
+Finds packages either from nims std lib or your nim packages.
+
+- Requires evil for inserting
+- Requires ~$NIM_UNWRAPPED_DIR~ to be set to nims source repository on your disk
+- Searches for nimble dir in either ~$NIMBLE_DIR~ or your users home directory
+
+To set a nimble directory via nix shell add this snippet:
+
+#+begin_src nix :tangle no
+{ pkgs, packages, nimpkgs, buildInputs }:
+
+pkgs.mkShell {
+  shellHook = ''
+    export NIMBLE_DIR="$PWD/.nimble"
+  '';
+};
+#+end_src
+
+
+#+begin_src elisp
+(defun +nim|import/add-std-import-statement (import)
+  "Insert stdlib import below last stdin statement."
+  (goto-char (point-max))
+  (cond ((search-backward-regexp "^import std/.+$" 0 t)
+         (evil-insert-newline-below))
+        ((goto-char (point-min)) (evil-insert-newline-above)))
+  (insert (t! "import std/<<import>>")))
+
+(defun +nim|import/add-lib-import-statement (import)
+  "Insert package import below all import statements."
+  (goto-char (point-max))
+  (cond ((search-backward-regexp "^import .+$" 0 t)
+         (evil-insert-newline-below))
+        ((goto-char (point-min)) (evil-insert-newline-above)))
+  (insert (t! "import <<import>>")))
+
+(defun +nim|import ()
+  "Add import from nims stdlib or your nimble packages."
+  (interactive)
+  (let* ((nim-src-dir (-some->> (getenv "NIM_UNWRAPPED_DIR")
+                        (-f-join "nim/lib/pure")
+                        (-id-when #'f-exists?)))
+         (libs (->> (f-entries nim-src-dir (lambda (x) (f-ext? x "nim")) t)
+                    (--map (->> (f-relative it nim-src-dir)
+                                (f-no-ext)
+                                ((lambda (x) (cons x 'libs)))))))
+         (nim-deps-dir (-some->> (or (getenv "NIMBLE_DIR")
+                                     (f-expand "~/.nimble"))
+                         (-f-join "pkgs")
+                         (-id-when #'f-exists?)))
+         (deps (->> (f-directories nim-deps-dir)
+                    (--map (-some->>
+                               (f-files it (lambda (x) (f-ext? x "nim")))
+                             (car)
+                             (f-base)
+                             (s-replace-regexp "-[0-9\\.]+$" "")
+                             ((lambda (x) (cons x 'deps))))))))
+    (ivy-read "Import: " (-concat libs deps)
+              :action (lambda (import)
+                        (save-excursion
+                          (pcase import
+                            (`(,x . deps) (+nim|import/add-lib-import-statement x))
+                            (`(,x . libs) (+nim|import/add-std-import-statement x))))))))
+#+end_src
 
 ** Package Config
 *** Flyspell
