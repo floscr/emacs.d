@@ -2216,6 +2216,16 @@ pkgs.mkShell {
                             (`(,x . deps) (+nim|import/add-lib-import-statement x))
                             (`(,x . libs) (+nim|import/add-std-import-statement x))))))))
 #+end_src
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after nim-mode
+ :map nim-mode-map
+ :localleader
+ (:prefix-map ("c" . "Create")
+  :desc "Import File" "i" #'+nim|import))
+#+END_SRC
 
 ** Package Config
 *** Flyspell
