@@ -188,6 +188,11 @@ Move to ivy candidate with =C-'=
 #+BEGIN_SRC elisp
 (package! jest :recipe (:host github :repo "floscr/emacs-jest"))
 #+END_SRC
+*** Nim
+
+#+BEGIN_SRC elisp
+(package! inim :recipe (:host github :repo "SerialDev/inim-mode"))
+#+END_SRC
 
 *** Graphql
 
