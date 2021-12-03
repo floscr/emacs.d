@@ -112,12 +112,6 @@ Move to ivy candidate with =C-'=
 #+END_SRC
 
 *** External
-**** Edit the current chrome input field directly in emacs
-
-#+BEGIN_SRC elisp
-(package! atomic-chrome)
-#+END_SRC
-
 *** Dired
 **** Filter dired buffers
 
@@ -426,19 +420,14 @@ Unified access to the best community driven cheat sheets repositories of the wor
 #+end_src
 ** atomic-chrome :BROWSER:
 
-Edit browser input fields with emacs
+Edit browser input fields with emacs.
 
-*** Functions
+*** Package
 
-**** Start Editing
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! atomic-chrome)
+#+END_SRC
 
-#+begin_src emacs-lisp
-(defun +atomic-chrome|start ()
-  "Function docstring"
-  (interactive)
-  (make-frame '((name . "atomic-chrome") (width . 300)))
-  (atomic-chrome-start-server))
-#+end_src
 ** company-prescient :EMACS:
 
 Better sorting for company
