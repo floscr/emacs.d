@@ -1889,7 +1889,16 @@ I mainly changed the function marking helper.
 (use-package nim-mode
   :ensure t
   :hook
-  (nim-mode . lsp))
+  (nim-mode . lsp)
+  :config
+  (setq nim-compile-default-command '("c"
+                                      "-r"
+                                      "--verbosity:0"
+                                      "--hint[Processing]:off"
+                                      "--hint[XDeclaredButNotUsed]:off"
+                                      "--hint[DuplicateModuleImport]:off"
+                                      "--excessiveStackTrace:on"
+                                      "--outdir:/tmp/nimbins")))
 #+end_src
 
 **** Dotfiles compilation command
