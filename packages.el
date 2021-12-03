@@ -87,6 +87,10 @@
 (package! jest :recipe (:host github :repo "floscr/emacs-jest"))
 ;; Jest: Test Runner:1 ends here
 
+;; [[file:config.org::*Nim][Nim:1]]
+(package! inim :recipe (:host github :repo "SerialDev/inim-mode"))
+;; Nim:1 ends here
+
 ;; [[file:config.org::*Graphql][Graphql:1]]
 (package! graphql)
 ;; Graphql:1 ends here
@@ -145,6 +149,10 @@
 (package! lsp-ui :disable t)
 (package! merlin-eldoc :disable t)
 ;; Remove those annoying LSP interface plugins:1 ends here
+
+;; [[file:config.org::*Elfeed-Goodies][Elfeed-Goodies:1]]
+(package! elfeed-goodies :disable t)
+;; Elfeed-Goodies:1 ends here
 
 ;; [[file:config.org::*Package][Package:1]]
 (package! eslintd-fix)

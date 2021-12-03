@@ -281,6 +281,14 @@ But this private repository host went down a few times, so I'll stick to github.
 (package! lsp-ui :disable t)
 (package! merlin-eldoc :disable t)
 #+END_SRC
+*** Elfeed-Goodies
+
+No need, screws with entry buffer position and header display...
+
+#+begin_src elisp
+(package! elfeed-goodies :disable t)
+#+end_src
+
 
 * Packages & Config
 ** eslintd-fix :JAVASCRIPT:
