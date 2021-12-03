@@ -436,7 +436,7 @@ Better sorting for company
 Source: [[file:~/.emacs.d/modules/lang/web/autoload/html.el::defun +web/indent-or-yas-or-emmet-expand (][Doom: modules/lang/web/autoload/html.el]]
 
 #+begin_src emacs-lisp
-(defun +web/indent-or-yas-or-emmet-expand ()
+(defun my:emmet/indent-or-yas-or-emmet-expand ()
   "Do-what-I-mean on TAB.
 
 Invokes `indent-for-tab-command' if at or before text bol, `yas-expand' if on a
@@ -457,7 +457,6 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
          (#'emmet-expand-line))))
 #+end_src
 
-
 *** Config
 
 #+BEGIN_SRC elisp
@@ -470,9 +469,10 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (setq emmet-move-cursor-between-quotes t)
   (map! :map emmet-mode-keymap
         :v [tab] #'emmet-wrap-with-markup
-        [tab] #'+web/indent-or-yas-or-emmet-expand
+        [tab] #'my:emmet/indent-or-yas-or-emmet-expand
         "M-E" #'emmet-expand-line))
 #+END_SRC
+
 ** browse-at-remote :FORK:GIT:
 
 Package override that fixes multiple remotes:
