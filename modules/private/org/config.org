@@ -823,7 +823,7 @@ Set the active state when clocking in.
 **** Personal Projects
 
 #+BEGIN_SRC elisp
-(defun +org-ql|projects ()
+(defun +org-ql|projects-agenda ()
   "List all work projects."
   (interactive)
   (org-ql-search (+org/expand-org-file-name '("Main/projects.org"))
@@ -833,6 +833,22 @@ Set the active state when clocking in.
     :title "Projects"
     :sort '(todo priority date)
     :super-groups '((:auto-outline-path))))
+
+(defun +org-ql|projects ()
+  (interactive)
+  (require 'org-ql)
+  (ivy-read
+     "Query: "
+     #'(lambda (input)
+         (let* ((input-or-dot (if (s-blank? input) "." input))
+                (query (org-ql--query-string-to-sexp (concat input-or-dot " level:2,1"))))
+           (ignore-errors
+               (org-ql-select (list (+org/expand-org-file-name "Main/projects.org")) query
+                 :action (lambda () (->> (org-get-outline-path t)
+                                         (s-join ".")
+                                         ((lambda (x) (propertize x 'marker (copy-marker (point)))))))))))
+     :dynamic-collection t
+     :action #'+org|search-goto))
 #+END_SRC
 
 **** Work Projects
