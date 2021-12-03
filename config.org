@@ -5725,15 +5725,16 @@ So deletes wont affect this register."
 (map!
  :leader
  (:desc "open" :prefix "o"
-   :desc "Calc"         :g "c" #'calc
-   :desc "Calc"         :g "C" #'=calendar
-   :desc "Transmission" :g "D" #'transmission
-   :desc "Elfeed"       :g "e" #'+eshell/toggle
-   :desc "Eshell"       :g "E" #'+rss|open
-   :desc "Irc"          :g "i" #'=irc
-   :desc "Mail"         :g "m" #'=mu4e
-   :desc "Proced"       :g "p" #'proced
-   :desc "Snippet"      :g "s" #'+snippets/edit))
+   :desc "Calc"            :g "c" #'calc
+   :desc "Calc"            :g "C" #'=calendar
+   :desc "Transmission"    :g "D" #'transmission
+   :desc "Elfeed"          :g "e" #'+eshell/toggle
+   :desc "Eshell"          :g "E" #'+rss|open
+   :desc "Irc"             :g "i" #'=irc
+   :desc "Mail"            :g "m" #'=mu4e
+   :desc "Proced"          :g "p" #'proced
+   :desc "Snippet"         :g "s" #'+snippets/edit
+   :desc "Flycheck Errors" :g "$" #'flycheck-list-errors))
 #+END_SRC
 
 **** Projects
