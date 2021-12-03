@@ -1711,6 +1711,33 @@ Copied from [[https://github.com/spegoraro/org-alert][spegoraro/org-alert: Syste
 #+BEGIN_SRC elisp
 
 #+END_SRC
+*** My pretty edit mode
+
+#+begin_src elisp
+(defun +org|zen ()
+  (interactive)
+  (writeroom-mode 1)
+  (writeroom--enable)
+  (org-pretty-mode 1)
+  (org-indent-mode -1)
+  ;; Remove all stars
+  (font-lock-add-keywords nil '(("^\\*+ " (0 (prog1 nil (put-text-property (match-beginning 0) (match-end 0) 'invisible t)))))
+    (visual-line-mode 1))
+  (setq visual-fill-column-width 10)
+  (setq-local text-scale-mode-amount 2)
+  (custom-theme-set-faces 'user
+                          `(org-link ((t (:weight bold))))
+                          `(org-level-1 ((t (:foreground "#C586C0" :height 1.45 :weight bold))))
+                          `(org-level-2 ((t (:inherit org-level-1))))
+                          `(org-level-3 ((t (:inherit org-level-1))))
+                          `(org-level-4 ((t (:inherit org-level-1))))
+                          `(org-level-5 ((t (:inherit org-level-1))))
+                          `(org-level-6 ((t (:inherit org-level-1))))
+                          `(org-level-7 ((t (:inherit org-level-1))))
+                          `(org-level-8 ((t (:inherit org-level-1))))))
+#+end_src
+
+
 
 ** Utils
 *** Get Frontmost chrome url
