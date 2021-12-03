@@ -626,20 +626,6 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
     (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org"))))))
 #+END_SRC
 
-****** Projects
-
-#+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("p" "Work Project Agenda"
-   ((alltodo "+WORK-EVENT"
-             ((org-agenda-sorting-strategy '(todo-state-down user-defined-down timestamp-down time-down))
-              (org-agenda-tag-filter-preset '("-EVENT"))
-              (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
-                                         (:discard (:anything t)))))))
-   ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
-    (org-agenda-files (list (f-join org-directory "Work/work.org"))))))
-#+END_SRC
-
 ****** Meistertask Meistermacs
 
 #+BEGIN_SRC elisp
@@ -692,14 +678,24 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 ***** Personal projects
 
 #+BEGIN_SRC elisp
+(after! org-super-agenda
+  (org-super-agenda--def-auto-group parent-project "their parent project"
+    :key-sort-fn (lambda (a b) b)
+    :key-form (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
+                (when (org-up-heading-safe)
+                  (while (and
+                          (not (org-get-todo-state))
+                          (org-up-heading-safe)))
+                  (->> (org-get-heading 'notags 'notodo)
+                       (substring-no-properties))))))
+
 (+org/add-to-agenda-custom-commands
- '("P" "Personal Project Agenda"
+ '("p" "Personal Projects"
    ((alltodo ""
-             ((org-agenda-sorting-strategy '(priority-down todo-state-down user-defined-down timestamp-down time-down))
-              (org-super-agenda-groups '((:name "Projects" :auto-parent-todo)
-                                         (:discard (:anything t)))))))
-   ((org-agenda-files (--> '("Main/projects.org" "Main/gtd.org")
-                            (--map (f-join org-directory it) it))))))
+     ((org-agenda-files (list (+org/expand-org-file-name "Main/projects.org")))
+      (org-agenda-prefix-format '((todo . "  ")))
+      (org-super-agenda-groups
+       '((:auto-parent-project))))))))
 #+END_SRC
 
 ***** Books
