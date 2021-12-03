@@ -3,6 +3,7 @@
 #+PROPERTY: header-args :emacs-lisp :tangle yes :comments link
 #+STARTUP: org-startup-folded: showall
 #+DISABLE_SPELLCHECKER: t
+#+TODO: TODO(t) ACTIVE(a) | INACTIVE(i)
 #+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t -*-
 #+END_SRC
