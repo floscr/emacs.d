@@ -711,12 +711,12 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                  (:name "Self Help" :tag ("SELF_HELP"))
                                  (:name "Comics" :tag ("COMIC")))))))))
 #+END_SRC
+
 ***** Closing Tag
 
 #+BEGIN_SRC elisp
 )
 #+END_SRC
-
 *** Clocking
 **** Automatically set clocking or todo state
 :PROPERTIES:
