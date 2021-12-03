@@ -835,15 +835,20 @@ Set the active state when clocking in.
     :super-groups '((:auto-outline-path))))
 
 (defun +org-ql|projects (&optional arg)
-  "Search projects file with an outline path and a max level of 2
-When supplied with universal arg, ignore the max level."
+  "Search projects file with an outline path and a max level of 2.
+When supplied with universal arg, ignore the max level.
+When supplied with numerical argument, take the number as the limit."
   (interactive "P")
   (require 'org-ql)
   (ivy-read
      "Query: "
      #'(lambda (input)
          (let* ((input-or-dot (if (s-blank? input) "." input))
-                (max-level (if arg "" "level:2,1"))
+                (max-level
+                 (pcase current-prefix-arg
+                   (`() "level:2,1")
+                   (`(,_x) "")
+                   (x (t! "level:<<x>>,1"))))
                 (query (org-ql--query-string-to-sexp (concat input-or-dot " " max-level))))
            (ignore-errors
                (org-ql-select (list (+org/expand-org-file-name "Main/projects.org")) query
