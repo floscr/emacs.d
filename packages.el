@@ -1,5 +1,28 @@
 ;; -*- no-byte-compile: t; -*-
 
+;; [[file:config.org::*Package][Package:1]]
+(package! emacs-conflict :recipe (:host github :repo "ibizaman/emacs-conflict"))
+;; Package:1 ends here
+
+;; [[file:config.org::*Config][Config:1]]
+(use-package! emacs-conflict
+  :commands (emacs-conflict-resolve-conflicts
+             emacs-conflict-resolve-conflict-dired))
+;; Config:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! prescient)
+(package! company-prescient)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! emmet-mode)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
+;; Package:1 ends here
+
 ;; [[file:config.org::*noflet][noflet:1]]
 (package! noflet)
 ;; noflet:1 ends here
@@ -160,17 +183,4 @@
 
 ;; [[file:config.org::*Package][Package:1]]
 (package! cheat-sh)
-;; Package:1 ends here
-
-;; [[file:config.org::*Package][Package:1]]
-(package! prescient)
-(package! company-prescient)
-;; Package:1 ends here
-
-;; [[file:config.org::*Package][Package:1]]
-(package! emmet-mode)
-;; Package:1 ends here
-
-;; [[file:config.org::*Package][Package:1]]
-(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
 ;; Package:1 ends here
