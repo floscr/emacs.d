@@ -4156,6 +4156,9 @@ All are these are distracting and not helpful.
       lsp-signature-render-documentation nil
       lsp-signature-doc-lines 1
 
+      ;; Disable flycheck override
+      lsp-diagnostic-package :none
+
       lsp-highlight-symbol-at-point nil
       ;; Disable make error highlighting
       lsp-prefer-flymake nil)
