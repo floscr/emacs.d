@@ -6,6 +6,34 @@
 ;; -*- lexical-binding: t -*-
 #+END_SRC
 
+* General Functions
+** org-heading-text
+
+#+begin_src emacs-lisp
+(defun +org/org-heading-text ()
+  "Return the text of the current heading"
+  (->>
+   (org-get-heading t t t t)
+   (substring-no-properties)))
+#+end_src
+* Org QL
+** Select entry with ivy
+
+#+begin_src emacs-lisp
+(defun +org-ql/counsel (files)
+  (interactive)
+  (require 'org-ql)
+  (ivy-read
+     "Query: "
+     #'(lambda (input)
+         (let ((query (org-ql--query-string-to-sexp input)))
+           (ignore-errors
+               (org-ql-select files query
+                 :action (lambda () (propertize (org-get-heading t) 'marker (copy-marker (point))))))))
+     :dynamic-collection t
+     :action #'+org|search-goto))
+#+end_src
+
 * Utils
 ** Parsing Functions
 *** Match at point
