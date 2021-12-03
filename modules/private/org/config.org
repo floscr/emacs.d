@@ -694,6 +694,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
    ((alltodo ""
      ((org-agenda-files (list (+org/expand-org-file-name "Main/projects.org")))
       (org-agenda-prefix-format '((todo . "  ")))
+      (org-agenda-sorting-strategy '(todo-state-up priority-down time-up user-defined-down))
       (org-super-agenda-groups
        '((:auto-parent-project))))))))
 #+END_SRC
