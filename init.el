@@ -79,6 +79,7 @@
  (org
   +roam2
   +dragndrop
+  +pretty
   +present)
  sh
  yaml
