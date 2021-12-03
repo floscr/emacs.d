@@ -1222,6 +1222,7 @@ Take the host as the base and either the TITLE or the path from the URL."
          (->>
           '("Main/programming.org"
             "Main/system.org"
+            "Main/server.org"
             "Main/emacs.org"
             "Work/docs.org")
           (+org/expand-org-file-name)
