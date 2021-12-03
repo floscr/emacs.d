@@ -291,9 +291,10 @@ No need, screws with entry buffer position and header display...
 
 
 * Packages & Config
-** eslintd-fix :JAVASCRIPT:
+** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :JAVASCRIPT:
 
-A javascript autofixing that isn't slow.
+A javascript auto-fixer that isn't slow.
+Needs [[https://www.npmjs.com/package/eslint_d][eslint_d]] binary in ~$PATH~.
 
 *** Package
 
@@ -308,8 +309,7 @@ A javascript autofixing that isn't slow.
   :config
   (setq
    flycheck-javascript-eslint-executable (executable-find "eslint_d")
-   flycheck-disabled-checkers '(javascript-jshint javascript))
-  (add-hook 'js2-mode-hook #'+js/start-eslint))
+   flycheck-disabled-checkers '(javascript-jshint javascript)))
 #+END_SRC
 
 *** Functions
@@ -317,18 +317,19 @@ A javascript autofixing that isn't slow.
 **** Enable eslintd for writable buffers
 
 #+begin_src elisp
-(defun +js/start-eslint ()
+(defun my:js/start-eslint ()
   "Start eslint on writable buffers.
 
 When enabling on read-only buffers it will throw an error."
   (unless buffer-read-only
     (eslintd-fix-mode)))
+
+(add-hook 'js2-mode-hook #'my:js/start-eslint)
 #+end_src
 
-** cheat-sh :CLI:
+** [[https://github.com/chubin/cheat.sh][cheat-sh]] :CLI:
 
-[[https://github.com/chubin/cheat.sh][chubin/cheat.sh]]
-Unified access to the best community driven cheat sheets repositories of the world.
+Community collection of snippets for command line tools.
 
 *** Package
 

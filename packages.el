@@ -51,10 +51,6 @@
 (package! ivy-avy)
 ;; Ivy Avy:1 ends here
 
-;; [[file:config.org::*Edit the current chrome input field directly in emacs][Edit the current chrome input field directly in emacs:1]]
-(package! atomic-chrome)
-;; Edit the current chrome input field directly in emacs:1 ends here
-
 ;; [[file:config.org::*Filter dired buffers][Filter dired buffers:1]]
 (package! dired-narrow)
 (package! dired-filter)
@@ -173,4 +169,8 @@
 
 ;; [[file:config.org::*Package][Package:1]]
 (package! cheat-sh)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! atomic-chrome)
 ;; Package:1 ends here
