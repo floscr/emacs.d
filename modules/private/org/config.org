@@ -1325,7 +1325,7 @@ Known Issues:
 **** Config
 
 #+BEGIN_SRC elisp
-(set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :transient t :ttl t :select t :autosave)
+(set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :ttl nil :select t :autosave)
 #+END_SRC
 
 **** Minor Mode
