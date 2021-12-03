@@ -1362,42 +1362,50 @@ Known Issues:
 (defun +org-indirect|narrow-subtree-indirect (&optional visit-fn goto-parent?)
   "Narrow to an indirect buffer in a popup."
   (interactive)
-  ;; Cleanup old indirect buffers
-  (kill-matching-buffers "^\\*Org Indirect.*" nil t)
-  (let ((buffer
-         (save-window-excursion
-           (when visit-fn (funcall visit-fn))
-           ;; save-window-excursion cancels org-mode being fully loaded
-           ;; this leads to the indirect buffer not knowing where the source comes frome
-           ;; and the org cycle methods not working
-           (org-mode)
-           (clone-indirect-buffer
-            (generate-new-buffer-name (template "*Org Indirect <<(buffer-name)>> "))
-            nil))))
-    (with-current-buffer buffer
-      (widen)
-      (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
-      (save-excursion
-        (when goto-parent?
-          (+org|org-topmost-todo-element)
-          ;; Show CHILDREN without content
-          (org-global-cycle 4))
-        (org-narrow-to-subtree))
-      ;; When the item has subtrees show only the subtrees
-      (ignore-errors
-        (if (save-excursion (search-forward-regexp "^\\*" nil t))
-            (org-global-cycle 10)
-          ;; Otherwise show contents but not the drawers
-          (org-cycle 4)))
-      (+org-indirect-window-mode 1)
-      (pop-to-buffer buffer)
-      (rename-buffer (concat
-                      (buffer-name)
-                      (int-to-string (point-min))
-                      (int-to-string (point-max))
-                      "*"))
-      (evil-forward-word-begin 1)
-      buffer)))
+  (let* ((src-buffer
+          (save-window-excursion
+            (save-excursion
+              (progn
+                (when visit-fn (funcall visit-fn))
+                ;; save-window-excursion cancels org-mode being fully loaded
+                ;; this leads to the indirect buffer not knowing where the source comes frome
+                ;; and the org cycle methods not working
+                (org-mode)
+                (current-buffer)))))
+         (dst-buffer-name (template "*Org Indirect <<(buffer-name src-buffer)>>*"))
+         (existing-buffer (--find (s-starts-with? dst-buffer-name (buffer-name it)) (buffer-list))))
+    (cond
+     (existing-buffer
+      (pop-to-buffer (buffer-name existing-buffer)))
+     (t
+      ;; Cleanup old indirect buffers
+      (kill-matching-buffers "^\\*Org Indirect.*" nil t)
+      (with-current-buffer src-buffer
+        (let ((buffer (clone-indirect-buffer dst-buffer-name nil)))
+          (with-current-buffer buffer
+            (widen)
+            (pop-to-buffer buffer)
+            (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
+            (save-excursion
+              (when goto-parent?
+                (+org|org-topmost-todo-element)
+                ;; Show CHILDREN without content
+                (org-global-cycle 4))
+              (org-narrow-to-subtree))
+            ;; When the item has subtrees show only the subtrees
+            (ignore-errors
+              (if (save-excursion (search-forward-regexp "^\\*" nil t))
+                  (org-global-cycle 10)
+                ;; Otherwise show contents but not the drawers
+                (org-cycle 4)))
+            (+org-indirect-window-mode 1)
+            (rename-buffer (concat
+                            (buffer-name)
+                            (int-to-string (point-min))
+                            (int-to-string (point-max))
+                            "*"))
+            (evil-forward-word-begin 1)
+            buffer)))))))
 #+END_SRC
 
 ***** Window Killing
