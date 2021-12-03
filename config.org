@@ -1901,15 +1901,6 @@ I mainly changed the function marking helper.
                                       "--outdir:/tmp/nimbins")))
 #+end_src
 
-**** Dotfiles compilation command
-
-#+BEGIN_SRC elisp
-(def-project-mode! +dotfiles-nim-compile-mode
-  :modes '(nim-mode)
-  :when (string= (doom-project-root) "/etc/dotfiles/")
-  :on-load
-  (setq-local nim-compile-default-command '("c" "-r" "--verbosity:0" "--hint[Processing]:off" "--excessiveStackTrace:on" "--outdir:../dst")))
-#+END_SRC
 **** Nimpretty
 
 #+begin_src elisp
