@@ -4,25 +4,29 @@
 Archived entries from file /home/floscr/.config/doom/config.org
 
 
-* [[https://github.com/ibizaman/emacs-conflict][ibizaman/emacs-conflict: Resolve conflicts happening when using file synchronization tools]]
+* DONE tree-sitter :EMACS:
 :PROPERTIES:
-:ARCHIVE_TIME: 2021-09-11 Sat 17:12
+:ARCHIVE_TIME: 2022-01-07 Fri 20:42
 :ARCHIVE_FILE: ~/.config/doom/config.org
 :ARCHIVE_OLPATH: Packages & Config
 :ARCHIVE_CATEGORY: config
+:ARCHIVE_TODO: DONE
 :END:
 
 ** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! emacs-conflict :recipe (:host github :repo "ibizaman/emacs-conflict"))
+(package! tree-sitter)
+(package! tree-sitter-langs)
 #+end_src
 
 ** Config
 
 #+begin_src emacs-lisp
-(use-package! emacs-conflict
-  :commands (emacs-conflict-resolve-conflicts
-             emacs-conflict-resolve-conflict-dired))
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  ;; (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
 
