@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: isMainModule
+# key: im
+# --
+when isMainModule:
+  $0
