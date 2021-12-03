@@ -2709,6 +2709,7 @@ Set my preferred clipboard paste method to ~xclip~.
       (:prefix-map ("i" . "Insert")
        :desc "Attachment"         "a" #'+org|attach-file
        :desc "Inavtive Timestamp" "i" (cmd! (+evil-org/normal-mode-paste-fix #'org-time-stamp-inactive))
+       :desc "Timestamp"          "t" (cmd! (+evil-org/normal-mode-paste-fix #'org-time-stamp))
        :desc "Subheadeing"        "s" (cmd!
                                        (call-interactively 'org-insert-subheading)
                                        (evil-insert-state)))
