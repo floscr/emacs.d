@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Semantic Git: Fix
+# key: F
+# --
+fix: $0
