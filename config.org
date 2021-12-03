@@ -6122,3 +6122,12 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
      (defalias ,obsolete-name ,current-name ,docstring)
      (make-obsolete ,obsolete-name ,current-name ,when)))
 #+end_src
+*** Fix Flycheck for emacs 29
+
+#+begin_src elisp
+(defun +flycheck/fix-emacs-29-save (&rest args)
+  (flycheck-clear)
+  (flycheck-buffer))
+
+(advice-add #'flycheck-handle-save :after #'+flycheck/fix-emacs-29-save)
+#+end_src
