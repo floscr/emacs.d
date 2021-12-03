@@ -1,16 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 
 ;; [[file:config.org::*Package][Package:1]]
-(package! emacs-conflict :recipe (:host github :repo "ibizaman/emacs-conflict"))
-;; Package:1 ends here
-
-;; [[file:config.org::*Config][Config:1]]
-(use-package! emacs-conflict
-  :commands (emacs-conflict-resolve-conflicts
-             emacs-conflict-resolve-conflict-dired))
-;; Config:1 ends here
-
-;; [[file:config.org::*Package][Package:1]]
 (package! prescient)
 (package! company-prescient)
 ;; Package:1 ends here
