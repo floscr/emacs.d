@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Pragma: Init (Type Class)
+# uuid: pragma_init
+# key: pi
+# --
+{.requiresInit.}

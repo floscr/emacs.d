@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Type Class
+# uuid: type_class
+# key: t
+# --
+type ${1:TypeClass}* = ref object
+  prop*: ${2:string}

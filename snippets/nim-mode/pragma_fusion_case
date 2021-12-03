@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Fusion Case Matching Pragma
+# uuid: pragma_fusion_case
+# key: pf
+# --
+import fusion/matching
+{.experimental: "caseStmtMacros".}

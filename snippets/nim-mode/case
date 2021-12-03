@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Switch Case Statement
+# uuid: case
+# key: c
+# --
+
+case $1:
+  of $0:
