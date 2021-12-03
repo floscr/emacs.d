@@ -2833,3 +2833,19 @@ I also did not know how to find the package file, so I made it so it wont crash 
        (-id-when #'f-exists?)
        (load)))
 #+END_SRC
+*** Fix Org Cache
+
+The element cache causes org-agenda to hang some times, this clears the cache for all files.
+See: [[https://www.youtube.com/watch?v=Yqba7BwrXcY][Mit dem Zug von Wien nach Vietnam: Er hat es durchgezogen! | MEINS Reportage - YouTube]]
+
+#+begin_src elisp
+(defun +org|org-element-cache-reset-all ()
+  (interactive)
+  (mapc
+    (lambda (file)
+      (save-window-excursion
+        (save-excursion
+          (find-file file)
+          (org-element-cache-reset))))
+    (org-agenda-files)))
+#+end_src
