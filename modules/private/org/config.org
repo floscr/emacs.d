@@ -1382,18 +1382,20 @@ Known Issues:
 (defun +org-indirect|narrow-subtree-indirect (&optional visit-fn goto-parent?)
   "Narrow to an indirect buffer in a popup."
   (interactive)
-  (let* ((src-buffer
-          (save-window-excursion
-            (save-excursion
-              (progn
-                (when visit-fn (funcall visit-fn))
-                ;; save-window-excursion cancels org-mode being fully loaded
-                ;; this leads to the indirect buffer not knowing where the source comes frome
-                ;; and the org cycle methods not working
-                (org-mode)
-                (current-buffer)))))
-         (dst-buffer-name (template "*Org Indirect <<(buffer-name src-buffer)>>*"))
-         (existing-buffer (--find (s-starts-with? dst-buffer-name (buffer-name it)) (buffer-list))))
+  (-let* (((src-buffer heading-text)
+           (save-window-excursion
+             (save-excursion
+               (progn
+                 (when visit-fn (funcall visit-fn))
+                 ;; save-window-excursion cancels org-mode being fully loaded
+                 ;; this leads to the indirect buffer not knowing where the source comes frome
+                 ;; and the org cycle methods not working
+                 (org-mode)
+                 (list
+                  (current-buffer)
+                  (+org/org-heading-text))))))
+          (dst-buffer-name (template "*Org Indirect <<(buffer-name src-buffer)>> <<heading-text>>*"))
+          (existing-buffer (--find (s-starts-with? dst-buffer-name (buffer-name it)) (buffer-list))))
     (cond
      (existing-buffer
       (pop-to-buffer (buffer-name existing-buffer)))
