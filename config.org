@@ -2562,6 +2562,33 @@ Press =gr= with a following motion character like =w=.
   (counsel-find-file (concat "/run/media/" (user-login-name) "/")))
 #+END_SRC
 
+***** Search project for symbol at point :FIX:ADVICE:
+
+Doom doesn't double escape ~|~ which is needed for ~rg~.
+Original [[file:~/.emacs.d/modules/config/default/autoload/search.el::defun +default/search-project-for-symbol-at-point][+default/search-project-for-symbol-at-point]]
+
+I've also removed the feature checking, since I ony use ~ivy~.
+
+#+begin_src elisp
+(defun my::ivy|search-project-for-symbol-at-point (symbol dir)
+  "Search current project for symbol at point.
+If prefix ARG is set, prompt for a known project to search from."
+  (interactive
+   (list (->> (or (doom-thing-at-point-or-region) "")
+              (rxt-quote-pcre)
+              (s-replace-all '(("|" . "\\|"))))
+         (let ((projectile-project-root nil))
+           (if current-prefix-arg
+               (if-let (projects (projectile-relevant-known-projects))
+                   (completing-read "Search project: " projects nil t)
+                 (user-error "There are no known projects"))
+             (doom-project-root default-directory)))))
+  (+ivy/project-search nil symbol dir))
+
+(advice-add #'+default/search-project-for-symbol-at-point :override #'my::ivy|search-project-for-symbol-at-point)
+#+end_src
+
+
 **** Config
 ***** Always show actions in hydra.
 
