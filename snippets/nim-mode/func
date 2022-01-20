@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Func
+# uuid: func
+# key: f
+# --
+func $1($2): ${3:auto} =
+  return ${0:""}

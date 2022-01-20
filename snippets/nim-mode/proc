@@ -3,5 +3,5 @@
 # uuid: proc
 # key: p
 # --
-proc $1($2):
-  $0
+proc $1($2): ${3:auto} =
+  ${0:""}
