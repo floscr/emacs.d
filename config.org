@@ -488,6 +488,53 @@ shuffling is done in place."
 
 
 
+** UI
+
+*** Adjust font to display
+
+#+BEGIN_SRC elisp
+(defun my::ui/adjust-font (size line-space &optional font-family weight)
+  (let* ((font-family (or font-family)))
+    (setq-default line-spacing line-space)
+    (setq-default doom-font (font-spec :family font-family :size size :weight weight))
+    (setq-default doom--font-scale nil)
+    (set-frame-font doom-font 'keep-size t)
+    (doom/reload-font)
+    (run-hooks 'after-setting-font-hook)))
+
+(defun my::ui/get-x-screen ()
+  "Get a list of all connected screens."
+  (-> "xrandr | grep ' connected ' | cut -d ' ' -f 1"
+      (shell-command-to-string)
+      (split-string "\n")
+      (reverse)
+      (cdr)
+      (reverse)
+      (cl-sort (lambda (a b)
+                 (cond ((string-match-p "^eDP" a) t)
+                       ((string-match-p "^eDP" b) nil)
+                       (t nil))))))
+
+(defun my::ui/has-display-connected? (screen)
+  "Check if SCREEN is connected."
+  (-contains? (my::ui/get-x-screen) screen))
+
+(defun my::ui|adjust-ui-to-display ()
+  "Adjust the UI to the current attached display."
+  (interactive)
+  (cond
+   ((string= (system-name) "mbair")
+    ;; Not actually a retina display, but this looks best
+    (my::ui/adjust-font 13 5 "Fira Code"))
+   ((string= (system-name) "Florians-iMac.local")
+    (my::ui/adjust-font 14 10 "Menlo"))
+   ((string= (system-name) "thinknix")
+    (if (my::ui/has-display-connected? "DP2")
+        (my::ui/adjust-font 18 7 "Fira Code" 'medium)
+      (my::ui/adjust-font 15 4 "Fira Code" 'medium)))
+   ((string= (system-name) "Florians-MacBook-Air.local")
+    (my::ui/adjust-font 14 10 "Menlo"))))
+#+END_SRC
 
 * Custom Packages
 ** TODO Custom Bookmarks
@@ -5057,51 +5104,6 @@ error in process filter: End of buffer
 
 
 * Needs to be restrucutred
-** UI
-
-#+BEGIN_SRC elisp
-(defun +ui/adjust-font (size line-space &optional font-family weight)
-  (let* ((font-family (or font-family)))
-    (setq-default line-spacing line-space)
-    (setq-default doom-font (font-spec :family font-family :size size :weight weight))
-    (setq-default doom--font-scale nil)
-    (set-frame-font doom-font 'keep-size t)
-    (doom/reload-font)
-    (run-hooks 'after-setting-font-hook)))
-
-(defun +ui/get-screens ()
-  "Get a list of all connected screens."
-  (-> "xrandr | grep ' connected ' | cut -d ' ' -f 1"
-      (shell-command-to-string)
-      (split-string "\n")
-      (reverse)
-      (cdr)
-      (reverse)
-      (cl-sort (lambda (a b)
-                 (cond ((string-match-p "^eDP" a) t)
-                       ((string-match-p "^eDP" b) nil)
-                       (t nil))))))
-
-(defun +ui/has-screen-connected? (screen)
-  "Check if SCREEN is connected."
-  (-contains? (+ui/get-screens) screen))
-
-(defun +ui|adjust-ui-to-display ()
-  "Adjust the UI to the current attached display."
-  (interactive)
-  (cond
-   ((string= (system-name) "mbair")
-    ;; Not actually a retina display, but this looks best
-    (+ui/adjust-font 13 5 "Fira Code"))
-   ((string= (system-name) "Florians-iMac.local")
-    (+ui/adjust-font 14 10 "Menlo"))
-   ((string= (system-name) "thinknix")
-    (if (+ui/has-screen-connected? "DP2")
-        (+ui/adjust-font 18 7 "Fira Code" 'medium)
-      (+ui/adjust-font 15 4 "Fira Code" 'medium)))
-   ((string= (system-name) "Florians-MacBook-Air.local")
-    (+ui/adjust-font 14 10 "Menlo"))))
-#+END_SRC
 ** Window management
 *** Toggle split style
 :PROPERTIES:
@@ -5430,7 +5432,7 @@ Resize the window font size etc according to the system.
 This will be disabled in terminal mode.
 
 #+BEGIN_SRC elisp
-(when (display-graphic-p) (+ui|adjust-ui-to-display))
+(when (display-graphic-p) (my::ui|adjust-ui-to-display))
 #+END_SRC
 
 *** Theme Toggle
