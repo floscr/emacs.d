@@ -1630,6 +1630,57 @@ When enabling on read-only buffers it will throw an error."
     :select nil :quit 'current :ttl nil))
 #+end_src
 
+***** [[https://github.com/NicolasPetton/Indium][indium]]
+
+A JavaScript development environment for Emacs.
+
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! indium)
+#+END_SRC
+
+****** Config
+
+#+BEGIN_SRC elisp
+(use-package! indium
+  :commands (indium-connect indium-launch)
+  :init
+  (setq indium-chrome-use-temporary-profile t)
+  (setq indium-chrome--default-data-dir (f-join (getenv "XDG_CACHE_HOME") "inidum-chrome-profile"))
+  (setq indium-chrome-data-dir (f-join (getenv "XDG_CACHE_HOME") "inidum-chrome-profile"))
+  (map! :map (js2-mode-map rjsx-mode-map)
+        :localleader
+        (:prefix ("i" . "Indium")
+          :desc "Console"                   "c" #'indium-switch-to-repl-buffer
+          :desc "Launch"                    "l" #'indium-launch
+          :desc "Launch"                    "q" #'indium-quit
+          :desc "Add breakpoint"            "r" #'indium-reload
+          (:prefix ("b" . "breakpoint")
+            :desc "Add"                     "b" #'indium-add-breakpoint
+            :desc "Conditional"             "c" #'indium-add-conditional-breakpoint
+            :desc "Conditional"             "e" #'indium-edit-breakpoint-condition
+            :desc "Conditional"             "l" #'indium-list-breakpoints
+            :desc "Conditional"             "0" #'indium-deactivate-breakpoints
+            :desc "Conditional"             "1" #'indium-activate-breakpoints
+            :desc "Delete"                  "d" #'indium-remove-breakpoint
+            :desc "Delete all from buffer"  "D" #'indium-remove-all-breakpoints-from-buffer
+            :desc "Edit Condition"          "e" #'indium-toggle-breakpoint
+            :desc "Toggle"                  "t" #'indium-toggle-breakpoint)))
+  (map!
+        :map indium-inspector-mode-map
+        :n "-" #'indium-inspector-pop)
+  (map! :map indium-debugger-mode-map
+        :n "gr" #'indium-debugger-resume
+        :n "gi" #'indium-debugger-step-into
+        :n "go" #'indium-debugger-step-over
+        :n "ge" #'indium-debugger-evaluate
+        :n "gl" #'indium-debugger-locals)
+  :config
+  (set-popup-rule! "^\\*JS REPL*" :size 0.3)
+  (set-popup-rule! "^\\*JS Debugger Locals*" :size 0.3))
+#+END_SRC
+
 *** Nix :NIXOS:NIX:
 **** Nixpkgs Fmt :AUTOFIX:
 ***** Package
@@ -2907,12 +2958,6 @@ Move to ivy candidate with =C-'=
 #+END_SRC
 
 **** Javascript
-***** Indium: Javascript debugging environment
-
-#+BEGIN_SRC elisp
-(package! indium)
-#+END_SRC
-
 ***** Impatient Mode: Live editing of html
 
 #+BEGIN_SRC elisp
@@ -4333,47 +4378,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Indium
-
-#+BEGIN_SRC elisp
-(use-package! indium
-  :commands (indium-connect indium-launch)
-  :init
-  (setq indium-chrome-use-temporary-profile t)
-  (setq indium-chrome--default-data-dir (f-join (getenv "XDG_CACHE_HOME") "inidum-chrome-profile"))
-  (setq indium-chrome-data-dir (f-join (getenv "XDG_CACHE_HOME") "inidum-chrome-profile"))
-  (map! :map (js2-mode-map rjsx-mode-map)
-        :localleader
-        (:prefix ("i" . "Indium")
-          :desc "Console"                   "c" #'indium-switch-to-repl-buffer
-          :desc "Launch"                    "l" #'indium-launch
-          :desc "Launch"                    "q" #'indium-quit
-          :desc "Add breakpoint"            "r" #'indium-reload
-          (:prefix ("b" . "breakpoint")
-            :desc "Add"                     "b" #'indium-add-breakpoint
-            :desc "Conditional"             "c" #'indium-add-conditional-breakpoint
-            :desc "Conditional"             "e" #'indium-edit-breakpoint-condition
-            :desc "Conditional"             "l" #'indium-list-breakpoints
-            :desc "Conditional"             "0" #'indium-deactivate-breakpoints
-            :desc "Conditional"             "1" #'indium-activate-breakpoints
-            :desc "Delete"                  "d" #'indium-remove-breakpoint
-            :desc "Delete all from buffer"  "D" #'indium-remove-all-breakpoints-from-buffer
-            :desc "Edit Condition"          "e" #'indium-toggle-breakpoint
-            :desc "Toggle"                  "t" #'indium-toggle-breakpoint)))
-  (map!
-        :map indium-inspector-mode-map
-        :n "-" #'indium-inspector-pop)
-  (map! :map indium-debugger-mode-map
-        :n "gr" #'indium-debugger-resume
-        :n "gi" #'indium-debugger-step-into
-        :n "go" #'indium-debugger-step-over
-        :n "ge" #'indium-debugger-evaluate
-        :n "gl" #'indium-debugger-locals)
-  :config
-  (set-popup-rule! "^\\*JS REPL*" :size 0.3)
-  (set-popup-rule! "^\\*JS Debugger Locals*" :size 0.3))
-#+END_SRC
-
 *** Impatient-Mode
 
 Serves the current buffer live over http.
