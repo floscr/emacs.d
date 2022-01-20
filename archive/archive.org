@@ -30,3 +30,251 @@ There's also no real information how to do ~AST~ transforms with functions (whic
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
+
+
+* DONE tree-sitter :EMACS:
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-01-07 Fri 20:42
+:ARCHIVE_FILE: ~/.config/doom/config.org
+:ARCHIVE_OLPATH: Packages & Config
+:ARCHIVE_CATEGORY: config
+:ARCHIVE_TODO: DONE
+:END:
+
+** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! tree-sitter)
+(package! tree-sitter-langs)
+#+end_src
+
+** Config
+
+#+begin_src emacs-lisp
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  ;; (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
+
+
+* Beancount
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-01-20 Thu 15:13
+:ARCHIVE_FILE: ~/.config/doom/config.org
+:ARCHIVE_OLPATH: Configuration/Package Config
+:ARCHIVE_CATEGORY: config
+:END:
+** Config
+
+#+BEGIN_SRC elisp
+(use-package! beancount
+  :defer t
+  :mode
+  ("\\.bean\\(?:count\\)?\\'" . beancount-mode)
+  :config
+  (setq beancount-accounts-files
+        (directory-files "~/Documents/Beancount"
+                         'full
+                         (rx ".beancount.gpg" eos))))
+#+END_SRC
+
+** Functions
+*** Helpers
+
+#+BEGIN_SRC elisp
+(defun +beancount/collect-accounts ()
+  "Collect accounts from beancount files."
+  (beancount-collect beancount-account-regexp 0 beancount-accounts-files))
+
+(defvar +beancount:income-accounts nil
+  "Prefixes for expense accounts.")
+(setq +beancount:income-accounts '("Assets" "Liabilities"))
+
+(defun +beancount/collect-expense-accounts (accounts)
+  "Collect accounts from list ACCOUNTS."
+  (-filter (lambda (x) (--find (s-starts-with? it x) +beancount:income-accounts)) accounts))
+
+(defun +beancount/date-string ()
+  "Function docstring"
+  (format-time-string "%Y-%m-%d"))
+#+END_SRC
+
+*** Open Main File
+
+#+BEGIN_SRC elisp
+(defun +beancount|open-main ()
+  "Open the main beancount-accounts-files file."
+  (interactive)
+  (find-file (car beancount-accounts-files)))
+#+END_SRC
+
+*** Balance
+:PROPERTIES:
+:SOURCE:   https://github.com/CanftIn/dotfiles/blob/cd919c6e3f4970ba56248ac68ab072111a00049f/.doom.d/config%20copy.el
+:END:
+
+#+BEGIN_SRC elisp
+(defun +beancount|balance ()
+    "Show the current balances."
+    (interactive)
+    (let ((compilation-read-command nil))
+      (beancount--run "bean-report"
+                      (file-relative-name buffer-file-name) "bal")))
+#+END_SRC
+
+*** Add expense
+
+Manually add an expense to the Cash Book.
+
+#+BEGIN_SRC elisp
+(defun +beancount|add-expense ()
+  "Add expense to the bottom of the file."
+  (interactive)
+  (and-let* ((accounts (+beancount/collect-accounts))
+             (from (ivy-read "From: " (+beancount/collect-expense-accounts accounts)))
+             (to (ivy-read "To: " accounts))
+             (subject (read-string "Subject: "))
+             (amount (read-number "Amount: ")))
+      (goto-char (point-max))
+      (newline 1)
+      (insert (template "<<(+beancount/date-string)>> * \"<<subject>>\"
+  <<from>> -<<amount>> EUR
+  <<to>> <<amount>> EUR
+"))
+      (beancount-align-to-previous-number)))
+#+END_SRC
+
+** Bindings
+
+#+BEGIN_SRC elisp
+(map! :map beancount-mode-map
+      :localleader
+      :n "a" #'+beancount|add-expense
+      :n "c" #'beancount-check
+      :n "q" #'beancount-query
+      :n "b" #'+beancount|balance)
+#+END_SRC
+
+
+* Beancount
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-01-20 Thu 15:14
+:ARCHIVE_FILE: ~/.config/doom/config.org
+:ARCHIVE_OLPATH: Needs to be restrucutred/Packages/Language Packages
+:ARCHIVE_CATEGORY: config
+:END:
+
+#+BEGIN_SRC elisp
+(package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
+#+END_SRC
+
+
+* Counsel Grep Buffers
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-01-21 Fri 13:43
+:ARCHIVE_FILE: ~/.config/doom/config.org
+:ARCHIVE_OLPATH: New Package Configuration/Completion/ivy / counsel/Functions
+:ARCHIVE_CATEGORY: config
+:ARCHIVE_ITAGS: COMPLETION
+:END:
+
+#+BEGIN_SRC elisp
+(defun +ivy|search-buffers (buffer-list)
+  "Grep workspace buffers."
+  (interactive)
+  (-->
+   (or buffer-list (+workspace-buffer-list))
+   (cl-remove-if-not #'buffer-file-name it)
+   (-map #'buffer-file-name it)
+   (-map #'shell-quote-argument it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun +ivy/search-buffer-list (&optional buffer-list)
+  (--> (or buffer-list ivy--old-cands)
+   (-log it)
+   (-map #'shell-quote-argument it)
+   (--map (f-join (doom-project-root) it) it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun counsel-grep-files (buffer-file-names)
+  "Grep for a string in the file visited by the current buffer."
+  (interactive)
+  (counsel-require-program counsel-grep-base-command
+   (setq counsel-grep-command
+         (format counsel-grep-base-command "%s" buffer-file-names))
+   (message "%s" counsel-grep-command)
+   (let ((init-point (point))
+         res)
+     (unwind-protect
+         (setq res (ivy-read "grep: " #'counsel-grep-function
+                             :dynamic-collection t
+                             :require-match t
+                             :keymap counsel-grep-map
+                             :history 'counsel-grep-history
+                             :re-builder #'ivy--regex
+                             :action #'counsel-grep-action
+                             :caller 'counsel-grep))
+       (unless res
+         (goto-char init-point))))))
+
+(after! ivy
+  (ivy-set-actions
+   'my::magit|counsel-changed-files
+   '(("/" (lambda (&optional arg)
+            (+ivy/search-buffer-list))
+      "Grep Forward"))))
+#+END_SRC
+
+
+* Mail
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-01-22 Sat 12:23
+:ARCHIVE_FILE: ~/.config/doom/config.org
+:ARCHIVE_OLPATH: Configuration/Package Config
+:ARCHIVE_CATEGORY: config
+:END:
+** Config
+*** Accounts
+**** Work
+
+**** COMMENT Work
+
+#+BEGIN_SRC elisp :tangle no
+(setq smtpmail-default-smtp-server "smtp.gmail.com")
+(setq smtpmail-smtp-service 587)
+(setq smtpmail-debug-info t)
+#+END_SRC
+
+*** Bookmarks
+
+#+BEGIN_SRC elisp :tangle no
+(setq mu4e-bookmarks
+  `(("flag:unread AND NOT flag:trashed AND NOT maildir:/Spam" "Unread messages"      ?u)
+    ("date:today..now AND NOT maildir:/Spam"                  "Today's messages"     ?T)))
+#+END_SRC
+
+*** Disable Background Color
+
+#+BEGIN_SRC elisp :tangle no
+(setq shr-use-colors nil)
+#+END_SRC
+
+*** Shortcuts
+
+#+BEGIN_SRC elisp :tangle no
+(setq mu4e-maildir-shortcuts
+      '(("/mailbox/work/INBOX"     . ?i)
+        ("/mailbox/work/Sent Mail" . ?s)
+        ("/mailbox/work/Trash"     . ?t)
+        ("/mailbox/work/All Mail"  . ?a)))
+#+END_SRC
+
+*** Automatically apply Section without asking
+
+#+BEGIN_SRC elisp :tangle no
+(setq mu4e-headers-leave-behavior 'apply)
+#+END_SRC
