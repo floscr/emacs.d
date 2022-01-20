@@ -2248,6 +2248,23 @@ Press =gr= with a following motion character like =w=.
  :map pdf-occur-buffer-mode-map
  :gn [tab] (cmd! (pdf-occur-goto-occurrence t)))
 #+END_SRC
+** Flycheck :LINTING:
+*** Config
+**** Disabled Checkers
+***** Elisp
+
+#+BEGIN_SRC elisp
+(add-hook! 'emacs-lisp-mode-hook :append
+  (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+#+END_SRC
+
+***** Nim
+
+#+BEGIN_SRC elisp
+(add-hook! 'nim-mode-hook :append
+  (setq flycheck-disabled-checkers '(nim-nimsuggest))
+  (flycheck-select-checker 'nim-1-6-0))
+#+END_SRC
 
 * Needs to be restrucutred
 ** Packages
@@ -3779,22 +3796,6 @@ pkgs.mkShell {
 
 ** Package Config
 *** Flycheck
-**** Disabled Checkers
-***** Elisp
-
-#+BEGIN_SRC elisp
-(add-hook! 'emacs-lisp-mode-hook :append
-  (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-#+END_SRC
-
-***** Nim
-
-#+BEGIN_SRC elisp
-(add-hook! 'nim-mode-hook :append
-  (setq flycheck-disabled-checkers '(nim-nimsuggest))
-  (flycheck-select-checker 'nim-1-6-0))
-#+END_SRC
-
 *** Writeroom
 
 **** Setup
