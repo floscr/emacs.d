@@ -1856,6 +1856,38 @@ I undo this option with the interactive prefix argument, which can be accessed v
       :map dired-mode-map
       :n "p" 'my::dired|paste-dwim)
 #+END_SRC
+** Projectile :PROJECTILE:
+*** Config
+**** Ignored Projects
+
+Dont add packages inside ~~.emacs.d~ to projectile, as I often browse the source for a package,
+but I dont want them added to my ~projectile-known-projects~.
+
+#+BEGIN_SRC elisp
+(use-package! projectile
+  :init
+  (setq projectile-ignored-projects '("~/"
+                                      "/tmp"
+                                      "~/.emacs.d/.local/straight/repos/")))
+#+END_SRC
+
+**** Scan directory for repositories
+
+#+BEGIN_SRC elisp
+(use-package! projectile
+  :init
+  (setq projectile-project-search-path '("~/Code/Dotfiles"
+                                         "~/Code/Repositories"
+                                         "~/Code/Projects"
+                                         "~/Code/Tools"
+                                         "~/Code/Meisterlabs"
+                                         "~/Code/Meisterlabs/mindmeister-web/.worktrees"))
+  :config
+  ;; Auto discover when running switch project for the first time
+  (add-transient-hook! 'counsel-projectile-switch-project
+    (projectile-cleanup-known-projects)
+    (projectile-discover-projects-in-search-path)))
+#+END_SRC
 
 ** Evil :EVIL:
 *** Packages
@@ -3439,38 +3471,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** projectile
-**** Ignored Projects
-
-Dont add packages inside ~~.emacs.d~ to projectile, as I often browse the source for a package,
-but I dont want them added to my ~projectile-known-projects~.
-
-#+BEGIN_SRC elisp
-(use-package! projectile
-  :init
-  (setq projectile-ignored-projects '("~/"
-                                      "/tmp"
-                                      "~/.emacs.d/.local/straight/repos/")))
-#+END_SRC
-
-**** Scan directory for repositories
-
-#+BEGIN_SRC elisp
-(use-package! projectile
-  :init
-  (setq projectile-project-search-path '("~/Code/Dotfiles"
-                                         "~/Code/Repositories"
-                                         "~/Code/Projects"
-                                         "~/Code/Tools"
-                                         "~/Code/Meisterlabs"
-                                         "~/Code/Meisterlabs/mindmeister-web/.worktrees"))
-  :config
-  ;; Auto discover when running switch project for the first time
-  (add-transient-hook! 'counsel-projectile-switch-project
-    (projectile-cleanup-known-projects)
-    (projectile-discover-projects-in-search-path)))
-#+END_SRC
-
 *** elescope
 
 #+BEGIN_SRC elisp
