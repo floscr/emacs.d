@@ -523,7 +523,6 @@ And I will load them on system start:
 #+END_SRC
 ** Custom Variables
 *** Directories
-
 **** Downloads
 
 #+BEGIN_SRC elisp
@@ -1384,6 +1383,24 @@ Package override that fixes multiple remotes:
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
 #+end_src
+*** [[https://github.com/freesteph/elescope][freesteph/elescope: Search and clone Git repos directly within Emacs.]]
+
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! elescope)
+#+END_SRC
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package elescope
+  :commands (elescope-checkout)
+  :config
+  (setq elescope-root-folder my::directories:repositories-dir)
+  :init
+  (defalias '+git|clone 'elescope-checkout))
+#+END_SRC
 
 ** Dired :DIRED:
 *** Packages
@@ -3481,17 +3498,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** elescope
-
-#+BEGIN_SRC elisp
-(use-package elescope
-  :commands (elescope-checkout)
-  :config
-  (setq elescope-root-folder "~/Code/Repositories")
-  :init
-  (defalias '+git|clone 'elescope-checkout))
-#+END_SRC
-
 *** daemon
 
 #+BEGIN_SRC elisp
