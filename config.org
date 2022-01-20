@@ -512,6 +512,17 @@ And I will load them on system start:
 
 (my::secrets/load-config-file)
 #+END_SRC
+** Doom
+*** Garbage Collection
+
+Set it to =32 MiB=.
+
+#+BEGIN_SRC elisp
+(setq doom-gc-cons-threshold 33554432)
+#+END_SRC
+
+
+
 
 * Needs to be restrucutred
 ** Packages
@@ -1266,16 +1277,7 @@ Package override that fixes multiple remotes:
 
 
 * Configuration
-** External Files
 ** Defaults
-*** Garbage Collection
-
-Set it to =32 MiB=.
-
-#+BEGIN_SRC elisp
-(setq doom-gc-cons-threshold 33554432)
-#+END_SRC
-
 *** Lookup search sources
 
 #+BEGIN_SRC elisp
