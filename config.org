@@ -1719,25 +1719,21 @@ A JavaScript development environment for Emacs.
   (set-popup-rule! "^\\*JS REPL*" :size 0.3)
   (set-popup-rule! "^\\*JS Debugger Locals*" :size 0.3))
 #+END_SRC
+**** Functions
+***** Match const function name
 
-*** Nix :NIXOS:NIX:
-**** Nixpkgs Fmt :AUTOFIX:
-***** Package
+#+BEGIN_SRC elisp
+(defun my::javascript/match-const-function-name (line)
+  "Matches a line to the word after the declaration"
+  (nth 2 (s-match
+          "\\(const\\|let\\|class\\)\s\\(.+?\\)\s"
+          line)))
 
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! nixpkgs-fmt)
+(defun my::javascript/const-function-at-point ()
+  "Returns the current function name at the current line"
+  (my::javascript/match-const-function-name (thing-at-point 'line t)))
 #+END_SRC
 
-***** Config
-
-#+begin_src elisp
-(use-package nixpkgs-fmt
-  :after nix-mode
-  :config
-  (setq nixpkgs-fmt-on-save-mode t)
-  :init
-  (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
-#+end_src
 *** Emacs Lisp (Elisp) :ELISP:
 **** Packages
 ***** [[https://github.com/countvajhula/symex.el][symex]]
@@ -1757,7 +1753,6 @@ An evil way to edit Lisp symbolic expressions (symexes) as trees in Emacs
   :commands (symex-mode symex-mode-interface))
 #+END_SRC
 
-*** MySQL :MYSQL:DATABASE:
 *** Json :JSON:
 **** Functions
 ***** Is Last JSON key at point
@@ -1826,10 +1821,565 @@ npm i -g json-fix
  :gni "<C-return>" #'my::json|insert-key-below
  :gni "<C-S-return>" #'my::json|insert-key-above)
 #+END_SRC
-*** Haskell :HASKELL:
+***** Functions
+***** Export default variable
 
-**** Functions
-***** Autofix with [[https://hackage.haskell.org/package/brittany][brittany]] :AUTOFIX:
+#+BEGIN_SRC elisp
+(defun js2r-export-default ()
+  "Exports the current declaration at the end of the file"
+  (interactive)
+  (save-excursion
+    (let* ((name (my::javascript/const-function-at-point)))
+      (goto-char (point-max))
+      (insert "\n")
+      (insert (template "export default <<name>>;")))))
+#+END_SRC
+
+***** Extract constant to file
+
+Extract the ~const~ under the cursor into a new file.
+
+#+BEGIN_SRC elisp
+(defun js2r-extract-const-to-file ()
+  "Extracts function to external file"
+  (interactive)
+  (let* ((name (my::javascript/const-function-at-point))
+         (path (concat "./" name ".js")))
+    (evil-digit-argument-or-evil-beginning-of-line)
+    (js2r-kill)
+    (f-write-text "" 'utf-8 path)
+    (find-file path)
+    (yank)))
+#+END_SRC
+
+***** Generate ~index.js~ file index
+
+Generate a file index in the current file for every other file in the current directory.
+
+#+BEGIN_SRC elisp
+(defun +js/index-file-names (&optional dir)
+  "Get filenames from current buffers directory."
+  (let ((fs (directory-files (or dir default-directory) nil ".*\\.js")))
+    (mapcar 'f-no-ext
+            (remove "index.js" fs))))
+
+(defun +js|generate-index (&optional dir ignore-list is-old-es-style)
+  "Generate an index import file for files in directory.
+Pass DIR for directory, falls back to default-directory
+Pass IGNORE-LIST for a list of files
+Pass IS-OLD-ES-STYLE for using the non-esm style exports"
+  (interactive)
+  (erase-buffer)
+  (let* ((dir (or dir default-directory))
+         (fs (->>
+              (+js/index-file-names dir)
+              (-log)
+              (--reject (s-ends-with-p ".test" it))
+              (--when ignore-list (--remove (-contains? ignore-list it) it)))))
+    (message "%s" fs)
+    (cond (is-old-es-style
+           (progn
+             (mapc (lambda (f) (insert "import " f " from './" f "';\n")) fs)
+             (insert "\n")
+             (insert "export default {\n")
+             (mapc (lambda (f) (insert "    " f ",\n")) fs)
+             (insert "};")))
+          (t
+           (mapc (lambda (f) (insert "export { default as " f " } from './" f "';\n")) fs)))))
+#+END_SRC
+
+***** Convert expression into template string
+
+Converts an expression into a template string.
+
+Example:
+When you would call the function on the ~foo~ inside the console.log,
+It would wrap it like this ~console.log(`${foo}`)~.
+
+#+BEGIN_SRC js :tangle no
+const foo = 'Foo'
+console.log(`${foo}`)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(defun +js|convert-sexp-to-template-string ()
+  "Wrap sexp into a template string"
+  (interactive)
+  (kill-sexp)
+  (insert (concat "`${" (substring-no-properties (car kill-ring)) "}`"))
+  (pop kill-ring))
+#+END_SRC
+
+***** Split / Join JSX Tag Node
+
+Stolen from the vscode extension: [[https://github.com/dannyconnell/vscode-split-html-attributes][dannyconnell/vscode-split-html-attributes]]
+I don't want to translate this to elisp, and js works as well.
+
+Split/Joins a JSX tags by seperating the attributes
+
+#+BEGIN_SRC js :tangle "./.cache/split-join-tag.js"
+const useSpacesForTabs = true;
+const tabSize = 4;
+const sortOrder = [];
+const closingBracketOnNewLine = true;
+
+let input = process.argv[2]
+
+// count the number of lines initally selected
+let lineCount = input.split('\n').length
+let lineText = input
+
+// get the initial white space at the start of the line
+let initialWhitespaceRegex = /\s*/i
+let initialWhitespace = lineText.match(initialWhitespaceRegex)[0]
+
+// get the opening tag
+let openingTagRegex = /^[^\s]+/
+let openingTag = input.match(openingTagRegex)[0]
+
+// remove opening tag and trim
+input = input.replace(openingTagRegex, '')
+input = input.trim()
+
+// get the ending bracket (if it's a "/>")
+let endingBracket = ''
+if (input.endsWith('/>')) {
+    endingBracket = '/>'
+}
+else {
+    endingBracket = '>'
+}
+
+// remove ending bracket and trim
+if (endingBracket == '/>') {
+    input = input.replace('/>', '')
+}
+else {
+    input = input.substring(0, input.length - 1)
+}
+input = input.trim()
+
+// create the indentation string
+let indentationString
+if (useSpacesForTabs == false) {
+    indentationString = '\t'
+}
+else {
+    indentationString = ' '.repeat(tabSize)
+}
+
+// regex to select all spaces that aren't within quotes
+let spacesRegex = /\s+(?=([^"]*"[^"]*")*[^"]*$)/g
+
+// get attributes into an array
+let attributesString = input.replace(spacesRegex, '\n')
+let attributesArray = attributesString.split('\n')
+
+// sort the attributes array
+let sortedAttributesArray = []
+if (sortOrder.length) {
+
+    // loop through sortOrder array
+    sortOrder.forEach(search => {
+        // loop through attributesArray
+        let itemsToMove = []
+        attributesArray.forEach((item, index) => {
+            if (item.match(search)) {
+                itemsToMove.push(index)
+                // attributesArray.splice(index, 1)
+            }
+        })
+        // move matched items from attributesArray to sortedAttributesArray (and sort them)
+        let tempMatchedItems = []
+        itemsToMove.forEach(indexItem => {
+            tempMatchedItems.push(attributesArray[indexItem])
+        })
+        tempMatchedItems.sort()
+        sortedAttributesArray.push(...tempMatchedItems)
+
+        // remove matched items from attributesArray
+        for (var i = itemsToMove.length - 1; i >= 0; --i) {
+            attributesArray.splice(itemsToMove[i], 1)
+        }
+    })
+
+    // sort remaining attributes and add to sortedAttributesArray
+    attributesArray.sort()
+    sortedAttributesArray.push(...attributesArray)
+}
+else {
+    sortedAttributesArray = attributesArray
+}
+
+// add the opening tag
+let result = openingTag
+
+// set the join character based on number of lines initially selected
+// (newLine if one line, space if more)
+let joinCharacter = lineCount > 1 ? ' ' : '\n'
+
+// if there are no attributes, set joinCharacter to ''
+if (sortedAttributesArray.length == 1 && sortedAttributesArray[0] == '') {
+    joinCharacter = ''
+}
+
+// add the sorted attributes to the textSplit string
+if (lineCount > 1) {
+    sortedAttributesArray.forEach(item => {
+        result += joinCharacter + item
+    })
+}
+else {
+    sortedAttributesArray.forEach(item => {
+        result += joinCharacter + initialWhitespace + indentationString + item
+    })
+}
+
+// configure ending bracket (new line or not new line)
+if (lineCount > 1) {
+    if (endingBracket == '/>') {
+        endingBracket = ' ' + endingBracket
+    }
+}
+else {
+    if (closingBracketOnNewLine) {
+        endingBracket = '\n' + initialWhitespace + endingBracket
+    }
+    else if (endingBracket == '/>') {
+        endingBracket = ' ' + endingBracket
+    }
+}
+
+// add the ending bracket
+result = result + endingBracket
+
+console.log(result)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(defun +rjsx/find-opening-closing-tag ()
+  "Return the opening and closing carent character positions for a tag under the cursor."
+  (save-excursion
+    (let* ((is-evil-normal-state (evil-normal-state-p))
+           (opening
+            (or (-some->> (rjsx--tag-at-point)
+                  (js2-node-abs-pos))
+                ;; Fallback when js2-node-abs-pos parser fails
+                (save-excursion (search-backward "<"))))
+           (closing (progn
+                      (when is-evil-normal-state
+                        (evil-insert-state))
+                      (while (and
+                              (re-search-forward "[^=]>" (point-max) t nil)
+                              (progn (backward-char 1) t)
+                              (rjsx--tag-at-point)
+                              (not (eq (js2-node-abs-pos (rjsx--tag-at-point)) opening))
+                              (progn (forward-char 1) t)))
+                      (when is-evil-normal-state
+                        (evil-normal-state))
+                      (forward-char 2)
+                      (point))))
+      (cons opening closing))))
+
+(defun +rjsx/split-join ()
+  "Function docstring"
+  (interactive)
+  (when (eq ?> (char-after))
+    (backward-char 1))
+  (-let* ((bounds (cond
+                   ((use-region-p) (cons (region-beginning) (region-end)))
+                   (t (+rjsx/find-opening-closing-tag))))
+          ((beg . end) bounds)
+          (input (->> (buffer-substring-no-properties beg end)
+                   (s-replace "\n" "\\n")
+                   (s-replace "'" "\\'")))
+          (output (->> (shell-command-to-string (t! "node <<doom-private-dir>>/.cache/split-join-tag.js  $'<<input>>'"))
+                    (s-trim-right))))
+    (delete-region beg end)
+    (insert output)
+    (indent-region beg
+                   ;; End position might be filled by whitespace, so we search again for the ending carent
+                   (save-excursion (progn
+                                     (goto-char (cdr (+rjsx/find-opening-closing-tag))))))))
+#+END_SRC
+
+***** Expand self closing tag
+
+Converts self closing JSX tags to closing tags.
+~<Foo />~ -> ~<Foo>|</Foo>~
+
+#+BEGIN_SRC elisp
+(defun +rjsx|expand-insert-self-closing-tag ()
+  "Opens the current tag at any position of the cursor and starts insert mode"
+  (interactive)
+  (search-forward "/>")
+  (evil-backward-char)
+  (call-interactively #'delete-backward-char)
+  (call-interactively #'rjsx-electric-gt)
+  (newline)
+  (call-interactively #'evil-indent-line)
+  (call-interactively #'evil-open-above))
+#+END_SRC
+
+***** Extract Props from function arguments to body
+
+#+BEGIN_SRC elisp
+(defun +js|extract-props ()
+  "Extract props object under the cursor."
+  (interactive)
+  (save-excursion
+    (let* ((point-start (search-backward "{"))
+           (point-end (search-forward "}"))
+           (text (buffer-substring-no-properties point-start point-end)))
+      (delete-region point-start point-end)
+      (insert "props")
+      (evil-open-below 1)
+      (insert (template "const <<text>> = props;"))
+      (search-backward "}")
+      (js2r-expand-node-at-point)))
+  (evil-normal-state))
+#+END_SRC
+
+***** Company Files
+
+Remove the ~js~ extension for ~company-files~.
+
+#+BEGIN_SRC elisp :tangle no
+(defun company-js-files (command &optional arg &rest ignored)
+  "Company complete path. Remove extension after completion"
+  (interactive (list 'interactive))
+  (require 'company)
+  (cl-case command
+    (interactive (company-begin-backend 'company-js-files))
+    (prefix (company-files--grab-existing-name))
+    (candidates (company-files--complete arg))
+    (location (cons (dired-noselect
+                     (file-name-directory (directory-file-name arg))) 1))
+    (post-completion (when (s-matches? "\.js$" arg) (delete-backward-char 3)))
+    (sorted t)
+    (no-cache t)))
+
+(map! :map js2-mode-map
+      :i "C-x C-f" #'company-js-files)
+#+END_SRC
+
+***** Import JS File
+
+#+BEGIN_SRC elisp :tangle no
+(defun +js/import-file (file)
+  (let ((cursor-postion (point))
+        (filename (f-no-ext file)))
+    (insert (template "import  from '<<filename>>';"))
+    (goto-char cursor-postion)
+    (forward-char 7)
+    (evil-insert-state)))
+
+(defun +js|ivy-import-file (&optional action)
+  (interactive)
+  (let* ((local-files
+          (-->
+           (-concat (list find-program) counsel-file-jump-args)
+           (string-join it " ")
+           shell-command-to-string
+           split-string))
+         (node-packages
+          (-->
+           (concat "jq -r '.dependencies | keys | .[]' " (concat (projectile-project-root) "package.json"))
+           shell-command-to-string
+           split-string))
+         (imports (append local-files node-packages)))
+    (ivy-read "Import file " imports :action (or action '+js/import-file))))
+ #+END_SRC
+
+***** Switch Ternary
+
+#+BEGIN_SRC elisp
+(defun js2r-ternary-switch-statements ()
+  "Switch expressions in a ternary."
+  (interactive)
+  (js2r--guard)
+  (js2r--wait-for-parse
+   (save-excursion
+     (let* ((ternary (js2r--closest 'js2-cond-node-p))
+            (test-expr (js2-node-string (js2-cond-node-test-expr ternary)))
+            (true-expr (js2-node-string (js2-cond-node-true-expr ternary)))
+            (false-expr (js2-node-string (js2-cond-node-false-expr ternary)))
+            (stmt (js2-node-parent-stmt ternary))
+            (stmt-pre (buffer-substring (js2-node-abs-pos stmt) (js2-node-abs-pos ternary)))
+            (stmt-post (s-trim (buffer-substring (js2-node-abs-end ternary) (js2-node-abs-end stmt))))
+            (beg (js2-node-abs-pos stmt)))
+       (goto-char beg)
+       (delete-char (js2-node-len stmt))
+       (insert "return " test-expr)
+       (newline)
+       (insert "? " false-expr)
+       (newline)
+       (insert ": " true-expr ";")
+       (indent-region beg (point))))))
+#+END_SRC
+
+***** Ignore Flycheck error on line
+
+#+BEGIN_SRC elisp
+(defun +js|eslint-fix-ignore-error ()
+  "Adds an ignore with the current flycheck error."
+  (interactive)
+  (if-let ((error-id (flycheck-copy-errors-as-kill (point) #'flycheck-error-id)))
+    (save-excursion
+      (previous-line)
+      (end-of-line)
+      (newline-and-indent)
+      (insert (template "// eslint-disable-next-line <<error-id>>")))))
+#+END_SRC
+***** Find file from package.json root
+
+#+BEGIN_SRC elisp
+(defun +javscript|package-root-files ()
+  "Find any file relative to the upmost package.json,
+useful for repos that contain multiple packages."
+  (interactive)
+  (let ((default-directory
+          (f--traverse-upwards (f-exists? (f-expand "package.json" it)))))
+    (+default/find-file-under-here)))
+#+END_SRC
+
+
+***** Find node_modules package
+
+Go to a package from the node_modules directory.
+
+#+BEGIN_SRC elisp
+(defun +javascript/find-npm-package-goto (package)
+  "Go to directory by package name"
+  (-some->> (f-join (projectile-project-root) "node_modules")
+    (-id-when #'f-exists?)
+    (-f-join package)
+    (find-file)))
+
+(defun +javascript|find-npm-package ()
+  "Find package in node_modules directory."
+  (interactive)
+  (-when-let* ((json (-some->> (f-join (projectile-project-root) "package.json")
+                       (-id-when #'f-exists?)
+                       (json-read-file)))
+               ((&alist 'dependencies dependencies
+                        'devDependencies devDependencies) json)
+               (packages (->> (-concat dependencies devDependencies)
+                              (-map #'car))))
+    (ivy-read "Go to package directory: " packages
+              :action #'+javascript/find-npm-package-goto)))
+#+END_SRC
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after js2-mode
+ :map js2-mode-map
+ :desc "Goto parent function" :n "gh" (cmd! (js2-beginning-of-defun))
+ :localleader
+ :desc "Goto NPM Package" "m" #'+javascript|find-npm-package
+ :desc "Package Root Files" "SPC" #'+javscript|package-root-files
+ (:prefix-map ("c" . "Create")
+  :desc "Import File" "i" #'js-import))
+
+(map!
+ :after rjsx-mode
+ :map rjsx-mode-map
+ :localleader
+ (:desc "Open Self-Closing Tag" :n ">" #'+rjsx|expand-insert-self-closing-tag)
+ (:desc "Rename Tag" :n "," #'rjsx-rename-tag-at-point)
+ (:desc "Collapse/Expand Tag" :n "<" #'+rjsx/split-join))
+#+END_SRC
+
+***** Evil Function Text Object Motion
+
+Adds text objects for functions in javascript.
+So you can press ~daf~ to delete a function.
+
+#+BEGIN_SRC elisp
+(add-hook! js-mode
+  (require 'evil-text-objects-javascript)
+  (evil-text-objects-javascript/install))
+#+END_SRC
+
+***** Evil Method Text Object Motion
+
+Overwrite ~evil-text-objects-javascript~ to also accepts methods.
+
+I mainly changed the function marking helper.
+
+#+BEGIN_SRC diff :tangle no
+- (call-interactively #'mark-defun)
++ (call-interactively #'js2-mark-defun)
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(after! evil-text-objects-javascript
+  (evil-define-text-object
+    evil-inner-javascript-function (count &optional beg end type)
+    "inner text object for all javascript functions."
+    (call-interactively #'js2-mark-defun)
+    (narrow-to-region (region-beginning) (region-end))
+    (goto-char (point-min))
+    (let* ((beg (save-excursion
+                  (search-forward "(")
+                  (backward-char)
+                  (evil-jump-item)
+                  (search-forward-regexp "[({]")
+                  (point)))
+           (end (save-excursion
+                  (goto-char beg)
+                  (evil-jump-item)
+                  (point))))
+      (evil-range beg end type)))
+
+  (evil-define-text-object
+    evil-outer-javascript-function (count &optional beg end type)
+    "Outer text object for all Javascript functions."
+    (call-interactively #'js2-mark-defun)
+    (narrow-to-region (region-beginning) (region-end))
+    (goto-char (point-min))
+    (let* ((beg (save-excursion
+                  (when (looking-at "[[:space:]]")
+                    (evil-forward-word-begin))
+                  (point)))
+           (end (save-excursion
+                  (goto-char beg)
+                  (search-forward "(")
+                  (backward-char)
+                  (evil-jump-item)
+                  (search-forward-regexp "[({]")
+                  (evil-jump-item)
+                  (forward-char)
+                  (if (save-excursion
+                        (progn
+                          (forward-char)
+                          (when (looking-at ",") (point))))
+                    (point)))))
+      (evil-range beg end type))))
+#+END_SRC
+*** Nix :NIXOS:NIX:
+**** Nixpkgs Fmt :AUTOFIX:
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! nixpkgs-fmt)
+#+END_SRC
+
+***** Config
+
+#+begin_src elisp
+(use-package nixpkgs-fmt
+  :after nix-mode
+  :config
+  (setq nixpkgs-fmt-on-save-mode t)
+  :init
+  (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
+#+end_src
+*** Haskell :HASKELL:
+***** Functions
+****** Autofix with [[https://hackage.haskell.org/package/brittany][brittany]] :AUTOFIX:
 
 #+begin_src elisp
 (defun my::haskell|autofix ()
@@ -4089,559 +4639,7 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 #+END_SRC
 
 ** Language Config
-*** Javascript
-**** Utils
-
-#+BEGIN_SRC elisp
-(defun +js/match-const-function-name (line)
-  "Matches a line to the word after the declaration"
-  (nth 2 (s-match
-          "\\(const\\|let\\|class\\)\s\\(.+?\\)\s"
-          line)))
-
-(defun +js/const-function-at-point ()
-  "Returns the current function name at the current line"
-  (+js/match-const-function-name (thing-at-point 'line t)))
-#+END_SRC
-
-**** Functions
-***** Export default variable
-
-#+BEGIN_SRC elisp
-(defun js2r-export-default ()
-  "Exports the current declaration at the end of the file"
-  (interactive)
-  (save-excursion
-    (let* ((name (+js/const-function-at-point)))
-      (goto-char (point-max))
-      (insert "\n")
-      (insert (template "export default <<name>>;")))))
-#+END_SRC
-
-***** Extract constant to file
-
-Extract the ~const~ under the cursor into a new file.
-
-#+BEGIN_SRC elisp
-(defun js2r-extract-const-to-file ()
-  "Extracts function to external file"
-  (interactive)
-  (let* ((name (+js/const-function-at-point))
-         (path (concat "./" name ".js")))
-    (evil-digit-argument-or-evil-beginning-of-line)
-    (js2r-kill)
-    (f-write-text "" 'utf-8 path)
-    (find-file path)
-    (yank)))
-#+END_SRC
-
-***** Generate ~index.js~ file index
-
-Generate a file index in the current file for every other file in the current directory.
-
-#+BEGIN_SRC elisp
-(defun +js/index-file-names (&optional dir)
-  "Get filenames from current buffers directory."
-  (let ((fs (directory-files (or dir default-directory) nil ".*\\.js")))
-    (mapcar 'f-no-ext
-            (remove "index.js" fs))))
-
-(defun +js|generate-index (&optional dir ignore-list is-old-es-style)
-  "Generate an index import file for files in directory.
-Pass DIR for directory, falls back to default-directory
-Pass IGNORE-LIST for a list of files
-Pass IS-OLD-ES-STYLE for using the non-esm style exports"
-  (interactive)
-  (erase-buffer)
-  (let* ((dir (or dir default-directory))
-         (fs (->>
-              (+js/index-file-names dir)
-              (-log)
-              (--reject (s-ends-with-p ".test" it))
-              (--when ignore-list (--remove (-contains? ignore-list it) it)))))
-    (message "%s" fs)
-    (cond (is-old-es-style
-           (progn
-             (mapc (lambda (f) (insert "import " f " from './" f "';\n")) fs)
-             (insert "\n")
-             (insert "export default {\n")
-             (mapc (lambda (f) (insert "    " f ",\n")) fs)
-             (insert "};")))
-          (t
-           (mapc (lambda (f) (insert "export { default as " f " } from './" f "';\n")) fs)))))
-#+END_SRC
-
-***** Convert expression into template string
-
-Converts an expression into a template string.
-
-Example:
-When you would call the function on the ~foo~ inside the console.log,
-It would wrap it like this ~console.log(`${foo}`)~.
-
-#+BEGIN_SRC js :tangle no
-const foo = 'Foo'
-console.log(`${foo}`)
-#+END_SRC
-
-#+BEGIN_SRC elisp
-(defun +js|convert-sexp-to-template-string ()
-  "Wrap sexp into a template string"
-  (interactive)
-  (kill-sexp)
-  (insert (concat "`${" (substring-no-properties (car kill-ring)) "}`"))
-  (pop kill-ring))
-#+END_SRC
-
-***** Split / Join JSX Tag Node
-
-Stolen from the vscode extension: [[https://github.com/dannyconnell/vscode-split-html-attributes][dannyconnell/vscode-split-html-attributes]]
-I don't want to translate this to elisp, and js works as well.
-
-Split/Joins a JSX tags by seperating the attributes
-
-#+BEGIN_SRC js :tangle "./.cache/split-join-tag.js"
-const useSpacesForTabs = true;
-const tabSize = 4;
-const sortOrder = [];
-const closingBracketOnNewLine = true;
-
-let input = process.argv[2]
-
-// count the number of lines initally selected
-let lineCount = input.split('\n').length
-let lineText = input
-
-// get the initial white space at the start of the line
-let initialWhitespaceRegex = /\s*/i
-let initialWhitespace = lineText.match(initialWhitespaceRegex)[0]
-
-// get the opening tag
-let openingTagRegex = /^[^\s]+/
-let openingTag = input.match(openingTagRegex)[0]
-
-// remove opening tag and trim
-input = input.replace(openingTagRegex, '')
-input = input.trim()
-
-// get the ending bracket (if it's a "/>")
-let endingBracket = ''
-if (input.endsWith('/>')) {
-    endingBracket = '/>'
-}
-else {
-    endingBracket = '>'
-}
-
-// remove ending bracket and trim
-if (endingBracket == '/>') {
-    input = input.replace('/>', '')
-}
-else {
-    input = input.substring(0, input.length - 1)
-}
-input = input.trim()
-
-// create the indentation string
-let indentationString
-if (useSpacesForTabs == false) {
-    indentationString = '\t'
-}
-else {
-    indentationString = ' '.repeat(tabSize)
-}
-
-// regex to select all spaces that aren't within quotes
-let spacesRegex = /\s+(?=([^"]*"[^"]*")*[^"]*$)/g
-
-// get attributes into an array
-let attributesString = input.replace(spacesRegex, '\n')
-let attributesArray = attributesString.split('\n')
-
-// sort the attributes array
-let sortedAttributesArray = []
-if (sortOrder.length) {
-
-    // loop through sortOrder array
-    sortOrder.forEach(search => {
-        // loop through attributesArray
-        let itemsToMove = []
-        attributesArray.forEach((item, index) => {
-            if (item.match(search)) {
-                itemsToMove.push(index)
-                // attributesArray.splice(index, 1)
-            }
-        })
-        // move matched items from attributesArray to sortedAttributesArray (and sort them)
-        let tempMatchedItems = []
-        itemsToMove.forEach(indexItem => {
-            tempMatchedItems.push(attributesArray[indexItem])
-        })
-        tempMatchedItems.sort()
-        sortedAttributesArray.push(...tempMatchedItems)
-
-        // remove matched items from attributesArray
-        for (var i = itemsToMove.length - 1; i >= 0; --i) {
-            attributesArray.splice(itemsToMove[i], 1)
-        }
-    })
-
-    // sort remaining attributes and add to sortedAttributesArray
-    attributesArray.sort()
-    sortedAttributesArray.push(...attributesArray)
-}
-else {
-    sortedAttributesArray = attributesArray
-}
-
-// add the opening tag
-let result = openingTag
-
-// set the join character based on number of lines initially selected
-// (newLine if one line, space if more)
-let joinCharacter = lineCount > 1 ? ' ' : '\n'
-
-// if there are no attributes, set joinCharacter to ''
-if (sortedAttributesArray.length == 1 && sortedAttributesArray[0] == '') {
-    joinCharacter = ''
-}
-
-// add the sorted attributes to the textSplit string
-if (lineCount > 1) {
-    sortedAttributesArray.forEach(item => {
-        result += joinCharacter + item
-    })
-}
-else {
-    sortedAttributesArray.forEach(item => {
-        result += joinCharacter + initialWhitespace + indentationString + item
-    })
-}
-
-// configure ending bracket (new line or not new line)
-if (lineCount > 1) {
-    if (endingBracket == '/>') {
-        endingBracket = ' ' + endingBracket
-    }
-}
-else {
-    if (closingBracketOnNewLine) {
-        endingBracket = '\n' + initialWhitespace + endingBracket
-    }
-    else if (endingBracket == '/>') {
-        endingBracket = ' ' + endingBracket
-    }
-}
-
-// add the ending bracket
-result = result + endingBracket
-
-console.log(result)
-#+END_SRC
-
-#+BEGIN_SRC elisp
-(defun +rjsx/find-opening-closing-tag ()
-  "Return the opening and closing carent character positions for a tag under the cursor."
-  (save-excursion
-    (let* ((is-evil-normal-state (evil-normal-state-p))
-           (opening
-            (or (-some->> (rjsx--tag-at-point)
-                  (js2-node-abs-pos))
-                ;; Fallback when js2-node-abs-pos parser fails
-                (save-excursion (search-backward "<"))))
-           (closing (progn
-                      (when is-evil-normal-state
-                        (evil-insert-state))
-                      (while (and
-                              (re-search-forward "[^=]>" (point-max) t nil)
-                              (progn (backward-char 1) t)
-                              (rjsx--tag-at-point)
-                              (not (eq (js2-node-abs-pos (rjsx--tag-at-point)) opening))
-                              (progn (forward-char 1) t)))
-                      (when is-evil-normal-state
-                        (evil-normal-state))
-                      (forward-char 2)
-                      (point))))
-      (cons opening closing))))
-
-(defun +rjsx/split-join ()
-  "Function docstring"
-  (interactive)
-  (when (eq ?> (char-after))
-    (backward-char 1))
-  (-let* ((bounds (cond
-                   ((use-region-p) (cons (region-beginning) (region-end)))
-                   (t (+rjsx/find-opening-closing-tag))))
-          ((beg . end) bounds)
-          (input (->> (buffer-substring-no-properties beg end)
-                   (s-replace "\n" "\\n")
-                   (s-replace "'" "\\'")))
-          (output (->> (shell-command-to-string (t! "node <<doom-private-dir>>/.cache/split-join-tag.js  $'<<input>>'"))
-                    (s-trim-right))))
-    (delete-region beg end)
-    (insert output)
-    (indent-region beg
-                   ;; End position might be filled by whitespace, so we search again for the ending carent
-                   (save-excursion (progn
-                                     (goto-char (cdr (+rjsx/find-opening-closing-tag))))))))
-#+END_SRC
-
-***** Expand self closing tag
-
-Converts self closing JSX tags to closing tags.
-~<Foo />~ -> ~<Foo>|</Foo>~
-
-#+BEGIN_SRC elisp
-(defun +rjsx|expand-insert-self-closing-tag ()
-  "Opens the current tag at any position of the cursor and starts insert mode"
-  (interactive)
-  (search-forward "/>")
-  (evil-backward-char)
-  (call-interactively #'delete-backward-char)
-  (call-interactively #'rjsx-electric-gt)
-  (newline)
-  (call-interactively #'evil-indent-line)
-  (call-interactively #'evil-open-above))
-#+END_SRC
-
-***** Extract Props from function arguments to body
-
-#+BEGIN_SRC elisp
-(defun +js|extract-props ()
-  "Extract props object under the cursor."
-  (interactive)
-  (save-excursion
-    (let* ((point-start (search-backward "{"))
-           (point-end (search-forward "}"))
-           (text (buffer-substring-no-properties point-start point-end)))
-      (delete-region point-start point-end)
-      (insert "props")
-      (evil-open-below 1)
-      (insert (template "const <<text>> = props;"))
-      (search-backward "}")
-      (js2r-expand-node-at-point)))
-  (evil-normal-state))
-#+END_SRC
-
-***** Company Files
-
-Remove the ~js~ extension for ~company-files~.
-
-#+BEGIN_SRC elisp :tangle no
-(defun company-js-files (command &optional arg &rest ignored)
-  "Company complete path. Remove extension after completion"
-  (interactive (list 'interactive))
-  (require 'company)
-  (cl-case command
-    (interactive (company-begin-backend 'company-js-files))
-    (prefix (company-files--grab-existing-name))
-    (candidates (company-files--complete arg))
-    (location (cons (dired-noselect
-                     (file-name-directory (directory-file-name arg))) 1))
-    (post-completion (when (s-matches? "\.js$" arg) (delete-backward-char 3)))
-    (sorted t)
-    (no-cache t)))
-
-(map! :map js2-mode-map
-      :i "C-x C-f" #'company-js-files)
-#+END_SRC
-
-***** Import JS File
-
-#+BEGIN_SRC elisp :tangle no
-(defun +js/import-file (file)
-  (let ((cursor-postion (point))
-        (filename (f-no-ext file)))
-    (insert (template "import  from '<<filename>>';"))
-    (goto-char cursor-postion)
-    (forward-char 7)
-    (evil-insert-state)))
-
-(defun +js|ivy-import-file (&optional action)
-  (interactive)
-  (let* ((local-files
-          (-->
-           (-concat (list find-program) counsel-file-jump-args)
-           (string-join it " ")
-           shell-command-to-string
-           split-string))
-         (node-packages
-          (-->
-           (concat "jq -r '.dependencies | keys | .[]' " (concat (projectile-project-root) "package.json"))
-           shell-command-to-string
-           split-string))
-         (imports (append local-files node-packages)))
-    (ivy-read "Import file " imports :action (or action '+js/import-file))))
- #+END_SRC
-
-***** Switch Ternary
-
-#+BEGIN_SRC elisp
-(defun js2r-ternary-switch-statements ()
-  "Switch expressions in a ternary."
-  (interactive)
-  (js2r--guard)
-  (js2r--wait-for-parse
-   (save-excursion
-     (let* ((ternary (js2r--closest 'js2-cond-node-p))
-            (test-expr (js2-node-string (js2-cond-node-test-expr ternary)))
-            (true-expr (js2-node-string (js2-cond-node-true-expr ternary)))
-            (false-expr (js2-node-string (js2-cond-node-false-expr ternary)))
-            (stmt (js2-node-parent-stmt ternary))
-            (stmt-pre (buffer-substring (js2-node-abs-pos stmt) (js2-node-abs-pos ternary)))
-            (stmt-post (s-trim (buffer-substring (js2-node-abs-end ternary) (js2-node-abs-end stmt))))
-            (beg (js2-node-abs-pos stmt)))
-       (goto-char beg)
-       (delete-char (js2-node-len stmt))
-       (insert "return " test-expr)
-       (newline)
-       (insert "? " false-expr)
-       (newline)
-       (insert ": " true-expr ";")
-       (indent-region beg (point))))))
-#+END_SRC
-
-***** Ignore Flycheck error on line
-
-#+BEGIN_SRC elisp
-(defun +js|eslint-fix-ignore-error ()
-  "Adds an ignore with the current flycheck error."
-  (interactive)
-  (if-let ((error-id (flycheck-copy-errors-as-kill (point) #'flycheck-error-id)))
-    (save-excursion
-      (previous-line)
-      (end-of-line)
-      (newline-and-indent)
-      (insert (template "// eslint-disable-next-line <<error-id>>")))))
-#+END_SRC
-***** Find file from package.json root
-
-#+BEGIN_SRC elisp
-(defun +javscript|package-root-files ()
-  "Find any file relative to the upmost package.json,
-useful for repos that contain multiple packages."
-  (interactive)
-  (let ((default-directory
-          (f--traverse-upwards (f-exists? (f-expand "package.json" it)))))
-    (+default/find-file-under-here)))
-#+END_SRC
-
-
-***** Find node_modules package
-
-Go to a package from the node_modules directory.
-
-#+BEGIN_SRC elisp
-(defun +javascript/find-npm-package-goto (package)
-  "Go to directory by package name"
-  (-some->> (f-join (projectile-project-root) "node_modules")
-    (-id-when #'f-exists?)
-    (-f-join package)
-    (find-file)))
-
-(defun +javascript|find-npm-package ()
-  "Find package in node_modules directory."
-  (interactive)
-  (-when-let* ((json (-some->> (f-join (projectile-project-root) "package.json")
-                       (-id-when #'f-exists?)
-                       (json-read-file)))
-               ((&alist 'dependencies dependencies
-                        'devDependencies devDependencies) json)
-               (packages (->> (-concat dependencies devDependencies)
-                              (-map #'car))))
-    (ivy-read "Go to package directory: " packages
-              :action #'+javascript/find-npm-package-goto)))
-#+END_SRC
-
-**** Bindings
-
-#+BEGIN_SRC elisp
-(map!
- :after js2-mode
- :map js2-mode-map
- :desc "Goto parent function" :n "gh" (cmd! (js2-beginning-of-defun))
- :localleader
- :desc "Goto NPM Package" "m" #'+javascript|find-npm-package
- :desc "Package Root Files" "SPC" #'+javscript|package-root-files
- (:prefix-map ("c" . "Create")
-  :desc "Import File" "i" #'js-import))
-
-(map!
- :after rjsx-mode
- :map rjsx-mode-map
- :localleader
- (:desc "Open Self-Closing Tag" :n ">" #'+rjsx|expand-insert-self-closing-tag)
- (:desc "Rename Tag" :n "," #'rjsx-rename-tag-at-point)
- (:desc "Collapse/Expand Tag" :n "<" #'+rjsx/split-join))
-#+END_SRC
-
-***** Evil Function Text Object Motion
-
-Adds text objects for functions in javascript.
-So you can press ~daf~ to delete a function.
-
-#+BEGIN_SRC elisp
-(add-hook! js-mode
-  (require 'evil-text-objects-javascript)
-  (evil-text-objects-javascript/install))
-#+END_SRC
-
-***** Evil Method Text Object Motion
-
-Overwrite ~evil-text-objects-javascript~ to also accepts methods.
-
-I mainly changed the function marking helper.
-
-#+BEGIN_SRC diff :tangle no
-- (call-interactively #'mark-defun)
-+ (call-interactively #'js2-mark-defun)
-#+END_SRC
-
-#+BEGIN_SRC elisp
-(after! evil-text-objects-javascript
-  (evil-define-text-object
-    evil-inner-javascript-function (count &optional beg end type)
-    "inner text object for all javascript functions."
-    (call-interactively #'js2-mark-defun)
-    (narrow-to-region (region-beginning) (region-end))
-    (goto-char (point-min))
-    (let* ((beg (save-excursion
-                  (search-forward "(")
-                  (backward-char)
-                  (evil-jump-item)
-                  (search-forward-regexp "[({]")
-                  (point)))
-           (end (save-excursion
-                  (goto-char beg)
-                  (evil-jump-item)
-                  (point))))
-      (evil-range beg end type)))
-
-  (evil-define-text-object
-    evil-outer-javascript-function (count &optional beg end type)
-    "Outer text object for all Javascript functions."
-    (call-interactively #'js2-mark-defun)
-    (narrow-to-region (region-beginning) (region-end))
-    (goto-char (point-min))
-    (let* ((beg (save-excursion
-                  (when (looking-at "[[:space:]]")
-                    (evil-forward-word-begin))
-                  (point)))
-           (end (save-excursion
-                  (goto-char beg)
-                  (search-forward "(")
-                  (backward-char)
-                  (evil-jump-item)
-                  (search-forward-regexp "[({]")
-                  (evil-jump-item)
-                  (forward-char)
-                  (if (save-excursion
-                        (progn
-                          (forward-char)
-                          (when (looking-at ",") (point))))
-                    (point)))))
-      (evil-range beg end type))))
-#+END_SRC
+*** MySQL :MYSQL:DATABASE:
 *** Nim
 **** Config
 
@@ -5108,7 +5106,6 @@ So I fix the checker manually for each mode after lsp was loaded.
 (setq mu4e-headers-leave-behavior 'apply)
 #+END_SRC
 
-*** Magit / Git
 *** Markdown
 
 Always keep markdown centered, without line numbers.

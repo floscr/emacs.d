@@ -498,7 +498,7 @@ bookmarks are not helpful since they're not relative.
           (magit-push-current-to-upstream nil)
           ;; The branch alread exists, so we can safely take the branch name
           (magit-get-upstream-branch))
-      (+git|push-dated))))
+      (my::magit|push-dated))))
 
 (defun +MM-build/get-build-script-names (dir)
   "Get a list of all build scripts from the package.json file."
@@ -527,7 +527,7 @@ When universal-argument is passed, just commit the bundle"
       (->> (read-string (t! "The current branch '<<vagrant-branch-name>>' is not bundle branch.
 Create a new one: ") "bundle-")
            (magit-branch-spinoff)
-           (+git|push-dated))))
+           (my::magit|push-dated))))
 
   (-when-let* ((web-directory (or (projectile-project-root) +MM:mm-web-dir))
                (web-branch-name (magit-get-current-branch))
@@ -553,7 +553,7 @@ Create a new one: ") "bundle-")
 To commit call +MM|kits-package-update."
   (interactive)
   (-when-let* ((json-encoding-pretty-print t)
-               (file (->> (+git/modfied-files "master")
+               (file (->> (my::magit/list-modified-files "master")
                           (--filter (string= (f-filename it) "package.json"))
                           (--map (f-join (doom-project-root) it))
                           (--map (list it (json-read-file it)))
@@ -597,7 +597,7 @@ To commit call +MM|kits-package-update."
 
   ;; Check for merge conflicts
   (call-interactively #'magit-fetch-all)
-  ;; (when (+git|check-branch-for-merge-conflict)
+  ;; (when (my::magit/check-for-merge-conflicts)
   ;;   (user-error "This branch has merge conflicts, resolve them before publishing!"))
 
   (-when-let* ((package-json (or (car (magit-staged-files))
@@ -647,9 +647,9 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (path (if same-branch?
                    (-if-let (branch (magit-get-current-branch))
                        (progn (magit-checkout (magit-rev-parse "HEAD"))
-                              (magit-worktree-branch-project-worktree branch branch t))
+                              (my::magit|create-worktree-project-from-branch branch branch t))
                      (user-error "Error: No branch checked out!"))
-                   (call-interactively #'magit-worktree-branch-project-worktree)))
+                   (call-interactively #'my::magit|create-worktree-project-from-branch)))
          (local-devutil-file (f-join origin-path "src/apps/Main/DevPlugin.local.js"))
          (worktree-devutil-file (f-join path "src/apps/Main/DevPlugin.local.js")))
     (when (file-exists-p local-devutil-file)
