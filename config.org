@@ -4243,91 +4243,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Company
-**** Config
-***** Sort company by occurrence
-:PROPERTIES:
-:SOURCE:   [[https://github.com/company-mode/company-mode/issues/52][{Proposal} Improve company-dabbrev candidate ordering · Issue #52 · company-mode/company-mode]]
-:END:
-
-#+BEGIN_SRC elisp
-(setq company-transformers '(company-sort-by-occurrence)
-      company-idle-delay 0.5)
-#+END_SRC
-
-**** Functions
-***** Company complete whole lines for all matching buffers
-
-Complete a whole line with all lines from buffers matching the current major-mode.
-
-#+BEGIN_SRC elisp
-(defun +company:buffer-list-with-modes (modes)
-  "Get all buffers that match MODES"
-  (--filter
-   (with-current-buffer it (-contains? (doom-enlist modes) major-mode))
-   (buffer-list)))
-
-(defun +company:buffer-list-with-major-mode ()
-  "Get all buffers matching the current major-mode
-Has built in aliases"
-  (let ((javascript-modes (list 'rjsx-mode 'js2-mode)))
-    (pcase major-mode
-      ('rjsx-mode
-       (+company:buffer-list-with-modes javascript-modes))
-      ('js2-mode
-       (+company:buffer-list-with-modes javascript-modes))
-      (_
-       (+company:buffer-list-with-modes major-mode)))))
-
-(defun +company/whole-lines-all-buffers (command &optional arg &rest ignored)
-  "`company-mode' completion backend that completes whole-lines, akin to vim's
-C-x C-l."
-  (interactive (list 'interactive))
-  (require 'company)
-  (pcase command
-    (`interactive (company-begin-backend '+company/whole-lines-all-buffers))
-    (`prefix      (company-grab-line "^[\t\s]*\\(.+\\)" 1))
-    (`candidates
-     (all-completions
-      arg
-      (funcall (-compose
-                #'-uniq
-                #'-flatten
-                (lambda (xs)
-                  (--map (with-current-buffer it
-                           (split-string
-                            (replace-regexp-in-string
-                             "^[\t\s]+" ""
-                             (buffer-substring-no-properties (point-min) (point-max)))
-                            "\\(\r\n\\|[\n\r]\\)" t)) xs)))
-               (+company:buffer-list-with-major-mode))))))
-#+END_SRC
-
-Bindings
-
-#+BEGIN_SRC elisp
-(map!
- (:prefix "C-x"
-   :i "C-l" #'+company/whole-lines-all-buffers
-   :i "C-." #'+company/whole-lines))
-#+END_SRC
-
-*** Eldoc
-
-#+BEGIN_SRC elisp :tangle no
-;; Always truncate ElDoc messages to one line. This prevents the echo
-;; area from resizing itself unexpectedly when point is on a variable
-;; with a multiline docstring.
-(setq eldoc-echo-area-use-multiline-p nil)
-
-;; Show ElDoc messages in the echo area immediately, instead of after
-;; 1/2 a second.
-(setq eldoc-idle-delay 0)
-
-;; Disable eldoc mode
-(global-eldoc-mode -1)
-#+END_SRC
-
 *** Eshell
 **** Aliases
 
@@ -5220,6 +5135,75 @@ Always keep markdown centered, without line numbers.
           :n ">"    #'markdown-demote)))
 #+END_SRC
 *** Open With
+
+*** Company
+**** Config
+***** Sort company by occurrence
+:PROPERTIES:
+:SOURCE:   [[https://github.com/company-mode/company-mode/issues/52][{Proposal} Improve company-dabbrev candidate ordering · Issue #52 · company-mode/company-mode]]
+:END:
+
+#+BEGIN_SRC elisp
+(setq company-transformers '(company-sort-by-occurrence)
+      company-idle-delay 0.5)
+#+END_SRC
+
+**** Functions
+***** Company complete whole lines for all matching buffers
+
+Complete a whole line with all lines from buffers matching the current major-mode.
+
+#+BEGIN_SRC elisp
+(defun +company:buffer-list-with-modes (modes)
+  "Get all buffers that match MODES"
+  (--filter
+   (with-current-buffer it (-contains? (doom-enlist modes) major-mode))
+   (buffer-list)))
+
+(defun +company:buffer-list-with-major-mode ()
+  "Get all buffers matching the current major-mode
+Has built in aliases"
+  (let ((javascript-modes (list 'rjsx-mode 'js2-mode)))
+    (pcase major-mode
+      ('rjsx-mode
+       (+company:buffer-list-with-modes javascript-modes))
+      ('js2-mode
+       (+company:buffer-list-with-modes javascript-modes))
+      (_
+       (+company:buffer-list-with-modes major-mode)))))
+
+(defun +company/whole-lines-all-buffers (command &optional arg &rest ignored)
+  "`company-mode' completion backend that completes whole-lines, akin to vim's
+C-x C-l."
+  (interactive (list 'interactive))
+  (require 'company)
+  (pcase command
+    (`interactive (company-begin-backend '+company/whole-lines-all-buffers))
+    (`prefix      (company-grab-line "^[\t\s]*\\(.+\\)" 1))
+    (`candidates
+     (all-completions
+      arg
+      (funcall (-compose
+                #'-uniq
+                #'-flatten
+                (lambda (xs)
+                  (--map (with-current-buffer it
+                           (split-string
+                            (replace-regexp-in-string
+                             "^[\t\s]+" ""
+                             (buffer-substring-no-properties (point-min) (point-max)))
+                            "\\(\r\n\\|[\n\r]\\)" t)) xs)))
+               (+company:buffer-list-with-major-mode))))))
+#+END_SRC
+
+Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ (:prefix "C-x"
+   :i "C-l" #'+company/whole-lines-all-buffers
+   :i "C-." #'+company/whole-lines))
+#+END_SRC
 
 *** Nov (EPUB Reading Mode)
 
