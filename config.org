@@ -1928,6 +1928,415 @@ Package override that fixes multiple remotes:
 (use-package! git-lens
   :commands (git-lens))
 #+END_SRC
+*** Functions
+**** Create worktree workspace
+
+Creates a new git workspace from a branch.
+Automatically adds ~.projectfile~ and opens a new doom workspace.
+
+#+BEGIN_SRC elisp
+(defun my::magit|create-worktree-project-from-branch (branch start-point &optional force)
+  "Create a new BRANCH and check it out in a new worktree at PATH in a new workspace."
+  (interactive
+   `(,@(butlast (magit-branch-read-args "Create and checkout branch"))
+     ,current-prefix-arg))
+  (let* ((worktree-path (f-join (projectile-project-root) ".worktrees"))
+         (path (f-join (projectile-project-root) ".worktrees" branch)))
+    (when (not (f-exists-p worktree-path))
+      (mkdir worktree-path t))
+    (magit-run-git "worktree" "add" (if force "-B" "-b")
+                   branch (expand-file-name path) start-point)
+    (f-touch (f-join path ".projectile"))
+    (+workspace-new branch)
+    (+workspace-switch branch)
+    (magit-diff-visit-directory path)
+    (projectile-add-known-project path)
+    path))
+#+END_SRC
+
+**** Revision show original file
+
+Show the original file when visiting a revision buffer.
+E.g.: When showing a diff from a commit, you may want to edit that file.
+
+#+BEGIN_SRC elisp
+(defun my::magit|show-revision-original ()
+  "Show the orginal file from a revision buffer
+If possible also go to the pointing line"
+  (interactive)
+  (when magit-buffer-file-name
+    (let ((file-name magit-buffer-file-name)
+          (line-number (line-number-at-pos)))
+      (if current-prefix-arg
+          (delete-other-windows))
+      (find-file file-name)
+      (goto-line line-number))))
+#+END_SRC
+
+**** Changed files in branch
+
+Show a list of the changed files in the current branch.
+For now only works on branches that were directly forked from master.
+
+#+BEGIN_SRC elisp
+(defun my::magit/list-new-files ()
+  "List of added files in the current branch."
+  (my::shell/command-to-list "git ls-files -om --exclude-standard"))
+
+(defun my::magit/list-modified-files (&optional branch)
+  "Get a list of modified files from the BRANCH to head."
+  (my::shell/command-to-list
+   (t! "git --no-pager diff --no-renames --name-only --no-merges <<(magit-rev-parse \"HEAD\")>> <<branch>>;")))
+
+(defun my::magit/list-branch-changed-files (branch)
+  "Get a list of new and modified files from BRANCH to head."
+  (->> (my::magit/list-modified-files branch)
+       (-concat (my::magit/list-new-files))
+       (-uniq)
+       (-filter
+        (lambda (x)
+          (let ((default-directory (projectile-project-root)))
+            (f-exists? x))))))
+
+(defun my::magit|counsel-changed-files (&optional branch)
+  (interactive)
+  (let ((enable-recursive-minibuffers t))
+    (ivy-read (template "Changed files for <<(or branch (magit-get-current-branch))>>:")
+              (my::magit/list-branch-changed-files (or "origin/master"))
+              :require-match t
+              :history 'file-name-history
+              :action counsel-projectile-find-file-action
+              :caller 'my::magit|counsel-changed-files)))
+#+END_SRC
+**** Undo commit
+
+#+BEGIN_SRC elisp
+(defun my::magit|git-undo ()
+  "Soft reset current git repo to HEAD~1."
+  (interactive)
+  (magit-reset-soft "HEAD~1"))
+#+END_SRC
+
+**** Push dated remote branch
+
+For work I need remote branches with a date prefix.
+
+#+BEGIN_SRC elisp
+(defun my::magit|push-dated (&optional branch)
+  "Pushes the given the current BRANCH with a dated prefix
+my-branch-name -> 19-01-my-branch-name
+When no BRANCH is given, take the current one."
+  (interactive)
+  (let* ((branch (or branch (magit-get-current-branch)))
+         (date (format-time-string "%y-%m"))
+         (remote (template "origin/<<date>>-<<branch>>")))
+    (magit-git-push branch remote "--set-upstream")
+    remote))
+#+END_SRC
+
+**** Diff range from current branch to ~magit-thing-at-point~
+
+When I'm on the log view, I want to quickly diff it against the currently checked out branch.
+The transient shortcut for this is ~d R~ define [[*Transient][here]].
+
+#+BEGIN_SRC elisp
+(defun my::magit|diff-range-from-current-branch ()
+  "Ranged diff from the checked out branch to the commit at point."
+  (interactive)
+  (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
+#+END_SRC
+
+**** Diff range from current pull request
+
+#+BEGIN_SRC elisp
+(defun my::magit|diff-range-from-pullreq ()
+  "Ranged diff from the pull request under point."
+  (interactive)
+  (-some->> (forge-current-topic)
+    (forge--pullreq-range)
+    (magit-diff-range)))
+#+END_SRC
+
+**** Review branch
+
+#+BEGIN_SRC elisp
+(defun my::magit|delete-review-branches ()
+  "Delete all review branches that no longer have an upstream."
+  (interactive)
+  (->> (magit-list-branches)
+       (--filter (s-starts-with? "refs/heads/REVIEW" it))
+       (--map (magit-name-local-branch it))
+       (--reject (magit-get-upstream-branch it))
+       (--each (lambda (x) (magit-branch-delete x t)))))
+
+(defun my::magit|checkout-review-branches (&optional branch start-point)
+  "Create a branch with review prefix for easy cleanup afterwards."
+  (interactive)
+  (let* ((remotes (magit-list-remote-branch-names))
+         (atpoint (magit-branch-at-point))
+         (branch (magit-completing-read
+                  "Checkout branch" remotes
+                  nil nil nil 'magit-revision-history
+                  (or (car (member atpoint remotes))
+                      (and atpoint
+                           (car (member (and (string-match "[^/]+/" atpoint)
+                                             (substring atpoint (match-end 0)))
+                                        remotes))))))
+         (review-branch-name (s-replace "origin/" "REVIEW-" branch)))
+    ;; HACK Workaround where the buffer cant be read
+    (advice-remove 'magit-checkout #'+magit-revert-repo-buffers-deferred-a)
+    (magit-checkout branch)
+    (when (magit-anything-modified-p)
+      (user-error "Cannot checkout when there are uncommitted changes"))
+    (if (-contains? (magit-list-local-branch-names) review-branch-name)
+        (magit-branch-checkout review-branch-name)
+      (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch))))
+#+END_SRC
+**** Cleanup branches
+
+Cleans up all merged and review branches
+
+#+BEGIN_SRC elisp
+(defun my::magit|cleanup-branches (&optional base-branch)
+  "Remove all merged and review branches."
+  (interactive)
+  (my::magit|delete-review-branches)
+  (let* ((base-branch (or base-branch "master")))
+    (call-interactively #'my::magit|delete-review-branches)
+    (deferred:$
+      (deferred:process-shell (template "git branch --merged | egrep -v \"(^\\*|<<base-branch>>)\" | xargs git branch -d"))
+      (deferred:nextc it
+        (magit-status-maybe-update-revision-buffer)))))
+#+END_SRC
+
+**** Branches by user
+
+#+BEGIN_SRC elisp
+(defun my::magit|branches-by-user (&optional ignore-review?)
+  "List all branches by user.
+Universal argument to ignore review branches."
+  (interactive "P")
+  (let ((branches
+         (->>
+          (concat "git for-each-ref"
+                  " --sort=-committerdate"
+                  " --format='%(committerdate) %(authorname) %(refname)'"
+                  " --sort=-committerdate"
+                  ;; refs/remotes/origin/ for remote branches
+                  " refs/heads"
+                  " | grep -e 'Florian Schroedl'")
+          (shell-command-to-string)
+          (s-split "\n")
+          (-butlast)
+          (-map (lambda (x) (->> (s-match ".*Florian Schroedl refs\\/heads\\/\\(.*\\)" x)
+                                 (-last-item))))
+          ((lambda (xs)
+             (if ignore-review?
+                 (--reject (s-starts-with? "REVIEW" it) xs)
+               xs))))))
+    (ivy-read "Checkout: " branches :action #'magit-checkout)))
+#+END_SRC
+
+**** DELETE Load forge when needed
+
+#+BEGIN_SRC elisp
+(use-package! forge
+  :commands (forge-browse-commit))
+#+END_SRC
+
+**** Commit Template
+
+Loads commit template from ~./git/TEMPLATE~ if the file exist.
+
+#+BEGIN_SRC elisp
+(defun my::magit::commit-template/find-template-file (branch)
+  (when-let* ((dir (my::magit/find-root-git-dir))
+              (entries (f-entries dir (lambda (x) (s-starts-with? "TEMPLATE" (f-base x)))))
+              (branch-template (template "TEMPLATE-<<branch>>")))
+    (or
+     (-find (lambda (x) (string= branch-template (f-base x))) entries)
+     (-find (lambda (x) (string= "TEMPLATE" (f-base x))) entries))))
+
+(defun my::magit::commit-template|edit-template-file ()
+  "Open an existing template file or create a new one."
+  (interactive)
+  (let ((file (or (my::magit::commit-template/find-template-file (magit-get-current-branch))
+                  (f-join (my::magit/find-root-git-dir) "TEMPLATE"))))
+    (find-file file)))
+
+(defun my::magit::commit-template/insert-template (&rest _)
+  "When a TEMPLATE file in the git directory exists, insert it as a commit template."
+  (when (eq (point) (point-at-eol))
+    (-some->> (my::magit::commit-template/find-template-file (magit-get-current-branch))
+      (f-read)
+      (s-trim)
+      (s-append " ")
+      (insert)))
+  (evil-insert-state))
+#+END_SRC
+
+And the hook
+
+#+BEGIN_SRC elisp
+(add-hook! 'git-commit-setup-hook :append #'my::magit::commit-template/insert-template)
+#+END_SRC
+
+**** Find root directory
+
+Find the root directory of a ~.git~ repository
+This also works for worktrees that are in a nested directory.
+
+#+BEGIN_SRC elisp
+(defun my::magit/find-root-git-dir ()
+  "Find the root directory of a repository."
+    (-some->> (magit-toplevel)
+      (-f-join ".git")
+      (-id-when #'f-exists?)
+      ((lambda (x)
+         (if (f-file? x)
+             (->> (magit-list-worktrees)
+                  (car)
+                  (car)
+                  (-f-join ".git"))
+           x)))))
+#+END_SRC
+**** Lock git buffer :ADVICE:
+
+#+BEGIN_SRC elisp
+(advice-add #'magit-toggle-buffer-lock :after (lambda () (my/bool-state-message 'magit-buffer-locked-p)))
+#+END_SRC
+
+**** Check for merge conflicts
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/questions/501407/is-there-a-git-merge-dry-run-option][Is there a git-merge --dry-run option? - Stack Overflow]]
+:END:
+
+Try two merge two branches in memory, to determine if there would be merge conflicts.
+
+#+BEGIN_SRC elisp
+(defun my::magit/check-for-merge-conflicts (&optional source-branch target-branch)
+  "Try to merge SOURCE-BRANCH into TARGET-BRANCH, return list of conflicting files when there are any.
+This will try to merge in memory, so no index files will be created.
+SOURCE-BRANCH defaults to the current branch.
+TARGET-BRANCH defaults to origin/master."
+  (interactive)
+  (let* ((source-branch (or source-branch (magit-get-current-branch)))
+         (target-branch (or target-branch "origin/master"))
+         (merge-base (my::shell/command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
+    (my::shell/command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
+#+END_SRC
+**** Copy over changes from diff
+
+#+BEGIN_SRC elisp
+(defun my::magit|diff-copy-file-changes ()
+  "Copies over contents of diff at point to the curent file system."
+  (interactive)
+  (save-excursion
+    (let ((buffer (call-interactively #'magit-diff-visit-file)))
+      (with-current-buffer buffer
+        (make-directory (f-dirname magit-buffer-file-name) t)
+        (f-write (substring-no-properties (buffer-string)) 'utf-8 magit-buffer-file-name)))
+    (kill-buffer)))
+#+END_SRC
+*** Config
+
+#+BEGIN_SRC elisp
+(after! magit
+  :config
+  (setq
+   magit-save-repository-buffers 'dontask
+   magithub-clone-default-directory "~/Code/Repositories"
+   git-commit-summary-max-length 120))
+
+(after! forge
+  :config
+  (setq forge-database-file (f-join doom-local-dir "forge-database.sqlite")))
+#+END_SRC
+
+*** Bindings
+**** Diff Navigation
+
+My workflow for navigating diffs
+Use ~z1~ to fold all diffs to their file headers and press's ~{~ or ~}~ to
+
+1. Refold all sections
+2. Go to the next section
+3. Unfold everything in the current section
+
+Then use ~]~ to navigate the sections
+
+#+BEGIN_SRC elisp
+(defun my::magit/jumpunfold-section (&optional forward)
+  "Fold all section. Go to next section when FORWARD. Show all children"
+  (interactive)
+  (magit-section-show-level-1-all)
+  (call-interactively (if forward #'magit-section-forward-sibling #'magit-section-backward-sibling))
+  (call-interactively #'magit-section-show-children))
+
+(map!
+ (:map magit-diff-mode-map
+  :nv "}" (cmd! (my::magit/jumpunfold-section 't))
+  :nv "{" (cmd! (my::magit/jumpunfold-section))))
+#+END_SRC
+
+**** Time Machine Navigation
+
+#+BEGIN_SRC elisp
+(map!
+ :after git-timemachine
+ :map git-timemachine-mode-map
+ :n "[" #'git-timemachine-show-previous-revision
+ :n "]" #'git-timemachine-show-next-revision
+ :n "b" #'git-timemachine-blame)
+#+END_SRC
+
+**** Disable quit for locked buffers
+
+Disable accidentally quitting magit buffers with ~q~ when the buffer is locked.
+
+#+BEGIN_SRC elisp
+(defun my::magit/disable-locked-quit (orig-fn &rest args)
+  (unless magit-buffer-locked-p
+    (apply orig-fn args)))
+
+(advice-add #'magit-mode-bury-buffer :around #'my::magit/disable-locked-quit)
+#+END_SRC
+
+**** Fix text mode
+
+Restores functionality when editing magit buffers as text.
+For now only the toggle functionality is needed.
+
+#+BEGIN_SRC elisp
+(defvar +magit-evil-edit-mode-map (make-sparse-keymap))
+
+(define-minor-mode +magit-evil-edit-mode ""
+  :keymap +magit-evil-edit-mode-map)
+
+(map! :map +magit-evil-edit-mode-map
+      :n [tab] #'magit-section-toggle)
+#+END_SRC
+
+**** Transient Bindings
+
+You can add flags or commands to the magit interface transient here.
+To append something, just state the flag that you see in the transient popup as the 2nd argument.
+
+#+BEGIN_SRC elisp
+(after! magit
+  (transient-append-suffix 'magit-log "-f" '("-0" "No merges" "--no-merges"))
+  (transient-append-suffix 'magit-push "p" '("d" "dated" my::magit|push-dated))
+
+  (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" my::magit|diff-range-from-current-branch))
+  (transient-append-suffix 'magit-diff "d" '("P" "Pullrequest Range" my::magit|diff-range-from-pullreq))
+  (transient-append-suffix 'magit-diff "d" '("f" "File" magit-diff-buffer-file))
+
+  (transient-append-suffix 'magit-commit
+    "-D" '("-D" "Override the author date" "--date=" transient-read-date))
+
+  (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" my::magit|checkout-review-branches))
+  (transient-append-suffix 'magit-branch "l" '("U" "My Branches" my::magit|branches-by-user)))
+#+END_SRC
 
 ** Dired :DIRED:ORGANIZATION:
 *** Packages
@@ -2544,7 +2953,7 @@ Press =gr= with a following motion character like =w=.
  (ivy-add-actions 'counsel-find-file my::counsel::action:search-from-find-file))
 #+end_src
 **** Functions
-***** Counsel Project File Jump
+***** Project File Jump
 
 #+BEGIN_SRC elisp
 (defun my::counsel|project-file-jump (x)
@@ -2553,7 +2962,7 @@ Press =gr= with a following motion character like =w=.
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
 #+END_SRC
 
-***** Counsel External Drives
+***** External Drives
 
 #+BEGIN_SRC elisp
 (defun my::counsel|mounted-drives ()
@@ -3188,7 +3597,6 @@ Move to ivy candidate with =C-'=
 (package! graphql)
 #+END_SRC
 
-**** Git
 
 **** Ebooks
 
@@ -4707,410 +5115,6 @@ So I fix the checker manually for each mode after lsp was loaded.
 #+END_SRC
 
 *** Magit / Git
-**** Utils
-***** Create worktree workspace
-
-Creates a new git workspace from a branch.
-Automatically adds ~.projectfile~ and opens a new doom workspace.
-
-#+BEGIN_SRC elisp
-(defun magit-worktree-branch-project-worktree (branch start-point &optional force)
-  "Create a new BRANCH and check it out in a new worktree at PATH in a new workspace."
-  (interactive
-   `(,@(butlast (magit-branch-read-args "Create and checkout branch"))
-     ,current-prefix-arg))
-  (let* ((worktree-path (f-join (projectile-project-root) ".worktrees"))
-         (path (f-join (projectile-project-root) ".worktrees" branch)))
-    (when (not (f-exists-p worktree-path))
-      (mkdir worktree-path t))
-    (magit-run-git "worktree" "add" (if force "-B" "-b")
-                   branch (expand-file-name path) start-point)
-    (f-touch (f-join path ".projectile"))
-    (+workspace-new branch)
-    (+workspace-switch branch)
-    (magit-diff-visit-directory path)
-    (projectile-add-known-project path)
-    path))
-#+END_SRC
-
-***** Revision show original file
-
-Show the original file when visiting a revision buffer.
-E.g.: When showing a diff from a commit, you may want to edit that file.
-
-#+BEGIN_SRC elisp
-(defun magit-revision-show-original-file ()
-  "Show the orginal file from a revision buffer
-If possible also go to the pointing line"
-  (interactive)
-  (when magit-buffer-file-name
-    (let ((file-name magit-buffer-file-name)
-          (line-number (line-number-at-pos)))
-      (if current-prefix-arg
-          (delete-other-windows))
-      (find-file file-name)
-      (goto-line line-number))))
-#+END_SRC
-
-***** Changed files in branch
-
-Show a list of the changed files in the current branch.
-For now only works on branches that were directly forked from master.
-
-#+BEGIN_SRC elisp
-(defun +git/new-files ()
-  "List of added files in the current branch."
-  (my::shell/command-to-list "git ls-files -om --exclude-standard"))
-
-(defun +git/modfied-files (&optional branch)
-  "Get a list of modified files from the BRANCH to head."
-  (my::shell/command-to-list
-   (template "git --no-pager diff --no-renames --name-only --no-merges <<(magit-rev-parse \"HEAD\")>> <<branch>>;")))
-
-(defun +git/changed-branch-files (branch)
-  "Get a list of new and modified files from BRANCH to head."
-  (->> (+git/modfied-files branch)
-       (-concat (+git/new-files))
-       (-uniq)
-       (-filter
-        (lambda (x)
-          (let ((default-directory (projectile-project-root)))
-            (f-exists? x))))))
-
-(defun +git|ivy-changed-files (&optional branch)
-  (interactive)
-  (let ((enable-recursive-minibuffers t))
-    (ivy-read (template "Changed files for <<(or branch (magit-get-current-branch))>>:")
-              (+git/changed-branch-files (or "origin/master"))
-              :require-match t
-              :history 'file-name-history
-              :action counsel-projectile-find-file-action
-              :caller '+git|ivy-changed-files)))
-#+END_SRC
-***** Undo commit
-
-#+BEGIN_SRC elisp
-(defun +git|undo ()
-  "Soft reset current git repo to HEAD~1."
-  (interactive)
-  (magit-reset-soft "HEAD~1"))
-#+END_SRC
-
-***** Push dated remote branch
-
-For work I need remote branches with a date prefix.
-
-#+BEGIN_SRC elisp
-(defun +git|push-dated (&optional branch)
-  "Pushes the given the current BRANCH with a dated prefix
-my-branch-name -> 19-01-my-branch-name
-When no BRANCH is given, take the current one."
-  (interactive)
-  (let* ((branch (or branch (magit-get-current-branch)))
-         (date (format-time-string "%y-%m"))
-         (remote (template "origin/<<date>>-<<branch>>")))
-    (magit-git-push branch remote "--set-upstream")
-    remote))
-#+END_SRC
-
-***** Diff range from current branch to ~magit-thing-at-point~
-
-When I'm on the log view, I want to quickly diff it against the currently checked out branch.
-The transient shortcut for this is ~d R~ define [[*Transient][here]].
-
-#+BEGIN_SRC elisp
-(defun +magit|diff-range-from-current-branch ()
-  "Ranged diff from the checked out branch to the commit at point."
-  (interactive)
-  (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
-#+END_SRC
-
-***** Diff range from current pull request
-
-#+BEGIN_SRC elisp
-(defun +magit|diff-range-from-pullreq ()
-  "Ranged diff from the pull request under point."
-  (interactive)
-  (-some->> (forge-current-topic)
-    (forge--pullreq-range)
-    (magit-diff-range)))
-#+END_SRC
-
-***** Review branch
-
-#+BEGIN_SRC elisp
-(defun +magit|delete-review-branches ()
-  "Delete all review branches that no longer have an upstream."
-  (interactive)
-  (->> (magit-list-branches)
-       (--filter (s-starts-with? "refs/heads/REVIEW" it))
-       (--map (magit-name-local-branch it))
-       (--reject (magit-get-upstream-branch it))
-       (--each (lambda (x) (magit-branch-delete x t)))))
-
-(defun +magit|checkout-review-branch (&optional branch start-point)
-  "Create a branch with review prefix for easy cleanup afterwards."
-  (interactive)
-  (let* ((remotes (magit-list-remote-branch-names))
-         (atpoint (magit-branch-at-point))
-         (branch (magit-completing-read
-                  "Checkout branch" remotes
-                  nil nil nil 'magit-revision-history
-                  (or (car (member atpoint remotes))
-                      (and atpoint
-                           (car (member (and (string-match "[^/]+/" atpoint)
-                                             (substring atpoint (match-end 0)))
-                                        remotes))))))
-         (review-branch-name (s-replace "origin/" "REVIEW-" branch)))
-    ;; HACK Workaround where the buffer cant be read
-    (advice-remove 'magit-checkout #'+magit-revert-repo-buffers-deferred-a)
-    (magit-checkout branch)
-    (when (magit-anything-modified-p)
-      (user-error "Cannot checkout when there are uncommitted changes"))
-    (if (-contains? (magit-list-local-branch-names) review-branch-name)
-        (magit-branch-checkout review-branch-name)
-      (magit-branch-and-checkout (s-replace "origin/" "REVIEW-" branch) branch))))
-#+END_SRC
-***** Cleanup branches
-
-Cleans up all merged and review branches
-
-#+BEGIN_SRC elisp
-(defun +magit|cleanup-branches (&optional base-branch)
-  "Remove all merged and review branches."
-  (interactive)
-  (+magit|delete-review-branches)
-  (let* ((base-branch (or base-branch "master")))
-    (call-interactively #'+magit|delete-review-branches)
-    (deferred:$
-      (deferred:process-shell (template "git branch --merged | egrep -v \"(^\\*|<<base-branch>>)\" | xargs git branch -d"))
-      (deferred:nextc it
-        (magit-status-maybe-update-revision-buffer)))))
-#+END_SRC
-
-***** Branches by user
-
-#+BEGIN_SRC elisp
-(defun +magit|branches-by-user (&optional ignore-review?)
-  "List all branches by user.
-Universal argument to ignore review branches."
-  (interactive "P")
-  (let ((branches
-         (->>
-          (concat "git for-each-ref"
-                  " --sort=-committerdate"
-                  " --format='%(committerdate) %(authorname) %(refname)'"
-                  " --sort=-committerdate"
-                  ;; refs/remotes/origin/ for remote branches
-                  " refs/heads"
-                  " | grep -e 'Florian Schroedl'")
-          (shell-command-to-string)
-          (s-split "\n")
-          (-butlast)
-          (-map (lambda (x) (->> (s-match ".*Florian Schroedl refs\\/heads\\/\\(.*\\)" x)
-                                 (-last-item))))
-          ((lambda (xs)
-             (if ignore-review?
-                 (--reject (s-starts-with? "REVIEW" it) xs)
-               xs))))))
-    (ivy-read "Checkout: " branches :action #'magit-checkout)))
-#+END_SRC
-
-***** Load forge when needed
-
-#+BEGIN_SRC elisp
-(use-package! forge
-  :commands (forge-browse-commit))
-#+END_SRC
-
-***** Commit Template
-
-Loads commit template from ~./git/TEMPLATE~ if the file exist.
-
-#+BEGIN_SRC elisp
-(defun +git/template-file (branch)
-  (when-let* ((dir (+git/find-root-git-dir))
-              (entries (f-entries dir (lambda (x) (s-starts-with? "TEMPLATE" (f-base x)))))
-              (branch-template (template "TEMPLATE-<<branch>>")))
-    (-log entries)
-    (-log branch-template)
-    (or
-     (-find (lambda (x) (string= branch-template (f-base x))) entries)
-     (-find (lambda (x) (string= "TEMPLATE" (f-base x))) entries))))
-
-(defun +git/load-git-template (&rest discard)
-  "When a TEMPLATE file in the git directory exists, insert it as a commit template."
-  (when (eq (point) (point-at-eol))
-    (-some->> (+git/template-file (magit-get-current-branch))
-      (f-read)
-      (s-trim)
-      (s-append " ")
-      (insert)))
-  (evil-insert-state))
-#+END_SRC
-
-And the hook
-
-#+BEGIN_SRC elisp
-(add-hook! 'git-commit-setup-hook :append #'+git/load-git-template)
-#+END_SRC
-
-***** Find root directory
-
-Find the root directory of a ~.git~ repository
-This also works for worktrees that are in a nested directory.
-
-#+BEGIN_SRC elisp
-(defun +git/find-root-git-dir ()
-  "Find the root directory of a repository."
-    (-some->> (magit-toplevel)
-      (-f-join ".git")
-      (-id-when #'f-exists?)
-      ((lambda (x)
-         (if (f-file? x)
-             (->> (magit-list-worktrees)
-                  (car)
-                  (car)
-                  (-f-join ".git"))
-           x)))))
-#+END_SRC
-***** Lock git buffer :ADVICE:
-
-#+BEGIN_SRC elisp
-(advice-add #'magit-toggle-buffer-lock :after (lambda () (my/bool-state-message 'magit-buffer-locked-p)))
-#+END_SRC
-***** Check for merge conflicts
-:PROPERTIES:
-:SOURCE:   [[https://stackoverflow.com/questions/501407/is-there-a-git-merge-dry-run-option][Is there a git-merge --dry-run option? - Stack Overflow]]
-:END:
-
-Try two merge two branches in memory, to determine if there would be merge conflicts.
-
-#+BEGIN_SRC elisp
-(defun +git|check-branch-for-merge-conflict (&optional source-branch target-branch)
-  "Try to merge SOURCE-BRANCH into TARGET-BRANCH, return list of conflicting files when there are any.
-This will try to merge in memory, so no index files will be created.
-SOURCE-BRANCH defaults to the current branch.
-TARGET-BRANCH defaults to origin/master."
-  (interactive)
-  (let* ((source-branch (or source-branch (magit-get-current-branch)))
-         (target-branch (or target-branch "origin/master"))
-         (merge-base (my::shell/command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
-    (my::shell/command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
-#+END_SRC
-***** Copy over changes from diff
-
-#+BEGIN_SRC elisp
-(defun +magit/diff-copy-file-changes ()
-  "Copies over contents of diff at point to the curent file system."
-  (interactive)
-  (save-excursion
-    (let ((buffer (call-interactively #'magit-diff-visit-file)))
-      (with-current-buffer buffer
-        (make-directory (f-dirname magit-buffer-file-name) t)
-        (f-write (substring-no-properties (buffer-string)) 'utf-8 magit-buffer-file-name)))
-    (kill-buffer)))
-#+END_SRC
-***** Text Mode
-
-Restores functionality when editing magit buffers as text.
-For now only the toggle functionality is needed.
-
-#+BEGIN_SRC elisp
-(defvar +magit-evil-edit-mode-map (make-sparse-keymap))
-
-(define-minor-mode +magit-evil-edit-mode ""
-  :keymap +magit-evil-edit-mode-map)
-
-(map! :map +magit-evil-edit-mode-map
-      :n [tab] #'magit-section-toggle)
-#+END_SRC
-
-**** Config
-
-#+BEGIN_SRC elisp
-(after! magit
-  :config
-  (setq
-   magit-save-repository-buffers 'dontask
-   magithub-clone-default-directory "~/Code/Repositories"
-   git-commit-summary-max-length 120))
-
-(after! forge
-  :config
-  (setq forge-database-file (f-join doom-local-dir "forge-database.sqlite")))
-#+END_SRC
-
-**** Bindings
-***** Diff Navigation
-
-My workflow for navigating diffs
-Use ~z1~ to fold all diffs to their file headers and press's ~{~ or ~}~ to
-
-1. Refold all sections
-2. Go to the next section
-3. Unfold everything in the current section
-
-Then use ~]~ to navigate the sections
-
-#+BEGIN_SRC elisp
-(defun floscr:magit-jumpunfold-section (&optional forward)
-  "Fold all section. Go to next section when FORWARD. Show all children"
-  (interactive)
-  (magit-section-show-level-1-all)
-  (call-interactively (if forward #'magit-section-forward-sibling #'magit-section-backward-sibling))
-  (call-interactively #'magit-section-show-children))
-
-(map!
- (:map magit-diff-mode-map
-  :nv "}" (cmd! (floscr:magit-jumpunfold-section 't))
-  :nv "{" (cmd! (floscr:magit-jumpunfold-section))))
-#+END_SRC
-
-***** Time Machine Navigation
-
-#+BEGIN_SRC elisp
-(map!
- :after git-timemachine
- :map git-timemachine-mode-map
- :n "[" #'git-timemachine-show-previous-revision
- :n "]" #'git-timemachine-show-next-revision
- :n "b" #'git-timemachine-blame)
-#+END_SRC
-
-***** Disable quit for locked buffers
-
-Disable accidentally quitting magit buffers with ~q~ when the buffer is locked.
-
-#+BEGIN_SRC elisp
-(defun +magit/disable-locked-quit (orig-fn &rest args)
-  (unless magit-buffer-locked-p
-    (apply orig-fn args)))
-
-(advice-add #'magit-mode-bury-buffer :around #'+magit/disable-locked-quit)
-#+END_SRC
-
-**** Transient Bindings
-
-You can add flags or commands to the magit interface transient here.
-To append something, just state the flag that you see in the transient popup as the 2nd argument.
-
-#+BEGIN_SRC elisp
-(after! magit
-  (transient-append-suffix 'magit-log "-f" '("-0" "No merges" "--no-merges"))
-  (transient-append-suffix 'magit-push "p" '("d" "dated" +git|push-dated))
-
-  (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" +magit|diff-range-from-current-branch))
-  (transient-append-suffix 'magit-diff "d" '("P" "Pullrequest Range" +magit|diff-range-from-pullreq))
-  (transient-append-suffix 'magit-diff "d" '("f" "File" magit-diff-buffer-file))
-
-  (transient-append-suffix 'magit-commit
-    "-D" '("-D" "Override the author date" "--date=" transient-read-date))
-
-  (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" +magit|checkout-review-branch))
-  (transient-append-suffix 'magit-branch "l" '("U" "My Branches" +magit|branches-by-user)))
-#+END_SRC
-
 *** Markdown
 
 Always keep markdown centered, without line numbers.
@@ -6213,15 +6217,15 @@ So deletes wont affect this register."
  (:prefix-map ("g" . "git")
   :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
   :desc "Blame"                               "B" #'magit-blame
-  :desc "Changed Files"                       "F" #'+git|ivy-changed-files
+  :desc "Changed Files"                       "F" #'my::magit|counsel-changed-files
   :desc "New Branch"                          "N" #'magit-branch-spinoff
-  :desc "Show revision original File"         "O" #'magit-revision-show-original-file
-  :desc "Map-editor Changed Files"            "T" (cmd! (+git|ivy-changed-files "map-editor"))
+  :desc "Show revision original File"         "O" #'my::magit|show-revision-original
+  :desc "Map-editor Changed Files"            "T" (cmd! (my::magit|counsel-changed-files "map-editor"))
   :desc "Amend Commit"                        "a" #'magit-commit-amend
   :desc "Checkout"                            "b" #'magit-checkout
   :desc "Diff"                                "d" #'magit-diff
   :desc "Push"                                "p" #'magit-push
-  :desc "Undo"                                "u" #'+git|undo
+  :desc "Undo"                                "u" #'my::magit|git-undo
   :desc "Worktree Popup"                      "w" #'magit-worktree
   :desc "New Org Pr"                          "!" #'+MM|new-pr-from-branch
   (:prefix ("f" . "file")
