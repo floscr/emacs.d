@@ -2735,7 +2735,44 @@ error in process filter: End of buffer
  :ni "RET" (cmd! (comint-send-input nil t))
  :n "<C-backspace>" #'comint-clear-buffer)
 #+END_SRC
+*** [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html][Eshell]]
+**** Functions
+***** Syntax highlighted cat
 
+#+BEGIN_SRC elisp
+(defun my::eshell/colorized-cat (file)
+  "Like `cat' but output with Emacs syntax highlighting."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (let ((buffer-file-name file))
+      (delay-mode-hooks
+        (set-auto-mode)
+        (if (fboundp 'font-lock-ensure)
+            (font-lock-ensure)
+          (with-no-warnings
+            (font-lock-fontify-buffer)))))
+    (buffer-string)))
+#+END_SRC
+
+**** Config
+***** COMMENT Custom Aliases
+
+#+BEGIN_SRC elisp
+(setq +eshell-aliases
+  '(("q"      "exit")
+    ("cat"    "my::eshell/colorized-cat $1")
+    ("f"      "find-file $1")
+    ("bd"     "eshell-up $1")
+    ("rg"     "rg --color=always $*")
+    ("ag"     "ag --color=always $*")
+    ("l"      "ls -lh")
+    ("ll"     "ls -lah")
+    ("gs"     "git status")
+    ("groot"  "cd (projectile-project-root)")
+    ("gc"     "git commit")
+    ("grha"   "git reset --hard; git clean -f -d")
+    ("clear"  "clear-scrollback")))
+#+END_SRC
 
 * Needs to be restrucutred
 ** Packages
@@ -4244,45 +4281,6 @@ pkgs.mkShell {
 
 ** Package Config
 *** Eshell
-**** Aliases
-
-Custom eshell aliases.
-
-#+BEGIN_SRC elisp
-(setq +eshell-aliases
-  '(("q"      "exit")
-    ("f"      "find-file $1")
-    ("bd"     "eshell-up $1")
-    ("rg"     "rg --color=always $*")
-    ("ag"     "ag --color=always $*")
-    ("l"      "ls -lh")
-    ("ll"     "ls -lah")
-    ("gs"     "git status")
-    ("groot"  "cd (projectile-project-root)")
-    ("gc"     "git commit")
-    ("grha"   "git reset --hard; git clean -f -d")
-    ("clear"  "clear-scrollback")))
-#+END_SRC
-
-**** Syntax highlighted cat
-
-#+BEGIN_SRC elisp
-(defun +eshell/cat (file)
-  "Like `cat' but output with Emacs syntax highlighting."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (let ((buffer-file-name file))
-      (delay-mode-hooks
-        (set-auto-mode)
-        (if (fboundp 'font-lock-ensure)
-            (font-lock-ensure)
-          (with-no-warnings
-            (font-lock-fontify-buffer)))))
-    (buffer-string)))
-
-(add-to-list '+eshell-aliases '("cat" "+eshell/cat $1"))
-#+END_SRC
-
 *** Evil-Snipe
 **** Repeat snipe after further key press
 
