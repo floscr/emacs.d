@@ -128,12 +128,13 @@ All todo keywords are for general items.
   (setq org-todo-keywords
         '((sequence "ACTIVE(a)" "NEXT(n)" "|" "DONE")
           (sequence "TODO(t)" "|" "DONE(x)")
-          (sequence "WAITING(w)" "WAIT_RESPONSE(r)" "WAIT_QA(q)" "SOMEDAY(s)" "|" "DONE" "CANCELLED(c)")
+          (sequence "IDEA(i) WAITING(w)" "WAIT_RESPONSE(r)" "WAIT_QA(q)" "SOMEDAY(s)" "|" "DONE" "CANCELLED(c)")
           (sequence "PROJECT(p)" "|" "DONE")
           (sequence "NOTE(N)")))
   (setq org-todo-keyword-faces
         '(("ACTIVE" :inherit warning :weight bold)
           ("NEXT" :inherit warning :weight bold)
+          ("IDEA" :inherit font-lock-constant-face :weight bold)
           ("NOTE" :inherit warning :weight bold)
           ("WAITING" :inherit default :weight bold)
           ("WAIT_RESPONSE" :inherit default :weight bold)
