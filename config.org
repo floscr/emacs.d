@@ -3863,7 +3863,7 @@ Find file on enter press for ~ivy-occur-mode~
 (map! :map ivy-occur-mode-map
       :gni "RET" #'ivy-occur-press-and-switch)
 #+END_SRC
-** Snippets
+** Snippets :SNIPPETS:
 *** Functions
 **** Expand snippet by name
 :PROPERTIES:
@@ -3932,6 +3932,21 @@ Return nil otherwise."
   :init
   (require 'doom-snippets nil t))
 #+END_SRC
+** Search (Grep) :SEARCH:
+
+*** Bindings
+
+**** Wgrep Mode
+
+#+begin_src elisp
+(map!
+ :map (wgrep-mode-map ivy-occur-grep-mode-map)
+ :n [return] #'compile-goto-error
+
+ :localleader
+ :desc "Remove line" "d" (cmd! (let ((inhibit-read-only t))
+                                 (my::buffer/delete-current-line))))
+#+end_src
 
 ** Web :WEB:
 *** [[https://github.com/skeeto/elfeed][Elfeed]] :DOOM:
@@ -5514,19 +5529,6 @@ Bindings
 *** Workspaces
 **** Config
 **** Functions
-*** Grep Modes
-**** Bindings
-
-#+BEGIN_SRC elisp
-(map!
- :map (wgrep-mode-map ivy-occur-grep-mode-map)
- :n [return] #'compile-goto-error
-
- :localleader
- :desc "Remove line" "d" (cmd! (let ((inhibit-read-only t))
-                                 (my::buffer/delete-current-line))))
-#+END_SRC
-
 *** Babel Async
 
 #+BEGIN_SRC elisp
