@@ -2836,6 +2836,54 @@ TARGET-BRANCH defaults to origin/master."
         (f-write (substring-no-properties (buffer-string)) 'utf-8 magit-buffer-file-name)))
     (kill-buffer)))
 #+END_SRC
+**** Smerge mode hydra
+:PROPERTIES:
+:SOURCE:   [[https://github.com/alphapapa/unpackaged.el#hydra][alphapapa/unpackaged.el: A collection of useful Emacs Lisp code that isn't substantial enough to be packaged]]
+:END:
+
+#+BEGIN_SRC elisp
+(use-package smerge-mode
+  :after hydra
+  :config
+  (defhydra unpackaged/smerge-hydra
+    (:color pink :hint nil :post (smerge-auto-leave))
+    "
+^Move^       ^Keep^               ^Diff^                 ^Other^
+^^-----------^^-------------------^^---------------------^^-------
+_n_ext       _b_ase               _<_: upper/base        _C_ombine
+_p_rev       _u_pper              _=_: upper/lower       _r_esolve
+^^           _l_ower              _>_: base/lower        _k_ill current
+^^           _a_ll                _R_efine
+^^           _RET_: current       _E_diff
+"
+    ("n" smerge-next)
+    ("p" smerge-prev)
+    ("b" smerge-keep-base)
+    ("u" smerge-keep-upper)
+    ("l" smerge-keep-lower)
+    ("a" smerge-keep-all)
+    ("RET" smerge-keep-current)
+    ("\C-m" smerge-keep-current)
+    ("<" smerge-diff-base-upper)
+    ("=" smerge-diff-upper-lower)
+    (">" smerge-diff-base-lower)
+    ("R" smerge-refine)
+    ("E" smerge-ediff)
+    ("C" smerge-combine-with-next)
+    ("r" smerge-resolve)
+    ("k" smerge-kill-current)
+    ("ZZ" (lambda ()
+            (interactive)
+            (save-buffer)
+            (bury-buffer))
+     "Save and bury buffer" :color blue)
+    ("q" nil "cancel" :color blue))
+  :hook (magit-diff-visit-file . (lambda ()
+                                   (when smerge-mode
+                                     (flycheck-mode -1)
+                                     (unpackaged/smerge-hydra/body)))))
+#+END_SRC
+
 *** Config
 
 #+BEGIN_SRC elisp
@@ -2849,6 +2897,16 @@ TARGET-BRANCH defaults to origin/master."
 (after! forge
   :config
   (setq forge-database-file (f-join doom-local-dir "forge-database.sqlite")))
+#+END_SRC
+
+**** Fix smerge mode color
+
+#+BEGIN_SRC elisp
+(after! smerge-mode
+  :config
+  ;; TODO This is broken after switching the theme but works for now
+  ;; This fixes the smerge diff color is really bright an ugly
+  (set-face-attribute 'smerge-refined-added nil :foreground nil :background nil))
 #+END_SRC
 
 *** Bindings
@@ -3518,14 +3576,13 @@ Press =gr= with a following motion character like =w=.
  :map pdf-occur-buffer-mode-map
  :gn [tab] (cmd! (pdf-occur-goto-occurrence t)))
 #+END_SRC
-*** Epub
+*** Ebook :EBOOK:
 **** Packages
 ***** [[https://depp.brause.cc/nov.el/][nov]]
 
 Major mode for reading EPUBs in Emacs
 
 ****** Functions
-
 ******* Setup function
 
 #+begin_src elisp
@@ -5249,65 +5306,6 @@ Bindings
 #+END_SRC
 
 *** NPM Mode
-*** Magit Smerge Mode
-**** Fix Colors
-
-#+BEGIN_SRC elisp
-(after! smerge-mode
-  :config
-  ;; TODO This is broken after switching the theme but works for now
-  ;; This fixes the smerge diff color is really bright an ugly
-  (set-face-attribute 'smerge-refined-added nil :foreground nil :background nil))
-#+END_SRC
-
-**** Hydra
-:PROPERTIES:
-:SOURCE:   [[https://github.com/alphapapa/unpackaged.el#hydra][alphapapa/unpackaged.el: A collection of useful Emacs Lisp code that isn't substantial enough to be packaged]]
-:END:
-
-#+BEGIN_SRC elisp
-(use-package smerge-mode
-  :after hydra
-  :config
-  (defhydra unpackaged/smerge-hydra
-    (:color pink :hint nil :post (smerge-auto-leave))
-    "
-^Move^       ^Keep^               ^Diff^                 ^Other^
-^^-----------^^-------------------^^---------------------^^-------
-_n_ext       _b_ase               _<_: upper/base        _C_ombine
-_p_rev       _u_pper              _=_: upper/lower       _r_esolve
-^^           _l_ower              _>_: base/lower        _k_ill current
-^^           _a_ll                _R_efine
-^^           _RET_: current       _E_diff
-"
-    ("n" smerge-next)
-    ("p" smerge-prev)
-    ("b" smerge-keep-base)
-    ("u" smerge-keep-upper)
-    ("l" smerge-keep-lower)
-    ("a" smerge-keep-all)
-    ("RET" smerge-keep-current)
-    ("\C-m" smerge-keep-current)
-    ("<" smerge-diff-base-upper)
-    ("=" smerge-diff-upper-lower)
-    (">" smerge-diff-base-lower)
-    ("R" smerge-refine)
-    ("E" smerge-ediff)
-    ("C" smerge-combine-with-next)
-    ("r" smerge-resolve)
-    ("k" smerge-kill-current)
-    ("ZZ" (lambda ()
-            (interactive)
-            (save-buffer)
-            (bury-buffer))
-     "Save and bury buffer" :color blue)
-    ("q" nil "cancel" :color blue))
-  :hook (magit-diff-visit-file . (lambda ()
-                                   (when smerge-mode
-                                     (flycheck-mode -1)
-                                     (unpackaged/smerge-hydra/body)))))
-#+END_SRC
-
 *** Workspaces
 **** Config
 ***** Always add buffers to current workspace
