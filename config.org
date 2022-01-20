@@ -29,6 +29,7 @@ It's the only prefix where you can assume that packages or emacs won't override 
 - ~my|function~: Interactive function
   - ~my::namespace|function~: Interactive function
 - ~my@function~: Macro
+- ~my*hook~: Hook function
 
 *** Exceptions
 
