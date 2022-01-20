@@ -5059,41 +5059,22 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
   (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
         (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
 
-(use-package! spell-fu
-  :init
-  (remove-hook! '(org-mode-hook
-                  markdown-mode-hook
-                  TeX-mode-hook
-                  rst-mode-hook
-                  mu4e-compose-mode-hook
-                  message-mode-hook
-                  text-mode-hook
-                  git-commit-mode-hook)
-    #'spell-fu-mode))
+(defmacro my::spelling@remove-doom-spell-hooks (package mode)
+  `(use-package! ,package
+     :init
+     (remove-hook! '(org-mode-hook
+                     markdown-mode-hook
+                     TeX-mode-hook
+                     rst-mode-hook
+                     mu4e-compose-mode-hook
+                     message-mode-hook
+                     text-mode-hook
+                     git-commit-mode-hook)
+       ,mode)))
 
-(use-package! flyspell
-  :init
-  (remove-hook! '(org-mode-hook
-                  markdown-mode-hook
-                  TeX-mode-hook
-                  rst-mode-hook
-                  mu4e-compose-mode-hook
-                  message-mode-hook
-                  text-mode-hook
-                  git-commit-mode-hook)
-    #'flyspell-mode))
-
-(use-package! writegood-mode
-  :init
-  (remove-hook! '(org-mode-hook
-                  markdown-mode-hook
-                  TeX-mode-hook
-                  rst-mode-hook
-                  mu4e-compose-mode-hook
-                  message-mode-hook
-                  text-mode-hook
-                  git-commit-mode-hook)
-    #'writegood-mode))
+(my::spelling@remove-doom-spell-hooks spell-fu #'spell-fu-mode)
+(my::spelling@remove-doom-spell-hooks flyspell #'flyspell-mode)
+(my::spelling@remove-doom-spell-hooks writegood-mode #'writegood-mode)
 
 (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert)
 #+end_src
