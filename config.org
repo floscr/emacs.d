@@ -480,6 +480,17 @@ shuffling is done in place."
 
 
 
+* Default Configuration
+** Temp
+
+Include colons as delimiters for now
+
+#+begin_src elisp
+(modify-syntax-entry ?: "w" emacs-lisp-mode-syntax-table)
+(modify-syntax-entry ?: "w" org-mode-syntax-table)
+(modify-syntax-entry ?: "w" grep-mode-syntax-table)
+#+end_src
+
 * Needs to be restrucutred
 ** Packages
 :PROPERTIES:
