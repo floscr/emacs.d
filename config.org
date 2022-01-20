@@ -490,7 +490,7 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
   (split-string (shell-command-to-string cmd) "\n" t))
 #+END_SRC
 
-*** Start Process with Nohup
+*** Start process that stays alive
 
 I don't want some processes to exit, when I close emacs.
 
