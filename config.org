@@ -1124,7 +1124,7 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 *** LSP
 ** Text Editing :TEXT:
 *** Packages
-**** [[https://github.com/btford/write-good][btford/write-good: Naive linter for English prose]] :LINTING:
+**** [[https://github.com/btford/write-good][btford/write-good: Naive linter for English prose]] :LINTING:DOOM:
 ***** Config
 ****** Disable doom defined hooks for writegood mode
 
@@ -1143,6 +1143,39 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
    (t (writegood-mode -1))))
 
 (add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
+#+END_SRC
+**** [[https://github.com/joostkremers/writeroom-mode][joostkremers/writeroom-mode: Writeroom-mode: distraction-free writing for Emacs.]] :DOOM:
+
+***** Config
+
+****** Custom Design :FIX:
+
+#+BEGIN_SRC elisp
+(defun my::writeroom/setup ()
+  (if writeroom-mode
+      (my::writeroom/load)
+    (my::writeroom/unload)))
+
+(defun my::writeroom/load ()
+  (setq-local line-spacing 0.4)
+  (setq-local +writeroom:faceremaps
+              (list
+               (face-remap-add-relative
+                'org-link `(:foreground ,(face-attribute 'default :foreground)
+                            :underline ,(face-attribute 'default :foreground)
+                            :weight normal))
+               (face-remap-add-relative
+                'default `(:foreground ,(doom-blend
+                                         (face-attribute 'default :background)
+                                         (face-attribute 'default :foreground)
+                                         0.1))))))
+
+(defun my::writeroom/unload ()
+  (kill-local-variable 'line-spacing)
+  (mapc #'face-remap-remove-relative +writeroom:faceremaps)
+  (kill-local-variable '+writeroom:faceremaps))
+
+(add-hook! 'writeroom-mode-hook #'my::writeroom/setup)
 #+END_SRC
 
 ** Programming :PROGRAMMING:
@@ -2230,7 +2263,6 @@ Press =gr= with a following motion character like =w=.
 
 
 
-
 ** Pdf :PDF:
 *** Config
 
@@ -2265,6 +2297,9 @@ Press =gr= with a following motion character like =w=.
   (setq flycheck-disabled-checkers '(nim-nimsuggest))
   (flycheck-select-checker 'nim-1-6-0))
 #+END_SRC
+
+
+
 
 * Needs to be restrucutred
 ** Packages
@@ -3795,45 +3830,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Flycheck
-*** Writeroom
-
-**** Setup
-
-The setup function
-
-#+BEGIN_SRC elisp
-(defun +writeroom/writeroom-setup ()
-  (if writeroom-mode
-      (+writeroom/writeroom-load)
-    (+writeroom/writeroom-unload)))
-
-(defun +writeroom/writeroom-load ()
-  (setq-local line-spacing 0.4)
-  (setq-local +writeroom:faceremaps
-              (list
-               (face-remap-add-relative
-                'org-link `(:foreground ,(face-attribute 'default :foreground)
-                            :underline ,(face-attribute 'default :foreground)
-                            :weight normal))
-               (face-remap-add-relative
-                'default `(:foreground ,(doom-blend
-                                         (face-attribute 'default :background)
-                                         (face-attribute 'default :foreground)
-                                         0.1))))))
-
-(defun +writeroom/writeroom-unload ()
-  (kill-local-variable 'line-spacing)
-  (mapc #'face-remap-remove-relative +writeroom:faceremaps)
-  (kill-local-variable '+writeroom:faceremaps))
-#+END_SRC
-
-and the hooks:
-
-#+BEGIN_SRC elisp
-(add-hook! 'writeroom-mode-hook #'+writeroom/writeroom-setup)
-#+END_SRC
-
 *** Beancount
 **** Config
 
