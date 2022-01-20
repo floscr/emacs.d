@@ -3486,23 +3486,56 @@ Press =gr= with a following motion character like =w=.
   (setq evil-snipe-repeat-keys t))
 #+END_SRC
 
-** Pdf :PDF:
-*** Config
+** Documents :DOCUMENTS:
+*** Pdf :PDF:
+**** Config
 
-**** TODO Fix midnight colors for doom-one theme
+***** TODO Fix midnight colors for doom-one theme
 
 #+BEGIN_SRC elisp
 ;; Fix midnight colors for doom-one theme
 (setq pdf-view-midnight-colors '("#BBC2CD" . "#282C34"))
 #+END_SRC
 
-*** Bindings
+**** Bindings
 
 #+BEGIN_SRC elisp
 (map!
  :map pdf-occur-buffer-mode-map
  :gn [tab] (cmd! (pdf-occur-goto-occurrence t)))
 #+END_SRC
+*** Epub
+**** Packages
+***** [[https://depp.brause.cc/nov.el/][nov]]
+
+Major mode for reading EPUBs in Emacs
+
+****** Functions
+
+******* Setup function
+
+#+begin_src elisp
+(defun my::nov/setup ()
+  (setq line-spacing 5)
+  (face-remap-add-relative 'variable-pitch :family "Liberation Serif" :height 1.4)
+  (setq visual-fill-column-center-text t)
+  (setq visual-fill-column-width (+ nov-text-width 25))
+  (visual-fill-column-mode t))
+#+end_src
+
+****** Config
+
+#+BEGIN_SRC elisp
+(use-package! nov
+  :defer t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (setq nov-text-width 75)
+  (setq nov-save-place-file (f-join doom-local-dir "nov-places"))
+  :config
+  (add-hook 'nov-mode-hook 'my::nov/setup))
+#+END_SRC
+
 ** Flycheck :LINTING:
 *** Config
 **** Disabled Checkers
@@ -5132,8 +5165,6 @@ So I fix the checker manually for each mode after lsp was loaded.
 (setq mu4e-headers-leave-behavior 'apply)
 #+END_SRC
 
-*** Open With
-
 *** Company
 **** Config
 ***** Sort company by occurrence
@@ -5201,40 +5232,6 @@ Bindings
  (:prefix "C-x"
    :i "C-l" #'+company/whole-lines-all-buffers
    :i "C-." #'+company/whole-lines))
-#+END_SRC
-
-*** Nov (EPUB Reading Mode)
-
-Adds EPUB reading mode
-[[https://github.com/wasamasa/nov.el][wasamasa/nov.el: Major mode for reading EPUBs in Emacs]]
-
-I want to keep the buffer centered, but let nov take care of breaking the text,
-since this is much nicer then ~visual-line-mode~.
-
-#+BEGIN_SRC elisp
-(defun my-nov-config ()
-  (setq line-spacing 5)
-  (face-remap-add-relative 'variable-pitch :family "Liberation Serif" :height 1.4)
-  (setq visual-fill-column-center-text t)
-  (setq visual-fill-column-width (+ nov-text-width 25))
-  (visual-fill-column-mode t))
-
-(use-package! nov
-  :defer t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (setq nov-text-width 75)
-  (setq nov-save-place-file (f-join doom-local-dir "nov-places"))
-  :config
-  (progn
-    (add-hook 'nov-mode-hook 'my-nov-config)))
-#+END_SRC
-
-The font can be installed via brew cask.
-
-#+BEGIN_SRC bash :tangle no
-brew tap homebrew/cask-fonts
-brew cask install font-liberation-sans
 #+END_SRC
 
 *** NPM Mode
