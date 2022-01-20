@@ -338,7 +338,7 @@ module.exports = measure;
          (+file-templates-alist nil))
     (find-file-other-window file)
     (when (eq (buffer-size) 0)
-      (yas/insert-by-name "Pull Request Template")
+      (my::snippets/insert-by-name "Pull Request Template")
       (goto-char (point-min)))))
 #+END_SRC
 
