@@ -1710,25 +1710,26 @@ Manage systemd from emacs
 #+end_src
 
 ** Git :GIT:
-*** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
+*** Packages
+**** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
 
 Package override that fixes multiple remotes:
 [[https://github.com/floscr/browse-at-remote/commit/9294ed82398457d2af5fcbf9090132f4693e4068][Add option to define preferred remote [*] · floscr/browse-at-remote@9294ed8]]
 
-**** Package
+***** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
 #+end_src
-*** [[https://github.com/freesteph/elescope][freesteph/elescope: Search and clone Git repos directly within Emacs.]]
+**** [[https://github.com/freesteph/elescope][elescope: Search and clone Git repos directly within Emacs.]]
 
-**** Package
+***** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! elescope)
 #+END_SRC
 
-**** Config
+***** Config
 
 #+BEGIN_SRC elisp
 (use-package elescope
@@ -1737,6 +1738,20 @@ Package override that fixes multiple remotes:
   (setq elescope-root-folder my::directories:repositories-dir)
   :init
   (defalias '+git|clone 'elescope-checkout))
+#+END_SRC
+**** [[https://github.com/emacsmirror/git-lens][git-lens: Show new, deleted or modified files in branch]]
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! git-lens)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! git-lens
+  :commands (git-lens))
 #+END_SRC
 
 ** Dired :DIRED:ORGANIZATION:
@@ -2905,18 +2920,6 @@ Move to ivy candidate with =C-'=
 #+END_SRC
 
 **** Git
-
-Show changes in current branch
-
-#+BEGIN_SRC elisp
-(package! git-lens)
-#+END_SRC
-
-Quickly download and browser repositories from github
-
-#+BEGIN_SRC elisp
-(package! elescope)
-#+END_SRC
 
 **** Ebooks
 
@@ -4314,13 +4317,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Git Lens
-
-#+BEGIN_SRC elisp
-(use-package! git-lens
-  :commands (git-lens))
-#+END_SRC
-
 *** Symex
 
 #+BEGIN_SRC elisp
