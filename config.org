@@ -1145,7 +1145,6 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 (add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
 #+END_SRC
 **** [[https://github.com/joostkremers/writeroom-mode][joostkremers/writeroom-mode: Writeroom-mode: distraction-free writing for Emacs.]] :DOOM:
-
 ***** Config
 
 ****** Custom Design :FIX:
@@ -2262,7 +2261,6 @@ Press =gr= with a following motion character like =w=.
 
 
 
-
 ** Pdf :PDF:
 *** Config
 
@@ -2300,6 +2298,246 @@ Press =gr= with a following motion character like =w=.
 
 
 
+** Web :WEB:
+*** Packages
+**** DISABLED [[https://github.com/algernon/elfeed-goodies][algernon/elfeed-goodies: Various goodies for Elfeed]] :DISABLED:
+
+No need, screws with entry buffer position and header display...
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! elfeed-goodies :disable t)
+#+end_src
+
+**** [[https://github.com/skeeto/elfeed][skeeto/elfeed: An Emacs web feeds client]] :DOOM:
+***** Functions
+****** Open elfeed
+
+#+BEGIN_SRC elisp
+(defun my::elfeed|open ()
+  (interactive)
+  (unless (get-buffer "*elfeed-search*")
+    (setq elfeed-search-filter +rss:default-search-filter))
+  (elfeed)
+  (my::rss|hydra/body))
+#+END_SRC
+
+****** Filter by unread
+
+#+BEGIN_SRC elisp
+(defun my::rss/filter-by-unread ()
+  "Show elfeed articles tagged with unread"
+  (interactive)
+  (elfeed-search-set-filter "@6-months-ago +unread"))
+#+END_SRC
+
+****** Visit entry DWIM
+
+Open the current entry:
+- With the browser
+- Or if it's a youtube feed, open with [[*Elfeed MPV][mpv]]
+
+#+BEGIN_SRC elisp
+(defun my::rss|visit-entry-dwim ()
+  "Either open the current entry in eww or play it in mpv."
+  (interactive)
+  (message "")
+  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
+        (patterns my::rss:visit-entry-mpv-pattern))
+    (while (and patterns (not (string-match (car my::rss:visit-entry-mpv-pattern) (elfeed-entry-link entry))))
+      (setq patterns (cdr patterns)))
+    (if patterns
+        (my::rss:play-entry-with-mpv)
+      (if (eq major-mode 'elfeed-search-mode)
+          (elfeed-search-browse-url)
+        (elfeed-show-visit)))))
+#+END_SRC
+
+****** Visit entry with MPV
+
+#+BEGIN_SRC elisp
+(defvar my::rss:visit-entry-mpv-pattern
+  '("youtu\\.?be")
+  "List of regexp to match against elfeed entry link to know
+whether to use mpv to visit the link.")
+
+(defun my::rss:play-entry-with-mpv ()
+  "Play entry link with mpv."
+  (interactive)
+  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
+        (url (elfeed-entry-link entry)))
+    (my::shell/mpv-youtube-url url)))
+#+END_SRC
+
+****** Visit entry with EWW
+
+#+BEGIN_SRC elisp
+(defun my::rss::visit-entry-eww ()
+  "Open the current entry with eww."
+  (interactive)
+  (add-hook 'eww-after-render-hook 'eww-readable nil t)
+  (let ((buffer (save-window-excursion
+                  (eww (elfeed-entry-link elfeed-show-entry))
+                  (current-buffer))))
+    (switch-to-buffer buffer)))
+#+END_SRC
+
+****** Wrap Elfeed
+
+#+BEGIN_SRC elisp
+(defun my::rss/wrap-entry ()
+  "Enhances an elfeed entry's readability by wrapping it to a width of
+`fill-column' and centering it with `visual-fill-column-mode'."
+  (let ((inhibit-read-only t)
+        (inhibit-modification-hooks t))
+    (setq-local truncate-lines nil)
+    (setq-local shr-width 100)
+    (setq-local +zen-text-scale 0.9)
+    (mixed-pitch-mode)
+    (writeroom-mode)
+    (set-buffer-modified-p nil)))
+
+(add-hook 'elfeed-show-mode-hook #'my::rss/wrap-entry)
+#+END_SRC
+
+****** Update feeds when saving org-elfeed file :ORG_MODE:
+
+When I save the elfeed org-mode file I want to automatically update the feed list.
+Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/elfeed-org.el::rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id)][elfeed package]].
+
+#+BEGIN_SRC elisp
+(defun my::rss/update-feeds-on-save ()
+  (when (and (eq major-mode 'org-mode)
+             (string= buffer-file-name (car rmh-elfeed-org-files))))
+  (require 'elfeed)
+  (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
+
+(add-hook! 'after-save-hook #'my::rss/update-feeds-on-save)
+#+END_SRC
+****** Capture entry :ORG_MODE:
+
+#+BEGIN_SRC elisp
+(defun my::rss::capture/stringify-entry (entry)
+  (let ((title (->> (elfeed-entry-title entry)
+                    ;; Remove braces, they're just confusing to org links
+                    (s-replace "[" "")
+                    (s-replace "]" "")))
+        (url (elfeed-entry-link entry))
+        (author (->> (elfeed-meta entry :authors)
+                     car
+                     ((lambda (x) (plist-get x :name)))))
+        (tags (-some--> (elfeed-entry-tags entry)
+                (-remove-item 'unread it)
+                (-map #'symbol-name it)
+                (s-join ":" it)
+                (s-wrap it ":" ":"))))
+    (template "[[<<url>>][<<author>> - <<title>>]] <<(when tags tags)>>")))
+
+(defun my::rss::capture|capture ()
+  "Capture current entry of elfeed."
+  (interactive)
+  (let* ((entry (if (eq major-mode 'elfeed-show-mode)
+                   elfeed-show-entry
+                 (elfeed-search-selected :single)))
+         (org-entry (my::rss::capture/stringify-entry entry)))
+       (kill-new org-entry)
+       (if (s-contains? org-entry "youtube.com")
+           (org-capture nil "ew")
+        (org-capture nil "er"))))
+#+END_SRC
+
+****** Hydra
+
+#+BEGIN_SRC elisp
+(defun my::rss/toggle-filter (tag)
+  "Toggle elfeed filter TAG or append to filters if non-existent."
+  (->> (or (-when-let* (((_ modi) (s-match (t! "\\_<\\([+-]\\)<<tag>>\\_>") elfeed-search-filter))
+                        (new-modi (if (string= modi "+") "-" "+")))
+             (s-replace-regexp (t! "\\_<\\<<modi>><<tag>>\\_>") (t! "<<new-modi>><<tag>>") elfeed-search-filter))
+           (s-append (t! " +<<tag>>") elfeed-search-filter))
+       (--tap (progn (setq elfeed-search-filter it)
+                     (elfeed-search-update--force)
+                     (-log (t! "Filter changed to: <<it>>"))))))
+
+(defun my::rss|counsel-toggle-filter (&optional arg)
+  "Toggles a filter in elfeed."
+  (interactive "P")
+  (ivy-read (t! "Filter: <<elfeed-search-filter>>") (elfeed-db-get-all-tags)
+            :action #'my::rss/toggle-filter
+            :caller #'my::rss|counsel-toggle-filter))
+
+(defhydra my::rss|hydra ()
+   "Elfeed"
+   ("j" (evil-next-line) "Next item" :column "Navigate")
+   ("k" (evil-previous-line) "Previous item")
+   ("t" (my::rss|counsel-toggle-filter) "Tags" :column "Filter")
+   ("0" (elfeed-search-set-filter "@2-weeksago +unread") "Unread" :column "Favorites")
+   ("f" (elfeed-search-set-filter "@2-weeksago +unread -YOUTUBE -REDDIT") "Feeds")
+   ("y" (elfeed-search-set-filter "@2-weeksago +unread +YOUTUBE") "Youtube")
+   ("e" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =emacs") "Reddit: Emacs")
+   ("n" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =nixos") "Reddit: Nixos")
+   ("U" (elfeed-update) "Update" :column "actions")
+   ("u" (elfeed-search-untag-all-unread) "Mark as unread")
+   ("s" (elfeed-db-save) "Save DB")
+   ("v" (my::rss|visit-entry-dwim) "Visit")
+   ("q" nil "Quit" :color blue))
+#+END_SRC
+***** Config
+****** elfeed-org file
+
+#+BEGIN_SRC elisp
+(setq rmh-elfeed-org-files (list (+org/expand-org-file-name "Elfeed/Elfeed.org")))
+#+END_SRC
+
+****** Disable sliced images
+
+These don't work if you have a big line-height.
+
+#+BEGIN_SRC elisp
+(setq +rss-enable-sliced-images nil)
+#+END_SRC
+
+****** Default search
+
+#+BEGIN_SRC elisp
+(setq +rss:default-search-filter "@2-week-ago +unread -YOUTUBE")
+(setq-default elfeed-search-filter +rss:default-search-filter)
+#+END_SRC
+
+***** Bindings
+****** Search Mode Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after elfeed
+ :map elfeed-search-mode-map
+ :gn "r" #'elfeed-update
+ (:prefix-map ("g" . "Go")
+  :desc "Youtube" :gn "y" (cmd! (elfeed-search-set-filter "@2-week-ago +YOUTUBE +unread"))
+  :desc "Normal"  :gn "n" (cmd! (elfeed-search-set-filter "@2-week-ago -YOUTUBE +unread"))
+  :desc "Month"   :gn "m" (cmd! (elfeed-search-set-filter "@1-month-ago +unread"))))
+#+END_SRC
+
+****** Show Mode Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after elfeed
+ :map elfeed-search-mode-map
+ :gn "r" #'elfeed-update)
+#+END_SRC
+
+****** LocalLeader
+
+#+BEGIN_SRC elisp
+(map! :map (elfeed-search-mode-map elfeed-show-mode-map)
+      :localleader
+      :desc "Filter Hydra" "f" #'my::rss|hydra/body
+      :desc "Capture"      "c" #'my::rss::capture|capture
+      :desc "Open Eww"     "o" #'my::rss::visit-entry-eww
+      :desc "Visit"        "v" #'my::rss|visit-entry-dwim
+      (:prefix-map ("s" . "Search")
+       :desc "Unread" "u" #'my::rss/filter-by-unread))
+#+END_SRC
 
 * Needs to be restrucutred
 ** Packages
@@ -2477,14 +2715,6 @@ But this private repository host went down a few times, so I'll stick to github.
 (package! lsp-ui :disable t)
 (package! merlin-eldoc :disable t)
 #+END_SRC
-**** Elfeed-Goodies
-
-No need, screws with entry buffer position and header display...
-
-#+begin_src elisp
-(package! elfeed-goodies :disable t)
-#+end_src
-
 ** UI
 
 #+BEGIN_SRC elisp
@@ -3825,246 +4055,6 @@ pkgs.mkShell {
 
 ** Package Config
 *** RSS with Elfeed
-**** Utils
-***** Open
-
-#+BEGIN_SRC elisp
-(defun +rss|open ()
-  (interactive)
-  (unless (get-buffer "*elfeed-search*")
-    (setq elfeed-search-filter +rss:default-search-filter))
-  (elfeed)
-  (+rss|hydra/body))
-#+END_SRC
-
-***** Custom Filters
-****** All unread
-
-#+BEGIN_SRC elisp
-(defun +rss|search-unread ()
-  "Show elfeed articles tagged with unread"
-  (interactive)
-  (elfeed-search-set-filter "@6-months-ago +unread"))
-#+END_SRC
-
-***** Visit
-
-Open the current entry:
-- With the browser
-- Or if it's a youtube feed, open with [[*Elfeed MPV][mpv]]
-
-#+BEGIN_SRC elisp
-(defun +rss|visit-dwim ()
-  "Either open the current entry in eww or play it in mpv."
-  (interactive)
-  (message "")
-  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
-        (patterns +rss:mpv-patterns))
-    (while (and patterns (not (string-match (car +rss:mpv-patterns) (elfeed-entry-link entry))))
-      (setq patterns (cdr patterns)))
-    (if patterns
-        (+rss|play-with-mpv)
-      (if (eq major-mode 'elfeed-search-mode)
-          (elfeed-search-browse-url)
-        (elfeed-show-visit)))))
-#+END_SRC
-
-***** Open with EWW
-
-#+BEGIN_SRC elisp
-(defun +rss|open-eww ()
-  "Open the current entry with eww."
-  (interactive)
-  (add-hook 'eww-after-render-hook 'eww-readable nil t)
-  (let ((buffer (save-window-excursion
-                  (eww (elfeed-entry-link elfeed-show-entry))
-                  (current-buffer))))
-    (switch-to-buffer buffer)))
-#+END_SRC
-
-***** Wrap Elfeed
-
-#+BEGIN_SRC elisp
-(defun +rss|elfeed-wrap ()
-  "Enhances an elfeed entry's readability by wrapping it to a width of
-`fill-column' and centering it with `visual-fill-column-mode'."
-  (let ((inhibit-read-only t)
-        (inhibit-modification-hooks t))
-    (setq-local truncate-lines nil)
-    (setq-local shr-width 100)
-    (setq-local +zen-text-scale 0.9)
-    (mixed-pitch-mode)
-    (writeroom-mode)
-    (set-buffer-modified-p nil)))
-
-(add-hook 'elfeed-show-mode-hook #'+rss|elfeed-wrap)
-#+END_SRC
-
-***** Elfeed open video with MPV
-
-Play youtube entries via MPV
-
-#+BEGIN_SRC elisp
-(defvar +rss:mpv-patterns
-  '("youtu\\.?be")
-  "List of regexp to match against elfeed entry link to know
-whether to use mpv to visit the link.")
-
-(defun +rss|play-with-mpv ()
-  "Play entry link with mpv."
-  (interactive)
-  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
-        (url (elfeed-entry-link entry)))
-    (my::shell/mpv-youtube-url url)))
-#+END_SRC
-
-***** Capture Elfeed Entries
-
-#+BEGIN_SRC elisp
-(defun +rss/stringify-entry (entry)
-  (let ((title (->> (elfeed-entry-title entry)
-                    ;; Remove braces, they're just confusing to org links
-                    (s-replace "[" "")
-                    (s-replace "]" "")))
-        (url (elfeed-entry-link entry))
-        (author (->> (elfeed-meta entry :authors)
-                     car
-                     ((lambda (x) (plist-get x :name)))))
-        (tags (-some--> (elfeed-entry-tags entry)
-                (-remove-item 'unread it)
-                (-map #'symbol-name it)
-                (s-join ":" it)
-                (s-wrap it ":" ":"))))
-    (template "[[<<url>>][<<author>> - <<title>>]] <<(when tags tags)>>")))
-
-(defun +rss|capture ()
-  "Capture current entry of elfeed."
-  (interactive)
-  (let* ((entry (if (eq major-mode 'elfeed-show-mode)
-                   elfeed-show-entry
-                 (elfeed-search-selected :single)))
-         (org-entry (+rss/stringify-entry entry)))
-       (kill-new org-entry)
-       (if (s-contains? org-entry "youtube.com")
-           (org-capture nil "ew")
-        (org-capture nil "er"))))
-
-;; (map!
-;;  :after elfeed
-;;  :map (elfeed-show-mode-map elfeed-show-mode-map)
-;;  :local
-;;  :gn "Co" #'+rss|capture)
-#+END_SRC
-
-***** Update feeds when saving org-elfeed file
-
-When I save the elfeed org-mode file I want to automatically update the feed list.
-Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/elfeed-org.el::rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id)][elfeed package]].
-
-#+BEGIN_SRC elisp
-(add-hook 'after-save-hook (defun +org-efleed/update-feeds ()
-                             (when (and (eq major-mode 'org-mode)
-                                        (string= buffer-file-name (car rmh-elfeed-org-files)))
-                                (require 'elfeed)
-                                (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))))
-#+END_SRC
-
-***** Hydra
-
-#+BEGIN_SRC elisp
-(defun +rss/toggle-filter (tag)
-  "Toggle elfeed filter TAG or append to filters if non-existent."
-  (->> (or (-when-let* (((_ modi) (s-match (t! "\\_<\\([+-]\\)<<tag>>\\_>") elfeed-search-filter))
-                        (new-modi (if (string= modi "+") "-" "+")))
-             (s-replace-regexp (t! "\\_<\\<<modi>><<tag>>\\_>") (t! "<<new-modi>><<tag>>") elfeed-search-filter))
-           (s-append (t! " +<<tag>>") elfeed-search-filter))
-       (--tap (progn (setq elfeed-search-filter it)
-                     (elfeed-search-update--force)
-                     (-log (t! "Filter changed to: <<it>>"))))))
-
-(defun +rss|counsel-filter (&optional arg)
-  "Toggles a filter in elfeed."
-  (interactive "P")
-  (ivy-read (t! "Filter: <<elfeed-search-filter>>") (elfeed-db-get-all-tags)
-            :action #'+rss/toggle-filter
-            :caller #'+rss|counsel-filter))
-
-(defhydra +rss|hydra ()
-   "Elfeed"
-   ("j" (evil-next-line) "Next item" :column "Navigate")
-   ("k" (evil-previous-line) "Previous item")
-   ("t" (+rss|counsel-filter) "Tags" :column "Filter")
-   ("0" (elfeed-search-set-filter "@2-weeksago +unread") "Unread" :column "Favorites")
-   ("f" (elfeed-search-set-filter "@2-weeksago +unread -YOUTUBE -REDDIT") "Feeds")
-   ("y" (elfeed-search-set-filter "@2-weeksago +unread +YOUTUBE") "Youtube")
-   ("e" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =emacs") "Reddit: Emacs")
-   ("n" (elfeed-search-set-filter "@2-weeksago +unread +REDDIT =nixos") "Reddit: Nixos")
-   ("U" (elfeed-update) "Update" :column "actions")
-   ("u" (elfeed-search-untag-all-unread) "Mark as unread")
-   ("s" (elfeed-db-save) "Save DB")
-   ("v" (+rss|visit-dwim) "Visit")
-   ("q" nil "Quit" :color blue))
-#+END_SRC
-
-**** Config
-***** Org Elfeed File
-
-#+BEGIN_SRC elisp
-(setq rmh-elfeed-org-files (list (+org/expand-org-file-name "Elfeed/Elfeed.org")))
-#+END_SRC
-
-***** Disable sliced images
-
-These don't work if you have a big line-height.
-
-#+BEGIN_SRC elisp
-(setq +rss-enable-sliced-images nil)
-#+END_SRC
-
-***** Default Search
-
-#+BEGIN_SRC elisp
-(setq +rss:default-search-filter "@2-week-ago +unread -YOUTUBE")
-(setq-default elfeed-search-filter +rss:default-search-filter)
-
-#+END_SRC
-
-**** Bindings
-***** Search Mode Bindings
-
-#+BEGIN_SRC elisp
-(map!
- :after elfeed
- :map elfeed-search-mode-map
- :gn "r" #'elfeed-update
- (:prefix-map ("g" . "Go")
-  :desc "Youtube" :gn "y" (cmd! (elfeed-search-set-filter "@2-week-ago +YOUTUBE +unread"))
-  :desc "Normal"  :gn "n" (cmd! (elfeed-search-set-filter "@2-week-ago -YOUTUBE +unread"))
-  :desc "Month"   :gn "m" (cmd! (elfeed-search-set-filter "@1-month-ago +unread"))))
-#+END_SRC
-
-***** Show Mode Bindings
-
-#+BEGIN_SRC elisp
-(map!
- :after elfeed
- :map elfeed-search-mode-map
- :gn "r" #'elfeed-update)
-#+END_SRC
-
-***** LocalLeader
-
-#+BEGIN_SRC elisp
-(map! :map (elfeed-search-mode-map elfeed-show-mode-map)
-      :localleader
-      :desc "Filter Hydra" "f" #'+rss|hydra/body
-      :desc "Capture"      "c" #'+rss|capture
-      :desc "Open Eww"     "o" #'+rss|open-eww
-      :desc "Visit"        "v" #'+rss|visit-dwim
-      (:prefix-map ("s" . "Search")
-       :desc "Unread" "u" #'+rss|search-unread))
-#+END_SRC
-
 *** IRC
 
 #+BEGIN_SRC elisp
@@ -6253,7 +6243,7 @@ So deletes wont affect this register."
    :desc "Calc"            :g "c" #'calc
    :desc "Calc"            :g "C" #'=calendar
    :desc "Elfeed"          :g "e" #'+eshell/toggle
-   :desc "Eshell"          :g "E" #'+rss|open
+   :desc "Eshell"          :g "E" #'my::elfeed|open
    :desc "Irc"             :g "i" #'=irc
    :desc "Mail"            :g "m" #'=mu4e
    :desc "Proced"          :g "p" #'proced
