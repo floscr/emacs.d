@@ -680,7 +680,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 #+BEGIN_SRC elisp
 (require 'org-super-agenda)
 (org-super-agenda--def-auto-group parent-project "their parent project"
-  :key-sort-fn (lambda (a b) b)
+  :key-sort-fn (lambda (a b) (string< a b))
   :key-form (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
               (when (org-up-heading-safe)
                 (while (and
