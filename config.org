@@ -1269,33 +1269,18 @@ When enabling on read-only buffers it will throw an error."
 *** Emacs Lisp (Elisp) :ELISP:
 
 ** System :SYSTEM:
-*** [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] :BROWSER:
-
-Edit browser input fields with emacs.
-
-**** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! atomic-chrome)
-#+END_SRC
-**** Config
-
-#+begin_src elisp
-(use-package! atomic-chrome
-  :command (atomic-chrome-start-server))
-#+end_src
-** File Exploring (Dired) :DIRED:EMACS:
-*** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
+*** Packages
+**** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
 
 Explore disk usage in emacs
 
-**** Package
+***** Package
 
 #+BEGIN_SRC elisp :tangle "packages.el" :comments link
 (package! disk-usage)
 #+end_src
 
-**** Config
+***** Config
 
 #+BEGIN_SRC elisp
 (use-package! disk-usage
@@ -1304,6 +1289,38 @@ Explore disk usage in emacs
   (map! :map disk-usage-mode-map
         :n "-" #'disk-usage-up))
 #+END_SRC
+**** [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] :BROWSER:
+
+Edit browser input fields with emacs.
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! atomic-chrome)
+#+END_SRC
+***** Config
+
+#+begin_src elisp
+(use-package! atomic-chrome
+  :commands (atomic-chrome-start-server))
+#+end_src
+
+**** [[https://github.com/cbowdon/daemons.el][cbowdon/daemons.el: An Emacs UI for managing init system services]] :LINUX:
+
+Manage systemd from emacs
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! daemons)
+#+END_SRC
+***** Config
+
+#+begin_src elisp
+(use-package! daemons
+  :commands (daemons))
+#+end_src
+
 ** Git :GIT:
 *** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
 
@@ -1325,21 +1342,6 @@ Package override that fixes multiple remotes:
 :END:
 
 *** General Packages
-**** System
-***** Disk
-
-#+BEGIN_SRC elisp
-(package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
-#+END_SRC
-
-***** Systemd daemons
-
-Manage systemd from emacs
-
-#+BEGIN_SRC elisp
-(package! daemons)
-#+END_SRC
-
 **** Evil
 ***** [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
 
