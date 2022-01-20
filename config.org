@@ -2289,12 +2289,6 @@ Move to ivy candidate with =C-'=
 (package! proced-narrow)
 #+END_SRC
 
-***** Transmission Interface
-
-#+BEGIN_SRC elisp
-(package! transmission)
-#+END_SRC
-
 *** Language Packages
 **** Elisp
 
@@ -3767,18 +3761,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Transmission
-
-#+BEGIN_SRC elisp
-(use-package! transmission
-  :commands (transmission)
-  :config
-  (map! :map transmission-files-mode-map
-        :n "<C-return>" (cmd! (->> (transmission-files-file-at-point)
-                                   (f-parent)
-                                   (dired)))))
-#+END_SRC
-
 *** PDF
 
 #+BEGIN_SRC elisp
@@ -6370,7 +6352,6 @@ So deletes wont affect this register."
  (:desc "open" :prefix "o"
    :desc "Calc"            :g "c" #'calc
    :desc "Calc"            :g "C" #'=calendar
-   :desc "Transmission"    :g "D" #'transmission
    :desc "Elfeed"          :g "e" #'+eshell/toggle
    :desc "Eshell"          :g "E" #'+rss|open
    :desc "Irc"             :g "i" #'=irc
