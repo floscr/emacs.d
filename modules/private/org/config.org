@@ -686,8 +686,13 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                 (while (and
                         (not (org-get-todo-state))
                         (org-up-heading-safe)))
-                (->> (org-get-heading 'notags 'notodo)
-                     (substring-no-properties)))))
+                (-some->> (org-get-heading 'notags 'notodo)
+                     (substring-no-properties)
+                     (--id-when (org-get-todo-state))
+                     (s-concat (save-excursion
+                                 (org-up-heading-safe)
+                                 (org-get-heading 'notags 'notodo))
+                               " / ")))))
 
 (after! org-agenda
   (+org/add-to-agenda-custom-commands
