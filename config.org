@@ -4656,8 +4656,8 @@ I undo this option with the interactive prefix argument, which can be accessed v
 
 (map! :after dired
       :map dired-mode-map
-      :n "R" (cmd! (my::dired/dired-target-from-prefix #'dired-do-copy))
-      :n "C" (cmd! (my::dired/dired-target-from-prefix #'dired-do-rename)))
+      :n "R" (cmd! (my::dired/dired-target-from-prefix #'dired-do-rename))
+      :n "C" (cmd! (my::dired/dired-target-from-prefix #'dired-do-copy)))
 #+END_SRC
 
 **** Dired Paste DWIM
