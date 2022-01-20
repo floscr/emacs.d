@@ -348,7 +348,7 @@ module.exports = measure;
 (defun +MM|npm-start-kits-app (&optional arg)
   (interactive "P")
   (npm-mode)
-  (let* ((dir (or (->> (f-join (my/project-root) "src/apps/")
+  (let* ((dir (or (->> (f-join (my::file/project-root) "src/apps/")
                        (-id-when #'f-exists?))
                   (f-expand "~/Code/Meisterlabs/kits-2.0/src/apps/")))
          (root (doom-project-root dir))

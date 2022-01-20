@@ -39,252 +39,6 @@ I will prefer those functions over built in functions if they are nicer to use.
 
 I often use my helper function [[file:autoload.org::*Template Literals][(template)]] for template strings.
 
-* Packages
-:PROPERTIES:
-:header-args: :tangle "packages.el" :comments link
-:END:
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments no
-;; -*- no-byte-compile: t; -*-
-#+END_SRC
-
-** General Packages
-*** System
-**** Disk
-
-#+BEGIN_SRC elisp
-(package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
-#+END_SRC
-
-**** Systemd daemons
-
-Manage systemd from emacs
-
-#+BEGIN_SRC elisp
-(package! daemons)
-#+END_SRC
-
-*** Evil
-**** [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
-
-#+BEGIN_SRC elisp
-(package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
-#+END_SRC
-
-**** Evil motions
-
-#+BEGIN_SRC elisp
-(package! evil-replace-with-register)
-(package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
-#+END_SRC
-
-*** UI
-**** Narrow to an indirect buffer
-
-#+BEGIN_SRC elisp
-(package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
-#+END_SRC
-
-**** Colorized hex strings
-
-#+BEGIN_SRC elisp
-(package! rainbow-mode)
-#+END_SRC
-
-**** Centered buffers, doom does not support this anymore.
-
-#+BEGIN_SRC elisp
-(package! visual-fill-column)
-#+END_SRC
-**** Ivy Avy
-
-Move to ivy candidate with =C-'=
-
-#+BEGIN_SRC elisp
-(package! ivy-avy)
-#+END_SRC
-
-**** Doom Themes
-
-#+BEGIN_SRC elisp :tangle no
-(package! doom-themes
-  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
-  :pin nil)
-#+END_SRC
-
-*** External
-*** Dired
-**** Filter dired buffers
-
-#+BEGIN_SRC elisp
-(package! dired-narrow)
-(package! dired-filter)
-#+END_SRC
-
-**** Open subtrees directly in the current view
-
-#+BEGIN_SRC elisp
-(package! dired-subtree)
-#+END_SRC
-*** Programming
-
-#+BEGIN_SRC elisp
-(package! edbi)
-#+END_SRC
-
-*** Etc
-**** Narrow Proced Buffers
-
-#+BEGIN_SRC elisp
-(package! proced-narrow)
-#+END_SRC
-
-**** Transmission Interface
-
-#+BEGIN_SRC elisp
-(package! transmission)
-#+END_SRC
-
-** Language Packages
-*** Elisp
-
-[[https://github.com/countvajhula/symex.el][Symex]] for editing emacs lisp by structure.
-
-#+BEGIN_SRC elisp
-(package! symex)
-#+END_SRC
-
-*** Beancount
-
-#+BEGIN_SRC elisp
-(package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
-#+END_SRC
-
-*** Javascript
-**** Indium: Javascript debugging environment
-
-#+BEGIN_SRC elisp
-(package! indium)
-#+END_SRC
-
-**** Impatient Mode: Live editing of html
-
-#+BEGIN_SRC elisp
-(package! impatient-mode)
-#+END_SRC
-
-**** JS Import: Package importing
-
-#+BEGIN_SRC elisp
-(package! js-import :recipe (:host github :repo "floscr/js-import"))
-#+END_SRC
-
-**** Jest: Test Runner
-
-#+BEGIN_SRC elisp
-(package! jest :recipe (:host github :repo "floscr/emacs-jest"))
-#+END_SRC
-*** Nim
-
-#+BEGIN_SRC elisp
-(package! inim :recipe (:host github :repo "SerialDev/inim-mode"))
-#+END_SRC
-
-*** Graphql
-
-#+BEGIN_SRC elisp
-(package! graphql)
-#+END_SRC
-
-*** Git
-
-Show changes in current branch
-
-#+BEGIN_SRC elisp
-(package! git-lens)
-#+END_SRC
-
-Quickly download and browser repositories from github
-
-#+BEGIN_SRC elisp
-(package! elescope)
-#+END_SRC
-
-*** Ebooks
-
-#+BEGIN_SRC elisp
-(package! nov)
-#+END_SRC
-*** Literate Calc Mode
-
-Inline Calculation
-
-#+BEGIN_SRC elisp
-(package! literate-calc-mode)
-#+END_SRC
-
-** Overrides
-*** Doom Snippets
-
-#+BEGIN_SRC elisp
-(package! doom-snippets :ignore t)
-(package! my-doom-snippets
-  :recipe (:host github
-           :repo "floscr/doom-snippets"
-           :files ("*.el" "*")))
-#+END_SRC
-
-*** Posframe
-
-#+BEGIN_SRC elisp
-(package! flycheck-posframe :pin "6eea204138721f511051af5138326fecaad237b7")
-#+END_SRC
-
-*** Calfw
-Continuous events are broken in the current calfw source,
-also it seems it isn't maintained anymore.
-[[https://github.com/floscr/emacs-calfw/commit/3d17649c545423d919fd3bb9de2efe6dfff210fe][This Commit]] fixes the behavior.
-
-#+BEGIN_SRC elisp
-(package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-cal :disable t)
-(package! org-gcal :disable t)
-#+END_SRC
-
-*** json-proces-client
-
-This package is originally hosted on https://gitea.petton.fr/nico/json-process-client.git/
-But this private repository host went down a few times, so I'll stick to github.
-
-#+BEGIN_SRC elisp
-(package! json-process-client
-  :recipe (:host github :repo "emacsmirror/json-process-client")
-  :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
-#+END_SRC
-*** merlin
-
-#+BEGIN_SRC elisp
-(package! merlin :pin "e4791e22986993c36c3f5c91e8dff93494cc232e")
-#+END_SRC
-
-** Disabled Packages
-*** Remove those annoying LSP interface plugins
-
-#+BEGIN_SRC elisp
-(package! lsp-ui :disable t)
-(package! merlin-eldoc :disable t)
-#+END_SRC
-*** Elfeed-Goodies
-
-No need, screws with entry buffer position and header display...
-
-#+begin_src elisp
-(package! elfeed-goodies :disable t)
-#+end_src
-
-
 
 * My Standard Library
 :PROPERTIES:
@@ -522,6 +276,59 @@ The proram persists when emacs is closed."
     (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
     (my::shell/no-exit-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
+** Files
+*** Get file timestamp
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::file/timestamp (path)
+  (->> (file-attributes path)
+       (nth 5)))
+#+END_SRC
+
+*** Get the last modified file in directory
+:PROPERTIES:
+:SOURCE:   https://stackoverflow.com/a/30886283
+:END:
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::file/last-modified-file-in-dir (path)
+  (->> (f-entries path)
+       (-sort (lambda (a b) (not (time-less-p (my::file/timestamp a)
+                                              (my::file/timestamp b)))))
+       (car)))
+#+END_SRC
+
+*** Chmod current file
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::file|chmod-this-file ()
+  "Chmod +x the current file."
+  (interactive)
+  (shell-command (template "chmod +x \"<<(buffer-file-name)>>\"")))
+#+END_SRC
+*** Dir has hidden entry
+
+#+BEGIN_SRC elisp
+(defun my::file/dir-has-hidden-entries (dir)
+  "Check if a DIR has any hidden entries.
+Return the first found file when one is found."
+  (--find (s-starts-with-p "." (f-filename it)) (f-entries dir)))
+#+END_SRC
+
+*** Find project root
+
+#+BEGIN_SRC elisp
+(defun my::file/project-root ()
+  "Find the project root either via projectile (not available in certain buffers like dired)
+or manually traverse upwards until the .git directory is found."
+  (interactive)
+  (or
+   projectile-project-root
+   (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
+#+END_SRC
 ** Debugging / Logging
 *** Kill and Message
 
@@ -670,8 +477,256 @@ shuffling is done in place."
 #+END_SRC
 
 
-** Old
-*** Bookmarks
+
+
+
+* Needs to be restrucutred
+** Packages
+:PROPERTIES:
+:header-args: :tangle "packages.el" :comments link
+:END:
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments no
+;; -*- no-byte-compile: t; -*-
+#+END_SRC
+
+*** General Packages
+**** System
+***** Disk
+
+#+BEGIN_SRC elisp
+(package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
+#+END_SRC
+
+***** Systemd daemons
+
+Manage systemd from emacs
+
+#+BEGIN_SRC elisp
+(package! daemons)
+#+END_SRC
+
+**** Evil
+***** [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
+
+#+BEGIN_SRC elisp
+(package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
+#+END_SRC
+
+***** Evil motions
+
+#+BEGIN_SRC elisp
+(package! evil-replace-with-register)
+(package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
+#+END_SRC
+
+**** UI
+***** Narrow to an indirect buffer
+
+#+BEGIN_SRC elisp
+(package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
+#+END_SRC
+
+***** Colorized hex strings
+
+#+BEGIN_SRC elisp
+(package! rainbow-mode)
+#+END_SRC
+
+***** Centered buffers, doom does not support this anymore.
+
+#+BEGIN_SRC elisp
+(package! visual-fill-column)
+#+END_SRC
+***** Ivy Avy
+
+Move to ivy candidate with =C-'=
+
+#+BEGIN_SRC elisp
+(package! ivy-avy)
+#+END_SRC
+
+***** Doom Themes
+
+#+BEGIN_SRC elisp :tangle no
+(package! doom-themes
+  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
+  :pin nil)
+#+END_SRC
+
+**** External
+**** Dired
+***** Filter dired buffers
+
+#+BEGIN_SRC elisp
+(package! dired-narrow)
+(package! dired-filter)
+#+END_SRC
+
+***** Open subtrees directly in the current view
+
+#+BEGIN_SRC elisp
+(package! dired-subtree)
+#+END_SRC
+**** Programming
+
+#+BEGIN_SRC elisp
+(package! edbi)
+#+END_SRC
+
+**** Etc
+***** Narrow Proced Buffers
+
+#+BEGIN_SRC elisp
+(package! proced-narrow)
+#+END_SRC
+
+***** Transmission Interface
+
+#+BEGIN_SRC elisp
+(package! transmission)
+#+END_SRC
+
+*** Language Packages
+**** Elisp
+
+[[https://github.com/countvajhula/symex.el][Symex]] for editing emacs lisp by structure.
+
+#+BEGIN_SRC elisp
+(package! symex)
+#+END_SRC
+
+**** Beancount
+
+#+BEGIN_SRC elisp
+(package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
+#+END_SRC
+
+**** Javascript
+***** Indium: Javascript debugging environment
+
+#+BEGIN_SRC elisp
+(package! indium)
+#+END_SRC
+
+***** Impatient Mode: Live editing of html
+
+#+BEGIN_SRC elisp
+(package! impatient-mode)
+#+END_SRC
+
+***** JS Import: Package importing
+
+#+BEGIN_SRC elisp
+(package! js-import :recipe (:host github :repo "floscr/js-import"))
+#+END_SRC
+
+***** Jest: Test Runner
+
+#+BEGIN_SRC elisp
+(package! jest :recipe (:host github :repo "floscr/emacs-jest"))
+#+END_SRC
+**** Nim
+
+#+BEGIN_SRC elisp
+(package! inim :recipe (:host github :repo "SerialDev/inim-mode"))
+#+END_SRC
+
+**** Graphql
+
+#+BEGIN_SRC elisp
+(package! graphql)
+#+END_SRC
+
+**** Git
+
+Show changes in current branch
+
+#+BEGIN_SRC elisp
+(package! git-lens)
+#+END_SRC
+
+Quickly download and browser repositories from github
+
+#+BEGIN_SRC elisp
+(package! elescope)
+#+END_SRC
+
+**** Ebooks
+
+#+BEGIN_SRC elisp
+(package! nov)
+#+END_SRC
+**** Literate Calc Mode
+
+Inline Calculation
+
+#+BEGIN_SRC elisp
+(package! literate-calc-mode)
+#+END_SRC
+
+*** Overrides
+**** Doom Snippets
+
+#+BEGIN_SRC elisp
+(package! doom-snippets :ignore t)
+(package! my-doom-snippets
+  :recipe (:host github
+           :repo "floscr/doom-snippets"
+           :files ("*.el" "*")))
+#+END_SRC
+
+**** Posframe
+
+#+BEGIN_SRC elisp
+(package! flycheck-posframe :pin "6eea204138721f511051af5138326fecaad237b7")
+#+END_SRC
+
+**** Calfw
+Continuous events are broken in the current calfw source,
+also it seems it isn't maintained anymore.
+[[https://github.com/floscr/emacs-calfw/commit/3d17649c545423d919fd3bb9de2efe6dfff210fe][This Commit]] fixes the behavior.
+
+#+BEGIN_SRC elisp
+(package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-cal :disable t)
+(package! org-gcal :disable t)
+#+END_SRC
+
+**** json-proces-client
+
+This package is originally hosted on https://gitea.petton.fr/nico/json-process-client.git/
+But this private repository host went down a few times, so I'll stick to github.
+
+#+BEGIN_SRC elisp
+(package! json-process-client
+  :recipe (:host github :repo "emacsmirror/json-process-client")
+  :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
+#+END_SRC
+**** merlin
+
+#+BEGIN_SRC elisp
+(package! merlin :pin "e4791e22986993c36c3f5c91e8dff93494cc232e")
+#+END_SRC
+
+*** Disabled Packages
+**** Remove those annoying LSP interface plugins
+
+#+BEGIN_SRC elisp
+(package! lsp-ui :disable t)
+(package! merlin-eldoc :disable t)
+#+END_SRC
+**** Elfeed-Goodies
+
+No need, screws with entry buffer position and header display...
+
+#+begin_src elisp
+(package! elfeed-goodies :disable t)
+#+end_src
+
+** Bookmarks
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
 
@@ -786,7 +841,7 @@ If found, show an ivy window with the bookmarks"
      ("k" +bookmarks/local/kill "Remove")
      ("r" +bookmarks/local/rename "Rename"))))
 #+END_SRC
-*** UI
+** UI
 
 #+BEGIN_SRC elisp
 (defun +ui/adjust-font (size line-space &optional font-family weight)
@@ -831,8 +886,8 @@ If found, show an ivy window with the bookmarks"
    ((string= (system-name) "Florians-MacBook-Air.local")
     (+ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
-*** Window management
-**** Toggle split style
+** Window management
+*** Toggle split style
 :PROPERTIES:
 :SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
 :END:
@@ -866,7 +921,7 @@ If found, show an ivy window with the bookmarks"
           (if this-win-2nd (other-window 1))))))
 #+END_SRC
 
-**** Toggle dedicated
+*** Toggle dedicated
 :PROPERTIES:
 :SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
 :END:
@@ -885,65 +940,6 @@ buffer in current window."
     (set-window-dedicated-p window (not is-locked))
     (message (template "<<(current-buffer)>>: <<txt>>!"))))
 #+END_SRC
-*** Files
-**** File Timestamp
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun +file/timestamp (path)
-  (->> (file-attributes path)
-       (nth 5)))
-#+END_SRC
-
-**** Get the latest file in directory
-:PROPERTIES:
-:SOURCE:   https://stackoverflow.com/a/30886283
-:END:
-
-Get the last created file in a directory.
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun +file/latest-file-in-dir (path)
-  (->> (f-entries path)
-       (-sort (lambda (a b) (not (time-less-p (+file/timestamp a)
-                                              (+file/timestamp b)))))
-       (car)))
-#+END_SRC
-
-**** Chmod this file
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun +file|chmod-this-file ()
-  "Chmod +x the current file."
-  (interactive)
-  (shell-command (template "chmod +x \"<<(buffer-file-name)>>\"")))
-#+END_SRC
-**** Has hidden entry
-
-#+BEGIN_SRC elisp
-(defun f-has-hidden-entry (dir)
-  "Check if a DIR has any hidden entries.
-Return the first found file when one is found."
-  (--find (s-starts-with-p "." (f-filename it)) (f-entries dir)))
-#+END_SRC
-
-**** Find Git Root
-
-#+BEGIN_SRC elisp
-(defun my/project-root ()
-  "Find the project root either via projectile (not available in certain buffers like dired)
-or manually traverse upwards until the .git directory is found."
-  (interactive)
-  (or
-   projectile-project-root
-   (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
-#+END_SRC
-* New Configuration
-
-
-
 
 * New Configuration
 ** Emacs :EMACS:
@@ -4318,7 +4314,7 @@ in that case throw a warning.
   (interactive)
   (->> (dired-get-marked-files)
        (-map (lambda (x)
-               (let ((cmd (if (f-has-hidden-entry x)
+               (let ((cmd (if (my::file/dir-has-hidden-entries x)
                               "mv -n ./* ./.* ../"
                             "mv -n ./* ../")))
                  (shell-command (t! "cd \"<<x>>\"; <<cmd>>"))
@@ -5615,7 +5611,7 @@ the projects cwd to find a file.
   (interactive)
   (let ((default-directory
           (or (+workspace/workspace-project-root)
-              (my/project-root))))
+              (my::file/project-root))))
     (magit-status)))
 #+END_SRC
 
