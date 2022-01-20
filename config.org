@@ -524,8 +524,18 @@ And I will load them on system start:
 ** Custom Variables
 *** Directories
 
+**** Downloads
+
 #+BEGIN_SRC elisp
 (defcustom my::directories:downloads-dir "~/Downloads"
+  "Downloads Directory"
+  :type 'string)
+#+END_SRC
+
+**** Repositories
+
+#+BEGIN_SRC elisp
+(defcustom my::directories:repositories-dir "~/Code/Repositories"
   "Downloads Directory"
   :type 'string)
 #+END_SRC
