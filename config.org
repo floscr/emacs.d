@@ -2573,6 +2573,14 @@ These don't work if you have a big line-height.
       :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
       :channels ("#emacs" "#nixos"))))
 #+End_SRC
+*** [[https://www.gnu.org/software/emacs/manual/html_mono/eww.html][EWW web browser]]
+**** Config
+***** Set the max page width
+
+#+BEGIN_SRC elisp
+(setq shr-width 100)
+#+END_SRC
+
 ** Calendar :ORGANIZATION:DOOM:
 *** Functions
 **** Filtered Calendars
@@ -4289,11 +4297,6 @@ pkgs.mkShell {
 
 ** Package Config
 *** EWW Web Browser
-**** Set the max page width
-
-#+BEGIN_SRC elisp
-(setq shr-width 100)
-#+END_SRC
 *** Jest
 
 #+BEGIN_SRC elisp
