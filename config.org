@@ -1159,7 +1159,6 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
   :commands (literate-calc-mode literate-calc-minor-mode))
 #+END_SRC
 
-
 **** [[https://github.com/joostkremers/writeroom-mode][joostkremers/writeroom-mode: Writeroom-mode: distraction-free writing for Emacs.]] :DOOM:
 ***** Config
 
@@ -1650,6 +1649,24 @@ When enabling on read-only buffers it will throw an error."
   (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
 #+end_src
 *** Emacs Lisp (Elisp) :ELISP:
+**** Packages
+***** [[https://github.com/countvajhula/symex.el][symex]]
+
+An evil way to edit Lisp symbolic expressions (symexes) as trees in Emacs
+
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! symex)
+#+END_SRC
+
+****** Config
+
+#+BEGIN_SRC elisp
+(use-package! symex
+  :commands (symex-mode symex-mode-interface))
+#+END_SRC
+
 *** MySQL
 
 ** System :SYSTEM:
@@ -2887,7 +2904,6 @@ Move to ivy candidate with =C-'=
 [[https://github.com/countvajhula/symex.el][Symex]] for editing emacs lisp by structure.
 
 #+BEGIN_SRC elisp
-(package! symex)
 #+END_SRC
 
 **** Javascript
@@ -4317,13 +4333,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Symex
-
-#+BEGIN_SRC elisp
-(use-package! symex
-  :commands (symex-mode symex-mode-interface))
-#+END_SRC
-
 *** Indium
 
 #+BEGIN_SRC elisp
