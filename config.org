@@ -316,6 +316,21 @@ Packages and utilities needed for this config.
   (message "Copied to clipboard: %s" x))
 #+END_SRC
 
+*** Without undo
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defmacro my/without-undo (&rest forms)
+  "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
+Taken from http://www.emacswiki.org/emacs/UndoCommands with some
+modifications."
+  `(let* ((buffer-undo-list)
+          (modified (buffer-modified-p))
+          (inhibit-read-only t))
+     (unwind-protect
+         (progn ,@forms)
+       (set-buffer-modified-p modified)) ()))
+#+END_SRC
 ** Old
 *** Bookmarks
 
@@ -588,21 +603,6 @@ or manually traverse upwards until the .git directory is found."
 #+END_SRC
 *** Utils
 **** General
-***** Without undo
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defmacro without-undo (&rest forms)
-  "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
-Taken from http://www.emacswiki.org/emacs/UndoCommands with some
-modifications."
-  `(let* ((buffer-undo-list)
-          (modified (buffer-modified-p))
-          (inhibit-read-only t))
-     (unwind-protect
-         (progn ,@forms)
-       (set-buffer-modified-p modified)) ()))
-#+END_SRC
 ***** Convert bool to enabled/disabled string
 
 #+BEGIN_SRC elisp
@@ -1938,13 +1938,13 @@ Saving and committing keeps the indentation in the source buffer.
 (defun +indirect-indent/restore-indentation ()
   (when (and (bound-and-true-p +indirect-indent-mode)
              (not (eq +indirect-indent 0)))
-    (without-undo
+    (my/without-undo
       (indent-rigidly (point-min) (point-max) (+ +indirect-indent)))))
 
 (defun +indirect-indent/remove-indentation ()
   (when (and (bound-and-true-p +indirect-indent-mode)
              (not (eq +indirect-indent 0)))
-    (without-undo
+    (my/without-undo
       (indent-rigidly (point-min) (point-max) (- +indirect-indent)))))
 
 (defun +indirect-indent|edit (beg end &optional with-mode)
@@ -1953,7 +1953,7 @@ Saving and committing keeps the indentation in the source buffer.
   (edit-indirect-region beg end t)
   (let ((indent (indent-rigidly--current-indentation (point-min) (point-max))))
     (unless (eq indent 0)
-      (without-undo
+      (my/without-undo
        (indent-rigidly (point-min) (point-max) (- indent)))
       ;; Local variables get undone when calling a mode
       ;; So we have to define the major mode before
