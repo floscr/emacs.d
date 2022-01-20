@@ -2260,7 +2260,6 @@ Press =gr= with a following motion character like =w=.
 #+END_SRC
 
 
-
 ** Pdf :PDF:
 *** Config
 
@@ -2295,7 +2294,6 @@ Press =gr= with a following motion character like =w=.
   (setq flycheck-disabled-checkers '(nim-nimsuggest))
   (flycheck-select-checker 'nim-1-6-0))
 #+END_SRC
-
 
 
 ** Web :WEB:
