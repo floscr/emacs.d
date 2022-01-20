@@ -659,397 +659,64 @@ The optional argument NEW-WINDOW is not used."
 
 
 
-* Custom Packages
-** TODO Custom Bookmarks
-*** Config
-**** Disable Emacs bookmarks
-
-#+BEGIN_SRC elisp
-(setq bookmark-save-flag nil)
-
-;; Can't set to nil as bookmarks are still set up to hooks
-;; Instead I'll keep it in this file which will be trashed on every reboot
-(setq bookmark-file "/tmp/emacs-bookmarks-file")
-#+END_SRC
-**** Main Bookmarks
-
-#+begin_src elisp
-(setq
- +bookmarks:main
- '(((file . "~/.config/doom/modules/private/work/config.org")
-    (name . "Config: Work")
-    (goto . "* Configuration")
-    (goto-bol . t)
-    (disable-relocation . t))
-   ((file . "~/.config/dotfiles/config/xmonad/xmonad.hs")
-    (name . "Xmonad"))
-   ((file . "~/.config/doom/autoload.org")
-    (name . "Config: Autoloads"))
-   ((file . "~/.config/doom/modules/private/org/config.org")
-    (name . "Config: Org"))
-   ((fn . (lambda () (find-file +bookmarks:local-bookmarks-file)))
-    (name . "Bookmarks: Local"))
-   ((file . "~/.config/doom/config.org")
-    (name . "Bookmarks: Main")
-    (goto . "*** Main Bookmarks")
-    (goto-bol . t))
-   ((fn . (lambda () (find-file (getenv "HISTFILE"))))
-    (name . "Shell History")
-    (goto-bol . t))
-   ((file . "~/.config/doom/modules/private/work/config.org")
-    (name . "Bookmarks: Work")
-    (goto . "*** Bookmarks")
-    (goto-bol . t))
-   ((file . "/etc/dotfiles/modules/desktop/common.nix")
-    (name . "Mimeapps")
-    (goto . "### Mimeapps")
-    (goto-bol . t))
-   ((file . "~/.config/weechat/xfer")
-    (name . "Weechat Xfer"))
-   ((file . "/run/media/floscr/tolino")
-    (name . "Tolino"))
-   ((org . "[[orgit:/ssh:mm-web-vagrant:/home/vagrant/mindmeister/][/ssh:mm-web-vagrant:/home/vagrant/mindmeister/ (magit-status)]]")
-    (name . "Vagrant: mindmeister magit status"))
-   ((org . "[[orgit:/ssh:mm-web-vagrant:/home/vagrant/mindmeister-web/][/ssh:mm-web-vagrant:/home/vagrant/mindmeister-web/ (magit-status)]]")
-    (name . "Vagrant: mindmeister-web magit status"))
-   ((file . "~/Documents/Scans/Scans.org")
-    (name . "Scans"))
-   ((fn . org-capture-goto-last-stored)
-    (name . "Capture: Last Stored Marker"))))
-#+end_src
-*** Functions
-
-#+BEGIN_SRC elisp
-(defun +bookmarks|main ()
-  (interactive)
-  (+bookmarks (-concat +bookmarks:main (+bookmarks/local/list))))
-#+END_SRC
-
-Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
-
-#+BEGIN_SRC elisp
-(defvar +bookmarks:local-bookmarks-file nil)
-(setq +bookmarks:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
-
-(defun +bookmarks/find-bookmarks (x &optional &key other-window?)
-  "Jump to a X relative to the project root, go to character POS."
-  (require 'link-hint)
-  (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
-               (item (car x)))
-    (let* ((file (-some->> (alist-get 'file item)
-                   (--when (alist-get 'relative item)
-                           (f-join (projectile-project-root) it))))
-           (buffer-is-open (when file (get-file-buffer file))))
-      (when file
-        (funcall find-fn file)
-        (+workspaces-add-current-buffer-h))
-      (when-let ((fn (alist-get 'fn item)))
-        (funcall fn))
-
-      ;; org item
-      (-some--> (alist-get 'org item)
-        (link-hint--open-org-link it)
-        ((lambda ()
-           (when (alist-get 'narrow item)
-             (org-narrow-to-element)))))
-
-      ;; goto, disable-relocation
-      ;; Go to a location matched by regex
-      ;; Unless disable-relocation is enabled and the file is already visited
-      (-some--> (alist-get 'goto item)
-        (--id-when (or (not buffer-is-open)
-                       (not (alist-get 'disable-relocation item))) it)
-        (--tap (progn
-                 (goto-char (point-min))
-                 (cond
-                  ((eq 'integer (type-of it))
-                   (goto-line it))
-                  ((eq 'string (type-of it))
-                   (search-forward it))))
-               it))
-      ;; action
-      ;; Execute a function after find file
-      (-some--> (alist-get 'action item)
-        (call-interactively it))
-      ;; goto-bol
-      ;; Go to the beginning, since the regex search
-      ;; will leave the cursor at the end of the search
-      (-some--> (alist-get 'goto-bol item)
-        (evil-first-non-blank)))))
-
-(defun +bookmarks/local/save (xs)
-  "Save an alist as json to the +bookmarks:local-bookmarks-file"
-  (->> xs
-       (json-encode)
-       ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file)))))
-
-(defun +bookmarks/find-bookmarks-other-window (x)
-  "Open bookmark X in other window, used with ivy action 'j'."
-  (+bookmarks/find-bookmarks (cdr x) :other-window? t))
-
-(defun +bookmarks/local|save ()
-  (interactive)
-  (let ((entry `((file . ,(buffer-file-name))
-                 (goto . ,(line-number-at-pos))
-                 (name . ,(read-string "Bookmark Name: ")))))
-    (->> (+bookmarks/local/list)
-      (-append entry)
-      (+bookmarks/local/save))))
-
-(defun +bookmarks/local/kill (x)
-  (->>
-   (--remove (cl-equalp (car (cdr x)) it) (+bookmarks/local/list))
-   (+bookmarks/local/save)))
-
-(defun +bookmarks/local/rename (x)
-  (require 'a)
-  (-let ((item (car (cdr x))))
-    (-log (a-get (cdr item) :name))
-    (->>
-     (+bookmarks/local/list)
-     (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
-     (+bookmarks/local/save))))
-
-(defun +bookmarks/local/list ()
-  (-some->> +bookmarks:local-bookmarks-file
-    (-id-when #'f-exists?)
-    (json-read-file)
-    (-map 'identity)))
-
-;;;###autoload
-(defun +bookmarks (&optional bookmarks-list)
-  "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
-If found, show an ivy window with the bookmarks"
-  (interactive)
-  (-if-let*
-      ((bookmarks
-        (or bookmarks-list
-            (+bookmarks/local/list)))
-       (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
-      (ivy-read "Bookmark: " bookmarks
-                :action (lambda (x) (+bookmarks/find-bookmarks (cdr x)))
-                :caller #'+bookmarks|find-bookmarks)
-    (user-error "No bookmarks file found at project root.")))
-
-(after! ivy
-  (ivy-set-actions
-   '+bookmarks|find-bookmarks
-   '(("j" +bookmarks/find-bookmarks-other-window "open in other window")
-     ("k" +bookmarks/local/kill "Remove")
-     ("r" +bookmarks/local/rename "Rename"))))
-#+END_SRC
-** TODO LY: Evil Lisp Navigation
-
-A navigation system for lisp languages that I'm comfortable with,
-like evil but with a more =sexp= based navigation.
-
-Alternatives I've used:
-
-- [[https://github.com/countvajhula/symex.el][countvajhula/symex.el]]
-  My main inspiration.
-  Too tree based for my taste, I after have to think about the code structure before I can execute actions.
-
-*** Minor Mode
-
-#+BEGIN_SRC elisp
-(set-frame-parameter nil 'internal-border-width 15)
-(defvar +ly-mode-map (make-sparse-keymap))
-
-(define-minor-mode +ly-mode
-  "Open org headlines in an indirect window buffer."
-  :keymap +ly-mode-map)
-
-(map! :map +ly-mode-map
-      :n "gj"     #'evil-next-line
-      :n "gk"     #'evil-previous-line
-      :n "M-j"    #'+ly|forward-line
-      :n "M-k"    #'+ly|backward-line
-      :n "M-u"    #'+ly|up-atom
-      :n "M-f"    #'+ly|forward-atom
-      :n "M-b"    #'+ly|backward-atom
-      :n "M-l"    #'+ly|forward-brace
-      :n "M-h"    #'+ly|backward-brace
-      :n "M-,"    #' symex-shift-backward
-      :n "M-."    #'symex-shift-forward
-      :n "M-o"    #'symex-open-line-after
-      :ni "<C-return>" #'+ly|add-atom
-      :n "M-RET" (cmd!
-                  (parinfer-toggle-mode)
-                  (parinfer-lispy:newline)
-                  (parinfer-toggle-mode))
-      :n "M-Y" (cmd!
-                (symex-yank)
-                (symex-paste-after)
-                (symex-insert-newline)))
-
-;; HACK: map not working intially
-(defun +ly/activate-mode-hook ()
-  (require 'symex)
-  (evil-insert-state)
-  (evil-normal-state))
-
-;; Mappings only get applied after reinserting normal mode
-(add-hook '+ly-mode-hook #'+ly/activate-mode-hook)
-#+END_SRC
-
-*** Utils
-**** Sexp Navigation
-
-#+BEGIN_SRC elisp
-(setq +ly:brace-regexp "([^() ]")
-(setq +ly:atom-regexp "[^() ]")
-
-(defun +ly|forward-atom ()
-  "Go to next atom."
-  (interactive)
-  (require 'symex)
-  (symex-traverse-forward)
-  (while (or (eq ?\( (char-after)))
-    (symex-traverse-forward)))
-
-(defun +ly|backward-atom ()
-  "Go to next atom."
-  (interactive)
-  (require 'symex)
-  (symex-traverse-backward)
-  (while (or (eq ?\( (char-after)))
-    (symex-traverse-backward)))
-
-(defun +ly|forward-brace ()
-  "Go to next sexp brace."
-  (interactive)
-  (require 'symex)
-  (symex-go-up)
-  (search-forward-regexp +ly:brace-regexp nil t)
-  (backward-char 2))
-
-(defun +ly|backward-brace ()
-  "Go to previous sexp brace."
-  (interactive)
-  (require 'symex)
-  (unless (eq ?\( (char-after))
-    (symex-go-down))
-  (search-backward-regexp +ly:brace-regexp nil t))
-
-(defun +ly|up-atom ()
-  "Go up the tree"
-  (interactive)
-  (require 'symex)
-  (symex-go-down))
-#+END_SRC
-
-**** Line Navigation
-
-#+BEGIN_SRC elisp
-(defun +ly|forward-line ()
-  "Function docstring"
-  (interactive)
-  (next-line 1)
-  (goto-char (point-at-bol))
-  (search-forward-regexp "\s*[^\s]" nil t)
-  (backward-char 1))
-
-(defun +ly|backward-line ()
-  "Function docstring"
-  (interactive)
-  (previous-line 1)
-  (goto-char (point-at-bol))
-  (search-forward-regexp "\s*[^\s]" nil t)
-  (backward-char 1))
-#+END_SRC
-**** List Modification
-
-***** Add to list
-
-#+BEGIN_SRC elisp
-(defun +ly/inside-string? ()
-  "Returns non-nil if inside string, else nil.
-Result depends on syntax table's string quote character."
-  (nth 3 (syntax-ppss)))
-
-(defun +ly|add-atom (&optional same-line?)
-  "Add atom in the current sexp. If the cursor is under a string match the type and insert another string."
-  (interactive "P")
-  (let ((was-parinfer-list-mode (eq 'paren parinfer--mode)))
-    (up-list 1 t)
-    (unless same-line?
-      (parinfer-lispy:newline))
-    (when same-line? (insert " "))
-    (cond ((+ly/inside-string?)
-           (insert (t! "\"\""))
-           (backward-char 1)))
-    (evil-insert-state)))
-#+END_SRC
-
-*** Hydra
-
-#+BEGIN_SRC elisp
-(defhydra +ly|hydra ()
-   "Ly Navigation"
-   ("f" (+ly|forward-brace) "Forward ()" :column "Navigate")
-   ("b" (+ly|backward-brace) "Backward ()")
-   ("f" (+ly|forward-brace) "forward ()" :column "Navigate")
-   ("b" (+ly|backward-brace) "Backward ()")
-   ("j" (+ly|forward-line) "Next Line")
-   ("k" (+ly|backward-line) "Backward Line"))
-#+END_SRC
-
-** TODO Indirect Indent Mode
-
-Adds minor mode for editing indented source code in an indirect buffer,
-with the indentation reset to 0.
-Saving and committing keeps the indentation in the source buffer.
-
-#+BEGIN_SRC elisp
-(defvar-local +indirect-indent 0)
-
-(defvar +indirect-indent-mode-map (make-sparse-keymap))
-
-(define-minor-mode +indirect-indent-mode
-  "Editing indented source code without the indent in an indirect buffer."
-  :keymap +indirect-indent-mode-map)
-
-(map! :map +indirect-indent-mode-map
-      :gni "s-s" #'edit-indirect-save)
-
-(add-hook! +indirect-indent-mode
-           (defun +indirect-indent/init-hook ()
-             (setq header-line-format
-                   "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")))
-
-(advice-add #'edit-indirect-commit :before #'+indirect-indent/restore-indentation)
-(advice-add #'edit-indirect-save :after #'+indirect-indent/remove-indentation)
-(advice-add #'edit-indirect-save :before #'+indirect-indent/restore-indentation)
-
-(defun +indirect-indent/restore-indentation ()
-  (when (and (bound-and-true-p +indirect-indent-mode)
-             (not (eq +indirect-indent 0)))
-    (my/without-undo
-      (indent-rigidly (point-min) (point-max) (+ +indirect-indent)))))
-
-(defun +indirect-indent/remove-indentation ()
-  (when (and (bound-and-true-p +indirect-indent-mode)
-             (not (eq +indirect-indent 0)))
-    (my/without-undo
-      (indent-rigidly (point-min) (point-max) (- +indirect-indent)))))
-
-(defun +indirect-indent|edit (beg end &optional with-mode)
-  "Edit script in an indirect buffer."
-  (interactive)
-  (edit-indirect-region beg end t)
-  (let ((indent (indent-rigidly--current-indentation (point-min) (point-max))))
-    (unless (eq indent 0)
-      (my/without-undo
-       (indent-rigidly (point-min) (point-max) (- indent)))
-      ;; Local variables get undone when calling a mode
-      ;; So we have to define the major mode before
-      (funcall with-mode)
-      (+indirect-indent-mode 1)
-      (setq +indirect-indent indent))))
-#+END_SRC
-
-
 * New Package Configuration
+** Package Overrides / Disabling / Pinning
+
+Packages that I haven't yet moved to their structure.
+
+*** Doom Snippets
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! doom-snippets :ignore t)
+(package! my-doom-snippets
+  :recipe (:host github
+           :repo "floscr/doom-snippets"
+           :files ("*.el" "*")))
+#+END_SRC
+
+*** Posframe
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! flycheck-posframe :pin "6eea204138721f511051af5138326fecaad237b7")
+#+END_SRC
+
+*** Calfw
+Continuous events are broken in the current calfw source,
+also it seems it isn't maintained anymore.
+[[https://github.com/floscr/emacs-calfw/commit/3d17649c545423d919fd3bb9de2efe6dfff210fe][This Commit]] fixes the behavior.
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
+(package! calfw-cal :disable t)
+(package! org-gcal :disable t)
+#+END_SRC
+
+*** json-proces-client
+
+This package is originally hosted on https://gitea.petton.fr/nico/json-process-client.git/
+But this private repository host went down a few times, so I'll stick to github.
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! json-process-client
+  :recipe (:host github :repo "emacsmirror/json-process-client")
+  :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
+#+END_SRC
+
+*** Remove those annoying LSP interface plugins
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! lsp-ui :disable t)
+#+END_SRC
+
+*** merlin
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! merlin :pin "e4791e22986993c36c3f5c91e8dff93494cc232e")
+(package! merlin-eldoc :disable t)
+#+END_SRC
+
 ** Emacs :EMACS:
 *** Libraries
 
@@ -1069,6 +736,18 @@ Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
 #+END_SRC
 
 ** Doom :DOOM:
+*** Themes
+
+**** Custom doom themes package
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! doom-themes
+  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
+  :pin nil)
+#+END_SRC
+
 *** Workspaces
 **** Functions
 ***** Switch to
@@ -1254,26 +933,6 @@ Press =gr= with a following motion character like =w=.
 #+END_SRC
 ** Text Editing :TEXT:
 *** Packages
-**** [[https://github.com/btford/write-good][btford/write-good: Naive linter for English prose]] :LINTING:DOOM:
-***** Config
-****** Disable doom defined hooks for writegood mode
-
-#+BEGIN_SRC elisp
-(use-package! writegood-mode
-  :hook 'nil)
-#+END_SRC
-
-****** Disable ~writegood-mode~ with ~spell-fu~ mode
-
-#+BEGIN_SRC elisp
-(defun +spell-fu/activate-writegood-mode-hook ()
-  "Toggle writegood mode with spell-fu mode."
-  (cond
-   (spell-fu-mode (writegood-mode 1))
-   (t (writegood-mode -1))))
-
-(add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
-#+END_SRC
 **** [[https://github.com/sulami/literate-calc-mode.el][literate-calc-mode]]
 
 ***** Package
@@ -1289,7 +948,10 @@ Press =gr= with a following motion character like =w=.
   :commands (literate-calc-mode literate-calc-minor-mode))
 #+END_SRC
 
-**** [[https://github.com/joostkremers/writeroom-mode][joostkremers/writeroom-mode: Writeroom-mode: distraction-free writing for Emacs.]] :DOOM:
+**** [[https://github.com/joostkremers/writeroom-mode][writeroom-mode]]
+
+Distraction free writing
+
 ***** Config
 
 ****** Custom Design :FIX:
@@ -1321,6 +983,14 @@ Press =gr= with a following motion character like =w=.
 
 (add-hook! 'writeroom-mode-hook #'my::writeroom/setup)
 #+END_SRC
+**** [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]]
+
+Centered buffers, doom does not support this anymore.
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! visual-fill-column)
+#+END_SRC
+
 ** Programming :PROGRAMMING:
 *** General Purpose
 **** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
@@ -1493,8 +1163,13 @@ Launch using [[*Launch][my::impatient-mode|launch]].
 
 *** Database :DATABASE:
 **** Packages
+***** TODO [[https://github.com/kiwanami/emacs-edbi][edbi]]
 
-***** TODO [[https://github.com/kiwanami/emacs-edbi][kiwanami/emacs-edbi: Database Interface for Emacs Lisp]]
+Emacs database layer interface
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! edbi)
+#+END_SRC
 
 ****** Config
 
@@ -1860,6 +1535,12 @@ No namespace here, so it matches the other commmands
   "Run the 'npm install' command."
   (interactive)
   (npm-mode--exec-process "npm ci"))
+#+END_SRC
+***** [[https://github.com/vermiculus/graphql.el][graphql]]
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! graphql)
 #+END_SRC
 
 **** Functions
@@ -3141,6 +2822,12 @@ Trigger with ~g/.~ in ~normal-mode~.
                           (dired-revert))
     (kbd "gh") 'dired-subtree-up))
 #+END_SRC
+**** [[https://github.com/Fuco1/dired-hacks#dired-subtree][dired-hacks/dired-subtree]]
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! dired-subtree)
+#+END_SRC
+
 *** Config
 **** Listing Switches / Sorting
 
@@ -3628,6 +3315,12 @@ Manage systemd from emacs
   :commands (daemons))
 #+end_src
 **** [[https://doc.endlessparentheses.com/Fun/proced-mode.html][proced]] :UNIX:
+***** Packages
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! proced-narrow)
+#+END_SRC
+
 ***** Functions
 ****** Shorten nixos path names in proced
 
@@ -3712,6 +3405,12 @@ but I dont want them added to my ~projectile-known-projects~.
 
 Major mode for reading EPUBs in Emacs
 
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! nov)
+#+END_SRC
+
 ****** Functions
 ******* Setup function
 
@@ -3738,8 +3437,32 @@ Major mode for reading EPUBs in Emacs
 #+END_SRC
 
 ** Spell Checking
-*** Flyspell
-**** Defer flyspell until first ~evil-insert-state~
+*** Packages
+**** [[https://github.com/btford/write-good][btford/write-good]] :LINTING:DOOM:
+
+Naive linter for english prose.
+
+***** Config
+****** Disable doom defined hooks for writegood mode
+
+#+BEGIN_SRC elisp
+(use-package! writegood-mode
+  :hook 'nil)
+#+END_SRC
+
+****** Disable ~writegood-mode~ with ~spell-fu~ mode
+
+#+BEGIN_SRC elisp
+(defun +spell-fu/activate-writegood-mode-hook ()
+  "Toggle writegood mode with spell-fu mode."
+  (cond
+   (spell-fu-mode (writegood-mode 1))
+   (t (writegood-mode -1))))
+
+(add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
+#+END_SRC
+**** Flyspell
+***** Defer flyspell until first ~evil-insert-state~
 
 Flyspell most of the time is an annoyance when opening a file just for reading.
 I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
@@ -4595,6 +4318,7 @@ error in process filter: End of buffer
     ("clear"  "clear-scrollback")))
 #+END_SRC
 
+
 * Needs to be restrucutred
 ** Packages
 :PROPERTIES:
@@ -4609,138 +4333,14 @@ error in process filter: End of buffer
 (package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
 #+END_SRC
 
-***** Colorized hex strings
-
-
-***** Centered buffers, doom does not support this anymore.
-
-#+BEGIN_SRC elisp
-(package! visual-fill-column)
-#+END_SRC
-***** Ivy Avy
-
-Move to ivy candidate with =C-'=
-
-#+BEGIN_SRC elisp
-(package! ivy-avy)
-#+END_SRC
-
-***** Doom Themes
-
-#+BEGIN_SRC elisp :tangle no
-(package! doom-themes
-  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
-  :pin nil)
-#+END_SRC
-
-**** Dired
-***** Open subtrees directly in the current view
-
-#+BEGIN_SRC elisp
-(package! dired-subtree)
-#+END_SRC
-**** Programming
-
-#+BEGIN_SRC elisp
-(package! edbi)
-#+END_SRC
-
-**** Etc
-***** Narrow Proced Buffers
-
-#+BEGIN_SRC elisp
-(package! proced-narrow)
-#+END_SRC
-
 *** Language Packages
-**** Elisp
 
-[[https://github.com/countvajhula/symex.el][Symex]] for editing emacs lisp by structure.
-
-#+BEGIN_SRC elisp
-#+END_SRC
-
-**** Javascript
-***** Impatient Mode: Live editing of html
-
-#+BEGIN_SRC elisp
-#+END_SRC
-
-***** Jest: Test Runner
-
-#+BEGIN_SRC elisp
-#+END_SRC
 **** Nim
 
 #+BEGIN_SRC elisp
 (package! inim :recipe (:host github :repo "SerialDev/inim-mode"))
 #+END_SRC
 
-**** Graphql
-
-#+BEGIN_SRC elisp
-(package! graphql)
-#+END_SRC
-
-
-**** Ebooks
-
-#+BEGIN_SRC elisp
-(package! nov)
-#+END_SRC
-*** Overrides
-**** Doom Snippets
-
-#+BEGIN_SRC elisp
-(package! doom-snippets :ignore t)
-(package! my-doom-snippets
-  :recipe (:host github
-           :repo "floscr/doom-snippets"
-           :files ("*.el" "*")))
-#+END_SRC
-
-**** Posframe
-
-#+BEGIN_SRC elisp
-(package! flycheck-posframe :pin "6eea204138721f511051af5138326fecaad237b7")
-#+END_SRC
-
-**** Calfw
-Continuous events are broken in the current calfw source,
-also it seems it isn't maintained anymore.
-[[https://github.com/floscr/emacs-calfw/commit/3d17649c545423d919fd3bb9de2efe6dfff210fe][This Commit]] fixes the behavior.
-
-#+BEGIN_SRC elisp
-(package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-cal :disable t)
-(package! org-gcal :disable t)
-#+END_SRC
-
-**** json-proces-client
-
-This package is originally hosted on https://gitea.petton.fr/nico/json-process-client.git/
-But this private repository host went down a few times, so I'll stick to github.
-
-#+BEGIN_SRC elisp
-(package! json-process-client
-  :recipe (:host github :repo "emacsmirror/json-process-client")
-  :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
-#+END_SRC
-**** merlin
-
-#+BEGIN_SRC elisp
-(package! merlin :pin "e4791e22986993c36c3f5c91e8dff93494cc232e")
-#+END_SRC
-
-*** Disabled Packages
-**** Remove those annoying LSP interface plugins
-
-#+BEGIN_SRC elisp
-(package! lsp-ui :disable t)
-(package! merlin-eldoc :disable t)
-#+END_SRC
 ** UI
 
 #+BEGIN_SRC elisp
