@@ -1922,12 +1922,16 @@ I want buffers added whenever I visit a buffer.
 #+END_SRC
 ** Evil :EVIL:
 *** Packages
-**** INACTIVE [[https://github.com/tarao/evil-plugins][tarao/evil-plugins]]
+**** [[https://github.com/tarao/evil-plugins][tarao/evil-plugins]]
+
+Used for [[*Little Word Motion][evil-little-word]].
+
 ***** Package
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
 #+END_SRC
+
 **** [[https://github.com/emacsmirror/evil-replace-with-register][evil-replace-with-register: Replace with register motion]]
 
 Replace the current selection with a register.
@@ -1935,7 +1939,7 @@ Press =gr= with a following motion character like =w=.
 
 ***** Package
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! evil-replace-with-register)
 #+END_SRC
 
@@ -1958,9 +1962,10 @@ Press =gr= with a following motion character like =w=.
 
 ***** Package
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
 #+END_SRC
+
 **** [[https://github.com/hlissner/evil-snipe][evil-snipe: 2-char searching ala vim-sneak & vim-seek, for evil-mode]]
 ***** Config
 ****** Repeat snipe after further key press
