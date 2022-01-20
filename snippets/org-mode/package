@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: Config Package
+# key: p
+# --
+
+**** ${1:package}
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! $1)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! $1)
+#+END_SRC

@@ -1126,18 +1126,16 @@ which I name after the matching url.
  (default +bindings +snippets +evil-commands)
 
  :private
- ;; rss
  system
  literate
  reason
  work
- (email +org +gmail)
  (org
   +org-reading-list
   +org-tags
   +org-pinboard))
-
 #+END_SRC
+
 *** Garbage collection
 
 Set it to =32 MiB=.

@@ -7,3 +7,8 @@
 #+END_SRC
 
 * Config
+
+Run a simple mathematic operation on a number under the cursor.
+
+#+BEGIN_SRC elisp
+#+END_SRC
