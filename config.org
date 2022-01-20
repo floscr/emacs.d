@@ -2231,6 +2231,23 @@ Press =gr= with a following motion character like =w=.
 
 
 
+** Pdf :PDF:
+*** Config
+
+**** TODO Fix midnight colors for doom-one theme
+
+#+BEGIN_SRC elisp
+;; Fix midnight colors for doom-one theme
+(setq pdf-view-midnight-colors '("#BBC2CD" . "#282C34"))
+#+END_SRC
+
+*** Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :map pdf-occur-buffer-mode-map
+ :gn [tab] (cmd! (pdf-occur-goto-occurrence t)))
+#+END_SRC
 
 * Needs to be restrucutred
 ** Packages
@@ -3761,14 +3778,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** PDF
-
-#+BEGIN_SRC elisp
-(map!
- :map pdf-occur-buffer-mode-map
- :gn [tab] (cmd! (pdf-occur-goto-occurrence t)))
-#+END_SRC
-
 *** Flycheck
 **** Disabled Checkers
 ***** Elisp
@@ -5340,13 +5349,6 @@ brew cask install font-liberation-sans
   "Run the 'npm install' command."
   (interactive)
   (npm-mode--exec-process "npm ci"))
-#+END_SRC
-
-*** PDF Tools
-
-#+BEGIN_SRC elisp
-;; Fix midnight colors for doom-one theme
-(setq pdf-view-midnight-colors '("#BBC2CD" . "#282C34"))
 #+END_SRC
 
 *** Magit Smerge Mode
