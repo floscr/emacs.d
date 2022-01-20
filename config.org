@@ -40,7 +40,6 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 - [[*Template Literals][Template Literals]]
   ~template~ or ~t~ macros
 
-
 * Tangle Headers
 
 #+BEGIN_SRC emacs-lisp
@@ -491,7 +490,6 @@ shuffling is done in place."
   (s-replace-regexp (t! "^<<(getenv \"HOME\")>>") "~" path))
 #+END_SRC
 
-
 * Custom Packages
 ** TODO Custom Bookmarks
 *** Config
@@ -922,7 +920,6 @@ Mostly used to edit the macro registers ~q~.
       (save-excursion
         (insert register)))))
 #+END_SRC
-
 
 * Default Configuration
 ** Temp
@@ -1518,7 +1515,6 @@ Fix a paragraph that was formatted to a fill column.
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 #+END_SRC
-
 
 * Package Configuration
 ** Package Overrides / Disabling / Pinning
@@ -5628,7 +5624,6 @@ Take me to the literate source file when using ~find-function~ etc.
 #+END_SRC
 ** Hydras
 
-
 * Bindings
 ** General
 
@@ -6600,7 +6595,6 @@ Since the minibuffer has no evil mode, i've got these bindings to help out:
 ;; (define-key! :keymaps +default-minibuffer-maps
 ;;   "C-w" 'sp-backward-delete-word)
 #+END_SRC
-
 
 * Hacks
 ** Override default browser
