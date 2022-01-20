@@ -142,3 +142,62 @@ Manually add an expense to the Cash Book.
 (package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
 #+END_SRC
 
+
+* Counsel Grep Buffers
+:PROPERTIES:
+:ARCHIVE_TIME: 2022-01-21 Fri 13:43
+:ARCHIVE_FILE: ~/.config/doom/config.org
+:ARCHIVE_OLPATH: New Package Configuration/Completion/ivy / counsel/Functions
+:ARCHIVE_CATEGORY: config
+:ARCHIVE_ITAGS: COMPLETION
+:END:
+
+#+BEGIN_SRC elisp
+(defun +ivy|search-buffers (buffer-list)
+  "Grep workspace buffers."
+  (interactive)
+  (-->
+   (or buffer-list (+workspace-buffer-list))
+   (cl-remove-if-not #'buffer-file-name it)
+   (-map #'buffer-file-name it)
+   (-map #'shell-quote-argument it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun +ivy/search-buffer-list (&optional buffer-list)
+  (--> (or buffer-list ivy--old-cands)
+   (-log it)
+   (-map #'shell-quote-argument it)
+   (--map (f-join (doom-project-root) it) it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun counsel-grep-files (buffer-file-names)
+  "Grep for a string in the file visited by the current buffer."
+  (interactive)
+  (counsel-require-program counsel-grep-base-command
+   (setq counsel-grep-command
+         (format counsel-grep-base-command "%s" buffer-file-names))
+   (message "%s" counsel-grep-command)
+   (let ((init-point (point))
+         res)
+     (unwind-protect
+         (setq res (ivy-read "grep: " #'counsel-grep-function
+                             :dynamic-collection t
+                             :require-match t
+                             :keymap counsel-grep-map
+                             :history 'counsel-grep-history
+                             :re-builder #'ivy--regex
+                             :action #'counsel-grep-action
+                             :caller 'counsel-grep))
+       (unless res
+         (goto-char init-point))))))
+
+(after! ivy
+  (ivy-set-actions
+   '+git|ivy-changed-files
+   '(("/" (lambda (&optional arg)
+            (+ivy/search-buffer-list))
+      "Grep Forward"))))
+#+END_SRC
+

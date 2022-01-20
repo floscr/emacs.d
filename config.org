@@ -2485,57 +2485,6 @@ Press =gr= with a following motion character like =w=.
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
 #+END_SRC
 
-***** Counsel Grep Buffers
-
-#+BEGIN_SRC elisp
-(defun +ivy|search-buffers (buffer-list)
-  "Grep workspace buffers."
-  (interactive)
-  (-->
-   (or buffer-list (+workspace-buffer-list))
-   (cl-remove-if-not #'buffer-file-name it)
-   (-map #'buffer-file-name it)
-   (-map #'shell-quote-argument it)
-   (s-join " " it)
-   (counsel-grep-files it)))
-
-(defun +ivy/search-buffer-list (&optional buffer-list)
-  (--> (or buffer-list ivy--old-cands)
-   (-log it)
-   (-map #'shell-quote-argument it)
-   (--map (f-join (doom-project-root) it) it)
-   (s-join " " it)
-   (counsel-grep-files it)))
-
-(defun counsel-grep-files (buffer-file-names)
-  "Grep for a string in the file visited by the current buffer."
-  (interactive)
-  (counsel-require-program counsel-grep-base-command
-   (setq counsel-grep-command
-         (format counsel-grep-base-command "%s" buffer-file-names))
-   (message "%s" counsel-grep-command)
-   (let ((init-point (point))
-         res)
-     (unwind-protect
-         (setq res (ivy-read "grep: " #'counsel-grep-function
-                             :dynamic-collection t
-                             :require-match t
-                             :keymap counsel-grep-map
-                             :history 'counsel-grep-history
-                             :re-builder #'ivy--regex
-                             :action #'counsel-grep-action
-                             :caller 'counsel-grep))
-       (unless res
-         (goto-char init-point))))))
-
-(after! ivy
-  (ivy-set-actions
-   '+git|ivy-changed-files
-   '(("/" (lambda (&optional arg)
-            (+ivy/search-buffer-list))
-      "Grep Forward"))))
-#+END_SRC
-
 ***** Counsel External Drives
 
 #+BEGIN_SRC elisp
