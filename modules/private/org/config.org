@@ -930,20 +930,44 @@ When supplied with numerical argument, take the number as the limit."
 *** Bookmarks
 
 #+BEGIN_SRC elisp
+(defun my::org/org-element-link (link)
+  "Returns a cons pair of an org-element LINK
+(const url title)
+title can be nil."
+  (cons
+   (org-element-property :raw-link link)
+   (-when-let* ((begin (org-element-property :contents-begin link))
+                (end (org-element-property :contents-end link)))
+     (buffer-substring-no-properties begin end))))
+
+(defun my::org/org-tree-first-link (tree)
+  "Get the first link instance in a tree."
+  (-some->>
+      (org-element-map tree 'link #'identity)
+      (car)
+      (my::org/org-element-link)))
+
+(defun my::org/heading-with-link (heading)
+  (let ((heading-link? (-some->> (org-ml-get-property :title heading)
+                         (org-ml-match '(:first link)))))
+    (if heading-link?
+        (my::org/org-element-link (car heading-link?))
+      (cons (car (my::org/org-tree-first-link heading))
+            (org-ml-get-property :raw-value heading)))))
+
 (defun +org|refile-to-bookmarks ()
   "Refile the current headline to bookmarks with url in properties."
   (interactive)
   (require 'org-ml)
-  (let* ((item (org-ml-parse-this-headline))
-         (headline (org-ml-get-property :raw-value item))
-         (headline-match (s-match "^\\[\\[\\(.+\\)\\]\\[\\(.*\\)\\]\\]" headline))
-         (new-item
-          (--> item
-               (org-ml-set-property :level 2 it)
-               (org-ml-headline-set-title! (nth 2 headline-match) nil it)
-               (org-ml-set-property :todo-keyword nil it)
-               (org-ml-headline-set-node-property "URL" (nth 1 headline-match) it)
-               (org-ml-to-string it))))
+  (-let* ((item (org-ml-parse-this-headline))
+          ((url . title) (my::org/heading-with-link item))
+          (new-item
+           (--> item
+                (org-ml-set-property :level 2 it)
+                (org-ml-headline-set-title! title nil it)
+                (org-ml-set-property :todo-keyword nil it)
+                (org-ml-headline-set-node-property "URL" url it)
+                (org-ml-to-string it))))
     (call-interactively #'org-cut-subtree)
     (find-file +org:bookmarks-file)
     (goto-char (point-max))
