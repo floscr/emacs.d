@@ -1022,7 +1022,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
           ("alignSelf"                +MM-Rules-flex-align)
           ("flexGrow"                 '+MM-Rules-number)
           ("flexShrink"               '+MM-Rules-number)
-          ("stretch"                  'noop)
+          ("stretch"                  'my/noop)
           ("flexWrap"                 '+MM-Rules-number)
 
           ("display"                  '("flex" "block" "inline-flex" "inline-block"))
@@ -1056,11 +1056,11 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
           ("marginRight"              '+MM-Rules-number)
 
           ("position"                 '("absolute" "relative" "fixed"))
-          ("absoluteHorizontalCenter" 'noop)
-          ("absoluteHorizontalCenter" 'noop)
-          ("absoluteCenter"           'noop)
-          ("absoluteHorizontalCenter" 'noop)
-          ("absoluteVerticalCenter"   'noop)
+          ("absoluteHorizontalCenter" 'my/noop)
+          ("absoluteHorizontalCenter" 'my/noop)
+          ("absoluteCenter"           'my/noop)
+          ("absoluteHorizontalCenter" 'my/noop)
+          ("absoluteVerticalCenter"   'my/noop)
           ("top"                      '+MM-Rules-number)
           ("left"                     '+MM-Rules-number)
           ("right"                    '+MM-Rules-number)
@@ -1083,7 +1083,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
           ("textDecoration"           '+MM-Rules-number)
           ("textShadow"               '+MM-Rules-number)
           ("textTransform"            '+MM-Rules-number)
-          ("truncate"                 'noop)
+          ("truncate"                 'my/noop)
           ("whiteSpace"               '("normal" "nowrap" "pre" "pre-line" "pre-wrap" "initial" "initial"))
           ("wordBreak"                '("normal" "break-all" "keep-all" "break-word" "initial" "inherit"))
           ("wordWrap"                 '("normal" "break-word" "initial" "unsert"))
@@ -1178,7 +1178,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (further-input (cond
                           ;; Rules without an attribute
                           ;; .absoluteHorizontalCenter()
-                          ((eq rule-value #'noop) nil)
+                          ((eq rule-value #'my/noop) nil)
                           ;; Rules with numbers
                           ;; .top(10)
                           ((-contains? (list '+MM-Rules-number '+MM-Rules-pixel '+MM-Rules-percent '+MM-Rules-deg) rule-value)
