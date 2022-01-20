@@ -1720,7 +1720,7 @@ Package override that fixes multiple remotes:
   (defalias '+git|clone 'elescope-checkout))
 #+END_SRC
 
-** Dired :DIRED:
+** Dired :DIRED:ORGANIZATION:
 *** Packages
 **** [[https://github.com/Fuco1/dired-hacks#dired-filter][dired-hacks - dired-filter]]
 
@@ -2565,6 +2565,149 @@ These don't work if you have a big line-height.
       :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
       :channels ("#emacs" "#nixos"))))
 #+End_SRC
+** Calendar :ORGANIZATION:DOOM:
+*** Functions
+**** Filtered Calendars
+***** Personal (Without Work)
+
+#+BEGIN_SRC elisp
+(defun my::calendar::filtered|personal (&rest args)
+  (interactive)
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
+***** Personal (Just Family)
+
+#+BEGIN_SRC elisp
+(defun my::calendar::filtered|just-family (&rest args)
+  (interactive)
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+FAMILY|+BIRTHDAY")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
+***** Personal (Just Birthdays)
+
+#+BEGIN_SRC elisp
+(defun my::calendar::filtered|birthdays (&rest args)
+  (interactive)
+  (let ((org-agenda-files `(,(+org/expand-org-file-name "Main/contacts.org")))
+        (org-agenda-skip-function '(+org/agenda-skip-without-match "+BIRTHDAY")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
+***** Personal (Without Family)
+
+#+BEGIN_SRC elisp
+(defun my::calendar::filtered|no-family (&rest args)
+  (interactive)
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-FAMILY-WORK")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+
+***** Work
+
+#+BEGIN_SRC elisp
+(defun my::calendar::filtered|work (&rest args)
+  (interactive)
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+WORK")))
+      (call-interactively #'=calendar)))
+#+END_SRC
+*** Config
+**** Custom Holidays (Austrian)
+
+Emacs comes with a lot of custom calendars that I don't want.
+This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar.html][How to set up a german emacs calendar]].
+
+#+begin_src elisp
+(use-package! calfw
+  :config
+  (setq my::calendar::holidays:general
+        '((holiday-fixed 1 1 "New Years")
+          (holiday-fixed 5 1 "1st Mai")))
+  (setq my::calendar::holidays:austria
+        `((holiday-fixed 1 6 "Heilige drei Könige")
+          (holiday-fixed 5 1 "Staatsfeiertag")
+          (holiday-fixed 8 15 "Mariä Himmelfahrt")
+          (holiday-fixed 10 26 "Nationalfeiertag")
+          (holiday-fixed 11 1 "Allerheiligen")
+          (holiday-fixed 12 8 "Mariä Empfängnis")
+          (holiday-fixed 12 24 "Weihnachten")
+          (holiday-fixed 12 25 "Christtag")
+          (holiday-fixed 12 26 "Stefanitag")
+          (holiday-easter-etc -2 "Karfreitag")
+          (holiday-easter-etc 0 "Ostersonntag")
+          (holiday-easter-etc 1 "Ostermontag")
+          (holiday-easter-etc 39 "Christi Himmelfahrt")
+          (holiday-easter-etc 49 "Pfingstsonntag")
+          (holiday-easter-etc 50 "Pfingstmontag")
+          (holiday-easter-etc 60 "Fronleichnam")))
+  (setq calendar-holidays (append
+                           my::calendar::holidays:general
+                           my::calendar::holidays:austria
+                           holiday-solar-holidays)))
+#+end_src
+
+
+
+***** General Holidays
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq general-holidays
+        '((holiday-fixed 1 1 "New Years")
+          (holiday-fixed 5 1 "1st Mai"))))
+#+END_SRC
+
+***** Austrian Holidays
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq austrian-holidays
+        `((holiday-fixed 1 6 "Heilige drei Könige")
+          (holiday-fixed 5 1 "Staatsfeiertag")
+          (holiday-fixed 8 15 "Mariä Himmelfahrt")
+          (holiday-fixed 10 26 "Nationalfeiertag")
+          (holiday-fixed 11 1 "Allerheiligen")
+          (holiday-fixed 12 8 "Mariä Empfängnis")
+          (holiday-fixed 12 24 "Weihnachten")
+          (holiday-fixed 12 25 "Christtag")
+          (holiday-fixed 12 26 "Stefanitag")
+          ;; variable
+          (holiday-easter-etc -2 "Karfreitag")
+          (holiday-easter-etc 0 "Ostersonntag")
+          (holiday-easter-etc 1 "Ostermontag")
+          (holiday-easter-etc 39 "Christi Himmelfahrt")
+          (holiday-easter-etc 49 "Pfingstsonntag")
+          (holiday-easter-etc 50 "Pfingstmontag")
+          (holiday-easter-etc 60 "Fronleichnam"))))
+#+END_SRC
+
+***** Set calendars
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq calendar-holidays
+        (append
+          general-holidays
+          austrian-holidays
+          holiday-solar-holidays)))
+#+END_SRC
+
+**** General
+
+#+BEGIN_SRC elisp
+(after! calfw
+  :config
+  (setq calendar-week-start-day 1)
+  (setq calendar-time-display-form
+        '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
+  (setq calendar-abbrev-length 2))
+#+END_SRC
+
 
 * Needs to be restrucutred
 ** Packages
@@ -4072,119 +4215,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Calendar
-**** Utils
-***** Filtered Calendars
-****** Personal (Without Work)
-
-#+BEGIN_SRC elisp
-(defun +calendar|personal (&rest args)
-  (interactive)
-  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK")))
-      (call-interactively #'=calendar)))
-#+END_SRC
-
-****** Personal (Just Family)
-
-#+BEGIN_SRC elisp
-(defun +calendar|just-family (&rest args)
-  (interactive)
-  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+FAMILY|+BIRTHDAY")))
-      (call-interactively #'=calendar)))
-#+END_SRC
-
-****** Personal (Just Birthdays)
-
-#+BEGIN_SRC elisp
-(defun +calendar|birthdays (&rest args)
-  (interactive)
-  (let ((org-agenda-files `(,(+org/expand-org-file-name "Main/contacts.org")))
-        (org-agenda-skip-function '(+org/agenda-skip-without-match "+BIRTHDAY")))
-      (call-interactively #'=calendar)))
-#+END_SRC
-
-****** Personal (Without Family)
-
-#+BEGIN_SRC elisp
-(defun +calendar|no-family (&rest args)
-  (interactive)
-  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-FAMILY-WORK")))
-      (call-interactively #'=calendar)))
-#+END_SRC
-
-****** Work
-
-#+BEGIN_SRC elisp
-(defun +calendar|work (&rest args)
-  (interactive)
-  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+WORK")))
-      (call-interactively #'=calendar)))
-#+END_SRC
-
-**** Config
-***** Calendars
-
-Emacs comes with a lot of custom calendars that I don't want.
-This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar.html][How to set up a german emacs calendar]].
-
-****** General Holidays
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq general-holidays
-        '((holiday-fixed 1 1 "New Years")
-          (holiday-fixed 5 1 "1st Mai"))))
-#+END_SRC
-
-****** Austrian Holidays
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq austrian-holidays
-        `((holiday-fixed 1 6 "Heilige drei Könige")
-          (holiday-fixed 5 1 "Staatsfeiertag")
-          (holiday-fixed 8 15 "Mariä Himmelfahrt")
-          (holiday-fixed 10 26 "Nationalfeiertag")
-          (holiday-fixed 11 1 "Allerheiligen")
-          (holiday-fixed 12 8 "Mariä Empfängnis")
-          (holiday-fixed 12 24 "Weihnachten")
-          (holiday-fixed 12 25 "Christtag")
-          (holiday-fixed 12 26 "Stefanitag")
-          ;; variable
-          (holiday-easter-etc -2 "Karfreitag")
-          (holiday-easter-etc 0 "Ostersonntag")
-          (holiday-easter-etc 1 "Ostermontag")
-          (holiday-easter-etc 39 "Christi Himmelfahrt")
-          (holiday-easter-etc 49 "Pfingstsonntag")
-          (holiday-easter-etc 50 "Pfingstmontag")
-          (holiday-easter-etc 60 "Fronleichnam"))))
-#+END_SRC
-
-****** Set calendars
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq calendar-holidays
-        (append
-          general-holidays
-          austrian-holidays
-          holiday-solar-holidays)))
-#+END_SRC
-
-***** General
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq calendar-week-start-day 1)
-  (setq calendar-time-display-form
-        '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
-  (setq calendar-abbrev-length 2))
-#+END_SRC
-
 *** Calc
 **** Additional Units
 
