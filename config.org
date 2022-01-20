@@ -5519,7 +5519,7 @@ whether to use mpv to visit the link.")
     (switch-to-buffer buffer)))
 #+END_SRC
 
-***** Wrap Elfeed
+***** Pretty elfeed
 
 #+BEGIN_SRC elisp
 (defun my::rss/wrap-entry ()
