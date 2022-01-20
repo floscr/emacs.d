@@ -3817,9 +3817,10 @@ Major mode for reading EPUBs in Emacs
   (flycheck-select-checker 'nim-1-6-0))
 #+END_SRC
 ** Completion :COMPLETION:
-*** [[https://github.com/abo-abo/swiper][ivy / counsel]]
-**** Actions
-***** Search from ~counsel-find-file~
+*** Packages
+**** [[https://github.com/abo-abo/swiper][ivy / counsel]]
+***** Actions
+****** Search from ~counsel-find-file~
 
 #+begin_src elisp
 (defun my::counsel/search-from-find-file-counsel (x)
@@ -3832,8 +3833,8 @@ Major mode for reading EPUBs in Emacs
   '(("s" my::counsel/search-from-find-file-counsel "Search in directory")))
  (ivy-add-actions 'counsel-find-file my::counsel::action:search-from-find-file))
 #+end_src
-**** Functions
-***** Project File Jump
+***** Functions
+****** Project File Jump
 
 #+BEGIN_SRC elisp
 (defun my::counsel|project-file-jump (x)
@@ -3842,7 +3843,7 @@ Major mode for reading EPUBs in Emacs
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
 #+END_SRC
 
-***** External Drives
+****** External Drives
 
 #+BEGIN_SRC elisp
 (defun my::counsel|mounted-drives ()
@@ -3851,7 +3852,7 @@ Major mode for reading EPUBs in Emacs
   (counsel-find-file (concat "/run/media/" (user-login-name) "/")))
 #+END_SRC
 
-***** Search project for symbol at point :FIX:ADVICE:
+****** Search project for symbol at point :FIX:ADVICE:
 
 Doom doesn't double escape ~|~ which is needed for ~rg~.
 Original [[file:~/.emacs.d/modules/config/default/autoload/search.el::defun +default/search-project-for-symbol-at-point][+default/search-project-for-symbol-at-point]]
@@ -3877,15 +3878,14 @@ If prefix ARG is set, prompt for a known project to search from."
 (advice-add #'+default/search-project-for-symbol-at-point :override #'my::ivy|search-project-for-symbol-at-point)
 #+end_src
 
-
-**** Config
-***** Always show actions in hydra.
+***** Config
+****** Always show actions in hydra.
 
 #+BEGIN_SRC elisp
 (setq ivy-read-action-function #'ivy-hydra-read-action)
 #+END_SRC
 
-***** Banish mouse cursor :HACK:
+****** Banish mouse cursor :HACK:
 
 The cursor will steal the focus from ivy-posframe, breaking ivy completely...
 
@@ -3896,7 +3896,7 @@ which is really unacceptable, but works for now.
 (setq posframe-mouse-banish t)
 #+END_SRC
 
-**** Bindings
+***** Bindings
 
 Adds general bindings to ivy.
 ~MOD + ↩~ will insert the current item and continue with a new instance of the same ivy buffer.
@@ -3918,6 +3918,75 @@ Find file on enter press for ~ivy-occur-mode~
 (map! :map ivy-occur-mode-map
       :gni "RET" #'ivy-occur-press-and-switch)
 #+END_SRC
+**** [[https://company-mode.github.io/][company]]
+***** Functions
+****** Complete line for all buffers
+
+Complete a whole line with all lines from buffers matching the current major-mode.
+
+#+BEGIN_SRC elisp
+(defun my::company/list-buffers-with-mode (modes)
+  "Get all buffers that match MODES"
+  (--filter
+   (with-current-buffer it (-contains? (doom-enlist modes) major-mode))
+   (buffer-list)))
+
+(defun my::company/list-buffers-with-major-mode ()
+  "Get all buffers matching the current major-mode
+Has built in aliases"
+  (let ((javascript-modes (list 'rjsx-mode 'js2-mode)))
+    (pcase major-mode
+      ('rjsx-mode
+       (my::company/list-buffers-with-mode javascript-modes))
+      ('js2-mode
+       (my::company/list-buffers-with-mode javascript-modes))
+      (_
+       (my::company/list-buffers-with-mode major-mode)))))
+
+(defun my::company/complete-line-all-buffers (command &optional arg &rest ignored)
+  "`company-mode' completion backend that completes whole-lines, akin to vim's
+C-x C-l."
+  (interactive (list 'interactive))
+  (require 'company)
+  (pcase command
+    (`interactive (company-begin-backend 'my::company/complete-line-all-buffers))
+    (`prefix      (company-grab-line "^[\t\s]*\\(.+\\)" 1))
+    (`candidates
+     (all-completions
+      arg
+      (funcall (-compose
+                #'-uniq
+                #'-flatten
+                (lambda (xs)
+                  (--map (with-current-buffer it
+                           (split-string
+                            (replace-regexp-in-string
+                             "^[\t\s]+" ""
+                             (buffer-substring-no-properties (point-min) (point-max)))
+                            "\\(\r\n\\|[\n\r]\\)" t)) xs)))
+               (my::company/list-buffers-with-major-mode))))))
+#+END_SRC
+
+Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ (:prefix "C-x"
+   :i "C-l" #'my::company/complete-line-all-buffers
+   :i "C-." #'+company/whole-lines))
+#+END_SRC
+
+***** Config
+****** Sort company by occurrence
+:PROPERTIES:
+:SOURCE:   [[https://github.com/company-mode/company-mode/issues/52][{Proposal} Improve company-dabbrev candidate ordering · Issue #52 · company-mode/company-mode]]
+:END:
+
+#+BEGIN_SRC elisp
+(setq company-transformers '(company-sort-by-occurrence)
+      company-idle-delay 0.5)
+#+END_SRC
+
 ** Snippets :SNIPPETS:
 *** Functions
 **** Expand snippet by name
@@ -5510,75 +5579,6 @@ So I fix the checker manually for each mode after lsp was loaded.
 
 #+BEGIN_SRC elisp :tangle no
 (setq mu4e-headers-leave-behavior 'apply)
-#+END_SRC
-
-*** Company
-**** Config
-***** Sort company by occurrence
-:PROPERTIES:
-:SOURCE:   [[https://github.com/company-mode/company-mode/issues/52][{Proposal} Improve company-dabbrev candidate ordering · Issue #52 · company-mode/company-mode]]
-:END:
-
-#+BEGIN_SRC elisp
-(setq company-transformers '(company-sort-by-occurrence)
-      company-idle-delay 0.5)
-#+END_SRC
-
-**** Functions
-***** Company complete whole lines for all matching buffers
-
-Complete a whole line with all lines from buffers matching the current major-mode.
-
-#+BEGIN_SRC elisp
-(defun +company:buffer-list-with-modes (modes)
-  "Get all buffers that match MODES"
-  (--filter
-   (with-current-buffer it (-contains? (doom-enlist modes) major-mode))
-   (buffer-list)))
-
-(defun +company:buffer-list-with-major-mode ()
-  "Get all buffers matching the current major-mode
-Has built in aliases"
-  (let ((javascript-modes (list 'rjsx-mode 'js2-mode)))
-    (pcase major-mode
-      ('rjsx-mode
-       (+company:buffer-list-with-modes javascript-modes))
-      ('js2-mode
-       (+company:buffer-list-with-modes javascript-modes))
-      (_
-       (+company:buffer-list-with-modes major-mode)))))
-
-(defun +company/whole-lines-all-buffers (command &optional arg &rest ignored)
-  "`company-mode' completion backend that completes whole-lines, akin to vim's
-C-x C-l."
-  (interactive (list 'interactive))
-  (require 'company)
-  (pcase command
-    (`interactive (company-begin-backend '+company/whole-lines-all-buffers))
-    (`prefix      (company-grab-line "^[\t\s]*\\(.+\\)" 1))
-    (`candidates
-     (all-completions
-      arg
-      (funcall (-compose
-                #'-uniq
-                #'-flatten
-                (lambda (xs)
-                  (--map (with-current-buffer it
-                           (split-string
-                            (replace-regexp-in-string
-                             "^[\t\s]+" ""
-                             (buffer-substring-no-properties (point-min) (point-max)))
-                            "\\(\r\n\\|[\n\r]\\)" t)) xs)))
-               (+company:buffer-list-with-major-mode))))))
-#+END_SRC
-
-Bindings
-
-#+BEGIN_SRC elisp
-(map!
- (:prefix "C-x"
-   :i "C-l" #'+company/whole-lines-all-buffers
-   :i "C-." #'+company/whole-lines))
 #+END_SRC
 
 *** Babel Async
