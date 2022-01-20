@@ -16,10 +16,13 @@ I often use my helper function [[file:autoload.org::*Template Literals][(templat
 ** Variable Naming
 
 All my private functions have the prefix ~my~.
-If I extend a module I will prefix it with the ~+module~.
+It's the only prefix where you can assume that packages or emacs won't override it and vice-versa.
 
-Furthermore the naming schema follows these rules:
+*** Schema
 
+- ~my::namespace~
+  Its not pretty, but it's the only way to work with emacs-lisps global scope for everything.
+  - ~my::namespace::sub-namespace~
 - ~my:variable~: Variable
 - ~my/function~: Private function
   - ~my::namespace/function~: Private function with namespace
@@ -1305,7 +1308,7 @@ Edit browser input fields with emacs.
   :commands (atomic-chrome-start-server))
 #+end_src
 
-**** [[https://github.com/cbowdon/daemons.el][cbowdon/daemons.el: An Emacs UI for managing init system services]] :LINUX:
+**** [[https://github.com/cbowdon/daemons.el][cbowdon/daemons.el Systemd UI]] :LINUX:
 
 Manage systemd from emacs
 
@@ -1333,7 +1336,529 @@ Package override that fixes multiple remotes:
 (package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
 #+end_src
 
+** Dired :DIRED:
+*** Packages
+**** [[https://github.com/Fuco1/dired-hacks#dired-filter][dired-hacks - dired-filter]]
 
+Filter current dired buffer by query/extension etc.
+Trigger with ~g/.~ in ~normal-mode~.
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! dired-filter)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! dired-filter
+  :after dired
+  :config
+  (setq dired-filter-saved-filters
+        (quote (("images"
+                 (extension "jpg" "png" "gif"))
+                ("media"
+                 (extension "mp3" "mp4" "MP3" "MP4" "avi" "mpg" "flv" "ogg" "wmv" "mkv" "mov" "wma"))
+                ("archives"
+                 (extension "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+                ("documents"
+                 (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub")))))
+  (dired-filter-define created-today
+      "Show only files that are newer than today."
+    (:description "created-today")
+    (let ((case-fold-search nil))
+      (time-less-p (time-subtract (current-time) (* 60 60 24))
+                   (file-attribute-modification-time (file-attributes file-name))))))
+#+END_SRC
+**** [[https://github.com/Fuco1/dired-hacks#dired-subtree][dired-hacks/dired-subtree]]
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! dired-subtree
+  :after dired
+  :config
+  (evil-define-key 'normal dired-mode-map
+    (kbd "<tab>") (cmd! () (dired-subtree-toggle)
+                      ;; Fix for dired-all-the-icons not showing up
+                      (dired-revert))
+    (kbd "<backtab>") (cmd! () (dired-subtree-cycle)
+                          (dired-revert))
+    (kbd "gh") 'dired-subtree-up))
+#+END_SRC
+*** Config
+**** Listing Switches / Sorting
+
+#+BEGIN_SRC elisp
+(defconst my::dired:default-listing-switches
+  "-ahl -t --group-directories-first")
+
+(setq dired-listing-switches my::dired:default-listing-switches)
+#+END_SRC
+
+**** Omit files types in dired
+
+#+begin_src elisp
+(use-package! dired
+  :config
+  (setq dired-omit-files
+        (concat dired-omit-files
+                ;; Apple files
+                "\\|\\.com.apple.timemachine.donotpresent$"
+                "\\|\\.Spotlight-V100$"
+                "\\|\\.fseventsd$"
+                "\\|\\.DocumentRevisions-V100$"
+                "\\|\\.TemporaryItems$"
+                ;; Windows files
+                "\\|\\System Volume Information$")))
+#+end_src
+
+**** Automatically revert dired buffers
+:PROPERTIES:
+:SOURCE:   [[https://www.reddit.com/r/emacs/comments/1acg6q/how_to_configure_dired_to_update_instantly_when/][How to configure dired to update instantly when files/folders change? : emacs]]
+:END:
+
+#+BEGIN_SRC elisp
+(add-hook 'dired-mode-hook 'auto-revert-mode)
+#+END_SRC
+
+**** Automatically create directories when moving/copying items :ADVICE:
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/questions/12994164/allow-dired-do-copy-and-dired-do-rename-to-create-new-dir-on-the-fly][emacs - Allow dired-do-copy and dired-do-rename to create new dir on the fly - Stack Overflow]]
+:END:
+
+#+BEGIN_SRC elisp
+(after! dired
+  (defadvice dired-mark-read-file-name (after rv:dired-create-dir-when-needed (prompt dir op-symbol arg files &optional default) activate)
+    (when (member op-symbol '(copy move))
+      (let ((directory-name (if (< 1 (length files))
+                                ad-return-value
+                              (file-name-directory ad-return-value))))
+        (when (and (not (file-directory-p directory-name))
+                   (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
+          (make-directory directory-name t))))))
+#+END_SRC
+**** Enable Async Mode
+
+#+BEGIN_SRC elisp
+(after! async
+  (dired-async-mode 1))
+#+END_SRC
+*** Functions
+**** Kill all dired buffers
+
+#+BEGIN_SRC elisp
+(defun my::dired|kill-dired-buffers ()
+  "Kills all dired buffers."
+  (interactive)
+  (mapc (lambda (buffer)
+          (when (eq 'dired-mode (buffer-local-value 'major-mode buffer))
+            (kill-buffer buffer)))
+        (buffer-list)))
+#+END_SRC
+
+**** Go to mounted drive :COUNSEL:
+
+#+begin_src elisp
+(defun my::dired|find-mounted-drive ()
+  "Browse mounted disk.
+When the mounted drive has only 1 partition, select this one otherwise show listing of disks."
+  (interactive)
+  (let ((dir (f-join "/run/media/" user-login-name)))
+    (counsel-find-file
+     (-some->> dir
+       (f-directories)
+       (--id-when (eq 1 (length it)))
+       (car))
+     (f-join "/run/media/" user-login-name))))
+#+end_src
+
+**** Unparent directory at point
+
+#+BEGIN_SRC elisp
+(defun my::dired|ungroup-directory ()
+  "Move all files and directories to the current directory,
+If everything goes well and the directory is empty, safely delete it.
+It might not work out though, when any of the entries has the same name,
+in that case throw a warning."
+  (interactive)
+  (->> (dired-get-marked-files)
+       (-map (lambda (x)
+               (let ((cmd (if (my::file/dir-has-hidden-entries x)
+                              "mv -n ./* ./.* ../"
+                            "mv -n ./* ../")))
+                 (shell-command (t! "cd \"<<x>>\"; <<cmd>>"))
+                 (when (f-empty? x)
+                   (dired-delete-file x))))))
+  (revert-buffer))
+#+END_SRC
+**** TODO Mouse navigation of the heading directory
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/13354/dired-heading-directory-with-text-properties-to-jump-to-parent-directories][breadcrumbs - Dired heading directory with text-properties to jump to parent directories - Emacs Stack Exchange]]
+:END:
+
+Allows to click on the header bar to got to navigate tree breadcrumbs in the dired header bar.
+
+#+begin_src elisp
+(defface dired-mouseover-face
+  '((t (:foreground "green")))
+  "Face for `dired-mouseover-face'."
+  :group 'dired)
+
+(defvar dired-mouse-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-2] 'dired-follow-link)
+    (define-key map [return] 'dired-follow-link)
+    (define-key map [follow-link] 'mouse-face)
+    map)
+  "Keymap for mouse when in `dired-mode'.")
+
+;; Author:  Drew Adams -- http://emacs.stackexchange.com/a/13411/2287
+(defun dired-follow-link (event)
+  "Follow the link in the dired directory heading, causing a new
+dired buffer to be opened.
+When clicking on the current directory always go one directory upwards."
+  (interactive (list last-nonmenu-event))
+  (run-hooks 'mouse-leave-buffer-hook)
+  (with-current-buffer (window-buffer (posn-window (event-start event)))
+    (let ((path  (get-text-property (posn-point (event-start event)) 'breadcrumb)))
+      (if (f-equal? dired-directory path)
+          (dired-up-directory)
+        (dired path)))))
+
+(defun dired-propertize-directory-heading ()
+  (interactive)
+  (unless (buffer-narrowed-p)
+    (let* (
+           p beg end path peol
+           (inhibit-read-only t))
+      (save-excursion
+        (goto-char (point-min))
+        (setq peol (point-at-eol))
+        (set-text-properties (point) peol nil)
+        (re-search-forward "\\([^/\\]+\\)[/\\]" peol t)
+        (when (looking-back "\\(^ +\\)\\([a-zA-Z]:\\)?/")
+          (setq p (match-end 1))
+          (setq path (if (match-string 2) (concat (match-string 2) "/") "/"))
+          (add-text-properties (point-min) (1- (match-end 0)) (list
+                                                               'breadcrumb path
+                                                               'mouse-face 'dired-mouseover-face
+                                                               'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
+                                                               'keymap dired-mouse-map)))
+        (while (re-search-forward "\\([^/\\]+\\)[/\\]" peol t)
+          (setq beg (match-beginning 1))
+          (setq end (match-end 1))
+          (setq path (buffer-substring-no-properties p end))
+          (add-text-properties beg end (list
+                                        'breadcrumb path
+                                        'mouse-face 'dired-mouseover-face
+                                        'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
+                                        'keymap dired-mouse-map)))
+        (setq path (buffer-substring-no-properties p (1- peol)))
+        (add-text-properties (point) (1- peol) (list
+                                                'breadcrumb path
+                                                'mouse-face 'dired-mouseover-face
+                                                'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
+                                                'keymap dired-mouse-map))))))
+
+(add-hook 'dired-after-readin-hook 'dired-propertize-directory-heading)
+#+end_src
+**** Get marked file size
+:PROPERTIES:
+:SOURCE:   https://www.emacswiki.org/emacs/DiredGetFileSize
+:END:
+
+#+BEGIN_SRC elisp
+ (defun my::dired|get-marked-file-size ()
+   "Get the file size of all marked dired entries."
+   (interactive)
+   (let ((files (dired-get-marked-files)))
+     (with-temp-buffer
+       (apply 'call-process "du" nil t nil "-sch" files)
+       (message
+        "Size of all marked files: %s"
+        (progn (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$") (match-string 1))))))
+#+END_SRC
+
+**** Toggle sorting
+
+When you toggle the sorting via ~dired-sort-toggle-or-edit~ the cursor stays at the current file, which is very disorienting.
+With this function the cursor stays on the current line.
+~save-excursion~ does not work in this function, it just throws to the top of the buffer.
+The dired-line jumps at the end are used to jump the filename again.
+
+#+BEGIN_SRC elisp
+(defun my::dired|toggle-sorting (&optional arg)
+  "Change sorting but stay on the same line."
+  (interactive "P")
+  (let ((pos (point)))
+    (cond
+     ((eq arg 3)
+      (setq dired-listing-switches (symbol-value 'my::dired:default-listing-switches))
+      (setq dired-actual-switches (symbol-value 'my::dired:default-listing-switches))
+      (dired-sort-set-mode-line)
+      (revert-buffer))
+     ((eq arg 2)
+      (setq dired-listing-switches
+            (read-string "Global ls switches (must contain -l): " dired-listing-switches))
+      (setq dired-actual-switches (symbol-value 'dired-listing-switches))
+      (dired-sort-set-mode-line)
+      (revert-buffer))
+     (arg
+      (setq dired-actual-switches
+            (read-string "Buffer ls switches (must contain -l): " dired-actual-switches)))
+     (t (dired-sort-toggle-or-edit)))
+    (goto-char pos)
+    (dired-next-line 1)
+    (dired-previous-line 1)))
+#+END_SRC
+**** Open file externally
+:PROPERTIES:
+:SOURCE:   https://www.reddit.com/r/emacs/comments/cgbpvl/opening_media_files_straight_from_gnu_emacs_dired/eufxc9j/
+:END:
+
+***** Config
+
+#+begin_src elisp
+(defvar my::dired::open-external:extensions nil
+  "Which files to open externally by default when pressing enter.")
+
+(setq my::dired::open-external:extensions
+      '(
+        ;; Video
+        "mov" "mpv" "mkv"
+        ;; Audio
+        "mp4" "mp3" "ogg"))
+#+end_src
+
+***** Function
+
+#+BEGIN_SRC elisp
+(defun my::dired::open-external/mouse-open (event)
+  "Open marked dired file(s) at point with an external application. Open directories normally"
+  (interactive "e")
+  (my::dired::open-external/mouse-open event))
+
+(defun my::dired::open-external/mouse-open (event &optional find-file-func find-dir-func)
+  "In Dired, visit the file or directory name you click on.
+The optional arguments FIND-FILE-FUNC and FIND-DIR-FUNC specify
+functions to visit the file and directory, respectively.  If
+omitted or nil, these arguments default to `find-file' and `dired',
+respectively."
+  (interactive "e")
+  (or find-file-func (setq find-file-func 'my::dired::open-external/xdg-open))
+  (or find-dir-func (setq find-dir-func 'dired))
+  (let (window pos file)
+    (save-excursion
+      (setq window (posn-window (event-end event))
+            pos (posn-point (event-end event)))
+      (if (not (windowp window))
+          (error "No file chosen"))
+      (set-buffer (window-buffer window))
+      (goto-char pos)
+      (setq file (dired-get-file-for-visit))
+      (if (file-directory-p file)
+          (or (and (cdr dired-subdir-alist)
+                   (dired-goto-subdir file))
+              (progn
+                (select-window window (funcall find-dir-func file))))
+        (select-window window)
+        (funcall find-file-func)))))
+
+(defun my::dired::open-external/xdg-open (&optional file)
+  "Open marked dired file(s) at point with an external application."
+  (let ((file-list (or file (dired-get-marked-files)))
+        (process-connection-type nil))
+    (--map (my::shell/no-exit-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
+
+(defun my::dired::open-external|open-dwim (&optional file)
+  (interactive)
+  (let ((file-list (or file (dired-get-marked-files)))
+        (process-connection-type nil))
+    (-each file-list (lambda (x)
+                       (message "%s" x)
+                       (let* ((path (expand-file-name x))
+                              (ext (f-ext path)))
+                         (if (-contains? my::dired::open-external:extensions ext)
+                             (my::shell/no-exit-command "xdg-open" (s-wrap path "\""))
+                           (dired-find-file)))))))
+#+END_SRC
+**** Convert Images
+:PROPERTIES:
+:SOURCE:   [[http://xenodium.com/enrich-your-dired-batching-toolbox/index.html][Enrich Emacs direds batching toolbox]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun my::dired|convert-image (&optional arg)
+  "Convert image files to other formats."
+  (interactive "P")
+  (assert (executable-find "convert") nil "Install imagemagick")
+  (let* ((dst-fpath)
+         (src-fpath)
+         (src-ext)
+         (last-ext)
+         (dst-ext))
+    (mapc
+     (lambda (fpath)
+       (setq src-fpath fpath)
+       (setq src-ext (downcase (file-name-extension src-fpath)))
+       (when (or (null dst-ext)
+                 (not (string-equal dst-ext last-ext)))
+         (setq dst-ext (completing-read "to format: "
+                                        (seq-remove (lambda (format)
+                                                      (string-equal format src-ext))
+                                                    '("jpg" "png")))))
+       (setq last-ext dst-ext)
+       (setq dst-fpath (format "%s.%s" (file-name-sans-extension src-fpath) dst-ext))
+       (message "convert %s to %s ..." (file-name-nondirectory dst-fpath) dst-ext)
+       (set-process-sentinel
+        (start-process "convert"
+                         (generate-new-buffer (format "*convert %s*" (file-name-nondirectory src-fpath)))
+                         "convert" src-fpath dst-fpath)
+        (lambda (process state)
+          (if (= (process-exit-status process) 0)
+              (message "convert %s ✔" (file-name-nondirectory dst-fpath))
+            (message "convert %s ❌" (file-name-nondirectory dst-fpath))
+            (message (with-current-buffer (process-buffer process)
+                       (buffer-string))))
+          (kill-buffer (process-buffer process)))))
+     (dired-map-over-marks (dired-get-filename) arg))))
+#+END_SRC
+*** Bindings
+
+#+BEGIN_SRC elisp
+(map! :after dired
+      :map dired-mode-map
+      ;; Mouse controls
+      :ng (kbd "<mouse-2>") 'my::dired::open-external|open-dwim
+      :ng (kbd "<mouse-8>") 'dired-up-directory
+
+
+      :n "q" (cmd! (kill-buffer))
+      :n "Q" #'my::dired|kill-dired-buffers
+
+      :ng "RET" 'my::dired::open-external|open-dwim
+      :gn "o" 'my::dired|toggle-sorting
+      :n "gg" 'my::dired|goto-top
+      :localleader
+      (:prefix ("s" . "search")
+       "i"  #'dired-goto-subdir))
+
+(define-key dired-mode-map (kbd "<down-mouse-1>") 'dired-mouse-find-file)
+#+END_SRC
+
+**** Go to top =gg= evil fix :EVIL:
+
+When I do =gg= in dired, I mostly want to go to the first entry.
+This function first goes to the first entry and then to the top of the buffer.
+
+#+BEGIN_SRC elisp
+(defun my::dired|goto-top ()
+  "Go to first directory, when already there go to first line."
+  (interactive)
+  (if (<= (line-number-at-pos) 3)
+      (goto-char (point-min))
+    (goto-line 3)
+    (dired-next-dirline 1)
+    (dired-prev-dirline 1)))
+#+END_SRC
+**** Wdired mode evil fix :EVIL:
+
+Stay in normal mode when switching to wdired
+
+#+BEGIN_SRC elisp
+(defun my::dired|evil-wdired-mode ()
+  "Stay in normal mode when switching to wdired."
+  (interactive)
+  (wdired-change-to-wdired-mode)
+  (evil-normal-state))
+
+(map! :after dired
+      :map dired-mode-map
+      :n "\\" #'my::dired|evil-wdired-mode)
+#+END_SRC
+
+**** Use same window for copying/renaming with prefix
+
+I've set ~dired-dwim-target~ to ~t~, so it uses the other window as the target destination.
+I undo this option with the interactive prefix argument, which can be accessed via ~SPC ucopy R/U~.
+
+#+BEGIN_SRC elisp
+(defun my::dired/dired-target-from-prefix (fn)
+  (let ((dired-dwim-target (if (eq (prefix-numeric-value current-prefix-arg) 4) ;; Single C-u
+                              nil
+                            dired-dwim-target)))
+      (call-interactively fn)))
+
+(map! :after dired
+      :map dired-mode-map
+      :n "R" (cmd! (my::dired/dired-target-from-prefix #'dired-do-copy))
+      :n "C" (cmd! (my::dired/dired-target-from-prefix #'dired-do-rename)))
+#+END_SRC
+
+**** Dired Paste DWIM
+
+#+BEGIN_SRC elisp
+(defun my::dired|paste-dwim ()
+  "Paste data in the current directory."
+  (interactive)
+  (let ((file (read-string "Filename: "))
+        (last-clip-type (->> (shell-command-to-string "greenclip print")
+                             (s-split "\n")
+                             (-first-item))))
+    (unless (string= "" file)
+      (cond
+       ((s-matches? "^image\\/png" last-clip-type)
+        (shell-command-to-string (template "xclip -selection clipboard -t image/png -o > <<file>>")))))
+    (dired-revert)))
+
+(map! :after dired
+      :map dired-mode-map
+      :n "p" 'my::dired|paste-dwim)
+#+END_SRC
+
+** Evil :EVIL:
+*** Packages
+**** INACTIVE [[https://github.com/tarao/evil-plugins][tarao/evil-plugins]]
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
+#+END_SRC
+**** [[https://github.com/emacsmirror/evil-replace-with-register][evil-replace-with-register: Replace with register motion]]
+
+Replace the current selection with a register.
+Press =gr= with a following motion character like =w=.
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! evil-replace-with-register)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! evil-replace-with-register
+  :config
+  (setq evil-replace-with-register-key (kbd "gr"))
+  (define-key evil-normal-state-map
+    evil-replace-with-register-key 'evil-replace-with-register)
+  (define-key evil-visual-state-map
+    evil-replace-with-register-key 'evil-replace-with-register))
+#+END_SRC
+**** [[https://github.com/urbint/evil-text-objects-javascript][evil-text-objects-javascript: Javascript motions]]
+
+- "f" - function
+- "c" - single-line comment
+- "C" - multi-line comment
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
+#+END_SRC
 
 * Needs to be restrucutred
 ** Packages
@@ -1342,20 +1867,6 @@ Package override that fixes multiple remotes:
 :END:
 
 *** General Packages
-**** Evil
-***** [[https://github.com/tarao/evil-plugins][Evil Plugin]] provides some nice addons for Evil Mode
-
-#+BEGIN_SRC elisp
-(package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
-#+END_SRC
-
-***** Evil motions
-
-#+BEGIN_SRC elisp
-(package! evil-replace-with-register)
-(package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
-#+END_SRC
-
 **** UI
 ***** Narrow to an indirect buffer
 
@@ -1390,15 +1901,7 @@ Move to ivy candidate with =C-'=
   :pin nil)
 #+END_SRC
 
-**** External
 **** Dired
-***** Filter dired buffers
-
-#+BEGIN_SRC elisp
-(package! dired-narrow)
-(package! dired-filter)
-#+END_SRC
-
 ***** Open subtrees directly in the current view
 
 #+BEGIN_SRC elisp
@@ -3934,521 +4437,6 @@ Bindings
    :i "C-." #'+company/whole-lines))
 #+END_SRC
 
-*** Dired
-**** Config
-
-#+BEGIN_SRC elisp
-(use-package! dired
-  :init
-  (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|\\.DS_Store$\\|flycheck_config.el"))
-#+END_SRC
-
-***** Enable Async Mode
-
-#+BEGIN_SRC elisp
-(after! async
-  (dired-async-mode 1))
-#+END_SRC
-
-***** Ignore .bs.js
-
-#+BEGIN_SRC elisp
-(use-package! dired-x
-  :after dired
-  :config
-  (setq dired-omit-files
-        (concat dired-omit-files
-                ;; Reason Compiled Files
-                "\\|\\.bs.js$"
-                ;; Apple Stuff
-                "\\|\\.com.apple.timemachine.donotpresent$"
-                "\\|\\.Spotlight-V100$"
-                "\\|\\.fseventsd$"
-                "\\|\\.DocumentRevisions-V100$"
-                "\\|\\.TemporaryItems$"
-                ;; Windows Stuff
-                "\\|\\System Volume Information$")))
-#+END_SRC
-
-***** Auto Refresh
-:PROPERTIES:
-:SOURCE:   [[https://www.reddit.com/r/emacs/comments/1acg6q/how_to_configure_dired_to_update_instantly_when/][How to configure dired to update instantly when files/folders change? : emacs]]
-:END:
-
-Automatically revert dired buffers.
-
-#+BEGIN_SRC elisp
-(add-hook 'dired-mode-hook 'auto-revert-mode)
-#+END_SRC
-
-***** Automatically create directories when moving/copying items
-:PROPERTIES:
-:SOURCE:   [[https://stackoverflow.com/questions/12994164/allow-dired-do-copy-and-dired-do-rename-to-create-new-dir-on-the-fly][emacs - Allow dired-do-copy and dired-do-rename to create new dir on the fly - Stack Overflow]]
-:END:
-
-#+BEGIN_SRC elisp
-(after! dired
-  (defadvice dired-mark-read-file-name (after rv:dired-create-dir-when-needed (prompt dir op-symbol arg files &optional default) activate)
-    (when (member op-symbol '(copy move))
-      (let ((directory-name (if (< 1 (length files))
-                                ad-return-value
-                              (file-name-directory ad-return-value))))
-        (when (and (not (file-directory-p directory-name))
-                   (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
-          (make-directory directory-name t))))))
-#+END_SRC
-***** Listing Switches / Sorting
-
-Adds ~+dired-default-listing-switches~ to reset the value.
-
-#+BEGIN_SRC elisp
-(defconst +dired-default-listing-switches
-  "-ahl -t --group-directories-first")
-(setq dired-listing-switches +dired-default-listing-switches)
-#+END_SRC
-
-**** Utils
-***** Dired Paste DWIM
-
-#+BEGIN_SRC elisp
-(defun +dired|paste-dwim ()
-  "Paste data in the current directory."
-  (interactive)
-  (let ((file (read-string "Filename: "))
-        (last-clip-type (->> (shell-command-to-string "greenclip print")
-                             (s-split "\n")
-                             (-first-item))))
-    (unless (string= "" file)
-      (cond
-       ((s-matches? "^image\\/png" last-clip-type)
-        (shell-command-to-string (template "xclip -selection clipboard -t image/png -o > <<file>>")))))
-    (dired-revert)))
-#+END_SRC
-
-***** Kill all dired buffers with ~Q~
-
-#+BEGIN_SRC elisp
-(defun +dired|kill-dired-buffers ()
-  "Kills all dired buffers
-Dired creates a buffer for every directory which it visits
-Which is fine since you can easily switch between visited buffers
-But at some time I want to purge those buffers"
-  (interactive)
-  (mapc (lambda (buffer)
-          (when (eq 'dired-mode (buffer-local-value 'major-mode buffer))
-            (kill-buffer buffer)))
-        (buffer-list)))
-
-(map! :after dired
-      :map dired-mode-map
-      :n "q" (cmd! (kill-buffer))
-      :n "Q" #'+dired|kill-dired-buffers)
-#+END_SRC
-
-***** Wdired Mode Switch
-
-Stay in normal mode when switching to wdired
-
-#+BEGIN_SRC elisp
-(defun +dired|change-to-wdired-mode ()
-  "Simple forward to wdired-change-to-wdired-mode, but staying in normal mode."
-  (interactive)
-  (wdired-change-to-wdired-mode)
-  (evil-normal-state))
-#+END_SRC
-
-Map ~\~ to change to wdired mode, like text mode in magit buffers.
-
-#+BEGIN_SRC elisp
-(map!
- :after dired
- :map dired-mode-map
- :n "\\" #'+dired|change-to-wdired-mode)
-#+END_SRC
-
-***** Use same window for copying/renaming with prefix
-
-I've set ~dired-dwim-target~ to ~t~, so it uses the other window as the target destination.
-I undo this option with the interactive prefix argument, which can be accessed via ~SPC ucopy R/U~.
-
-#+BEGIN_SRC elisp
-(defun +dired/dired-target-from-prefix (fn)
-  (let ((dired-dwim-target (if (eq (prefix-numeric-value current-prefix-arg) 4) ;; Single C-u
-                              nil
-                            dired-dwim-target)))
-      (call-interactively fn)))
-
-(defun +dired|dired-do-copy (&optional arg)
-  (interactive "P")
-  (+dired/dired-target-from-prefix #'dired-do-copy))
-
-(defun +dired|dired-do-rename (&optional arg)
-  (interactive "P")
-  (+dired/dired-target-from-prefix #'dired-do-rename))
-
-(map! :after dired
-      :map dired-mode-map
-      :n "R" #'+dired|dired-do-rename
-      :n "C" #'+dired|dired-do-copy)
-#+END_SRC
-***** Show Marked File Size
-:PROPERTIES:
-:SOURCE:   https://www.emacswiki.org/emacs/DiredGetFileSize
-:END:
-
-#+BEGIN_SRC elisp
- (defun dired-get-size ()
-  (interactive)
-  (let ((files (dired-get-marked-files)))
-    (with-temp-buffer
-      (apply 'call-process "du" nil t nil "-sch" files)
-      (message
-       "Size of all marked files: %s"
-       (progn (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$") (match-string 1))))))
-#+END_SRC
-
-***** Open file externally
-:PROPERTIES:
-:SOURCE:   https://www.reddit.com/r/emacs/comments/cgbpvl/opening_media_files_straight_from_gnu_emacs_dired/eufxc9j/
-:END:
-
-****** Extensions
-
-#+begin_src elisp
-(defvar +dired:open-external-extensions nil
-  "Which files to open externally by default when pressing enter.")
-
-(setq +dired:open-external-extensions
-      '(
-        ;; Video
-        "mov" "mpv" "mkv"
-        ;; Audio
-        "mp4" "mp3" "ogg"))
-#+end_src
-
-****** Function
-
-#+BEGIN_SRC elisp
-(defun +dired/mouse-open-externally (event)
-  "Open marked dired file(s) at point with an external application. Open directories normally"
-  (interactive "e")
-  (+dired/mouse-open-externally event))
-
-(defun +dired/mouse-open-externally (event &optional find-file-func find-dir-func)
-  "In Dired, visit the file or directory name you click on.
-The optional arguments FIND-FILE-FUNC and FIND-DIR-FUNC specify
-functions to visit the file and directory, respectively.  If
-omitted or nil, these arguments default to `find-file' and `dired',
-respectively."
-  (interactive "e")
-  (or find-file-func (setq find-file-func '+dired|open-externally))
-  (or find-dir-func (setq find-dir-func 'dired))
-  (let (window pos file)
-    (save-excursion
-      (setq window (posn-window (event-end event))
-            pos (posn-point (event-end event)))
-      (if (not (windowp window))
-          (error "No file chosen"))
-      (set-buffer (window-buffer window))
-      (goto-char pos)
-      (setq file (dired-get-file-for-visit))
-      (if (file-directory-p file)
-          (or (and (cdr dired-subdir-alist)
-                   (dired-goto-subdir file))
-              (progn
-                (select-window window (funcall find-dir-func file))))
-        (select-window window)
-        (funcall find-file-func)))))
-
-(defun +dired|open-externally (&optional file)
-  "Open marked dired file(s) at point with an external application."
-  (interactive)
-  (let ((file-list (or file (dired-get-marked-files)))
-        (process-connection-type nil))
-    (--map (my::shell/no-exit-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
-
-(defun +dired|open-dwim (&optional file)
-  (interactive)
-  (let ((file-list (or file (dired-get-marked-files)))
-        (process-connection-type nil))
-    (-each file-list (lambda (x)
-                       (message "%s" x)
-                       (let* ((path (expand-file-name x))
-                              (ext (f-ext path)))
-                         (if (-contains? +dired:open-external-extensions ext)
-                             (my::shell/no-exit-command "xdg-open" (s-wrap path "\""))
-                           (dired-find-file)))))))
-#+END_SRC
-
-***** Toggle Sorting
-
-When you toggle the sorting via ~dired-sort-toggle-or-edit~ the cursor stays at the current file, which is very disorienting.
-With this function the cursor stays on the current line.
-~save-excursion~ does not work in this function, it just throws to the top of the buffer.
-The dired-line jumps at the end are used to jump the filename again.
-
-#+BEGIN_SRC elisp
-(defun +dired|toggle-sort (&optional arg)
-  "Change sorting but stay on the same line."
-  (interactive "P")
-  (let ((pos (point)))
-    (cond
-     ((eq arg 3)
-      (setq dired-listing-switches (symbol-value '+dired-default-listing-switches))
-      (setq dired-actual-switches (symbol-value '+dired-default-listing-switches))
-      (dired-sort-set-mode-line)
-      (revert-buffer))
-     ((eq arg 2)
-      (setq dired-listing-switches
-            (read-string "Global ls switches (must contain -l): " dired-listing-switches))
-      (setq dired-actual-switches (symbol-value 'dired-listing-switches))
-      (dired-sort-set-mode-line)
-      (revert-buffer))
-     (arg
-      (setq dired-actual-switches
-            (read-string "Buffer ls switches (must contain -l): " dired-actual-switches)))
-     (t (dired-sort-toggle-or-edit)))
-    (goto-char pos)
-    (dired-next-line 1)
-    (dired-previous-line 1)))
-#+END_SRC
-***** Convert Images
-:PROPERTIES:
-:SOURCE:   [[http://xenodium.com/enrich-your-dired-batching-toolbox/index.html][Enrich Emacs direds batching toolbox]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun +dired|convert-image (&optional arg)
-  "Convert image files to other formats."
-  (interactive "P")
-  (assert (executable-find "convert") nil "Install imagemagick")
-  (let* ((dst-fpath)
-         (src-fpath)
-         (src-ext)
-         (last-ext)
-         (dst-ext))
-    (mapc
-     (lambda (fpath)
-       (setq src-fpath fpath)
-       (setq src-ext (downcase (file-name-extension src-fpath)))
-       (when (or (null dst-ext)
-                 (not (string-equal dst-ext last-ext)))
-         (setq dst-ext (completing-read "to format: "
-                                        (seq-remove (lambda (format)
-                                                      (string-equal format src-ext))
-                                                    '("jpg" "png")))))
-       (setq last-ext dst-ext)
-       (setq dst-fpath (format "%s.%s" (file-name-sans-extension src-fpath) dst-ext))
-       (message "convert %s to %s ..." (file-name-nondirectory dst-fpath) dst-ext)
-       (set-process-sentinel
-        (start-process "convert"
-                         (generate-new-buffer (format "*convert %s*" (file-name-nondirectory src-fpath)))
-                         "convert" src-fpath dst-fpath)
-        (lambda (process state)
-          (if (= (process-exit-status process) 0)
-              (message "convert %s ✔" (file-name-nondirectory dst-fpath))
-            (message "convert %s ❌" (file-name-nondirectory dst-fpath))
-            (message (with-current-buffer (process-buffer process)
-                       (buffer-string))))
-          (kill-buffer (process-buffer process)))))
-     (dired-map-over-marks (dired-get-filename) arg))))
-#+END_SRC
-***** Unparent directory at point
-
-Move all files and directories to the current directory,
-If everything goes well and the directory is empty, safely delete it.
-It might not work out though, when any of the entries has the same name,
-in that case throw a warning.
-
-#+BEGIN_SRC elisp
-(defun +dired|ungroup-directory ()
-  "Move the marked files one folder upwards, never overwrite the files."
-  (interactive)
-  (->> (dired-get-marked-files)
-       (-map (lambda (x)
-               (let ((cmd (if (my::file/dir-has-hidden-entries x)
-                              "mv -n ./* ./.* ../"
-                            "mv -n ./* ../")))
-                 (shell-command (t! "cd \"<<x>>\"; <<cmd>>"))
-                 (when (f-empty? x)
-                   (dired-delete-file x))))))
-  (revert-buffer))
-#+END_SRC
-***** Dired go to top
-
-When I do =gg= in dired, I mostly want to go to the first entry.
-This function first goes to the first entry and then to the top of the buffer.
-
-#+BEGIN_SRC elisp
-(defun +dired|goto-top ()
-  "Go to first directory, when already there go to first line."
-  (interactive)
-  (if (<= (line-number-at-pos) 3)
-      (goto-char (point-min))
-    (goto-line 3)
-    (dired-next-dirline 1)
-    (dired-prev-dirline 1)))
-#+END_SRC
-***** Mouse Navigation of the heading directory
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/13354/dired-heading-directory-with-text-properties-to-jump-to-parent-directories][breadcrumbs - Dired heading directory with text-properties to jump to parent directories - Emacs Stack Exchange]]
-:END:
-
-Allows to click on the header bar to got to navigate tree breadcrumbs in the dired header bar.
-
-#+begin_src elisp
-(defface dired-mouseover-face
-  '((t (:foreground "green")))
-  "Face for `dired-mouseover-face'."
-  :group 'dired)
-
-(defvar dired-mouse-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map [mouse-2] 'dired-follow-link)
-    (define-key map [return] 'dired-follow-link)
-    (define-key map [follow-link] 'mouse-face)
-    map)
-  "Keymap for mouse when in `dired-mode'.")
-
-;; Author:  Drew Adams -- http://emacs.stackexchange.com/a/13411/2287
-(defun dired-follow-link (event)
-  "Follow the link in the dired directory heading, causing a new
-dired buffer to be opened.
-When clicking on the current directory always go one directory upwards."
-  (interactive (list last-nonmenu-event))
-  (run-hooks 'mouse-leave-buffer-hook)
-  (with-current-buffer (window-buffer (posn-window (event-start event)))
-    (let ((path  (get-text-property (posn-point (event-start event)) 'breadcrumb)))
-      (if (f-equal? dired-directory path)
-          (dired-up-directory)
-        (dired path)))))
-
-(defun dired-propertize-directory-heading ()
-  (interactive)
-  (unless (buffer-narrowed-p)
-    (let* (
-           p beg end path peol
-           (inhibit-read-only t))
-      (save-excursion
-        (goto-char (point-min))
-        (setq peol (point-at-eol))
-        (set-text-properties (point) peol nil)
-        (re-search-forward "\\([^/\\]+\\)[/\\]" peol t)
-        (when (looking-back "\\(^ +\\)\\([a-zA-Z]:\\)?/")
-          (setq p (match-end 1))
-          (setq path (if (match-string 2) (concat (match-string 2) "/") "/"))
-          (add-text-properties (point-min) (1- (match-end 0)) (list
-                                                               'breadcrumb path
-                                                               'mouse-face 'dired-mouseover-face
-                                                               'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
-                                                               'keymap dired-mouse-map)))
-        (while (re-search-forward "\\([^/\\]+\\)[/\\]" peol t)
-          (setq beg (match-beginning 1))
-          (setq end (match-end 1))
-          (setq path (buffer-substring-no-properties p end))
-          (add-text-properties beg end (list
-                                        'breadcrumb path
-                                        'mouse-face 'dired-mouseover-face
-                                        'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
-                                        'keymap dired-mouse-map)))
-        (setq path (buffer-substring-no-properties p (1- peol)))
-        (add-text-properties (point) (1- peol) (list
-                                                'breadcrumb path
-                                                'mouse-face 'dired-mouseover-face
-                                                'help-echo (format "mouse-2, RET: Follow the link to \"%s\"." path)
-                                                'keymap dired-mouse-map))))))
-
-(add-hook 'dired-after-readin-hook 'dired-propertize-directory-heading)
-#+end_src
-***** Find file mounted drive
-
-#+begin_src elisp
-(defun +dired/find-file-mounted-drives ()
-  "Browse mounted disk.
-When the mounted drive has only 1 partition, select this one otherwise show listing of disks."
-  (interactive)
-  (let ((dir (f-join "/run/media/" user-login-name)))
-    (counsel-find-file
-     (-some->> dir
-       (f-directories)
-       (--id-when (eq 1 (length it)))
-       (car))
-     (f-join "/run/media/" user-login-name))))
-#+end_src
-
-
-**** Extensions
-***** Narrow
-
-[[https://github.com/Fuco1/dired-hacks#dired-narrow][Dired Narrow]] allows narrowing a dired buffer to a subselection.
-Widen can be restored with ~g~.
-
-#+BEGIN_SRC elisp
-(use-package! dired-narrow
-  :after dired
-  :config
-  (bind-key "C-c C-n" #'dired-narrow))
-#+END_SRC
-
-***** Subtree
-
-#+BEGIN_SRC elisp
-(use-package! dired-subtree
-  :after dired
-  :config
-  (evil-define-key 'normal dired-mode-map
-    (kbd "<tab>") (cmd! () (dired-subtree-toggle)
-                      ;; Fix for dired-all-the-icons not showing up
-                      (dired-revert))
-    (kbd "<backtab>") (cmd! () (dired-subtree-cycle)
-                          (dired-revert))
-    (kbd "gh") 'dired-subtree-up))
-#+END_SRC
-
-***** Filter
-
-#+BEGIN_SRC elisp
-(use-package! dired-filter
-  :after dired
-  :config
-  (setq dired-filter-saved-filters
-        (quote (("images"
-                 (extension "jpg" "png" "gif"))
-                ("media"
-                 (extension "mp3" "mp4" "MP3" "MP4" "avi" "mpg" "flv" "ogg" "wmv" "mkv" "mov" "wma"))
-                ("archives"
-                 (extension "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
-                ("documents"
-                 (extension "doc" "docx" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub")))))
-  (dired-filter-define created-today
-      "Show only files that are newer than today."
-    (:description "created-today")
-    (let ((case-fold-search nil))
-      (time-less-p (time-subtract (current-time) (* 60 60 24))
-                   (file-attribute-modification-time (file-attributes file-name))))))
-
-#+END_SRC
-
-**** Bindings
-
-#+BEGIN_SRC elisp
-(map! :after dired
-      :map dired-mode-map
-      ;; Mouse controls
-      :ng (kbd "<mouse-2>") '+dired|open-dwim
-      :ng (kbd "<mouse-8>") 'dired-up-directory
-
-      :ng "RET" '+dired|open-dwim
-      :gn "o" '+dired|toggle-sort
-      :n "p" '+dired|paste-dwim
-      :n "gg" '+dired|goto-top
-      :localleader
-      (:prefix ("s" . "search")
-       "i"  #'dired-goto-subdir))
-
-(define-key dired-mode-map (kbd "<down-mouse-1>") 'dired-mouse-find-file)
-#+END_SRC
-
 *** Eldoc
 
 #+BEGIN_SRC elisp :tangle no
@@ -5826,21 +5814,6 @@ To undo this behavior just add =g= flag
 #+END_SRC
 
 **** Motions
-***** Replace With Register Motion
-
-Replace the current selection with a register.
-Press =gr= with a following motion character like =w=.
-
-#+BEGIN_SRC elisp
-(use-package! evil-replace-with-register
-  :config
-  (setq evil-replace-with-register-key (kbd "gr"))
-  (define-key evil-normal-state-map
-    evil-replace-with-register-key 'evil-replace-with-register)
-  (define-key evil-visual-state-map
-    evil-replace-with-register-key 'evil-replace-with-register))
-#+END_SRC
-
 ***** Additional text objects
 
 - =q= for any type of quote
@@ -6376,7 +6349,6 @@ So deletes wont affect this register."
    :desc "Last captured"         "C" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
    :desc "Downloads"             "d" (cmd! (find-file "~/Downloads"))
    :desc "Elfeed"                "e" (cmd! (find-file (car rmh-elfeed-org-files)))
-   :desc "Scans"                 "s" (cmd! (find-file (f-dirname (f-expand +docs:index-file))))
    :desc "Media"                 "m" (cmd! (find-file "~/Media"))
    :desc "Music"                 "M" (cmd! (find-file "~/Media/Music"))
    :desc "Notes"                 "n" (cmd! (find-file org-directory))
@@ -6384,7 +6356,7 @@ So deletes wont affect this register."
    :desc "Last refiled"          "r" (cmd! (org-refile-goto-last-stored))
    :desc "Tmp"                   "t" (cmd! (find-file "/tmp"))
    :desc "Home"                  "h" (cmd! (find-file "~"))
-   :desc "Run (Mounted Drives)"  "r" #'+dired/find-file-mounted-drives)))
+   :desc "Run (Mounted Drives)"  "r" #'my::dired|find-mounted-drive)))
 #+END_SRC
 
 **** Git
