@@ -2551,7 +2551,7 @@ These don't work if you have a big line-height.
       (:prefix-map ("s" . "Search")
        :desc "Unread" "u" #'my::rss/filter-by-unread))
 #+END_SRC
-*** DISABLED IRC
+*** DISABLED IRC :DOOM:
 
 **** Config
 
@@ -2706,6 +2706,16 @@ This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar
   (setq calendar-time-display-form
         '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
   (setq calendar-abbrev-length 2))
+#+END_SRC
+** Calc
+*** Config
+**** Additional Units
+
+#+BEGIN_SRC elisp
+(setq math-additional-units '((GB "1024 * MiB" "Giga Byte")
+                              (MB "1024 * KiB" "Mega Byte")
+                              (KB "1024 * B" "Kilo Byte")
+                              (B nil "Byte")))
 #+END_SRC
 
 
@@ -4215,16 +4225,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Calc
-**** Additional Units
-
-#+BEGIN_SRC elisp
-(setq math-additional-units '((GB "1024 * MiB" "Giga Byte")
-                              (MB "1024 * KiB" "Mega Byte")
-                              (KB "1024 * B" "Kilo Byte")
-                              (B nil "Byte")))
-#+END_SRC
-
 *** Comint
 **** Allow evil enter anywhere
 
