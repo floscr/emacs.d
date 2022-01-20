@@ -1236,18 +1236,19 @@ Pretty print colors string with the color as the background.
 #+END_SRC
 
 *** Javascript :JAVASCRIPT:
-**** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :LINTING:AUTOFIX:
+**** Packages :PACKAGE:
+***** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :LINTING:AUTOFIX:
 
 A javascript auto-fixer that isn't slow.
 Needs [[https://www.npmjs.com/package/eslint_d][eslint_d]] binary in ~$PATH~.
 
-***** Package
+****** Package
 
 #+BEGIN_SRC elisp :tangle "packages.el" :comments link
 (package! eslintd-fix)
 #+END_SRC
 
-***** Config
+****** Config
 
 #+BEGIN_SRC elisp
 (use-package! eslintd-fix
@@ -1258,8 +1259,8 @@ Needs [[https://www.npmjs.com/package/eslint_d][eslint_d]] binary in ~$PATH~.
    flycheck-disabled-checkers '(javascript-jshint javascript)))
 #+END_SRC
 
-***** Functions
-****** Enable eslintd for writable buffers
+****** Functions
+******* Enable eslintd for writable buffers
 
 #+begin_src elisp
 (defun my:js/start-eslint ()
@@ -1271,6 +1272,20 @@ When enabling on read-only buffers it will throw an error."
 
 (add-hook 'js2-mode-hook #'my:js/start-eslint)
 #+end_src
+***** [[https://github.com/floscr/js-import][floscr/js-import]] :AUTOFIX:FORK:
+
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! js-import :recipe (:host github :repo "floscr/js-import"))
+#+END_SRC
+
+****** Config
+
+#+BEGIN_SRC elisp
+(put 'js-import-alias-map 'safe-local-variable (lambda (x) t))
+#+END_SRC
+
 *** Nix :NIXOS:NIX:
 **** Nixpkgs Fmt :AUTOFIX:
 ***** Package
@@ -1978,12 +1993,6 @@ Move to ivy candidate with =C-'=
 
 #+BEGIN_SRC elisp
 (package! impatient-mode)
-#+END_SRC
-
-***** JS Import: Package importing
-
-#+BEGIN_SRC elisp
-(package! js-import :recipe (:host github :repo "floscr/js-import"))
 #+END_SRC
 
 ***** Jest: Test Runner
@@ -3430,12 +3439,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** js-import
-
-#+BEGIN_SRC elisp
-(put 'js-import-alias-map 'safe-local-variable (lambda (x) t))
-#+END_SRC
-
 *** projectile
 **** Ignored Projects
 
