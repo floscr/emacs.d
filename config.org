@@ -2511,14 +2511,15 @@ I mainly changed the function marking helper.
       (evil-range beg end type))))
 #+END_SRC
 *** Nix :NIXOS:NIX:
-**** Nixpkgs Fmt :AUTOFIX:
-***** Package
+**** Packages
+***** Nixpkgs Fmt :AUTOFIX:
+****** Package
 
 #+BEGIN_SRC elisp :tangle "packages.el" :comments link
 (package! nixpkgs-fmt)
 #+END_SRC
 
-***** Config
+****** Config
 
 #+begin_src elisp
 (use-package nixpkgs-fmt
@@ -2528,6 +2529,31 @@ I mainly changed the function marking helper.
   :init
   (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
 #+end_src
+**** Functions
+***** Edit indirect
+
+Edit nix script regions in an indirect buffer just like ~org-edit-special~.
+
+#+BEGIN_SRC elisp
+(defun my::nixos/edit-indirect ()
+  "Edit script in an indirect buffer."
+  (interactive)
+  (and-let* ((beg (save-excursion
+                    (search-backward "''\n" nil t)
+                    (forward-char 3)
+                    (point)))
+             (end (save-excursion
+                    (re-search-forward "''" nil t)
+                    (previous-line 1)
+                    (goto-char (point-at-eol))
+                    (point))))
+    (+indirect-indent|edit beg end #'sh-mode)))
+
+(map! :map nix-mode-map "C-c '" 'my::nixos/edit-indirect)
+
+(set-popup-rule! "^\\*edit-indirect" :ignore t)
+#+END_SRC
+
 *** Haskell :HASKELL:
 ***** Functions
 ****** Autofix with [[https://hackage.haskell.org/package/brittany][brittany]] :AUTOFIX:
@@ -5563,32 +5589,6 @@ Bindings
 #+BEGIN_SRC elisp
 (use-package! ob-async
   :after org-babel)
-#+END_SRC
-
-*** NixOs
-
-**** Edit indirect
-
-Edit nix script regions in an indirect buffer just like ~org-edit-special~.
-
-#+BEGIN_SRC elisp
-(defun +nix|edit-indirect ()
-  "Edit script in an indirect buffer."
-  (interactive)
-  (and-let* ((beg (save-excursion
-                    (search-backward "''\n" nil t)
-                    (forward-char 3)
-                    (point)))
-             (end (save-excursion
-                    (re-search-forward "''" nil t)
-                    (previous-line 1)
-                    (goto-char (point-at-eol))
-                    (point))))
-    (+indirect-indent|edit beg end #'sh-mode)))
-
-(map! :map nix-mode-map "C-c '" '+nix|edit-indirect)
-
-(set-popup-rule! "^\\*edit-indirect" :ignore t)
 #+END_SRC
 
 ** Bindings
