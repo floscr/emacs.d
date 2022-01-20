@@ -5121,9 +5121,14 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 
 #+BEGIN_SRC elisp
 (defun my::counsel|mounted-drives ()
-  "Counsel of mounted drives from udiskie."
+  "Counsel of mounted drives."
   (interactive)
-  (counsel-find-file (concat "/run/media/" (user-login-name) "/")))
+  (let* ((path (f-join "/run/media/" (user-login-name)))
+         (entries (f-entries path)))
+    (pcase (length entries)
+      (0 (user-error "Error: No mounted devices!"))
+      (1 (counsel-find-file (car entries)))
+      (_ (counsel-find-file path)))))
 #+END_SRC
 
 ****** Search project for symbol at point :FIX:ADVICE:
