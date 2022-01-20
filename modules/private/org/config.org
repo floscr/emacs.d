@@ -2354,13 +2354,6 @@ Cant remove them with:
                      (t (user-error "Could not save clipboard contents:\n%s" txt))))))))
 #+END_SRC
 
-*** Roam
-**** Config
-
-#+BEGIN_SRC elisp
-(setq org-roam-directory (+org/expand-org-file-name "Roam"))
-#+END_SRC
-
 **** Journal
 
 #+BEGIN_SRC elisp
