@@ -489,7 +489,6 @@ shuffling is done in place."
 
 
 
-
 * Custom Packages
 ** TODO Custom Bookmarks
 *** Config
@@ -879,7 +878,6 @@ Saving and committing keeps the indentation in the source buffer.
       (setq +indirect-indent indent))))
 #+END_SRC
 
-
 * Default Configuration
 ** Temp
 
@@ -1019,37 +1017,7 @@ and don't want one single undo action for the whole "session".
 (setq evil-want-fine-undo t)
 #+END_SRC
 
-** Hacks
-*** Override default browser
-
-Why does this not work out of the box?
-
-#+BEGIN_SRC elisp
-(defun browse-url-brave (url &optional _new-window)
-  "Ask the Chromium WWW browser to load URL.
-Default to the URL around or before point.  The strings in
-variable `browse-url-chromium-arguments' are also passed to
-Chromium.
-The optional argument NEW-WINDOW is not used."
-  (interactive (browse-url-interactive-arg "URL: "))
-  (setq url (browse-url-encode-url url))
-  (let* ((process-environment (browse-url-process-environment)))
-    (apply #'start-process
-           (concat "brave " url) nil
-           "brave"
-           (append
-            browse-url-chromium-arguments
-            (list url)))))
-
-(pcase (getenv "BROWSER")
-  ("brave" (setq browse-url-browser-function 'browse-url-brave))
-  ("chromium" (setq browse-url-browser-function 'browse-url-chromium))
-  ("firefox" (setq browse-url-browser-function 'browse-url-firefox)))
-#+END_SRC
-
-
-
-* New Package Configuration
+* Package Configuration
 ** Package Overrides / Disabling / Pinning
 
 Packages that I haven't yet moved to their structure.
@@ -5189,6 +5157,107 @@ buffer in current window."
     (message (template "<<(current-buffer)>>: <<txt>>!"))))
 #+END_SRC
 
+
+* Hacks
+** Override default browser
+
+Why does this not work out of the box?
+
+#+BEGIN_SRC elisp
+(defun browse-url-brave (url &optional _new-window)
+  "Ask the Chromium WWW browser to load URL.
+Default to the URL around or before point.  The strings in
+variable `browse-url-chromium-arguments' are also passed to
+Chromium.
+The optional argument NEW-WINDOW is not used."
+  (interactive (browse-url-interactive-arg "URL: "))
+  (setq url (browse-url-encode-url url))
+  (let* ((process-environment (browse-url-process-environment)))
+    (apply #'start-process
+           (concat "brave " url) nil
+           "brave"
+           (append
+            browse-url-chromium-arguments
+            (list url)))))
+
+(pcase (getenv "BROWSER")
+  ("brave" (setq browse-url-browser-function 'browse-url-brave))
+  ("chromium" (setq browse-url-browser-function 'browse-url-chromium))
+  ("firefox" (setq browse-url-browser-function 'browse-url-firefox)))
+#+END_SRC
+
+** Fix ~evil-org-mode-map~
+
+Fixes =(void-function ad-Advice-newline-and-indent)= error for now.
+I honestly don't know where this comes from.
+
+#+BEGIN_SRC elisp
+(map!
+ :map evil-org-mode-map
+ :after org
+ :i [return] #'org-return-and-maybe-indent)
+#+END_SRC
+** Prevent ~woman defvaralias~ error
+
+I'm using ~woman~ for manuals, but it throws this error on first launch
+
+#+BEGIN_QUOTE
+Warning (defvaralias): Overwriting value of ‘woman-topic-history’ by aliasing to ‘Man-topic-history’
+#+END_QUOTE
+
+Solution from here: [[https://discord.com/channels/406534637242810369/406554085794381833/703782241766998067][Doom Discord question]]
+
+#+BEGIN_SRC elisp
+(add-to-list 'warning-suppress-types '(defvaralias))
+#+END_SRC
+
+** Stupid workaround where splitting a window with evil-ex-results breaks emacs...
+
+#+BEGIN_SRC elisp
+(advice-add 'evil-window-vsplit :after #'evil-force-normal-state)
+(advice-add 'evil-window-split :after #'evil-force-normal-state)
+#+END_SRC
+** Emacs 28 Head Workaround
+
+#+begin_src elisp
+(with-no-warnings
+      (defclass xref-location () ()
+        :documentation "(Obsolete) location represents a position in a file or buffer."))
+#+end_src
+** Make optional
+
+#+begin_src elisp
+(defmacro define-obsolete-function-alias ( obsolete-name current-name &optional when
+                                           docstring)
+  "Set OBSOLETE-NAME's function definition to CURRENT-NAME and mark it obsolete.
+
+\(define-obsolete-function-alias \\='old-fun \\='new-fun \"22.1\" \"old-fun's doc.\")
+
+is equivalent to the following two lines of code:
+
+\(defalias \\='old-fun \\='new-fun \"old-fun's doc.\")
+\(make-obsolete \\='old-fun \\='new-fun \"22.1\")
+
+WHEN should be a string indicating when the function was first
+made obsolete, for example a date or a release number.
+
+See the docstrings of `defalias' and `make-obsolete' for more details."
+  (declare (doc-string 4))
+  `(progn
+     (defalias ,obsolete-name ,current-name ,docstring)
+     (make-obsolete ,obsolete-name ,current-name ,when)))
+#+end_src
+** Fix Flycheck for emacs 29
+
+#+begin_src elisp
+(defun +flycheck/fix-emacs-29-save (&rest args)
+  (flycheck-clear)
+  (flycheck-buffer))
+
+(advice-add #'flycheck-handle-save :after #'+flycheck/fix-emacs-29-save)
+#+end_src
+
+
 * Configuration
 ** Custom Functions & Modes
 *** Unfill Paragraph
@@ -6551,73 +6620,3 @@ E.g.: ?* -> Clipboard Contents"
 ;;   "C-w" 'sp-backward-delete-word)
 #+END_SRC
 ** Hacks
-*** Fix ~evil-org-mode-map~
-
-Fixes =(void-function ad-Advice-newline-and-indent)= error for now.
-I honestly don't know where this comes from.
-
-#+BEGIN_SRC elisp
-(map!
- :map evil-org-mode-map
- :after org
- :i [return] #'org-return-and-maybe-indent)
-#+END_SRC
-*** Prevent ~woman defvaralias~ error
-
-I'm using ~woman~ for manuals, but it throws this error on first launch
-
-#+BEGIN_QUOTE
-Warning (defvaralias): Overwriting value of ‘woman-topic-history’ by aliasing to ‘Man-topic-history’
-#+END_QUOTE
-
-Solution from here: [[https://discord.com/channels/406534637242810369/406554085794381833/703782241766998067][Doom Discord question]]
-
-#+BEGIN_SRC elisp
-(add-to-list 'warning-suppress-types '(defvaralias))
-#+END_SRC
-
-*** Stupid workaround where splitting a window with evil-ex-results breaks emacs...
-
-#+BEGIN_SRC elisp
-(advice-add 'evil-window-vsplit :after #'evil-force-normal-state)
-(advice-add 'evil-window-split :after #'evil-force-normal-state)
-#+END_SRC
-*** Emacs 28 Head Workaround
-
-#+begin_src elisp
-(with-no-warnings
-      (defclass xref-location () ()
-        :documentation "(Obsolete) location represents a position in a file or buffer."))
-#+end_src
-*** Make optional
-
-#+begin_src elisp
-(defmacro define-obsolete-function-alias ( obsolete-name current-name &optional when
-                                           docstring)
-  "Set OBSOLETE-NAME's function definition to CURRENT-NAME and mark it obsolete.
-
-\(define-obsolete-function-alias \\='old-fun \\='new-fun \"22.1\" \"old-fun's doc.\")
-
-is equivalent to the following two lines of code:
-
-\(defalias \\='old-fun \\='new-fun \"old-fun's doc.\")
-\(make-obsolete \\='old-fun \\='new-fun \"22.1\")
-
-WHEN should be a string indicating when the function was first
-made obsolete, for example a date or a release number.
-
-See the docstrings of `defalias' and `make-obsolete' for more details."
-  (declare (doc-string 4))
-  `(progn
-     (defalias ,obsolete-name ,current-name ,docstring)
-     (make-obsolete ,obsolete-name ,current-name ,when)))
-#+end_src
-*** Fix Flycheck for emacs 29
-
-#+begin_src elisp
-(defun +flycheck/fix-emacs-29-save (&rest args)
-  (flycheck-clear)
-  (flycheck-buffer))
-
-(advice-add #'flycheck-handle-save :after #'+flycheck/fix-emacs-29-save)
-#+end_src
