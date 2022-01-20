@@ -2367,12 +2367,6 @@ Move to ivy candidate with =C-'=
 (package! symex)
 #+END_SRC
 
-**** Beancount
-
-#+BEGIN_SRC elisp
-(package! beancount :recipe (:host github :repo "cnsunyour/beancount.el"))
-#+END_SRC
-
 **** Javascript
 ***** Indium: Javascript debugging environment
 
@@ -3830,99 +3824,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Beancount
-**** Config
-
-#+BEGIN_SRC elisp
-(use-package! beancount
-  :defer t
-  :mode
-  ("\\.bean\\(?:count\\)?\\'" . beancount-mode)
-  :config
-  (setq beancount-accounts-files
-        (directory-files "~/Documents/Beancount"
-                         'full
-                         (rx ".beancount.gpg" eos))))
-#+END_SRC
-
-**** Functions
-
-***** Helpers
-
-#+BEGIN_SRC elisp
-(defun +beancount/collect-accounts ()
-  "Collect accounts from beancount files."
-  (beancount-collect beancount-account-regexp 0 beancount-accounts-files))
-
-(defvar +beancount:income-accounts nil
-  "Prefixes for expense accounts.")
-(setq +beancount:income-accounts '("Assets" "Liabilities"))
-
-(defun +beancount/collect-expense-accounts (accounts)
-  "Collect accounts from list ACCOUNTS."
-  (-filter (lambda (x) (--find (s-starts-with? it x) +beancount:income-accounts)) accounts))
-
-(defun +beancount/date-string ()
-  "Function docstring"
-  (format-time-string "%Y-%m-%d"))
-#+END_SRC
-
-***** Open Main File
-
-#+BEGIN_SRC elisp
-(defun +beancount|open-main ()
-  "Open the main beancount-accounts-files file."
-  (interactive)
-  (find-file (car beancount-accounts-files)))
-#+END_SRC
-
-***** Balance
-:PROPERTIES:
-:SOURCE:   https://github.com/CanftIn/dotfiles/blob/cd919c6e3f4970ba56248ac68ab072111a00049f/.doom.d/config%20copy.el
-:END:
-
-#+BEGIN_SRC elisp
-(defun +beancount|balance ()
-    "Show the current balances."
-    (interactive)
-    (let ((compilation-read-command nil))
-      (beancount--run "bean-report"
-                      (file-relative-name buffer-file-name) "bal")))
-#+END_SRC
-
-***** Add expense
-
-Manually add an expense to the Cash Book.
-
-#+BEGIN_SRC elisp
-(defun +beancount|add-expense ()
-  "Add expense to the bottom of the file."
-  (interactive)
-  (and-let* ((accounts (+beancount/collect-accounts))
-             (from (ivy-read "From: " (+beancount/collect-expense-accounts accounts)))
-             (to (ivy-read "To: " accounts))
-             (subject (read-string "Subject: "))
-             (amount (read-number "Amount: ")))
-      (goto-char (point-max))
-      (newline 1)
-      (insert (template "<<(+beancount/date-string)>> * \"<<subject>>\"
-  <<from>> -<<amount>> EUR
-  <<to>> <<amount>> EUR
-"))
-      (beancount-align-to-previous-number)))
-#+END_SRC
-
-**** Bindings
-
-#+BEGIN_SRC elisp
-(map! :map beancount-mode-map
-      :localleader
-      :n "a" #'+beancount|add-expense
-      :n "c" #'beancount-check
-      :n "q" #'beancount-query
-      :n "b" #'+beancount|balance)
-#+END_SRC
-
 *** RSS with Elfeed
 **** Utils
 ***** Open
@@ -6622,7 +6523,7 @@ redefines its keys every time `eshell-mode' is enabled."
               (org-mu4e-store-and-capture)))
 #+END_SRC
 
-**** Beancount
+**** mail
 
 #+BEGIN_SRC elisp
 (map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
