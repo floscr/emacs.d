@@ -2536,6 +2536,20 @@ These don't work if you have a big line-height.
       (:prefix-map ("s" . "Search")
        :desc "Unread" "u" #'my::rss/filter-by-unread))
 #+END_SRC
+*** DISABLED IRC
+
+**** Config
+
+#+BEGIN_SRC elisp :tangle no
+(after! circe
+  (set-irc-server! "chat.freenode.net"
+    `(:tls t
+      :port 6697
+      :nick "floscr"
+      :sasl-username ,(+pass-get-user "Irc/freenode.net")
+      :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
+      :channels ("#emacs" "#nixos"))))
+#+End_SRC
 
 * Needs to be restrucutred
 ** Packages
@@ -2812,7 +2826,6 @@ buffer in current window."
     (set-window-dedicated-p window (not is-locked))
     (message (template "<<(current-buffer)>>: <<txt>>!"))))
 #+END_SRC
-
 
 * Configuration
 ** Custom Functions & Modes
@@ -4052,19 +4065,8 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** RSS with Elfeed
 *** IRC
 
-#+BEGIN_SRC elisp
-(after! circe
-  (set-irc-server! "chat.freenode.net"
-                   `(:tls t
-                          :port 6697
-                          :nick "floscr"
-                          :sasl-username ,(+pass-get-user "Irc/freenode.net")
-                          :sasl-password (lambda (&rest _) (+pass-get-secret "Irc/freenode.net"))
-                          :channels ("#emacs" "#nixos"))))
-#+End_SRC
 
 #+RESULTS:
 
