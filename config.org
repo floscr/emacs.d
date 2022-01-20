@@ -2625,6 +2625,35 @@ Manage systemd from emacs
 (use-package! daemons
   :commands (daemons))
 #+end_src
+**** [[https://doc.endlessparentheses.com/Fun/proced-mode.html][proced]] :UNIX:
+***** Functions
+****** Shorten nixos path names in proced
+
+Nixos paths can be very long, which is distracting in proced.
+This shortens the nixos paths to ~{nix}~.
+
+#+BEGIN_SRC elisp
+(defun my::proced/remove-nixos-path-name (oldformat &rest xs)
+  (let ((xs (--map (->> it
+                        (s-replace-regexp "/nix/store/[^/]+" "{nix}")
+                        (s-replace-regexp (template "^/home/<<(user-login-name)>>") "~")
+                        ((lambda (x) (if (s-contains? "chromium" x) "{chromium}" x))))
+                  xs)))
+    (apply oldformat xs)))
+
+(advice-add #'proced-format-args :around #'my::proced/remove-nixos-path-name)
+#+END_SRC
+
+***** Bindings
+
+#+begin_src elisp
+(map! :map proced-mode-map
+      :n "/" #'proced-narrow
+      :n "gr" #'proced)
+
+(map! :map process-menu-mode-map
+      :n "gr" #'list-processes)
+#+end_src
 
 ** Git :GIT:
 *** Packages
@@ -5536,44 +5565,6 @@ Bindings
   :after org-babel)
 #+END_SRC
 
-*** Process List / Proced
-**** Config
-***** Proced Narrow
-
-#+BEGIN_SRC elisp
-(use-package! proced-narrow
-  :after proced
-  :config
-  (map!
-   :map proced-mode-map
-   :n "/" #'proced-narrow))
-#+END_SRC
-
-***** Shorten nixos path names in proced
-
-Nixos paths can be very long, which is distracting in proced.
-This shortens the nixos paths to ~{nix}~.
-
-#+BEGIN_SRC elisp
-(defun +proced/remove-nixos-path-name (oldformat &rest xs)
-  (let ((xs (--map (->> it
-                        (s-replace-regexp "/nix/store/[^/]+" "{nix}")
-                        (s-replace-regexp (template "^/home/<<(user-login-name)>>") "~")
-                        ((lambda (x) (if (s-contains? "chromium" x) "{chromium}" x))))
-                  xs)))
-    (apply oldformat xs)))
-
-(advice-add #'proced-format-args :around #'+proced/remove-nixos-path-name)
-#+END_SRC
-
-**** Bindings
-
-#+BEGIN_SRC elisp
-(map! :map process-menu-mode-map
-      :n "gr" #'list-processes)
-(map! :map proced-mode-map
-      :n "gr" #'proced)
-#+END_SRC
 *** NixOs
 
 **** Edit indirect
