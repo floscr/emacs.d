@@ -1123,6 +1123,142 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 #+end_src
 
 *** LSP
+** Doom :DOOM:
+*** Workspaces
+**** Functions
+***** Switch to
+
+Enhancement of the default ~+workspace/switch-to~.
+This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
+
+#+BEGIN_SRC elisp
+(defvar counsel-workspace-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-<backspace>") #'my::workspaces|switch-to-delete-space)
+    map))
+
+(defun my::workspaces/switch-to-delete-space (workspace)
+  (let* ((current-workspace-name (+workspace-current-name))
+         (new-workspace-name
+            (or (--first (string= current-workspace-name it) (+workspace-list-names)) "main")))
+    (+workspace/delete workspace)
+    (+workspace-switch new-workspace-name)
+    (my::workspaces/switch-to)))
+
+(defun my::workspaces|switch-to-delete-space ()
+  (interactive)
+  (ivy-set-action #'my::workspaces/switch-to-delete-space)
+  (ivy-done))
+
+(defun my::workspaces/switch-to ()
+  (interactive)
+  (ivy-read "Switch to workspace: "
+            (+workspace-list-names)
+            :keymap counsel-workspace-map
+            :action #'+workspace/switch-to))
+#+END_SRC
+
+***** Close others
+
+#+BEGIN_SRC elisp
+(defun my::workspaces|close-others ()
+  "Close all other workspaces."
+  (interactive)
+  (--> (+workspace-list-names)
+       (--reject (string= (+workspace-current-name) it) it)
+       (-each it #'+workspace-delete))) ;
+#+END_SRC
+
+***** Find workspace file
+
+Most of the time you create workspaces from a project.
+But when the CWD has changed in that workspace, you would have to relocate to
+the projects cwd to find a file.
+
+#+BEGIN_SRC elisp
+(defun my::workspaces/workspace-project-root (&optional arg)
+  "Gets the root dir for the current workspace"
+  (--find (s-match (concat (+workspace-current-name) "/$") it) projectile-known-projects))
+
+(defun my::workspaces|find-workspace-project-file ()
+  "Projectile find file for the project named after the current workspace."
+  (interactive)
+  (cl-letf (((symbol-function 'projectile-project-root) #'my::workspaces/workspace-project-root))
+    (projectile-find-file)))
+
+(defun my::workspaces|workspace-project-vc ()
+  "Projectile find file for the project named after the current workspace."
+  (interactive)
+  (let ((default-directory
+          (or (my::workspaces/workspace-project-root)
+              (my::file/project-root))))
+    (magit-status)))
+#+END_SRC
+
+***** New named workspace
+
+#+BEGIN_SRC elisp
+(defun +workspace/new-named ()
+  "Create a new named workspace."
+  (interactive)
+  (let ((name (read-string "New workspace name: ")))
+    (if name (+workspace/new name))))
+#+END_SRC
+
+***** Cleanup
+
+#+BEGIN_SRC elisp
+(defun my::workspaces/remove-other-buffers (&optional keep-alive?)
+  "Kill or remove all other buffers from current workspace."
+  (interactive)
+  (--> (+workspace-buffer-list)
+       (--reject (eq (current-buffer) it) it)
+       (if keep-alive?
+           (persp-remove-buffer it)
+         (kill-buffer it))))
+
+(defun my::workspaces|hide-other-buffers ()
+  "Hide all inactive buffers from the current workspace."
+  (interactive)
+  (my::workspaces/remove-other-buffers t))
+
+(defun my::workspaces|kill-other-buffers ()
+  "Kill all interactive buffers from the current workspace."
+  (interactive)
+  (my::workspaces/remove-other-buffers))
+
+(defun my::workspaces|hide-non-project-buffers ()
+  "Hide all file buffers that don't belong to the project workspace."
+  (interactive)
+  (let ((project-path (or (expand-file-name (my::workspaces/workspace-project-root))
+                          (projectile-project-root))))
+    (-some--> (+workspace-buffer-list)
+         ;; Dont remove non-remove buffers
+         (--filter (buffer-file-name it) it)
+         (--reject (s-contains? project-path (buffer-file-name it)) it)
+         (--each (persp-remove-buffer it) it))))
+#+END_SRC
+
+**** Config
+***** Always add buffers to current workspace
+
+Doom per default adds buffers to the current workspace on ~find-file~.
+I want buffers added whenever I visit a buffer.
+
+#+BEGIN_SRC elisp
+(after! persp-mode
+  (defun my::workspaces*add-special-buffer ()
+    (if-let* ((name (buffer-name))
+              (add-buffer? (or
+                            ;; Always add files to workspaces
+                            (buffer-file-name)
+                            ;; Add src buffer
+                            (s-matches? "\\*Org Src.*" name))))
+      (persp-add-buffer (current-buffer) (get-current-persp))))
+
+  (add-hook 'doom-switch-buffer-hook #'my::workspaces*add-special-buffer))
+#+END_SRC
+
 ** Text Editing :TEXT:
 *** Packages
 **** [[https://github.com/btford/write-good][btford/write-good: Naive linter for English prose]] :LINTING:DOOM:
@@ -5306,143 +5442,9 @@ Bindings
    :i "C-." #'+company/whole-lines))
 #+END_SRC
 
-*** NPM Mode
 *** Workspaces
 **** Config
-***** Always add buffers to current workspace
-
-Doom per default adds buffers to the current workspace on ~find-file~.
-I want buffers added whenever I visit a buffer.
-
-#+BEGIN_SRC elisp
-(after! persp-mode
-  (defun +workspace*add-special-buffer ()
-    (if-let* ((name (buffer-name))
-              (add-buffer? (or
-                            ;; Always add files to workspaces
-                            (buffer-file-name)
-                            ;; Add src buffer
-                            (s-matches? "\\*Org Src.*" name))))
-      (persp-add-buffer (current-buffer) (get-current-persp))))
-
-  (add-hook 'doom-switch-buffer-hook #'+workspace*add-special-buffer))
-#+END_SRC
-
 **** Functions
-***** Switch to workspace
-
-Enhancement of the default ~+workspace/switch-to~.
-This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
-
-#+BEGIN_SRC elisp
-(defvar counsel-workspace-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-<backspace>") #'+workspace/switch-to-delete-space)
-    map))
-
-(defun +workspace//switch-to-delete-space (workspace)
-  (let* ((current-workspace-name (+workspace-current-name))
-         (new-workspace-name
-            (or (--first (string= current-workspace-name it) (+workspace-list-names)) "main")))
-    (+workspace/delete workspace)
-    (+workspace-switch new-workspace-name)
-    (+workspace/my-switch-to)))
-
-(defun +workspace/switch-to-delete-space ()
-  (interactive)
-  (ivy-set-action #'+workspace//switch-to-delete-space)
-  (ivy-done))
-
-(defun +workspace/my-switch-to ()
-  (interactive)
-  (ivy-read "Switch to workspace: "
-            (+workspace-list-names)
-            :keymap counsel-workspace-map
-            :action #'+workspace/switch-to))
-#+END_SRC
-
-***** Close Other Workspaces
-
-#+BEGIN_SRC elisp
-(defun +workspace|close-others ()
-  "Close all other workspaces."
-  (interactive)
-  (--> (+workspace-list-names)
-       (--reject (string= (+workspace-current-name) it) it)
-       (-each it #'+workspace-delete))) ;
-#+END_SRC
-
-
-***** Find file for workspace
-
-Most of the time you create workspaces from a project.
-But when the CWD has changed in that workspace, you would have to relocate to
-the projects cwd to find a file.
-
-#+BEGIN_SRC elisp
-(defun +workspace/workspace-project-root (&optional arg)
-  "Gets the root dir for the current workspace"
-  (--find (s-match (concat (+workspace-current-name) "/$") it) projectile-known-projects))
-
-(defun +workspace|find-workspace-project-file ()
-  "Projectile find file for the project named after the current workspace."
-  (interactive)
-  (cl-letf (((symbol-function 'projectile-project-root) #'+workspace/workspace-project-root))
-    (projectile-find-file)))
-
-(defun +workspace|workspace-project-vc ()
-  "Projectile find file for the project named after the current workspace."
-  (interactive)
-  (let ((default-directory
-          (or (+workspace/workspace-project-root)
-              (my::file/project-root))))
-    (magit-status)))
-#+END_SRC
-
-***** New named workspace
-
-#+BEGIN_SRC elisp
-(defun +workspace/new-named ()
-  "Create a new named workspace."
-  (interactive)
-  (let ((name (read-string "New workspace name: ")))
-    (if name (+workspace/new name))))
-#+END_SRC
-
-***** Cleanup Workspace
-
-#+BEGIN_SRC elisp
-(defun +workspace/remove-other-buffers (&optional keep-alive?)
-  "Kill or remove all other buffers from current workspace."
-  (interactive)
-  (--> (+workspace-buffer-list)
-       (--reject (eq (current-buffer) it) it)
-       (if keep-alive?
-           (persp-remove-buffer it)
-         (kill-buffer it))))
-
-(defun +workspace|hide-other-buffers ()
-  "Hide all inactive buffers from the current workspace."
-  (interactive)
-  (+workspace/remove-other-buffers t))
-
-(defun +workspace|kill-other-buffers ()
-  "Kill all interactive buffers from the current workspace."
-  (interactive)
-  (+workspace/remove-other-buffers))
-
-(defun +workspace|hide-non-project-buffers ()
-  "Hide all file buffers that don't belong to the project workspace."
-  (interactive)
-  (let ((project-path (or (expand-file-name (+workspace/workspace-project-root))
-                          (projectile-project-root))))
-    (-some--> (+workspace-buffer-list)
-         ;; Dont remove non-remove buffers
-         (--filter (buffer-file-name it) it)
-         (--reject (s-contains? project-path (buffer-file-name it)) it)
-         (--each (persp-remove-buffer it) it))))
-#+END_SRC
-
 *** Grep Modes
 **** Bindings
 
@@ -6266,8 +6268,8 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("p" . "project")
-  :desc "Workspace Project Files" "P" #'+workspace|find-workspace-project-file
-  :desc "Project VC"              "v" #'+workspace|workspace-project-vc
+  :desc "Workspace Project Files" "P" #'my::workspaces|find-workspace-project-file
+  :desc "Project VC"              "v" #'my::workspaces|workspace-project-vc
   :desc "Project Bookmarks"       "RET" #'+bookmarks))
 #+END_SRC
 
@@ -6334,12 +6336,12 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("TAB" . "workspace")
-  :desc "Switch to"     "." #'+workspace/my-switch-to
-  :desc "Close others"  "o" #'+workspace|close-others
-  :desc "Create"        "c" #'+workspace/new-named
+  :desc "Switch to"     "." #'my::workspaces/switch-to
+  :desc "Close others"  "o" #'my::workspaces|close-others
+  :desc "Create"        "c" #'my::workspaces/new-named
   :desc "Rename"        "," #'+workspace/rename
-  :desc "Project Files" "p" #'+workspace|find-workspace-project-file
-  :desc "Project VC"    "v" #'+workspace|workspace-project-vc
+  :desc "Project Files" "p" #'my::workspaces|find-workspace-project-file
+  :desc "Project VC"    "v" #'my::workspaces|workspace-project-vc
   :desc "Clone"         "C" (cmd!
                              (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
                              (message "Cloned current workspace %s" (+workspace-current-name)))
