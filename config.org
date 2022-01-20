@@ -1215,6 +1215,26 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
         [tab] #'my:emmet/indent-or-yas-or-emmet-expand
         "M-E" #'emmet-expand-line))
 #+END_SRC
+**** [[https://elpa.gnu.org/packages/rainbow-mode.html][rainbow-mode]] :UI:
+
+Pretty print colors string with the color as the background.
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! rainbow-mode)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package rainbow-mode
+  :commands (rainbow-mode)
+  :config
+  ;; Always enable rgb, etc colors
+  (setq rainbow-html-colors t))
+#+END_SRC
+
 *** Javascript :JAVASCRIPT:
 **** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :LINTING:AUTOFIX:
 
@@ -1864,6 +1884,11 @@ Press =gr= with a following motion character like =w=.
 (package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
 #+END_SRC
 
+
+
+
+
+
 * Needs to be restrucutred
 ** Packages
 :PROPERTIES:
@@ -1880,9 +1905,6 @@ Press =gr= with a following motion character like =w=.
 
 ***** Colorized hex strings
 
-#+BEGIN_SRC elisp
-(package! rainbow-mode)
-#+END_SRC
 
 ***** Centered buffers, doom does not support this anymore.
 
@@ -3408,16 +3430,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** rainbow-mode
-
-#+BEGIN_SRC elisp
-(use-package rainbow-mode
-  :commands (rainbow-mode)
-  :config
-  ;; Always enable rgb, etc colors
-  (setq rainbow-html-colors t))
-#+END_SRC
-
 *** js-import
 
 #+BEGIN_SRC elisp
@@ -5388,13 +5400,6 @@ brew cask install font-liberation-sans
 #+BEGIN_SRC elisp
 ;; Fix midnight colors for doom-one theme
 (setq pdf-view-midnight-colors '("#BBC2CD" . "#282C34"))
-#+END_SRC
-
-*** rainbow-mode
-
-#+BEGIN_SRC elisp
-(use-package! rainbow-mode
-  :commands (rainbow-mode))
 #+END_SRC
 
 *** Magit Smerge Mode
