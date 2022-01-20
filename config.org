@@ -920,6 +920,7 @@ Mostly used to edit the macro registers ~q~.
         (insert register)))))
 #+END_SRC
 
+
 * Default Configuration
 ** Temp
 
@@ -1397,6 +1398,7 @@ Fix a paragraph that was formatted to a fill column.
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 #+END_SRC
+
 
 * Package Configuration
 ** Package Overrides / Disabling / Pinning
@@ -5464,6 +5466,18 @@ error in process filter: End of buffer
 #+END_SRC
 
 ** Org
+*** Packages
+**** [[https://github.com/astahlman/ob-async][ob-aysnc]] :DOOM:
+
+ob-async enables asynchronous execution of org-babel src blocks via the ~:async~ property.
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! ob-async
+  :after org-babel)
+#+END_SRC
+
 *** Functions
 **** Jump to definition for tangled files
 
@@ -5476,9 +5490,7 @@ Take me to the literate source file when using ~find-function~ etc.
   (ignore-errors
     (org-babel-tangle-jump-to-org)))
 #+END_SRC
-
 ** Hydras
-
 
 
 * Bindings
@@ -6552,14 +6564,3 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 
 (advice-add #'flycheck-handle-save :after #'+flycheck/fix-emacs-29-save)
 #+end_src
-
-
-* Configuration
-** Package Config
-*** Babel Async
-
-#+BEGIN_SRC elisp
-(use-package! ob-async
-  :after org-babel)
-#+END_SRC
-
