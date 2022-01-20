@@ -735,7 +735,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
   (+org/add-to-agenda-custom-commands
    '("u" "Unscheduled"
      ((alltodo ""
-               ((org-agenda-todo-ignore-scheduled 'future)
+               ((org-agenda-todo-ignore-scheduled 'all)
                 (org-agenda-tags-todo-honor-ignore-options t)))))))
 #+end_src
 
