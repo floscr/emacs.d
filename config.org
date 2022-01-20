@@ -2391,6 +2391,33 @@ I mainly changed the function marking helper.
     (haskell-mode-stylish-buffer)
     (save-buffer)))
 #+end_src
+*** Markdown :MARKDOWN:
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! markdown-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.mdx\\'" . markdown-mode))
+  (setq markdown-fontify-code-blocks-natively t)
+  :config
+  (add-hook! markdown-mode
+    (hl-line-mode -1)
+    (visual-line-mode)
+    (visual-fill-column-mode)
+    (outline-minor-mode)
+    (setq visual-fill-column-width 90
+          display-line-numbers nil)
+    (setq line-spacing 2
+          fill-column 80)))
+#+END_SRC
+**** Bindings
+
+#+begin_src elisp
+(map! (:map markdown-mode-map
+       :n "<"    #'markdown-promote
+       :n ">"    #'markdown-demote))
+#+end_src
+
 ** System :SYSTEM:
 *** Packages
 **** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
@@ -4639,7 +4666,6 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
 #+END_SRC
 
 ** Language Config
-*** MySQL :MYSQL:DATABASE:
 *** Nim
 **** Config
 
@@ -5106,30 +5132,6 @@ So I fix the checker manually for each mode after lsp was loaded.
 (setq mu4e-headers-leave-behavior 'apply)
 #+END_SRC
 
-*** Markdown
-
-Always keep markdown centered, without line numbers.
-
-#+BEGIN_SRC elisp
-(use-package! markdown-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.mdx\\'" . markdown-mode))
-  (setq markdown-fontify-code-blocks-natively t)
-  :config
-  (add-hook! markdown-mode
-    (hl-line-mode -1)
-    (visual-line-mode)
-    (visual-fill-column-mode)
-    (outline-minor-mode)
-    (setq visual-fill-column-width 90
-          display-line-numbers nil)
-    (setq line-spacing 2
-          fill-column 80))
-
-  (map! (:map markdown-mode-map
-          :n "<"    #'markdown-promote
-          :n ">"    #'markdown-demote)))
-#+END_SRC
 *** Open With
 
 *** Company
