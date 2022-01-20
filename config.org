@@ -1122,7 +1122,6 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
   (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
 #+end_src
 
-*** LSP
 ** Doom :DOOM:
 *** Workspaces
 **** Functions
@@ -3987,6 +3986,68 @@ Bindings
       company-idle-delay 0.5)
 #+END_SRC
 
+** LSP
+*** Config
+**** Guess root
+
+When working in nested git worktrees, lsp should infer the root by using projectile, by finding the closest ~.projectile~ file.
+This file is always created when [[*Create worktree workspace][creating a worktree]].
+
+#+begin_src elisp
+(setq lsp-auto-guess-root t)
+#+end_src
+
+**** Disable presets
+
+All are these are distracting and not helpful.
+
+- Removes all popup UIs
+- Remove signature message
+- Remove lsp flycheck
+
+#+BEGIN_SRC elisp
+(setq lsp-eldoc-render-all nil
+      lsp-eldoc-enable-hover nil
+      lsp-eldoc-enable-signature-help nil
+      lsp-eldoc-prefer-signature-help nil
+      lsp-inhibit-message t
+
+      lsp-eldoc-enable-hover nil
+      ;; Disable Signature
+      lsp-signature-auto-activate nil
+      lsp-signature-render-documentation nil
+      lsp-signature-doc-lines 1
+
+      ;; Disable flycheck override
+      lsp-diagnostic-package :none
+
+      lsp-highlight-symbol-at-point nil
+      ;; Disable make error highlighting
+      lsp-prefer-flymake nil)
+
+;; (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
+
+(setq lsp-on-idle-hook nil)
+#+END_SRC
+
+**** Fix flycheck for js buffers :FIX:
+
+LSP manually disables all checkers and chooses it's own.
+This way you can't add checkers after your regular hooks like ~js2-hook~.
+So I fix the checker manually for each mode after lsp was loaded.
+
+#+BEGIN_SRC elisp
+(after! lsp-mode
+  (remove-hook 'lsp-mode-hook #'+lsp-init-flycheck-or-flymake-h))
+
+(defun +js/fix-checker ()
+  "Fix LSP overwritten checkers."
+  (interactive)
+  (when (-contains? '(js2-mode rjsx-mode) major-mode)
+    (flycheck-select-checker 'javascript-eslint)))
+
+(add-hook 'lsp-mode-hook #'+js/fix-checker)
+#+END_SRC
 ** Snippets :SNIPPETS:
 *** Functions
 **** Expand snippet by name
@@ -5474,68 +5535,6 @@ Source:
   :init
   (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
   (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
-#+END_SRC
-
-*** LSP
-**** Guess root
-
-When working in nested git worktrees, lsp should infer the root by using projectile, by finding the closest ~.projectile~ file.
-This file is always created when [[*Create worktree workspace][creating a worktree]].
-
-#+begin_src elisp
-(setq lsp-auto-guess-root t)
-#+end_src
-
-**** Disable presets
-
-All are these are distracting and not helpful.
-
-- Removes all popup UIs
-- Remove signature message
-- Remove lsp flycheck
-
-#+BEGIN_SRC elisp
-(setq lsp-eldoc-render-all nil
-      lsp-eldoc-enable-hover nil
-      lsp-eldoc-enable-signature-help nil
-      lsp-eldoc-prefer-signature-help nil
-      lsp-inhibit-message t
-
-      lsp-eldoc-enable-hover nil
-      ;; Disable Signature
-      lsp-signature-auto-activate nil
-      lsp-signature-render-documentation nil
-      lsp-signature-doc-lines 1
-
-      ;; Disable flycheck override
-      lsp-diagnostic-package :none
-
-      lsp-highlight-symbol-at-point nil
-      ;; Disable make error highlighting
-      lsp-prefer-flymake nil)
-
-;; (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
-
-(setq lsp-on-idle-hook nil)
-#+END_SRC
-
-**** Fix flycheck for js buffers
-
-LSP manually disables all checkers and chooses it's own.
-This way you can't add checkers after your regular hooks like ~js2-hook~.
-So I fix the checker manually for each mode after lsp was loaded.
-
-#+BEGIN_SRC elisp
-(after! lsp-mode
-  (remove-hook 'lsp-mode-hook #'+lsp-init-flycheck-or-flymake-h))
-
-(defun +js/fix-checker ()
-  "Fix LSP overwritten checkers."
-  (interactive)
-  (when (-contains? '(js2-mode rjsx-mode) major-mode)
-    (flycheck-select-checker 'javascript-eslint)))
-
-(add-hook 'lsp-mode-hook #'+js/fix-checker)
 #+END_SRC
 
 *** Mail
