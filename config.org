@@ -2137,13 +2137,6 @@ Universal argument to ignore review branches."
     (ivy-read "Checkout: " branches :action #'magit-checkout)))
 #+END_SRC
 
-**** DELETE Load forge when needed
-
-#+BEGIN_SRC elisp
-(use-package! forge
-  :commands (forge-browse-commit))
-#+END_SRC
-
 **** Commit Template
 
 Loads commit template from ~./git/TEMPLATE~ if the file exist.
