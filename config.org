@@ -491,6 +491,28 @@ Include colons as delimiters for now
 (modify-syntax-entry ?: "w" grep-mode-syntax-table)
 #+end_src
 
+** Secrets
+
+Config files that I don't want to share with the world.
+They will be stored in here:
+
+#+BEGIN_SRC elisp
+(defvar my::secrets:config-file nil
+  "My private config file.")
+(setq my::secrets:config-file "~/.config/secrets.el")
+#+END_SRC
+
+And I will load them on system start:
+
+#+BEGIN_SRC elisp
+(defun my::secrets/load-config-file ()
+  (-some->> my::secrets:config-file
+    (-id-when 'file-exists-p)
+    (load-library)))
+
+(my::secrets/load-config-file)
+#+END_SRC
+
 * Needs to be restrucutred
 ** Packages
 :PROPERTIES:
@@ -1245,28 +1267,6 @@ Package override that fixes multiple remotes:
 
 * Configuration
 ** External Files
-*** Secrets
-
-Config files that I don't want to share with the world.
-They will be stored in here:
-
-#+BEGIN_SRC elisp
-(defvar my:secrets-config-file nil
-  "My private config file.")
-(setq my:secrets-config-file "~/.config/secrets.el")
-#+END_SRC
-
-And I will load them on system start:
-
-#+BEGIN_SRC elisp
-(defun my/load-secrets-config ()
-  (-some->> my:secrets-config-file
-    (-id-when 'file-exists-p)
-    (load-library)))
-
-(my/load-secrets-config)
-#+END_SRC
-
 ** Defaults
 *** Garbage Collection
 
