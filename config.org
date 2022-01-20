@@ -2275,6 +2275,14 @@ Press =gr= with a following motion character like =w=.
 #+BEGIN_SRC emacs-lisp :tangle no
 (package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
 #+END_SRC
+**** [[https://github.com/hlissner/evil-snipe][evil-snipe: 2-char searching ala vim-sneak & vim-seek, for evil-mode]]
+***** Config
+****** Repeat snipe after further key press
+
+#+BEGIN_SRC elisp
+(after! evil-snipe
+  (setq evil-snipe-repeat-keys t))
+#+END_SRC
 
 ** Pdf :PDF:
 *** Config
@@ -4280,15 +4288,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Eshell
-*** Evil-Snipe
-**** Repeat snipe after further key press
-
-#+BEGIN_SRC elisp
-(after! evil-snipe
-  (setq evil-snipe-repeat-keys t))
-#+END_SRC
-
 *** EWW Web Browser
 **** Set the max page width
 
