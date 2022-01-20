@@ -2717,6 +2717,24 @@ This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar
                               (KB "1024 * B" "Kilo Byte")
                               (B nil "Byte")))
 #+END_SRC
+** Terminal
+*** [[https://www.emacswiki.org/emacs/ComintMode][Comint]]
+**** Bindings
+***** Allow evil enter anywhere :FIX:
+
+Fix for comint mode, throwing an error when pressing enter in the middle of the line.
+
+#+BEGIN_EXAMPLE
+error in process filter: End of buffer
+#+END_EXAMPLE
+
+#+BEGIN_SRC elisp
+(map!
+ :after comint
+ :map comint-mode-map
+ :ni "RET" (cmd! (comint-send-input nil t))
+ :n "<C-backspace>" #'comint-clear-buffer)
+#+END_SRC
 
 
 * Needs to be restrucutred
@@ -4225,23 +4243,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Comint
-**** Allow evil enter anywhere
-
-Fix for comint mode, throwing an error when pressing enter in the middle of the line.
-
-#+BEGIN_EXAMPLE
-error in process filter: End of buffer
-#+END_EXAMPLE
-
-#+BEGIN_SRC elisp
-(map!
- :after comint
- :map comint-mode-map
- :ni "RET" (cmd! (comint-send-input nil t))
- :n "<C-backspace>" #'comint-clear-buffer)
-#+END_SRC
-
 *** Company
 **** Config
 ***** Sort company by occurrence
