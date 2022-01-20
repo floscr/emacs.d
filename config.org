@@ -1933,7 +1933,7 @@ This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# -
         (evil-insert-newline-above)
       (evil-insert-newline-below))
     (indent-according-to-mode)
-    (yas/insert-by-name "key")))
+    (my::snippets/insert-by-name "key")))
 
 (defun my::json|insert-key-above ()
   "Function docstring"
@@ -3863,6 +3863,75 @@ Find file on enter press for ~ivy-occur-mode~
 (map! :map ivy-occur-mode-map
       :gni "RET" #'ivy-occur-press-and-switch)
 #+END_SRC
+** Snippets
+*** Functions
+**** Expand snippet by name
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/questions/10211730/insert-yasnippet-by-name][emacs - Insert yasnippet by name - Stack Overflow]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun my::snippets/insert-by-name (name)
+  (require 'noflet)
+  (noflet ((dummy-prompt
+            (prompt choices &optional display-fn)
+            (declare (ignore prompt))
+            (or (cl-find name choices :key display-fn :test #'string=)
+                (throw 'notfound nil))))
+    (let ((yas-prompt-functions '(dummy-prompt)))
+      (catch 'notfound
+        (yas-insert-snippet t)))))
+#+END_SRC
+
+**** Use last src language
+:PROPERTIES:
+:SOURCE:   [[https://github.com/tecosaur/emacs-config/blob/0c50e2a651e8903a922a60acf701d4a6ba0e1d29/config.org][emacs-config/config.org at 0c50e2a651e8903a922a60acf701d4a6ba0e1d29 · tecosaur/emacs-config]]
+:END:
+
+Used with [[file:snippets/org-mode/src::`%`$0][src snippet]] to auto fill the language from the previously used src language.
+
+#+BEGIN_SRC elisp
+(defun my::snippets/org-src-lang ()
+  "Try to find the current language of the src/header at point.
+Return nil otherwise."
+  (save-excursion
+    (pcase
+        (downcase
+         (buffer-substring-no-properties
+          (goto-char (line-beginning-position))
+          (or (ignore-errors (1- (search-forward " " (line-end-position))))
+              (1+ (point)))))
+      ("#+property:"
+       (when (re-search-forward "header-args:")
+         (buffer-substring-no-properties
+          (point)
+          (or (and (forward-symbol 1) (point))
+              (1+ (point))))))
+      ("#+begin_src"
+       (buffer-substring-no-properties
+        (point)
+        (or (and (forward-symbol 1) (point))
+            (1+ (point)))))
+      ("#+header:"
+       (search-forward "#+begin_src")
+       (my::snippets/org-src-lang))
+      (_ nil))))
+
+(defun my::snippets/org-last-src-lang ()
+  (save-excursion
+    (beginning-of-line)
+    (when (search-backward "#+begin_src" nil t)
+      (my::snippets/org-src-lang))))
+#+END_SRC
+*** Config
+
+**** Disable doom snippets / load custom snippets
+
+#+BEGIN_SRC elisp
+(use-package! yasnippet
+  :init
+  (require 'doom-snippets nil t))
+#+END_SRC
 
 ** Web :WEB:
 *** [[https://github.com/skeeto/elfeed][Elfeed]] :DOOM:
@@ -5456,75 +5525,6 @@ Bindings
  :localleader
  :desc "Remove line" "d" (cmd! (let ((inhibit-read-only t))
                                  (my::buffer/delete-current-line))))
-#+END_SRC
-
-*** Yasnippet
-**** Utils
-***** Expand snippet by name
-:PROPERTIES:
-:SOURCE:   [[https://stackoverflow.com/questions/10211730/insert-yasnippet-by-name][emacs - Insert yasnippet by name - Stack Overflow]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun yas/insert-by-name (name)
-  (require 'noflet)
-  (noflet ((dummy-prompt
-            (prompt choices &optional display-fn)
-            (declare (ignore prompt))
-            (or (cl-find name choices :key display-fn :test #'string=)
-                (throw 'notfound nil))))
-    (let ((yas-prompt-functions '(dummy-prompt)))
-      (catch 'notfound
-        (yas-insert-snippet t)))))
-#+END_SRC
-
-***** Use last src language
-:PROPERTIES:
-:SOURCE:   [[https://github.com/tecosaur/emacs-config/blob/0c50e2a651e8903a922a60acf701d4a6ba0e1d29/config.org][emacs-config/config.org at 0c50e2a651e8903a922a60acf701d4a6ba0e1d29 · tecosaur/emacs-config]]
-:END:
-
-Used with [[file:snippets/org-mode/src::`%`$0][src snippet]] to auto fill the language from the previously used src language.
-
-#+BEGIN_SRC elisp
-(defun +yas/org-src-lang ()
-  "Try to find the current language of the src/header at point.
-Return nil otherwise."
-  (save-excursion
-    (pcase
-        (downcase
-         (buffer-substring-no-properties
-          (goto-char (line-beginning-position))
-          (or (ignore-errors (1- (search-forward " " (line-end-position))))
-              (1+ (point)))))
-      ("#+property:"
-       (when (re-search-forward "header-args:")
-         (buffer-substring-no-properties
-          (point)
-          (or (and (forward-symbol 1) (point))
-              (1+ (point))))))
-      ("#+begin_src"
-       (buffer-substring-no-properties
-        (point)
-        (or (and (forward-symbol 1) (point))
-            (1+ (point)))))
-      ("#+header:"
-       (search-forward "#+begin_src")
-       (+yas/org-src-lang))
-      (_ nil))))
-
-(defun +yas/org-last-src-lang ()
-  (save-excursion
-    (beginning-of-line)
-    (when (search-backward "#+begin_src" nil t)
-      (+yas/org-src-lang))))
-#+END_SRC
-
-**** Load custom snippets
-
-#+BEGIN_SRC elisp
-(use-package! yasnippet
-  :init
-  (require 'doom-snippets nil t))
 #+END_SRC
 
 *** Babel Async
