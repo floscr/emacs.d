@@ -1080,8 +1080,10 @@ Include colons as delimiters for now
 
 #+begin_src elisp
 (modify-syntax-entry ?: "w" emacs-lisp-mode-syntax-table)
-(modify-syntax-entry ?: "w" org-mode-syntax-table)
-(modify-syntax-entry ?: "w" grep-mode-syntax-table)
+(after! org-mode
+  (modify-syntax-entry ?: "w" org-mode-syntax-table))
+(after! grep-mode
+  (modify-syntax-entry ?: "w" grep-mode-syntax-table))
 #+end_src
 
 ** Secrets
