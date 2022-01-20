@@ -990,6 +990,24 @@ Centered buffers, doom does not support this anymore.
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! visual-fill-column)
 #+END_SRC
+**** [[https://www.emacswiki.org/emacs/NarrowIndirect][narrow-indirect]]
+
+When narrowing to region or defun, make it in an indirect other window.
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
+#+END_SRC
+
+***** Bindings
+
+#+BEGIN_SRC elisp
+(use-package! narrow-indirect
+  :init
+  (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
+  (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
+#+END_SRC
 
 ** Programming :PROGRAMMING:
 *** General Purpose
@@ -4327,12 +4345,6 @@ error in process filter: End of buffer
 
 *** General Packages
 **** UI
-***** Narrow to an indirect buffer
-
-#+BEGIN_SRC elisp
-(package! narrow-indirect :recipe (:host github :repo "emacsmirror/narrow-indirect"))
-#+END_SRC
-
 *** Language Packages
 
 **** Nim
@@ -5113,21 +5125,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Narrow To Defun Indirect
-
-When narrowing to region or defun, make it in an indirect other window.
-
-Source:
-- [[./packages/narrow-indirect.el]]
-- [[https://www.emacswiki.org/emacs/NarrowIndirect][EmacsWiki: Narrow Indirect]]
-
-#+BEGIN_SRC elisp
-(use-package! narrow-indirect
-  :init
-  (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
-  (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
-#+END_SRC
-
 *** Mail
 **** Config
 ***** Accounts
