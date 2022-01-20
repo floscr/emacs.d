@@ -1305,7 +1305,11 @@ Edit browser input fields with emacs.
 
 #+begin_src elisp
 (use-package! atomic-chrome
-  :commands (atomic-chrome-start-server))
+  :commands (atomic-chrome-start-server)
+  :config
+  (setq
+   atomic-chrome-url-major-mode-alist
+   '(("github\\.com" . gfm-mode))))
 #+end_src
 
 **** [[https://github.com/cbowdon/daemons.el][cbowdon/daemons.el Systemd UI]] :LINUX:
@@ -3404,17 +3408,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** atomic chrome
-
-**** Major mode
-
-[[https://github.com/alpha22jp/atomic-chrome#set-major-mode-for-editing-buffer][alpha22jp/atomic-chrome: Edit text area on Chrome with Emacs using Atomic Chrome]]
-
-#+begin_src elisp
-(setq atomic-chrome-url-major-mode-alist
-      '(("github\\.com" . gfm-mode)))
-#+end_src
-
 *** rainbow-mode
 
 #+BEGIN_SRC elisp
