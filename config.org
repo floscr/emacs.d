@@ -5581,9 +5581,6 @@ Bindings
    :i "C-." #'+company/whole-lines))
 #+END_SRC
 
-*** Workspaces
-**** Config
-**** Functions
 *** Babel Async
 
 #+BEGIN_SRC elisp
