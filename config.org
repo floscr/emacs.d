@@ -39,8 +39,8 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
   Prefixed with a ~-~
 - [[*Template Literals][Template Literals]]
   ~template~ or ~t~ macros
-
-* Tangle Headers
+* Setup
+** Tangle Headers
 
 #+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t -*-
@@ -53,18 +53,7 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 #+BEGIN_SRC emacs-lisp :tangle "init.el" :comments no
 ;; -*- no-byte-compile: t; -*-
 #+END_SRC
-
-* My Standard Library
-:PROPERTIES:
-:header-args: :tangle "autoload.el" :comments link
-:END:
-
-Macros & Functions that extend my elisp standard library.
-If you copy any of my emacs-lisp code, you will need these functions.
-
-Tangles to [[file:autoload.el][autoload.el]]
-
-** Required Package
+** Required Packages
 
 Packages and utilities needed for this config.
 
@@ -77,6 +66,23 @@ Packages and utilities needed for this config.
 (require 'f)
 (require 'noflet)
 #+END_SRC
+
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
+(require 'dash)
+(require 's)
+(require 'f)
+(require 'noflet)
+#+END_SRC
+
+* My Standard Library
+:PROPERTIES:
+:header-args: :tangle "autoload.el" :comments link
+:END:
+
+Macros & Functions that extend my elisp standard library.
+If you copy any of my emacs-lisp code, you will need these functions.
+
+Tangles to [[file:autoload.el][autoload.el]]
 
 ** Macros
 *** Template Literals
