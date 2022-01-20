@@ -306,16 +306,6 @@ Packages and utilities needed for this config.
 (defun my/noop (&optional args) nil)
 #+END_SRC
 
-*** Kill and Message
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my/kill-and-message (x)
-  "Executes kill-new but with a message log side effect."
-  (kill-new x)
-  (message "Copied to clipboard: %s" x))
-#+END_SRC
-
 *** Without undo
 
 #+BEGIN_SRC elisp
@@ -331,6 +321,36 @@ modifications."
          (progn ,@forms)
        (set-buffer-modified-p modified)) ()))
 #+END_SRC
+** Debugging / Logging
+*** Kill and Message
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my/kill-and-message (x)
+  "Executes kill-new but with a message log side effect."
+  (kill-new x)
+  (message "Copied to clipboard: %s" x))
+#+END_SRC
+
+*** Convert boolean to enabled/disabled string
+
+#+BEGIN_SRC elisp
+(defun my/bool-to-enabled-string (x)
+  "Convert bool X to string for messaging.
+t   -> \"Enabled\")
+nil -> \"Disabled\""
+  (if x "Enabled" "Disabled"))
+#+END_SRC
+
+*** Variable t/nil toggle message
+
+#+BEGIN_SRC elisp
+(defun my/bool-state-message (x)
+  "Log message if a bool is enabled or not"
+  (interactive)
+  (message (t! "<<(symbol-name x)>>: <<(my/bool-to-enabled-string (symbol-value x))>>")))
+#+END_SRC
+
 ** Old
 *** Bookmarks
 
@@ -602,26 +622,6 @@ or manually traverse upwards until the .git directory is found."
    (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
 #+END_SRC
 *** Utils
-**** General
-***** Convert bool to enabled/disabled string
-
-#+BEGIN_SRC elisp
-(defun my/bool-to-enabled-string (x)
-  "Convert bool X to string for messaging.
-t   -> \"Enabled\")
-nil -> \"Disabled\""
-  (if x "Enabled" "Disabled"))
-#+END_SRC
-
-***** Variable t/nil toggle message
-
-#+BEGIN_SRC elisp
-(defun my/bool-state-message (x)
-  "Log message if a bool is enabled or not"
-  (interactive)
-  (message (t! "<<(symbol-name x)>>: <<(my/bool-to-enabled-string (symbol-value x))>>")))
-#+END_SRC
-
 **** Dash Extensions
 ***** -tap
 
