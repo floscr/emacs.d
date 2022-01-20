@@ -1113,6 +1113,29 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 #+end_src
 
 *** LSP
+** Text Editing :TEXT:
+*** Packages
+**** [[https://github.com/btford/write-good][btford/write-good: Naive linter for English prose]] :LINTING:
+***** Config
+****** Disable doom defined hooks for writegood mode
+
+#+BEGIN_SRC elisp
+(use-package! writegood-mode
+  :hook 'nil)
+#+END_SRC
+
+****** Disable ~writegood-mode~ with ~spell-fu~ mode
+
+#+BEGIN_SRC elisp
+(defun +spell-fu/activate-writegood-mode-hook ()
+  "Toggle writegood mode with spell-fu mode."
+  (cond
+   (spell-fu-mode (writegood-mode 1))
+   (t (writegood-mode -1))))
+
+(add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
+#+END_SRC
+
 ** Programming Languages :PROGRAMMING:
 *** General Purpose
 **** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
@@ -3498,29 +3521,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** writegood mode
-
-**** Config
-
-***** Disable doom defined hooks for writegood mode
-
-#+BEGIN_SRC elisp
-(use-package! writegood-mode
-  :hook 'nil)
-#+END_SRC
-
-**** Disable ~writegood-mode~ with ~spell-fu~ mode
-
-#+BEGIN_SRC elisp
-(defun +spell-fu/activate-writegood-mode-hook ()
-  "Toggle writegood mode with spell-fu mode."
-  (cond
-   (spell-fu-mode (writegood-mode 1))
-   (t (writegood-mode -1))))
-
-(add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
-#+END_SRC
-
 *** Edbi
 **** Bridge
 
