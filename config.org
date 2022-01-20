@@ -3546,7 +3546,7 @@ arguments can be set as a list via ‘nimpretty-args’."
   :desc "Import File" "i" #'my::nim|import))
 #+END_SRC
 
-** Git :GIT:
+** Git / Magit :GIT:
 *** Packages
 **** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
 
