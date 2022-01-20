@@ -3,7 +3,7 @@
 #+PROPERTY: header-args :emacs-lisp :tangle yes :comments link
 #+STARTUP: org-startup-folded: showall
 #+DISABLE_SPELLCHECKER: t
-#+TODO: TODO(t) ACTIVE(a) | INACTIVE(i)
+#+TODO: TODO(t) ACTIVE(a) | INACTIVE(i) DISABLED(d)
 
 * Docs
 ** Code style
