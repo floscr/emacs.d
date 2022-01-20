@@ -4,11 +4,15 @@
 #+STARTUP: org-startup-folded: showall
 #+DISABLE_SPELLCHECKER: t
 #+TODO: TODO(t) ACTIVE(a) | INACTIVE(i)
-#+BEGIN_SRC emacs-lisp
-;; -*- lexical-binding: t -*-
-#+END_SRC
 
-* Code Style
+* Docs
+** Code style
+
+Most of the code here will follow a functional mindset using [[https://github.com/magnars/dash.el][dash.el]] and [[https://github.com/magnars/s.el][s.el]].
+I will prefer those functions over built in functions if they are nicer to use.
+
+I often use my helper function [[file:autoload.org::*Template Literals][(template)]] for template strings.
+
 ** Variable Naming
 
 All my private functions have the prefix ~my~.
@@ -32,13 +36,15 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 - [[*Template Literals][Template Literals]]
   ~template~ or ~t~ macros
 
-** Code style
+* Tangle Headers
 
-Most of the code here will follow a functional mindset using [[https://github.com/magnars/dash.el][dash.el]] and [[https://github.com/magnars/s.el][s.el]].
-I will prefer those functions over built in functions if they are nicer to use.
+#+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: t -*-
+#+END_SRC
 
-I often use my helper function [[file:autoload.org::*Template Literals][(template)]] for template strings.
-
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments no
+;; -*- no-byte-compile: t; -*-
+#+END_SRC
 
 * My Standard Library
 :PROPERTIES:
@@ -698,6 +704,119 @@ The optional argument NEW-WINDOW is not used."
   (+bookmarks (-concat +bookmarks:main (+bookmarks/local/list))))
 #+END_SRC
 
+Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
+
+#+BEGIN_SRC elisp
+(defvar +bookmarks:local-bookmarks-file nil)
+(setq +bookmarks:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
+
+(defun +bookmarks/find-bookmarks (x &optional &key other-window?)
+  "Jump to a X relative to the project root, go to character POS."
+  (require 'link-hint)
+  (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
+               (item (car x)))
+    (let* ((file (-some->> (alist-get 'file item)
+                   (--when (alist-get 'relative item)
+                           (f-join (projectile-project-root) it))))
+           (buffer-is-open (when file (get-file-buffer file))))
+      (when file
+        (funcall find-fn file)
+        (+workspaces-add-current-buffer-h))
+      (when-let ((fn (alist-get 'fn item)))
+        (funcall fn))
+
+      ;; org item
+      (-some--> (alist-get 'org item)
+        (link-hint--open-org-link it)
+        ((lambda ()
+           (when (alist-get 'narrow item)
+             (org-narrow-to-element)))))
+
+      ;; goto, disable-relocation
+      ;; Go to a location matched by regex
+      ;; Unless disable-relocation is enabled and the file is already visited
+      (-some--> (alist-get 'goto item)
+        (--id-when (or (not buffer-is-open)
+                       (not (alist-get 'disable-relocation item))) it)
+        (--tap (progn
+                 (goto-char (point-min))
+                 (cond
+                  ((eq 'integer (type-of it))
+                   (goto-line it))
+                  ((eq 'string (type-of it))
+                   (search-forward it))))
+               it))
+      ;; action
+      ;; Execute a function after find file
+      (-some--> (alist-get 'action item)
+        (call-interactively it))
+      ;; goto-bol
+      ;; Go to the beginning, since the regex search
+      ;; will leave the cursor at the end of the search
+      (-some--> (alist-get 'goto-bol item)
+        (evil-first-non-blank)))))
+
+(defun +bookmarks/local/save (xs)
+  "Save an alist as json to the +bookmarks:local-bookmarks-file"
+  (->> xs
+       (json-encode)
+       ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file)))))
+
+(defun +bookmarks/find-bookmarks-other-window (x)
+  "Open bookmark X in other window, used with ivy action 'j'."
+  (+bookmarks/find-bookmarks (cdr x) :other-window? t))
+
+(defun +bookmarks/local|save ()
+  (interactive)
+  (let ((entry `((file . ,(buffer-file-name))
+                 (goto . ,(line-number-at-pos))
+                 (name . ,(read-string "Bookmark Name: ")))))
+    (->> (+bookmarks/local/list)
+      (-append entry)
+      (+bookmarks/local/save))))
+
+(defun +bookmarks/local/kill (x)
+  (->>
+   (--remove (cl-equalp (car (cdr x)) it) (+bookmarks/local/list))
+   (+bookmarks/local/save)))
+
+(defun +bookmarks/local/rename (x)
+  (require 'a)
+  (-let ((item (car (cdr x))))
+    (-log (a-get (cdr item) :name))
+    (->>
+     (+bookmarks/local/list)
+     (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
+     (+bookmarks/local/save))))
+
+(defun +bookmarks/local/list ()
+  (-some->> +bookmarks:local-bookmarks-file
+    (-id-when #'f-exists?)
+    (json-read-file)
+    (-map 'identity)))
+
+;;;###autoload
+(defun +bookmarks (&optional bookmarks-list)
+  "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
+If found, show an ivy window with the bookmarks"
+  (interactive)
+  (-if-let*
+      ((bookmarks
+        (or bookmarks-list
+            (+bookmarks/local/list)))
+       (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
+      (ivy-read "Bookmark: " bookmarks
+                :action (lambda (x) (+bookmarks/find-bookmarks (cdr x)))
+                :caller #'+bookmarks|find-bookmarks)
+    (user-error "No bookmarks file found at project root.")))
+
+(after! ivy
+  (ivy-set-actions
+   '+bookmarks|find-bookmarks
+   '(("j" +bookmarks/find-bookmarks-other-window "open in other window")
+     ("k" +bookmarks/local/kill "Remove")
+     ("r" +bookmarks/local/rename "Rename"))))
+#+END_SRC
 ** LY: Evil Lisp Navigation
 
 A navigation system for lisp languages that I'm comfortable with,
@@ -854,7 +973,6 @@ Result depends on syntax table's string quote character."
    ("k" (+ly|backward-line) "Backward Line"))
 #+END_SRC
 
-
 ** Indirect Indent Mode
 
 Adds minor mode for editing indented source code in an indirect buffer,
@@ -909,15 +1027,302 @@ Saving and committing keeps the indentation in the source buffer.
       (setq +indirect-indent indent))))
 #+END_SRC
 
+
+* New Package Configuration
+** Emacs :EMACS:
+*** Libraries
+
+Packages that enhance or fix ~emacs-lisp~.
+
+**** [[https://github.com/nicferrier/emacs-noflet][noflet]] :FIX:
+
+Override functions like variables with using ~(flet ((#'my-fn)))~
+
+Since ~flet~ was deprecated, I'm using this for now.
+Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! noflet)
+#+END_SRC
+*** Completion
+**** [[https://github.com/raxod502/prescient.el][company-prescient]] :EMACS:
+
+Better sorting for company
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! prescient)
+(package! company-prescient)
+#+end_src
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! prescient
+  :config
+  (prescient-persist-mode 1))
+
+(use-package! company-prescient
+  :after company
+  :config
+  (company-prescient-mode 1))
+#+END_SRC
+*** Spell Checking
+**** Flyspell
+***** Defer flyspell until first ~evil-insert-state~
+
+Flyspell most of the time is an annoyance when opening a file just for reading.
+I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
+
+So I defer it until the first text change has been done (or the first insert state).
+I've tried it on the ~first-change-hook~, but that is also affected by changing todo states for example in ~org-mode~.
+
+#+begin_src elisp
+(defun +flyspell/load-after-first-insert--activate ()
+  "Turns on flyspell after the first buffer change or evil-insert state."
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert)
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate)
+  (spell-fu-mode 1))
+
+(defun +flyspell/load-after-first-insert ()
+  "Turns on flyspell after the first buffer evil-insert state.
+Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set."
+  (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
+        (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
+
+(use-package! flyspell
+  :init
+  (remove-hook! '(org-mode-hook markdown-mode-hook) #'flyspell-mode)
+  (remove-hook! '(org-mode-hook markdown-mode-hook text-mode-hook) #'spell-fu-mode)
+  (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
+#+end_src
+
+*** LSP
+** Programming Languages :PROGRAMMING:
+*** General Purpose
+**** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! tree-sitter)
+(package! tree-sitter-langs)
+#+end_src
+
+***** Config
+
+#+begin_src emacs-lisp :tangle no
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  ;; (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
+**** [[https://github.com/chubin/cheat.sh][cheat-sh]] :CLI:
+
+Community collection of snippets for command line tools.
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! cheat-sh)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package cheat-sh
+  :commands (cheat-sh)
+  :config
+  (setq cheat-sh-topic-mode-map
+        '((awk-mode . "awk")
+          (c++-mode . "cpp")
+          (c-mode . "c")
+          (clojure-mode . "clojure")
+          (clojurescript-mode . "clojure")
+          (dockerfile-mode . "docker")
+          (emacs-lisp-mode . "elisp")
+          (fish-mode . "fish")
+          (go-mode . "go")
+          (haskell-mode . "haskell")
+          (hy-mode . "hy")
+          (java-mode . "java")
+          (js-jsx-mode . "javascript")
+          (js-mode . "javascript")
+          (js-mode . "js")
+          (lisp-interaction-mode . "elisp")
+          (lisp-mode . "lisp")
+          (objc-mode . "objectivec")
+          (pike-mode . "pike")
+          (powershell-mode . "powershell")
+          (python-mode . "python")
+          (rust-mode . "rust")
+          (sh-mode . "bash")
+          (nim-mode . "nim"))))
+#+END_SRC
+**** [[https://github.com/smihica/emmet-mode][emmet-mode]] :CSS:
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! emmet-mode)
+#+end_src
+
+***** Functions
+****** Indent or Yase Emmet Expand
+
+Source: [[file:~/.emacs.d/modules/lang/web/autoload/html.el::defun +web/indent-or-yas-or-emmet-expand (][Doom: modules/lang/web/autoload/html.el]]
+
+#+begin_src emacs-lisp
+(defun my:emmet/indent-or-yas-or-emmet-expand ()
+  "Do-what-I-mean on TAB.
+
+Invokes `indent-for-tab-command' if at or before text bol, `yas-expand' if on a
+snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
+`yas-minor-mode' is enabled or not."
+  (interactive)
+  (call-interactively
+   (cond ((or (<= (current-column) (current-indentation))
+              (not (eolp))
+              (not (or (memq (char-after) (list ?\n ?\s ?\t))
+                       (eobp))))
+          #'indent-for-tab-command)
+         ((featurep! :editor snippets)
+          (require 'yasnippet)
+          (if (yas--templates-for-key-at-point)
+              #'yas-expand
+            #'emmet-expand-yas))
+         (#'emmet-expand-line))))
+#+end_src
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! emmet-mode
+  :preface (defvar emmet-mode-keymap (make-sparse-keymap))
+  :hook (css-mode web-mode html-mode haml-mode nxml-mode)
+  :config
+  (when (require 'yasnippet nil t)
+    (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
+  (setq emmet-move-cursor-between-quotes t)
+  (map! :map emmet-mode-keymap
+        :v [tab] #'emmet-wrap-with-markup
+        [tab] #'my:emmet/indent-or-yas-or-emmet-expand
+        "M-E" #'emmet-expand-line))
+#+END_SRC
+*** Javascript :JAVASCRIPT:
+**** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :LINTING:AUTOFIX:
+
+A javascript auto-fixer that isn't slow.
+Needs [[https://www.npmjs.com/package/eslint_d][eslint_d]] binary in ~$PATH~.
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! eslintd-fix)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! eslintd-fix
+  :after js2-mode
+  :config
+  (setq
+   flycheck-javascript-eslint-executable (executable-find "eslint_d")
+   flycheck-disabled-checkers '(javascript-jshint javascript)))
+#+END_SRC
+
+***** Functions
+****** Enable eslintd for writable buffers
+
+#+begin_src elisp
+(defun my:js/start-eslint ()
+  "Start eslint on writable buffers.
+
+When enabling on read-only buffers it will throw an error."
+  (unless buffer-read-only
+    (eslintd-fix-mode)))
+
+(add-hook 'js2-mode-hook #'my:js/start-eslint)
+#+end_src
+*** Nix :NIXOS:NIX:
+**** Nixpkgs Fmt :AUTOFIX:
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! nixpkgs-fmt)
+#+END_SRC
+
+***** Config
+
+#+begin_src elisp
+(use-package nixpkgs-fmt
+  :after nix-mode
+  :config
+  (setq nixpkgs-fmt-on-save-mode t)
+  :init
+  (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
+#+end_src
+*** Emacs Lisp (Elisp) :ELISP:
+
+** System :SYSTEM:
+*** [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] :BROWSER:
+
+Edit browser input fields with emacs.
+
+**** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! atomic-chrome)
+#+END_SRC
+**** Config
+
+#+begin_src elisp
+(use-package! atomic-chrome
+  :command (atomic-chrome-start-server))
+#+end_src
+** File Exploring (Dired) :DIRED:EMACS:
+*** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
+
+Explore disk usage in emacs
+
+**** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! disk-usage)
+#+end_src
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! disk-usage
+  :commands (disk-usage)
+  :config
+  (map! :map disk-usage-mode-map
+        :n "-" #'disk-usage-up))
+#+END_SRC
+** Git :GIT:
+*** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
+
+Package override that fixes multiple remotes:
+[[https://github.com/floscr/browse-at-remote/commit/9294ed82398457d2af5fcbf9090132f4693e4068][Add option to define preferred remote [*] · floscr/browse-at-remote@9294ed8]]
+
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
+#+end_src
+
+
+
 * Needs to be restrucutred
 ** Packages
 :PROPERTIES:
 :header-args: :tangle "packages.el" :comments link
 :END:
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments no
-;; -*- no-byte-compile: t; -*-
-#+END_SRC
 
 *** General Packages
 **** System
@@ -1155,121 +1560,6 @@ No need, screws with entry buffer position and header display...
 (package! elfeed-goodies :disable t)
 #+end_src
 
-** Bookmarks
-
-Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
-
-#+BEGIN_SRC elisp
-(defvar +bookmarks:local-bookmarks-file nil)
-(setq +bookmarks:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
-
-(defun +bookmarks/find-bookmarks (x &optional &key other-window?)
-  "Jump to a X relative to the project root, go to character POS."
-  (require 'link-hint)
-  (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
-               (item (car x)))
-    (let* ((file (-some->> (alist-get 'file item)
-                   (--when (alist-get 'relative item)
-                           (f-join (projectile-project-root) it))))
-           (buffer-is-open (when file (get-file-buffer file))))
-      (when file
-        (funcall find-fn file)
-        (+workspaces-add-current-buffer-h))
-      (when-let ((fn (alist-get 'fn item)))
-        (funcall fn))
-
-      ;; org item
-      (-some--> (alist-get 'org item)
-        (link-hint--open-org-link it)
-        ((lambda ()
-           (when (alist-get 'narrow item)
-             (org-narrow-to-element)))))
-
-      ;; goto, disable-relocation
-      ;; Go to a location matched by regex
-      ;; Unless disable-relocation is enabled and the file is already visited
-      (-some--> (alist-get 'goto item)
-        (--id-when (or (not buffer-is-open)
-                       (not (alist-get 'disable-relocation item))) it)
-        (--tap (progn
-                 (goto-char (point-min))
-                 (cond
-                  ((eq 'integer (type-of it))
-                   (goto-line it))
-                  ((eq 'string (type-of it))
-                   (search-forward it))))
-               it))
-      ;; action
-      ;; Execute a function after find file
-      (-some--> (alist-get 'action item)
-        (call-interactively it))
-      ;; goto-bol
-      ;; Go to the beginning, since the regex search
-      ;; will leave the cursor at the end of the search
-      (-some--> (alist-get 'goto-bol item)
-        (evil-first-non-blank)))))
-
-(defun +bookmarks/local/save (xs)
-  "Save an alist as json to the +bookmarks:local-bookmarks-file"
-  (->> xs
-       (json-encode)
-       ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file)))))
-
-(defun +bookmarks/find-bookmarks-other-window (x)
-  "Open bookmark X in other window, used with ivy action 'j'."
-  (+bookmarks/find-bookmarks (cdr x) :other-window? t))
-
-(defun +bookmarks/local|save ()
-  (interactive)
-  (let ((entry `((file . ,(buffer-file-name))
-                 (goto . ,(line-number-at-pos))
-                 (name . ,(read-string "Bookmark Name: ")))))
-    (->> (+bookmarks/local/list)
-      (-append entry)
-      (+bookmarks/local/save))))
-
-(defun +bookmarks/local/kill (x)
-  (->>
-   (--remove (cl-equalp (car (cdr x)) it) (+bookmarks/local/list))
-   (+bookmarks/local/save)))
-
-(defun +bookmarks/local/rename (x)
-  (require 'a)
-  (-let ((item (car (cdr x))))
-    (-log (a-get (cdr item) :name))
-    (->>
-     (+bookmarks/local/list)
-     (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
-     (+bookmarks/local/save))))
-
-(defun +bookmarks/local/list ()
-  (-some->> +bookmarks:local-bookmarks-file
-    (-id-when #'f-exists?)
-    (json-read-file)
-    (-map 'identity)))
-
-;;;###autoload
-(defun +bookmarks (&optional bookmarks-list)
-  "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
-If found, show an ivy window with the bookmarks"
-  (interactive)
-  (-if-let*
-      ((bookmarks
-        (or bookmarks-list
-            (+bookmarks/local/list)))
-       (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
-      (ivy-read "Bookmark: " bookmarks
-                :action (lambda (x) (+bookmarks/find-bookmarks (cdr x)))
-                :caller #'+bookmarks|find-bookmarks)
-    (user-error "No bookmarks file found at project root.")))
-
-(after! ivy
-  (ivy-set-actions
-   '+bookmarks|find-bookmarks
-   '(("j" +bookmarks/find-bookmarks-other-window "open in other window")
-     ("k" +bookmarks/local/kill "Remove")
-     ("r" +bookmarks/local/rename "Rename"))))
-#+END_SRC
 ** UI
 
 #+BEGIN_SRC elisp
@@ -1369,296 +1659,6 @@ buffer in current window."
     (set-window-dedicated-p window (not is-locked))
     (message (template "<<(current-buffer)>>: <<txt>>!"))))
 #+END_SRC
-
-* New Configuration
-** Emacs :EMACS:
-*** Libraries
-
-Packages that enhance or fix ~emacs-lisp~.
-
-**** [[https://github.com/nicferrier/emacs-noflet][noflet]] :FIX:
-
-Override functions like variables with using ~(flet ((#'my-fn)))~
-
-Since ~flet~ was deprecated, I'm using this for now.
-Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
-
-***** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! noflet)
-#+END_SRC
-*** Completion
-**** [[https://github.com/raxod502/prescient.el][company-prescient]] :EMACS:
-
-Better sorting for company
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! prescient)
-(package! company-prescient)
-#+end_src
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package! prescient
-  :config
-  (prescient-persist-mode 1))
-
-(use-package! company-prescient
-  :after company
-  :config
-  (company-prescient-mode 1))
-#+END_SRC
-*** Spell Checking
-**** Flyspell
-***** Defer flyspell until first ~evil-insert-state~
-
-Flyspell most of the time is an annoyance when opening a file just for reading.
-I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
-
-So I defer it until the first text change has been done (or the first insert state).
-I've tried it on the ~first-change-hook~, but that is also affected by changing todo states for example in ~org-mode~.
-
-#+begin_src elisp
-(defun +flyspell/load-after-first-insert--activate ()
-  "Turns on flyspell after the first buffer change or evil-insert state."
-  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert)
-  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate)
-  (spell-fu-mode 1))
-
-(defun +flyspell/load-after-first-insert ()
-  "Turns on flyspell after the first buffer evil-insert state.
-Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set."
-  (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
-        (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
-
-(use-package! flyspell
-  :init
-  (remove-hook! '(org-mode-hook markdown-mode-hook) #'flyspell-mode)
-  (remove-hook! '(org-mode-hook markdown-mode-hook text-mode-hook) #'spell-fu-mode)
-  (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
-#+end_src
-
-*** LSP
-*** Evil
-
-** Programming Languages :PROGRAMMING:
-*** General Purpose
-**** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(package! tree-sitter)
-(package! tree-sitter-langs)
-#+end_src
-
-***** Config
-
-#+begin_src emacs-lisp :tangle no
-(use-package! tree-sitter
-  :config
-  (require 'tree-sitter-langs)
-  ;; (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-#+end_src
-**** [[https://github.com/chubin/cheat.sh][cheat-sh]] :CLI:
-
-Community collection of snippets for command line tools.
-
-***** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! cheat-sh)
-#+END_SRC
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package cheat-sh
-  :commands (cheat-sh)
-  :config
-  (setq cheat-sh-topic-mode-map
-        '((awk-mode . "awk")
-          (c++-mode . "cpp")
-          (c-mode . "c")
-          (clojure-mode . "clojure")
-          (clojurescript-mode . "clojure")
-          (dockerfile-mode . "docker")
-          (emacs-lisp-mode . "elisp")
-          (fish-mode . "fish")
-          (go-mode . "go")
-          (haskell-mode . "haskell")
-          (hy-mode . "hy")
-          (java-mode . "java")
-          (js-jsx-mode . "javascript")
-          (js-mode . "javascript")
-          (js-mode . "js")
-          (lisp-interaction-mode . "elisp")
-          (lisp-mode . "lisp")
-          (objc-mode . "objectivec")
-          (pike-mode . "pike")
-          (powershell-mode . "powershell")
-          (python-mode . "python")
-          (rust-mode . "rust")
-          (sh-mode . "bash")
-          (nim-mode . "nim"))))
-#+END_SRC
-**** [[https://github.com/smihica/emmet-mode][emmet-mode]] :CSS:
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! emmet-mode)
-#+end_src
-
-***** Functions
-****** Indent or Yase Emmet Expand
-
-Source: [[file:~/.emacs.d/modules/lang/web/autoload/html.el::defun +web/indent-or-yas-or-emmet-expand (][Doom: modules/lang/web/autoload/html.el]]
-
-#+begin_src emacs-lisp
-(defun my:emmet/indent-or-yas-or-emmet-expand ()
-  "Do-what-I-mean on TAB.
-
-Invokes `indent-for-tab-command' if at or before text bol, `yas-expand' if on a
-snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
-`yas-minor-mode' is enabled or not."
-  (interactive)
-  (call-interactively
-   (cond ((or (<= (current-column) (current-indentation))
-              (not (eolp))
-              (not (or (memq (char-after) (list ?\n ?\s ?\t))
-                       (eobp))))
-          #'indent-for-tab-command)
-         ((featurep! :editor snippets)
-          (require 'yasnippet)
-          (if (yas--templates-for-key-at-point)
-              #'yas-expand
-            #'emmet-expand-yas))
-         (#'emmet-expand-line))))
-#+end_src
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package! emmet-mode
-  :preface (defvar emmet-mode-keymap (make-sparse-keymap))
-  :hook (css-mode web-mode html-mode haml-mode nxml-mode)
-  :config
-  (when (require 'yasnippet nil t)
-    (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
-  (setq emmet-move-cursor-between-quotes t)
-  (map! :map emmet-mode-keymap
-        :v [tab] #'emmet-wrap-with-markup
-        [tab] #'my:emmet/indent-or-yas-or-emmet-expand
-        "M-E" #'emmet-expand-line))
-#+END_SRC
-*** Javascript :JAVASCRIPT:
-**** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :LINTING:AUTOFIX:
-
-A javascript auto-fixer that isn't slow.
-Needs [[https://www.npmjs.com/package/eslint_d][eslint_d]] binary in ~$PATH~.
-
-***** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! eslintd-fix)
-#+END_SRC
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package! eslintd-fix
-  :after js2-mode
-  :config
-  (setq
-   flycheck-javascript-eslint-executable (executable-find "eslint_d")
-   flycheck-disabled-checkers '(javascript-jshint javascript)))
-#+END_SRC
-
-***** Functions
-****** Enable eslintd for writable buffers
-
-#+begin_src elisp
-(defun my:js/start-eslint ()
-  "Start eslint on writable buffers.
-
-When enabling on read-only buffers it will throw an error."
-  (unless buffer-read-only
-    (eslintd-fix-mode)))
-
-(add-hook 'js2-mode-hook #'my:js/start-eslint)
-#+end_src
-*** Nix :NIXOS:NIX:
-**** Nixpkgs Fmt :AUTOFIX:
-***** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! nixpkgs-fmt)
-#+END_SRC
-
-***** Config
-
-#+begin_src elisp
-(use-package nixpkgs-fmt
-  :after nix-mode
-  :config
-  (setq nixpkgs-fmt-on-save-mode t)
-  :init
-  (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
-#+end_src
-*** Emacs Lisp (Elisp) :ELISP:
-
-** System :SYSTEM:
-*** [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] :BROWSER:
-
-Edit browser input fields with emacs.
-
-**** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! atomic-chrome)
-#+END_SRC
-**** Config
-
-#+begin_src elisp
-(use-package! atomic-chrome
-  :command (atomic-chrome-start-server))
-#+end_src
-** File Exploring (Dired) :DIRED:EMACS:
-*** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
-
-Explore disk usage in emacs
-
-**** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! disk-usage)
-#+end_src
-
-**** Config
-
-#+BEGIN_SRC elisp
-(use-package! disk-usage
-  :commands (disk-usage)
-  :config
-  (map! :map disk-usage-mode-map
-        :n "-" #'disk-usage-up))
-#+END_SRC
-** Git :GIT:
-*** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
-
-Package override that fixes multiple remotes:
-[[https://github.com/floscr/browse-at-remote/commit/9294ed82398457d2af5fcbf9090132f4693e4068][Add option to define preferred remote [*] · floscr/browse-at-remote@9294ed8]]
-
-**** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
-#+end_src
 
 
 * Configuration
