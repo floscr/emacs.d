@@ -660,7 +660,7 @@ The optional argument NEW-WINDOW is not used."
 
 
 * Custom Packages
-** Custom Bookmarks
+** TODO Custom Bookmarks
 *** Config
 **** Disable Emacs bookmarks
 
@@ -838,7 +838,7 @@ If found, show an ivy window with the bookmarks"
      ("k" +bookmarks/local/kill "Remove")
      ("r" +bookmarks/local/rename "Rename"))))
 #+END_SRC
-** LY: Evil Lisp Navigation
+** TODO LY: Evil Lisp Navigation
 
 A navigation system for lisp languages that I'm comfortable with,
 like evil but with a more =sexp= based navigation.
@@ -994,7 +994,7 @@ Result depends on syntax table's string quote character."
    ("k" (+ly|backward-line) "Backward Line"))
 #+END_SRC
 
-** Indirect Indent Mode
+** TODO Indirect Indent Mode
 
 Adds minor mode for editing indented source code in an indirect buffer,
 with the indentation reset to 0.
