@@ -1,24 +1,4 @@
-;; -*- no-byte-compile: t; -*-
-
-;; [[file:config.org::*Package][Package:1]]
-(package! prescient)
-(package! company-prescient)
-;; Package:1 ends here
-
-;; [[file:config.org::*Package][Package:1]]
-(package! emmet-mode)
-;; Package:1 ends here
-
-;; [[file:config.org::*Package][Package:1]]
-(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
-;; Package:1 ends here
-
-;; [[file:config.org::*noflet][noflet:1]]
-(package! noflet)
-;; noflet:1 ends here
-
 ;; [[file:config.org::*Disk][Disk:1]]
-(package! disk-usage)
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
 ;; Disk:1 ends here
 
@@ -120,10 +100,6 @@
 (package! literate-calc-mode)
 ;; Literate Calc Mode:1 ends here
 
-;; [[file:config.org::*Nix][Nix:1]]
-(package! nixpkgs-fmt)
-;; Nix:1 ends here
-
 ;; [[file:config.org::*Doom Snippets][Doom Snippets:1]]
 (package! doom-snippets :ignore t)
 (package! my-doom-snippets
@@ -164,7 +140,7 @@
 ;; Elfeed-Goodies:1 ends here
 
 ;; [[file:config.org::*Package][Package:1]]
-(package! eslintd-fix)
+(package! noflet)
 ;; Package:1 ends here
 
 ;; [[file:config.org::*Package][Package:1]]
@@ -172,5 +148,32 @@
 ;; Package:1 ends here
 
 ;; [[file:config.org::*Package][Package:1]]
+(package! eslintd-fix)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! nixpkgs-fmt)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
 (package! atomic-chrome)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! disk-usage)
+;; Package:1 ends here
+
+;; -*- no-byte-compile: t; -*-
+
+;; [[file:config.org::*Package][Package:1]]
+(package! prescient)
+(package! company-prescient)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! emmet-mode)
+;; Package:1 ends here
+
+;; [[file:config.org::*Package][Package:1]]
+(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
 ;; Package:1 ends here

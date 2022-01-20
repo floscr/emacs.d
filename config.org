@@ -37,21 +37,10 @@ I often use my helper function [[file:autoload.org::*Template Literals][(templat
 #+END_SRC
 
 ** General Packages
-*** Libraries
-**** noflet
-
-Since ~flet~ was deprecated, I'm using this for now.
-Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
-
-#+BEGIN_SRC elisp
-(package! noflet)
-#+END_SRC
-
 *** System
 **** Disk
 
 #+BEGIN_SRC elisp
-(package! disk-usage)
 (package! udiskie :recipe (:host gitlab :repo "floscr/udiskie.el"))
 #+END_SRC
 
@@ -222,12 +211,6 @@ Inline Calculation
 (package! literate-calc-mode)
 #+END_SRC
 
-*** Nix
-
-#+BEGIN_SRC elisp
-(package! nixpkgs-fmt)
-#+END_SRC
-
 ** Overrides
 *** Doom Snippets
 
@@ -290,58 +273,122 @@ No need, screws with entry buffer position and header display...
 #+end_src
 
 
-* Packages & Config
-** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :JAVASCRIPT:
 
-A javascript auto-fixer that isn't slow.
-Needs [[https://www.npmjs.com/package/eslint_d][eslint_d]] binary in ~$PATH~.
+* New Configuration
 
-*** Package
+
+
+
+* New Configuration
+** Emacs :EMACS:
+*** Libraries
+
+Packages that enhance or fix ~emacs-lisp~.
+
+**** [[https://github.com/nicferrier/emacs-noflet][noflet]] :FIX:
+
+Override functions like variables with using ~(flet ((#'my-fn)))~
+
+Since ~flet~ was deprecated, I'm using this for now.
+Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
+
+***** Package
 
 #+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! eslintd-fix)
+(package! noflet)
 #+END_SRC
+*** Completion
+**** [[https://github.com/raxod502/prescient.el][company-prescient]] :EMACS:
 
-*** Config
+Better sorting for company
 
-#+BEGIN_SRC elisp
-(after! js2-mode
-  :config
-  (setq
-   flycheck-javascript-eslint-executable (executable-find "eslint_d")
-   flycheck-disabled-checkers '(javascript-jshint javascript)))
-#+END_SRC
+***** Package
 
-*** Functions
-
-**** Enable eslintd for writable buffers
-
-#+begin_src elisp
-(defun my:js/start-eslint ()
-  "Start eslint on writable buffers.
-
-When enabling on read-only buffers it will throw an error."
-  (unless buffer-read-only
-    (eslintd-fix-mode)))
-
-(add-hook 'js2-mode-hook #'my:js/start-eslint)
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! prescient)
+(package! company-prescient)
 #+end_src
 
-** [[https://github.com/chubin/cheat.sh][cheat-sh]] :CLI:
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! prescient
+  :config
+  (prescient-persist-mode 1))
+
+(use-package! company-prescient
+  :after company
+  :config
+  (company-prescient-mode 1))
+#+END_SRC
+*** Spell Checking
+**** Flyspell
+***** Defer flyspell until first ~evil-insert-state~
+
+Flyspell most of the time is an annoyance when opening a file just for reading.
+I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
+
+So I defer it until the first text change has been done (or the first insert state).
+I've tried it on the ~first-change-hook~, but that is also affected by changing todo states for example in ~org-mode~.
+
+#+begin_src elisp
+(defun +flyspell/load-after-first-insert--activate ()
+  "Turns on flyspell after the first buffer change or evil-insert state."
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert)
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate)
+  (spell-fu-mode 1))
+
+(defun +flyspell/load-after-first-insert ()
+  "Turns on flyspell after the first buffer evil-insert state.
+Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set."
+  (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
+        (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
+
+(use-package! flyspell
+  :init
+  (remove-hook! '(org-mode-hook markdown-mode-hook) #'flyspell-mode)
+  (remove-hook! '(org-mode-hook markdown-mode-hook text-mode-hook) #'spell-fu-mode)
+  (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
+#+end_src
+
+*** LSP
+*** Evil
+
+** Programming Languages :PROGRAMMING:
+*** General Purpose
+**** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! tree-sitter)
+(package! tree-sitter-langs)
+#+end_src
+
+***** Config
+
+#+begin_src emacs-lisp :tangle no
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  ;; (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
+**** [[https://github.com/chubin/cheat.sh][cheat-sh]] :CLI:
 
 Community collection of snippets for command line tools.
 
-*** Package
+***** Package
 
 #+BEGIN_SRC elisp :tangle "packages.el" :comments link
 (package! cheat-sh)
 #+END_SRC
 
-*** Config
+***** Config
 
 #+BEGIN_SRC elisp
 (use-package cheat-sh
-  :commands (cheat-sh-read)
+  :commands (cheat-sh)
   :config
   (setq cheat-sh-topic-mode-map
         '((awk-mode . "awk")
@@ -369,69 +416,15 @@ Community collection of snippets for command line tools.
           (sh-mode . "bash")
           (nim-mode . "nim"))))
 #+END_SRC
-
-** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
-
-*** Package
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(package! tree-sitter)
-(package! tree-sitter-langs)
-#+end_src
-
-*** Config
-
-#+begin_src emacs-lisp :tangle no
-(use-package! tree-sitter
-  :config
-  (require 'tree-sitter-langs)
-  ;; (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-#+end_src
-** atomic-chrome :BROWSER:
-
-Edit browser input fields with emacs.
-
-*** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! atomic-chrome)
-#+END_SRC
-
-** company-prescient :EMACS:
-
-Better sorting for company
-
-*** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! prescient)
-(package! company-prescient)
-#+end_src
-
-*** Config
-
-#+BEGIN_SRC elisp
-(use-package prescient
-  :config
-  (prescient-persist-mode 1))
-
-(use-package company-prescient
-  :after company
-  :config
-  (company-prescient-mode 1))
-#+END_SRC
-** emmet-mode :CSS:
-
-*** Package
+**** [[https://github.com/smihica/emmet-mode][emmet-mode]] :CSS:
+***** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! emmet-mode)
 #+end_src
 
-*** Functions
-
-**** Indent or Yase Emmet Expand
+***** Functions
+****** Indent or Yase Emmet Expand
 
 Source: [[file:~/.emacs.d/modules/lang/web/autoload/html.el::defun +web/indent-or-yas-or-emmet-expand (][Doom: modules/lang/web/autoload/html.el]]
 
@@ -457,7 +450,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
          (#'emmet-expand-line))))
 #+end_src
 
-*** Config
+***** Config
 
 #+BEGIN_SRC elisp
 (use-package! emmet-mode
@@ -472,17 +465,110 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
         [tab] #'my:emmet/indent-or-yas-or-emmet-expand
         "M-E" #'emmet-expand-line))
 #+END_SRC
+*** Javascript :JAVASCRIPT:
+**** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :LINTING:AUTOFIX:
 
-** browse-at-remote :FORK:GIT:
+A javascript auto-fixer that isn't slow.
+Needs [[https://www.npmjs.com/package/eslint_d][eslint_d]] binary in ~$PATH~.
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! eslintd-fix)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! eslintd-fix
+  :after js2-mode
+  :config
+  (setq
+   flycheck-javascript-eslint-executable (executable-find "eslint_d")
+   flycheck-disabled-checkers '(javascript-jshint javascript)))
+#+END_SRC
+
+***** Functions
+****** Enable eslintd for writable buffers
+
+#+begin_src elisp
+(defun my:js/start-eslint ()
+  "Start eslint on writable buffers.
+
+When enabling on read-only buffers it will throw an error."
+  (unless buffer-read-only
+    (eslintd-fix-mode)))
+
+(add-hook 'js2-mode-hook #'my:js/start-eslint)
+#+end_src
+*** Nix :NIXOS:NIX:
+**** Nixpkgs Fmt :AUTOFIX:
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! nixpkgs-fmt)
+#+END_SRC
+
+***** Config
+
+#+begin_src elisp
+(use-package nixpkgs-fmt
+  :after nix-mode
+  :config
+  (setq nixpkgs-fmt-on-save-mode t)
+  :init
+  (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
+#+end_src
+*** Emacs Lisp (Elisp) :ELISP:
+
+** System :SYSTEM:
+*** [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] :BROWSER:
+
+Edit browser input fields with emacs.
+
+**** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! atomic-chrome)
+#+END_SRC
+**** Config
+
+#+begin_src elisp
+(use-package! atomic-chrome
+  :command (atomic-chrome-start-server))
+#+end_src
+** File Exploring (Dired) :DIRED:EMACS:
+*** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
+
+Explore disk usage in emacs
+
+**** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! disk-usage)
+#+end_src
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! disk-usage
+  :commands (disk-usage)
+  :config
+  (map! :map disk-usage-mode-map
+        :n "-" #'disk-usage-up))
+#+END_SRC
+** Git :GIT:
+*** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
 
 Package override that fixes multiple remotes:
 [[https://github.com/floscr/browse-at-remote/commit/9294ed82398457d2af5fcbf9090132f4693e4068][Add option to define preferred remote [*] · floscr/browse-at-remote@9294ed8]]
 
-*** Package
+**** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
 #+end_src
+
 
 * Configuration
 ** External Files
@@ -2201,48 +2287,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Flyspell
-
-**** Defer flyspell until first ~evil-insert-state~
-
-Flyspell most of the time is an annoyance when opening a file just for reading.
-I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
-
-So I defer it until the first text change has been done (or the first insert state).
-I've tried it on the ~first-change-hook~, but that is also affected by changing todo states for example in ~org-mode~.
-
-#+begin_src elisp
-(defun +flyspell/load-after-first-insert--activate ()
-  "Turns on flyspell after the first buffer change or evil-insert state."
-  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert)
-  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate)
-  (spell-fu-mode 1))
-
-(defun +flyspell/load-after-first-insert ()
-  "Turns on flyspell after the first buffer evil-insert state.
-Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set."
-  (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
-        (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
-
-(use-package! flyspell
-  :init
-  (remove-hook! '(org-mode-hook markdown-mode-hook) #'flyspell-mode)
-  (remove-hook! '(org-mode-hook markdown-mode-hook text-mode-hook) #'spell-fu-mode)
-  (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
-#+end_src
-
-
-*** Nixpkgs Fmt
-
-#+begin_src elisp
-(use-package nixpkgs-fmt
-  :after nix-mode
-  :config
-  (setq nixpkgs-fmt-on-save-mode t)
-  :init
-  (add-hook! nix-mode #'nixpkgs-fmt-on-save-mode))
-#+end_src
-
 *** atomic chrome
 
 **** Major mode
@@ -2262,16 +2306,6 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
   :config
   ;; Always enable rgb, etc colors
   (setq rainbow-html-colors t))
-#+END_SRC
-
-*** disk-usage
-
-#+BEGIN_SRC elisp
-(use-package disk-usage
-  :commands (disk-usage)
-  :config
-  (map! :map disk-usage-mode-map
-        :n "-" #'disk-usage-up))
 #+END_SRC
 
 *** js-import
