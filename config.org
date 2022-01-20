@@ -496,26 +496,6 @@ I don't want some processes to exit, when I close emacs.
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my/start-inferior-process-shell-command (command)
-  (let ((name (format "*nohup: %s*" command)))
-    (start-process-shell-command name nil (format "nohup %s" command))))
-
-;;;###autoload
-(defun my/start-inferior-process (name buffer program &rest program-args)
-  (let ((nohup-name (lambda (&optional text)
-                      (if (not (null text))
-                          (format "*nohup: %s*" text)
-                        nil)))
-        (args (-some->> program-args
-                (s-join " "))))
-    (start-process
-     (funcall nohup-name name)
-     (funcall nohup-name buffer)
-     shell-file-name
-     shell-command-switch
-     (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
-
-;;;###autoload
 (defun my::shell/no-exit-command (cmd &optional &rest args)
   "Launch a shell command, without opening a message buffer.
 The proram persists when emacs is closed."
