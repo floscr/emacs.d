@@ -724,6 +724,19 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                            (:name "Self Help" :tag ("SELF_HELP"))
                                            (:name "Comics" :tag ("COMIC"))))))))))
 #+END_SRC
+***** Unscheduled
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/questions/21118288/making-org-agenda-list-hide-items-scheduled-for-the-future][emacs - Making org-agenda-list hide items scheduled for the future - Stack Overflow]]
+:END:
+
+#+begin_src elisp
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   '("u" "Unscheduled"
+     ((alltodo ""
+               ((org-agenda-todo-ignore-scheduled 'future)
+                (org-agenda-tags-todo-honor-ignore-options t)))))))
+#+end_src
 
 *** Clocking
 **** Automatically set clocking or todo state
