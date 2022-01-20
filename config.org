@@ -3498,13 +3498,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** daemon
-
-#+BEGIN_SRC elisp
-(use-package daemons
-  :commands (daemons))
-#+END_SRC
-
 *** writegood mode
 
 **** Config
