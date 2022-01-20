@@ -40,6 +40,7 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 - [[*Template Literals][Template Literals]]
   ~template~ or ~t~ macros
 
+
 * Tangle Headers
 
 #+BEGIN_SRC emacs-lisp
@@ -49,6 +50,7 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments no
 ;; -*- no-byte-compile: t; -*-
 #+END_SRC
+
 
 * My Standard Library
 :PROPERTIES:
@@ -487,111 +489,6 @@ shuffling is done in place."
 #+END_SRC
 
 
-** UI
-*** Adjust font to display
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my::ui/adjust-font (size line-space &optional font-family weight)
-  (let* ((font-family (or font-family)))
-    (setq-default line-spacing line-space)
-    (setq-default doom-font (font-spec :family font-family :size size :weight weight))
-    (setq-default doom--font-scale nil)
-    (set-frame-font doom-font 'keep-size t)
-    (doom/reload-font)
-    (run-hooks 'after-setting-font-hook)))
-
-;;;###autoload
-(defun my::ui/get-x-screen ()
-  "Get a list of all connected screens."
-  (-> "xrandr | grep ' connected ' | cut -d ' ' -f 1"
-      (shell-command-to-string)
-      (split-string "\n")
-      (reverse)
-      (cdr)
-      (reverse)
-      (cl-sort (lambda (a b)
-                 (cond ((string-match-p "^eDP" a) t)
-                       ((string-match-p "^eDP" b) nil)
-                       (t nil))))))
-
-;;;###autoload
-(defun my::ui/has-display-connected? (screen)
-  "Check if SCREEN is connected."
-  (-contains? (my::ui/get-x-screen) screen))
-
-;;;###autoload
-(defun my::ui|adjust-ui-to-display ()
-  "Adjust the UI to the current attached display."
-  (interactive)
-  (cond
-   ((string= (system-name) "mbair")
-    ;; Not actually a retina display, but this looks best
-    (my::ui/adjust-font 13 5 "Fira Code"))
-   ((string= (system-name) "Florians-iMac.local")
-    (my::ui/adjust-font 14 10 "Menlo"))
-   ((string= (system-name) "thinknix")
-    (if (my::ui/has-display-connected? "DP2")
-        (my::ui/adjust-font 18 7 "Fira Code" 'medium)
-      (my::ui/adjust-font 15 4 "Fira Code" 'medium)))
-   ((string= (system-name) "Florians-MacBook-Air.local")
-    (my::ui/adjust-font 14 10 "Menlo"))))
-#+END_SRC
-** Window management
-*** Toggle split style
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
-:END:
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my::ui|toggle-window-split-direction ()
-  "Toggle current window split between horizontal and vertical."
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
-#+END_SRC
-
-*** Toggle dedicated
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
-:END:
-
-Lock a window so the buffer can't be changed or it cant be deleted.
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my::ui|toggle-window-dedicated ()
-  "Control whether or not Emacs is allowed to display another
-buffer in current window."
-  (interactive)
-  (let* ((window (get-buffer-window (current-buffer)))
-         (is-locked (window-dedicated-p window))
-         (txt (if is-locked "Window unlocked" "Window locked")))
-    (set-window-dedicated-p window (not is-locked))
-    (message (template "<<(current-buffer)>>: <<txt>>!"))))
-#+END_SRC
-
 * Custom Packages
 ** TODO Custom Bookmarks
 *** Config
@@ -981,6 +878,48 @@ Saving and committing keeps the indentation in the source buffer.
       (setq +indirect-indent indent))))
 #+END_SRC
 
+** TODO Evil edit register
+
+Edit registers with ~+evil-edit-register|counsel~.
+Mostly used to edit the macro registers ~q~.
+
+#+BEGIN_SRC elisp
+(defvar +evil-edit-register:register "")
+(defvar +evil-edit-register-mode-map (make-sparse-keymap))
+
+(define-minor-mode +evil-edit-register-mode
+  "Edit evil register and save it back to the register."
+  :keymap +evil-edit-register-mode-map)
+
+(map! :map +evil-edit-register-mode-map
+      "C-c C-c" #'+evil-edit-register|save-and-exit
+      "C-c C-k" #'kill-buffer-and-window)
+
+(defun +evil-edit-register|save-and-exit (&optional arg)
+  "Save the buffer content back to the register register"
+  (interactive)
+  (evil-set-register
+   (string-to-char +evil-edit-register:register)
+   (buffer-substring-no-properties (point-min) (point-max)))
+  (kill-buffer-and-window))
+
+(defun +evil-edit-register|counsel (register-string)
+  "Edit evil register in register"
+  (require 'noflet)
+  (interactive (noflet ((counsel-evil-registers-action (x) x))
+                 (list (counsel-evil-registers))))
+  (-when-let* ((register-string (substring-no-properties register-string))
+               (buffer (generate-new-buffer (t! "*Evil Register Edit: <<register-string>>*")))
+               ((_ reg register) (s-match "^\\[\\(.\\)\\]: \\(.*\\)$" register-string)))
+    (pop-to-buffer buffer)
+    (with-current-buffer buffer
+      (+evil-edit-register-mode 1)
+      (setq-local +evil-edit-register:register reg)
+      (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
+      (save-excursion
+        (insert register)))))
+#+END_SRC
+
 * Default Configuration
 ** Temp
 
@@ -1083,23 +1022,6 @@ which I name after the matching url.
 #+END_SRC
 
 ** Doom
-*** Popups
-
-#+BEGIN_SRC elisp
-(set-popup-rules!
-  '(("^\\*Org Agenda" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
-    ("^\\*Org Src" :ignore t)
-    ("^\\*Org QL View: \\(Work \\)?Projects*" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
-    ("^\\*PDF-Occur*" :side right :size 0.5 :select t :modeline t)
-    ("^\\*WoMan " :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
-    ("^\\*helm" :vslot -100 :size 0.32 :ttl nil)
-    ("^\\*helpful command" :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
-    ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
-    ("^\\*projectile-files-errors" :ignore t)
-    ("^\\*elfeed-entry" :modeline t :ttl nil)
-    ("^\\*Flycheck checker" :size 0.2 :select nil)))
-#+END_SRC
-
 *** Garbage collection
 
 Set it to =32 MiB=.
@@ -1108,16 +1030,372 @@ Set it to =32 MiB=.
 (setq doom-gc-cons-threshold 33554432)
 #+END_SRC
 
-** Evil
-*** Enable fine undo
-
-Whether evil actions like =cw= are undone in several steps.
-This is sometimes annoying, as it might need you to press =u= multiple times.
-But I prefer the fine grained control, as I'm often staying longer in insert mode,
-and don't want one single undo action for the whole "session".
+** UI
+*** Functions
+**** Toggle window split style
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
+:END:
 
 #+BEGIN_SRC elisp
-(setq evil-want-fine-undo t)
+;;;###autoload
+(defun my::ui|toggle-window-split-direction ()
+  "Toggle current window split between horizontal and vertical."
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+#+END_SRC
+
+**** Toggle window dedicated
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
+:END:
+
+Lock a window so the buffer can't be changed or it cant be deleted.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::ui|toggle-window-dedicated ()
+  "Control whether or not Emacs is allowed to display another
+buffer in current window."
+  (interactive)
+  (let* ((window (get-buffer-window (current-buffer)))
+         (is-locked (window-dedicated-p window))
+         (txt (if is-locked "Window unlocked" "Window locked")))
+    (set-window-dedicated-p window (not is-locked))
+    (message (template "<<(current-buffer)>>: <<txt>>!"))))
+#+END_SRC
+**** Adjust font to display
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::ui/adjust-font (size line-space &optional font-family weight)
+  (let* ((font-family (or font-family)))
+    (setq-default line-spacing line-space)
+    (setq-default doom-font (font-spec :family font-family :size size :weight weight))
+    (setq-default doom--font-scale nil)
+    (set-frame-font doom-font 'keep-size t)
+    (doom/reload-font)
+    (run-hooks 'after-setting-font-hook)))
+
+;;;###autoload
+(defun my::ui/get-x-screen ()
+  "Get a list of all connected screens."
+  (-> "xrandr | grep ' connected ' | cut -d ' ' -f 1"
+      (shell-command-to-string)
+      (split-string "\n")
+      (reverse)
+      (cdr)
+      (reverse)
+      (cl-sort (lambda (a b)
+                 (cond ((string-match-p "^eDP" a) t)
+                       ((string-match-p "^eDP" b) nil)
+                       (t nil))))))
+
+;;;###autoload
+(defun my::ui/has-display-connected? (screen)
+  "Check if SCREEN is connected."
+  (-contains? (my::ui/get-x-screen) screen))
+
+;;;###autoload
+(defun my::ui|adjust-ui-to-display ()
+  "Adjust the UI to the current attached display."
+  (interactive)
+  (cond
+   ((string= (system-name) "mbair")
+    ;; Not actually a retina display, but this looks best
+    (my::ui/adjust-font 13 5 "Fira Code"))
+   ((string= (system-name) "Florians-iMac.local")
+    (my::ui/adjust-font 14 10 "Menlo"))
+   ((string= (system-name) "thinknix")
+    (if (my::ui/has-display-connected? "DP2")
+        (my::ui/adjust-font 18 7 "Fira Code" 'medium)
+      (my::ui/adjust-font 15 4 "Fira Code" 'medium)))
+   ((string= (system-name) "Florians-MacBook-Air.local")
+    (my::ui/adjust-font 14 10 "Menlo"))))
+#+END_SRC
+**** Line spacing hydra :HYDRA:
+
+Change and reset line-spacing for all buffers.
+
+#+BEGIN_SRC elisp
+(defvar my::ui:default-line-spacing line-spacing)
+(defvar my::ui:default-line-spacing-increment-step 1)
+(defvar my::ui:default-big-line-spacing-increment-step 10)
+
+(defun my::ui/set-line-spacing (&optional increment)
+  "Set the line spacing
+When no line spacing is given is the default-line-spacing"
+  (setq-default line-spacing (+ (or increment my::ui:default-line-spacing-increment-step) line-spacing)))
+
+(defun my::ui|reset-line-spacing ()
+  (interactive)
+  (setq-default line-spacing my::ui:default-line-spacing))
+
+(defun my::ui|increase-line-spacing ()
+  (interactive)
+  (my::ui/set-line-spacing))
+
+(defun my::ui|decrease-line-spacing ()
+  (interactive)
+  (my::ui/set-line-spacing (- my::ui:default-line-spacing-increment-step)))
+
+(defun my::ui|increase-line-spacing-big ()
+  (interactive)
+  (my::ui/set-line-spacing my::ui:default-big-line-spacing-increment-step))
+
+(defun my::ui|decrease-line-spacing-big ()
+  (interactive)
+  (my::ui/set-line-spacing (- my::ui:default-big-line-spacing-increment-step)))
+
+(evil-define-key 'normal 'global (kbd "]z") #'my::ui/line-spacing-hydra/body)
+
+;;;###autoload (autoload '+common-lisp/macrostep/body "lang/common-lisp/autoload/hydras" nil nil)
+(defhydra my::ui/line-spacing-hydra (:exit nil :hint nil :foreign-keys run :color pink)
+  "
+Macro Expansion
+^^Definitions                           ^^Compiler Notes             ^^Stickers
+^^^^^^─────────────────────────────────────────────────────────────────────────────────────
+[_r_] Reset
+[_]_] Expand
+[_[_] Collapse
+[_}_] Expand Big
+[_{_] Collapse Big
+"
+  ("r" my::ui|reset-line-spacing)
+  ("]" my::ui|increase-line-spacing)
+  ("[" my::ui|decrease-line-spacing)
+  ("}" my::ui|increase-line-spacing-big)
+  ("{" my::ui|decrease-line-spacing-big)
+  ("q" nil "cancel" :color blue))
+#+END_SRC
+
+**** TODO Theme Toggle
+
+Toggle between a light and a dark theme.
+Bound to ~SPC t t~.
+
+#+BEGIN_SRC elisp
+(defconst light-theme 'doom-one)
+(defconst dark-theme  'doom-one-light)
+
+(defun my::ui|toggle-theme ()
+  "Toggle between light and dark themes."
+  (interactive)
+  (cond ((eq doom-theme dark-theme)
+         (message "Toggling to light-theme: %s" light-theme)
+         (setq doom-theme light-theme)
+         (doom/reload-theme))
+        ((eq doom-theme light-theme)
+         (message "Toggling to dark-theme: %s" dark-theme)
+         (setq doom-theme dark-theme)
+         (doom/reload-theme))
+        (t (message "Toggling theme is not possible. Theme is not currently light-theme (%s) or dark-theme (%s)." light-theme dark-theme))))
+#+END_SRC
+*** Configuration
+**** Zen mode & variable pitch fonts
+
+#+BEGIN_SRC elisp
+(setq +zen-text-scale 1.5)
+
+(let ((height 140)
+      (size 23))
+  (setq doom-variable-pitch-font (font-spec :family "IBM Plex Sans" :size size)
+        doom-serif-font (font-spec :family "IBM Plex Sans" :size size)))
+#+END_SRC
+**** Add frame padding
+
+#+BEGIN_SRC elisp
+(add-hook! '(window-setup-hook after-make-frame-functions)
+  (defun my::ui/init-frame-ui (&optional frame)
+    (interactive)
+    "Re-enable menu-bar-lines in GUI frames."
+    (when-let (frame (or frame (selected-frame)))
+      (when (display-graphic-p frame)
+        (set-frame-parameter frame 'internal-border-width 15)))))
+#+END_SRC
+
+**** Theme Modifications
+***** General
+
+#+BEGIN_SRC elisp
+(add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
+#+END_SRC
+
+****** Function Start
+
+#+BEGIN_SRC elisp
+(defun *doom-themes-custom-set-faces ()
+  (set-face-attribute 'fringe nil
+                      :foreground (face-background 'default)
+                      :background (face-background 'default))
+  (custom-set-faces!
+#+END_SRC
+
+****** Bookmarks
+
+#+BEGIN_SRC elisp
+'(bookmark-face :background nil)
+#+END_SRC
+
+****** Dired Output
+
+Remove the rainbow colors from dired.
+
+#+BEGIN_SRC elisp
+'(diredfl-read-priv :foreground "#80899E")
+'(diredfl-write-priv :foreground "#80899E")
+'(diredfl-exec-priv :foreground "#80899E")
+'(diredfl-other-priv :foreground "#80899E")
+
+'(all-the-icons-dired-dir-face :foreground "#80899E")
+
+'(diredfl-dir-priv :foreground "#282C34")
+'(diredfl-k-modified :foreground "#FF8E90")
+
+'(diredfl-number :foreground "#80899E")
+'(diredfl-date-time :foreground "#49505F")
+`(diredfl-dir-name :foreground "#2DADF2")
+#+END_SRC
+
+****** Mu4E
+
+Switch the highlight.
+
+#+BEGIN_SRC elisp
+'(mu4e-highlight-face :inherit mu4e-unread-face)
+#+END_SRC
+
+****** Org Mode
+
+Remove the ugly grey background
+
+#+BEGIN_SRC elisp
+'(org-column :background nil)
+#+END_SRC
+
+****** Function End
+
+#+BEGIN_SRC elisp
+))
+#+END_SRC
+***** Hooks
+****** Diff Highlighting
+
+#+BEGIN_SRC elisp
+(add-hook! '(diff-hl-margin-minor-mode-hook)
+  (progn
+    (set-face-attribute 'smerge-refined-added nil
+                        :foreground (doom-blend "#98be65" "#3e493d" 0.15)
+                        :background (doom-lighten "#98bb5d" 0.2))
+    (set-face-attribute 'smerge-refined-removed nil
+                        :foreground (doom-blend "#ff6c6b" "#4f343a" 0.2)
+                        :background (doom-lighten "#ff6c6b" 0.1))))
+
+(add-hook! '(magit-status-mode-hook magit-diff-mode-hook)
+           (progn
+                   (set-face-attribute 'diff-refine-added nil
+                                       :foreground (doom-blend "#98be65" "#3e493d" 0.15)
+                                       :background (doom-lighten "#98bb5d" 0.2))
+                   (set-face-attribute 'diff-refine-removed nil
+                                       :foreground (doom-blend "#ff6c6b" "#4f343a" 0.2)
+                                       :background (doom-lighten "#ff6c6b" 0.1))))
+#+END_SRC
+**** Adjust UI
+
+Resize the window font size etc according to the system.
+This will be disabled in terminal mode.
+
+#+BEGIN_SRC elisp
+(when (display-graphic-p) (my::ui|adjust-ui-to-display))
+#+END_SRC
+**** Scrolloff
+
+Start scrolling X lines before the end of a screen.
+Disable for certain modes (terminal & ivy) where the window is to small.
+
+#+BEGIN_SRC elisp
+(setq scroll-conservatively 10)
+(setq scroll-margin 10)
+
+(add-hook 'term-mode-hook (cmd! (setq-local scroll-margin 0)))
+(add-hook 'ivy-mode-hook (cmd! (setq-local scroll-margin 0)))
+#+END_SRC
+
+**** (Visual) Fill Column
+
+#+BEGIN_SRC elisp :tangle no
+(setq-default fill-column 110)
+(setq fill-column 110)
+(setq visual-fill-column-width fill-column)
+
+(setq visual-fill-column-center-text t
+      visual-fill-column-width fill-column)
+#+END_SRC
+
+**** Disable trailing whitespace warning
+
+#+BEGIN_SRC elisp :tangle no
+(setq-hook! 'prog-mode-hook show-trailing-whitespace nil)
+#+END_SRC
+
+**** Fix underline
+
+Draw the underline at the bottom of the text, not at the end of line-spacing.
+
+#+BEGIN_SRC elisp
+(setq x-underline-at-descent-line nil)
+#+END_SRC
+
+** Text
+*** Functions
+**** Expand region hydra :HYDRA:
+:PROPERTIES:
+:SOURCE:   https://www.reddit.com/r/emacs/comments/also27/second_trial_for_a_weekly_tipstricksetc_thread/efi7pbj/
+:END:
+
+Expand visual region using a hydra.
+Double press ~v~ to enable.
+
+#+BEGIN_SRC elisp
+(defhydra my::text/expand-region-hydra ()
+   "region: "
+   ("f" er/mark-defun "defun")
+   ("v" er/expand-region "expand")
+   ("V" er/contract-region "contract"))
+
+(evil-define-key 'visual 'global (kbd "v") #'my::text/expand-region-hydra/body)
+#+END_SRC
+**** Unfill Paragraph
+
+Fix a paragraph that was formatted to a fill column.
+
+#+BEGIN_SRC elisp
+(defun my::text|unfill-paragraph ()
+  "Fix a paragraph that was formatted to a fill column."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil)))
 #+END_SRC
 
 * Package Configuration
@@ -1197,8 +1475,23 @@ Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
 #+END_SRC
 
 ** Doom :DOOM:
-*** Themes
+*** Popups
 
+#+BEGIN_SRC elisp
+(set-popup-rules!
+  '(("^\\*Org Agenda" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*Org Src" :ignore t)
+    ("^\\*Org QL View: \\(Work \\)?Projects*" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*PDF-Occur*" :side right :size 0.5 :select t :modeline t)
+    ("^\\*WoMan " :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*helm" :vslot -100 :size 0.32 :ttl nil)
+    ("^\\*helpful command" :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
+    ("^\\*projectile-files-errors" :ignore t)
+    ("^\\*elfeed-entry" :modeline t :ttl nil)
+    ("^\\*Flycheck checker" :size 0.2 :select nil)))
+#+END_SRC
+*** Themes
 **** Custom doom themes package
 
 ***** Package
@@ -1392,6 +1685,17 @@ Press =gr= with a following motion character like =w=.
 (after! evil-snipe
   (setq evil-snipe-repeat-keys t))
 #+END_SRC
+*** Config
+**** Enable fine undo
+
+Whether evil actions like =cw= are undone in several steps.
+This is sometimes annoying, as it might need you to press =u= multiple times.
+But I prefer the fine grained control, as I'm often staying longer in insert mode,
+and don't want one single undo action for the whole "session".
+
+#+BEGIN_SRC elisp
+(setq evil-want-fine-undo t)
+#+END_SRC
 ** Text Editing :TEXT:
 *** Packages
 **** [[https://github.com/sulami/literate-calc-mode.el][literate-calc-mode]]
@@ -1469,6 +1773,7 @@ When narrowing to region or defun, make it in an indirect other window.
   (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
   (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
 #+END_SRC
+*** Functions
 
 ** Programming :PROGRAMMING:
 *** General Purpose
@@ -5158,6 +5463,996 @@ error in process filter: End of buffer
     ("clear"  "clear-scrollback")))
 #+END_SRC
 
+** Org
+*** Functions
+**** Jump to definition for tangled files
+
+Take me to the literate source file when using ~find-function~ etc.
+
+#+BEGIN_SRC elisp
+(defadvice! +org|try-org-babel-tangle-jump-to-org (&optional arg1)
+  :after '(find-function
+           find-variable)
+  (ignore-errors
+    (org-babel-tangle-jump-to-org)))
+#+END_SRC
+
+** Hydras
+
+
+
+* Bindings
+** General
+
+#+BEGIN_SRC elisp
+(map! :g "C-±" #'+popup/raise)
+#+END_SRC
+
+*** Disable emacs-state-toggle
+
+#+BEGIN_SRC elisp
+(map! :nm "C-z" nil)
+#+END_SRC
+
+*** Auto indent bracket openings
+:PROPERTIES:
+:SOURCE:   [[https://xenodium.com/emacs-smartparens-auto-indent/][Emacs smartparens auto-indent]]
+:END:
+
+Automatically indent and format when opening area betwen to delimiters.
+
+#+begin_src elisp
+(defun my::text/indent-between-pair (&rest _ignored)
+  (newline)
+  (indent-according-to-mode)
+  (forward-line -1)
+  (indent-according-to-mode))
+
+(sp-local-pair 'prog-mode "{" nil :post-handlers '((my::text/indent-between-pair "RET")))
+(sp-local-pair 'prog-mode "[" nil :post-handlers '((my::text/indent-between-pair "RET")))
+(sp-local-pair 'prog-mode "(" nil :post-handlers '((my::text/indent-between-pair "RET")))
+#+end_src
+
+** Super
+
+#+BEGIN_SRC elisp
+(map!
+ (:map override
+   :g "s-n" #'evil-buffer-new
+   :g "s-;" #'eval-expression
+   :g "s-a" #'mark-whole-buffer
+   :g "s-s" #'save-buffer
+   :g "s-v" #'yank
+   :g "s-x" #'execute-extended-command
+   :g "s-y" #'helm-show-kill-ring
+
+   ;; Text scale
+   :g "s-="   #'doom/increase-font-size
+   :g "s--"   #'doom/decrease-font-size
+   :g "s-0"   #'doom/reset-font-size))
+#+END_SRC
+
+** Evil
+*** Config
+**** Use global ex by default
+
+I almost always want global search and replace, doom changed this in [[orgit-rev:~/.emacs.d/::1a6f5086400d164178016784aac12114934c8245][1a6f50864]].
+To undo this behavior just add =g= flag
+
+#+BEGIN_SRC elisp
+(setq evil-ex-substitute-global t)
+#+END_SRC
+
+*** Motions
+**** Additional text objects
+
+- =q= for any type of quote
+- =B= for curly braces
+- =r= for square brackets
+
+#+BEGIN_SRC elisp
+(after! evil
+  (require 'evil-textobj-anyblock)
+  (evil-define-text-object my-evil-textobj-anyblock-inner-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "`")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count nil)))
+
+  (evil-define-text-object my-evil-textobj-anyblock-a-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "`")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count t)))
+
+  (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
+  (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
+  (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket)
+  (define-key evil-inner-text-objects-map "B" 'evil-inner-curly))
+#+END_SRC
+
+**** Up to next/previous indent
+
+Text objects for lines after or before the current line,
+that have the same or deeper indent.
+
+#+BEGIN_SRC elisp
+(defun evil-indent-plus--line-down-indent-range (&optional point)
+  (require 'evil-indent-plus)
+  (let* ((range (evil-indent-plus--same-indent-range point))
+         (base (point))
+         (begin (point)))
+    (list begin (cl-second range) base)))
+
+(evil-define-text-object evil-indent-plus-i-indent-line-down (&optional count beg end type)
+  "Text object describing the block with the same (or greater) indentation as the current line,
+and the line above, skipping empty lines."
+  :type line
+  (require 'evil-indent-plus)
+  (evil-indent-plus--linify (evil-indent-plus--line-down-indent-range)))
+
+(define-key evil-inner-text-objects-map "+" 'evil-indent-plus-i-indent-line-down)
+
+(defun evil-indent-plus--line-up-indent-range (&optional point)
+  (require 'evil-indent-plus)
+  (let* ((range (evil-indent-plus--same-indent-range point))
+         (base (point))
+         (begin (point)))
+    (list begin (cl-first range) base)))
+
+(evil-define-text-object evil-indent-plus-i-indent-line-up (&optional count beg end type)
+  "Text object describing the block with the same (or greater) indentation as the current line,
+and the line above, skipping empty lines."
+  :type line
+  (require 'evil-indent-plus)
+  (evil-indent-plus--linify (evil-indent-plus--line-up-indent-range)))
+
+(define-key evil-inner-text-objects-map "-" 'evil-indent-plus-i-indent-line-up)
+#+END_SRC
+
+**** Little Word Motion
+
+#+BEGIN_SRC elisp
+(defun load-evil-camel-case-motion ()
+  (require 'evil-little-word)
+  (define-key evil-normal-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-normal-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-operator-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "M-w") 'evil-forward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "M-b") 'evil-backward-little-word-begin)
+  (define-key evil-visual-state-map (kbd "i M-w") 'evil-inner-little-word))
+
+(load-evil-camel-case-motion)
+#+END_SRC
+**** Sort Motion
+
+#+BEGIN_SRC elisp
+(evil-define-operator +evil/sort (beg end)
+  "Sort lines with motion"
+  (interactive "<r>")
+  (sort-lines nil beg end))
+
+(map!
+ (:after evil
+    :m "gS" #'+evil/sort))
+#+END_SRC
+
+**** Case Conversion
+
+Copied code from [[https://github.com/strickinato/evil-briefcase][strickinato/evil-briefcase]] since it's not maintained anymore.
+Convert case motion via ~Z~.
+
+Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
+
+#+BEGIN_SRC elisp
+(evil-define-operator +evil/case-upper (beg end type)
+  "Convert text to upper case."
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-upcase beg end nil)
+    (let ((str (s-upcase (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-lower (beg end type)
+  "Convert text to lowercase."
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-downcase beg end nil)
+    (let ((str (s-downcase (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-camel-upper (beg end type)
+  "Convert text to CamelCase with a Capital C"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-upper-camel-case beg end nil)
+    (let ((str (s-upper-camel-case (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-camel-lower (beg end type)
+  "Convert text to camelCase with a small C"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-lower-camel-case beg end nil)
+    (let ((str (s-lower-camel-case (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-snake-lower (beg end type)
+  "Convert text to snake_case, slithering"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-snake-case beg end nil)
+    (let ((str (s-snake-case (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-snake-upper (beg end type)
+  "Convert text to SNAKE_CASE, AKA SCREAMING_SNAKE_CASE"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-snake-case beg end nil)
+    (let ((str (s-upcase (s-snake-case (buffer-substring-no-properties beg end)))))
+      (delete-region beg end)
+      (insert str))))
+
+(evil-define-operator +evil/case-kebab-upper (beg end type)
+  "Convert text to KEBAB-KASE, mmmm... THICK MEAT"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-dashed-words beg end nil)
+    (let ((str (s-dashed-words (buffer-substring-no-properties beg end))))
+      (delete-region beg end)
+      (insert (upcase str)))))
+
+(evil-define-operator +evil/case-kebab-lower (beg end type)
+  "Convert text to kebab-kase, mmmm... hyphens"
+  (if (eq type 'block)
+      (evil-apply-on-block #'s-dashed-words beg end nil)
+    (let ((str (s-dashed-words (buffer-substring-no-properties beg end))))
+        (delete-region beg end)
+        (insert str))))
+
+(map!
+ (:after evil
+  :m "Zu" #'+evil/case-upper
+  :m "Zl" #'+evil/case-lower
+  :m "ZC" #'+evil/case-camel-upper
+  :m "Zc" #'+evil/case-camel-lower
+  :m "ZS" #'+evil/case-snake-upper
+  :m "Zs" #'+evil/case-snake-lower
+  :m "ZK" #'+evil/case-kebab-upper
+  :m "Zk" #'+evil/case-kebab-lower))
+#+END_SRC
+
+**** Org Src Block
+
+Matches any block with ~BEGIN_~, e.g.: SRC blocks.
+
+#+BEGIN_SRC elisp
+(defun +evil-org/src-block ()
+  "Matches src blocks using org-element-context."
+  (-when-let* ((ctx (org-element-context))
+               (type (car ctx))
+               (ctx (cond
+                     ((equal type 'src-block) ctx)
+                     ((equal type 'example-block) ctx)
+                     ((equal type 'quote-block) ctx)
+                     ;; Inside quote blocks org-element-context matches the paragraphs
+                     ;; So we have to take the parent block to get the quote-block
+                     ((equal type 'paragraph)
+                      (-some->> ctx
+                        (nth 1)
+                        ((lambda (x) (doom-plist-get x :parent)))
+                        (--id-when (equal (car it) 'quote-block)))))))
+    ctx))
+
+(evil-define-text-object +evil-org-inner-src-block (count &optional beg end type)
+  "Select an org src/quote/example block object."
+  (evil-org-select-inner-element (+evil-org/src-block)))
+
+(evil-define-text-object +evil-org-an-src-block (count beg end type)
+  "An org object.
+Matches urls and table cells."
+  (evil-org-select-an-element (+evil-org/src-block)))
+
+(after! evil-org
+  (evil-define-key '(visual operator) evil-org-mode-map
+    "ib" #'+evil-org-inner-src-block
+    "ab" #'+evil-org-an-src-block))
+#+END_SRC
+
+*** Normal Bindings
+**** Window navigation
+
+Fix window navigation for various modes.
+I don't like pressing ~C-w~ or ~SPC w~ as leader to navigate,
+so I have to work around it:
+
+#+BEGIN_SRC elisp
+(map!
+ :en "C-h"   #'evil-window-left
+ :en "C-j"   #'evil-window-down
+ :en "C-k"   #'evil-window-up
+ :en "C-l"   #'evil-window-right)
+
+(map!
+ :map (image-mode-map
+       magit-diff-mode-map
+       magit-revision-mode-map
+       magit-status-mode-map
+       eshell-mode-map
+       evil-org-mode-map)
+ :en "C-h"   #'evil-window-left
+ :en "C-j"   #'evil-window-down
+ :en "C-k"   #'evil-window-up
+ :en "C-l"   #'evil-window-right)
+
+(add-hook! 'eshell-first-time-mode-hook
+  (map!
+   :map eshell-mode-map
+   :en "C-h"   #'evil-window-left
+   :en "C-j"   #'evil-window-down
+   :en "C-k"   #'evil-window-up
+   :en "C-l"   #'evil-window-right))
+
+(map!
+ :map org-agenda-mode-map
+ "C-h"  #'evil-window-left
+ "C-j"  #'evil-window-down
+ "C-k"  #'evil-window-up
+ "C-l"  #'evil-window-right)
+#+END_SRC
+
+**** History navigation in minibuffer
+
+#+BEGIN_SRC elisp
+(define-key minibuffer-local-map "\C-p" 'previous-history-element)
+(define-key minibuffer-local-map "\C-n" 'next-history-element)
+#+END_SRC
+
+**** Jump to last buffer
+
+#+BEGIN_SRC elisp
+(map! :n "gb" #'evil-switch-to-windows-last-buffer)
+#+END_SRC
+
+**** Select last paste
+:PROPERTIES:
+:SOURCE:   https://emacs.stackexchange.com/a/21093
+:END:
+
+#+BEGIN_SRC elisp
+(defun +evil|select-pasted ()
+  (interactive)
+  (let ((start-marker (evil-get-marker ?\[))
+        (end-marker (evil-get-marker ?\])))
+    (evil-visual-select start-marker end-marker)))
+
+(map! :n "gp" #'+evil|select-pasted)
+#+END_SRC
+
+**** Go up one directory from the current buffer
+
+#+BEGIN_SRC elisp
+(map! :m "-"  #'dired-jump)
+#+END_SRC
+
+**** Visual Line Mode Navigation
+
+#+BEGIN_SRC elisp
+(map! :map visual-line-mode-map
+      :nv "j" #'evil-next-visual-line
+      :nv "k" #'evil-previous-visual-line)
+#+END_SRC
+
+*** Insert Bindings
+
+Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
+
+**** Insert from the kill ring in insert mode
+
+#+BEGIN_SRC elisp
+(map! :i "A-y" #'helm-show-kill-ring)
+#+END_SRC
+
+**** Unicode Characters
+
+#+BEGIN_SRC elisp
+(map!
+ :i "C-y"   #'helm-show-kill-ring
+ :i "M-`"   (cmd! (insert "°"))
+ :i "M-."   (cmd! (insert "…"))
+ :i "M-^"   (cmd! (insert "°"))
+ :i "M-l"   (cmd! (insert "λ"))
+ :i "M-w"   (cmd! (insert "⚠"))
+ :i "M-i"   (cmd! (insert "ℹ")))
+#+END_SRC
+
+*** Square Bracket Bindings
+
+Global ~[~ & ~]~ combinator bindings
+
+**** Dumb Jump
+
+#+BEGIN_SRC elisp
+(map!
+ :n "]F" #'dumb-jump-go
+ :n "[F" #'dumb-jump-back)
+#+END_SRC
+
+**** Flycheck Error Jumping
+
+#+BEGIN_SRC elisp
+(map!
+ :n "]e" #'flycheck-next-error
+ :n "[e" #'flycheck-previous-error)
+#+END_SRC
+**** Projectile Alternate file finding
+
+#+BEGIN_SRC elisp
+(map!
+ :n "]1" #'projectile-toggle-between-implementation-and-test
+ :n "[1" #'projectile-toggle-between-implementation-and-test)
+#+END_SRC
+
+*** Text Objects
+
+Custom evil text objects mostly stolen from [[https://github.com/jerryxgh/lambda-x/blob/master/lambda-evil.el#L236][Spacemacs|define-text-object-regexp]].
+
+**** Utils
+***** Define Text Objects
+
+#+BEGIN_SRC elisp
+(defmacro +evil/define-text-object-regexp (key name start-regexp end-regexp)
+  "Define a text object.
+START-REGEXP and END-REGEXP are the boundaries of the text object."
+  (let ((inner-name (make-symbol (concat "evil-inner-" name)))
+        (outer-name (make-symbol (concat "evil-outer-" name))))
+    `(progn
+       (evil-define-text-object ,inner-name (count &optional beg end type)
+         (evil-select-paren ,start-regexp ,end-regexp beg end type count nil))
+       (evil-define-text-object ,outer-name (count &optional beg end type)
+         (evil-select-paren ,start-regexp ,end-regexp beg end type count t))
+       (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
+       (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
+#+END_SRC
+**** Config
+
+#+BEGIN_SRC elisp
+(+evil/define-text-object-regexp "~" "tilde" "~" "~")
+(+evil/define-text-object-regexp "=" "equal" "=" "=")
+(+evil/define-text-object-regexp "|" "bar" "|" "|")
+(+evil/define-text-object-regexp "*" "star" "*" "*")
+(+evil/define-text-object-regexp "$" "dollar" "$" "$")
+(+evil/define-text-object-regexp "%" "percent" "%" "%")
+(+evil/define-text-object-regexp "/" "slash" "/" "/")
+(+evil/define-text-object-regexp "_" "underscore" "_" "_")
+(+evil/define-text-object-regexp "-" "hyphen" "-" "-")
+#+END_SRC
+
+**** Quotes Text Object
+
+Changes the text matching inside quotes with ~q~ motion (e.g. ~ciq~)
+Change inner bracket with ~r~
+
+#+BEGIN_SRC elisp
+(after! evil
+  (require 'evil-textobj-anyblock)
+  (evil-define-text-object my-evil-textobj-anyblock-inner-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "'")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count nil)))
+
+  (evil-define-text-object my-evil-textobj-anyblock-a-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "'")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count t)))
+
+  (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
+  (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
+  (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket))
+#+END_SRC
+*** Ex Commands
+
+Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+commands.el::;;; editor/evil/+commands.el -*- lexical-binding: t; -*-][+commands.el]]
+
+#+BEGIN_SRC elisp
+(after! evil-ex
+  :config
+  (evil-ex-define-cmd "W" #'evil-write))
+#+END_SRC
+
+*** MultiEdit
+
+#+BEGIN_SRC elisp
+(map! :nv "C-M-d" #'evil-multiedit-match-all)
+#+END_SRC
+
+*** Jump with =tab=
+
+#+BEGIN_SRC elisp
+(map! :n [tab] (general-predicate-dispatch nil
+                 (and (featurep! :editor fold)
+                      (save-excursion (end-of-line) (invisible-p (point))))
+                 #'+fold/toggle
+                 (fboundp 'evil-jump-item)
+                 #'evil-jump-item)
+      :v [tab] (general-predicate-dispatch nil
+                 (and (bound-and-true-p yas-minor-mode)
+                      (or (eq evil-visual-selection 'line)
+                          (not (memq (char-after) (list ?\( ?\[ ?\{ ?\} ?\] ?\))))))
+                 #'yas-insert-snippet
+                 (fboundp 'evil-jump-item)
+                 #'evil-jump-item))
+#+END_SRC
+*** TODO Paste Fix
+
+Evil pastes at the current cursor, which I don't expect it to do.
+Most of the time it requires me to move into insert mode, move one character,
+and then do my function.
+
+#+BEGIN_SRC elisp
+(defun +evil/normal-mode-paste-fix (fn &optional insert-char)
+  "Move forward one character and then paste."
+  (interactive)
+  (if (and (evil-normal-state-p)
+           (my::buffer/line-contains "[^\s]"))
+      (progn
+        (forward-char 1)
+        (when (and insert-char (looking-at insert-char))
+          (insert insert-char))
+        (let ((line (substring-no-properties (thing-at-point 'line))))
+          (call-interactively fn)
+          (when (eq line (substring-no-properties (thing-at-point 'line)))
+            (delete-char 1))))
+    (call-interactively fn)))
+#+END_SRC
+
+*** TODO Store all yanks in extra register
+
+#+begin_src elisp :tangle no
+(defvar +evil:last-yank nil)
+
+(defun +evil/save-to-yank-register (&rest _rest)
+  "Save the last yank to a specific register that only gets overwritten by yanks.
+So deletes wont affect this register."
+  (setq +evil:last-yank (evil-get-register ?\")))
+
+(defun +evil/insert-from-yank-register ()
+  "Save the last yank to a specific register that only gets overwritten by yanks.
+So deletes wont affect this register."
+  (-some->> +evil:last-yank
+    (insert)))
+
+;; (advice-add 'evil-yank :after #'+evil/save-to-yank-register)
+#+end_src
+
+** Leader
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ "RET"  #'+bookmarks|main
+ "'"  #'+popup/toggle
+ "au" #'undo-tree-visualize
+ "-"  #'quick-calc)
+#+END_SRC
+
+*** Buffer
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("b" . "buffer")
+  :desc "Rename Buffer"  "r" #'rename-buffer
+  :desc "Rename Buffer"  "+" #'persp-add-buffer))
+#+END_SRC
+
+*** File / Goto
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("f" . "file")
+  :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
+  (:prefix-map ("g" . "goto")
+   :desc "Drive"                 "/" #'my::counsel|mounted-drives
+   :desc "Desktop"               "D" (cmd! (find-file "~/Desktop"))
+   :desc "Config"                "." (cmd! (find-file "~/.config"))
+   :desc "Code"                  "c" (cmd! (find-file "~/Code"))
+   :desc "Last captured"         "C" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
+   :desc "Downloads"             "d" (cmd! (find-file "~/Downloads"))
+   :desc "Elfeed"                "e" (cmd! (find-file (car rmh-elfeed-org-files)))
+   :desc "Media"                 "m" (cmd! (find-file "~/Media"))
+   :desc "Music"                 "M" (cmd! (find-file "~/Media/Music"))
+   :desc "Notes"                 "n" (cmd! (find-file org-directory))
+   :desc "Project Root"          "p" (cmd! (find-file (projectile-project-root)))
+   :desc "Last refiled"          "r" (cmd! (org-refile-goto-last-stored))
+   :desc "Tmp"                   "t" (cmd! (find-file "/tmp"))
+   :desc "Home"                  "h" (cmd! (find-file "~"))
+   :desc "Run (Mounted Drives)"  "r" #'my::dired|find-mounted-drive)))
+#+END_SRC
+
+*** Git
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("g" . "git")
+  :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
+  :desc "Blame"                               "B" #'magit-blame
+  :desc "Changed Files"                       "F" #'my::magit|counsel-changed-files
+  :desc "New Branch"                          "N" #'magit-branch-spinoff
+  :desc "Show revision original File"         "O" #'my::magit|show-revision-original
+  :desc "Map-editor Changed Files"            "T" (cmd! (my::magit|counsel-changed-files "map-editor"))
+  :desc "Amend Commit"                        "a" #'magit-commit-amend
+  :desc "Checkout"                            "b" #'magit-checkout
+  :desc "Diff"                                "d" #'magit-diff
+  :desc "Push"                                "p" #'magit-push
+  :desc "Undo"                                "u" #'my::magit|git-undo
+  :desc "Worktree Popup"                      "w" #'magit-worktree
+  :desc "New Org Pr"                          "!" #'+MM|new-pr-from-branch
+  (:prefix ("f" . "file")
+   :desc "VC file"                            "F" #'vc-revision-other-window)
+  (:prefix ("l" . "list")
+   :desc "List gists"                         "g" #'+gist:list
+   :desc "List submodules"                    "n" #'magit-list-submodules
+   :desc "List issues"                        "p" #'forge-list-issues
+   :desc "List pull requests"                 "r" #'forge-list-pullreqs
+   :desc "List pull awaiting review requests" "R" #'forge-list-requested-reviews
+   :desc "List notifications"                 "s" #'forge-list-notifications)))
+#+END_SRC
+
+*** Insert
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("i" . "insert")
+   :desc "New Snippet"    "S" #'+snippets/new
+   :desc "Killring"       "y" #'helm-show-kill-ring))
+#+END_SRC
+
+*** Open
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:desc "open" :prefix "o"
+   :desc "Calc"            :g "c" #'calc
+   :desc "Calc"            :g "C" #'=calendar
+   :desc "Elfeed"          :g "e" #'+eshell/toggle
+   :desc "Eshell"          :g "E" #'my::elfeed|open
+   :desc "Irc"             :g "i" #'=irc
+   :desc "Mail"            :g "m" #'=mu4e
+   :desc "Proced"          :g "p" #'proced
+   :desc "Snippet"         :g "s" #'+snippets/edit
+   :desc "Flycheck Errors" :g "$" #'flycheck-list-errors))
+#+END_SRC
+
+*** Projects
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("p" . "project")
+  :desc "Workspace Project Files" "P" #'my::workspaces|find-workspace-project-file
+  :desc "Project VC"              "v" #'my::workspaces|workspace-project-vc
+  :desc "Project Bookmarks"       "RET" #'+bookmarks))
+#+END_SRC
+
+*** Search
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("s" . "search")
+  :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point
+  :desc "Occur" "o" #'occur
+  :desc "Web Lookup" "w" #'+lookup/online
+  :desc "Web Lookup with prompt" "W" #'+lookup/online-select))
+#+END_SRC
+
+*** Toggle
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("t" . "toggle")
+   :desc "Theme Dark/Light" "t" #'my::ui|toggle-theme
+   :desc "Auto Completion" "c" #'+company/toggle-auto-completion))
+#+END_SRC
+
+*** Window
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ :desc  "Split Vertical"        "|"    #'evil-window-vsplit
+ :desc  "Split Horizontal"      "-"    #'evil-window-split
+
+ (:prefix-map ("w" . "window")
+  :desc  "Delete"               "d"    #'delete-window
+  :desc  "Ace Delete Windo"     "D"    #'ace-delete-window
+  :desc  "New"                  "n"    #'evil-window-new
+
+  :desc  "Undo"                 "u"    #'winner-undo
+  :desc  "Redo"                 "r"    #'winner-redo
+  :desc  "Enlargen"             "o"    #'doom/window-enlargen
+
+  :desc  "Toggle Split"         "T"    #'+window|toggle-split-direction
+
+  :desc  "Split Vertical"       "|"    #'evil-window-vsplit
+  :desc  "Split Horizontal"     "_"    #'evil-window-split
+
+  :desc  "Move Left"            "H"    #'+evil/window-move-left
+  :desc  "Move Down"            "U"    #'+evil/window-move-down
+  :desc  "Move Up"              "K"    #'+evil/window-move-up
+  :desc  "Move Right"           "L"    #'+evil/window-move-right
+
+  :desc  "Set Height"           "C-_"  #'evil-window-set-height
+  :desc  "Set Height"           "C-|"  #'evil-window-set-width
+
+  :desc  "Swap"                 "SPC"  #'ace-swap-window
+  :desc  "Toggle Locked"        "#"    #'my|toggle-window-dedicated
+  :desc "Toggle Locked"         "."    #'+popup/raise))
+#+END_SRC
+
+*** Workspace
+
+#+BEGIN_SRC elisp
+(map!
+ :leader
+ (:prefix-map ("TAB" . "workspace")
+  :desc "Switch to"     "." #'my::workspaces/switch-to
+  :desc "Close others"  "o" #'my::workspaces|close-others
+  :desc "Create"        "c" #'my::workspaces/new-named
+  :desc "Rename"        "," #'+workspace/rename
+  :desc "Project Files" "p" #'my::workspaces|find-workspace-project-file
+  :desc "Project VC"    "v" #'my::workspaces|workspace-project-vc
+  :desc "Clone"         "C" (cmd!
+                             (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
+                             (message "Cloned current workspace %s" (+workspace-current-name)))
+  :desc "Switch to last workspace" "0"   #'+workspace/other))
+#+END_SRC
+
+*** Yank
+
+#+BEGIN_SRC elisp
+(defun +yank/execute-action (x &optional insert)
+  "Copy the the yank or insert it during insert mode."
+  (interactive)
+  (cond
+   ((or (evil-insert-state-p) insert) (insert x))
+   (t (my/kill-and-message x)))
+  x)
+
+(defun +yank/dired-path ()
+  "Returns the current dired entry or the buffer directory."
+  (or (dired-file-name-at-point) dired-directory))
+
+(defun +yank/buffer-filename ()
+  "Returns the current buffers file name if possible."
+  (cond ((doom-dired-buffer-p (current-buffer)) (+yank/dired-path))
+        (buffer-file-name buffer-file-name)
+        (org-src-source-file-name org-src-source-file-name)
+        (t nil)))
+
+(defun +yank/buffer-path ()
+  "Returns the current buffers path."
+  (or (+yank/buffer-filename) default-directory))
+
+(defun +yank|filename (&optional insert)
+  "Yank the buffer file name."
+  (interactive "P")
+  (or
+   (-some->> (+yank/buffer-filename)
+     ;; When pointing at a directory at dired, I still take the directory
+     ((lambda (x) (if (f-file? x)
+                      (file-name-directory x)
+                    x)))
+     ((lambda (x) (+yank/execute-action x insert))))
+   (user-error "Error: Not a file bufer!")))
+
+(defun +yank|base (&optional insert)
+  "Yank the buffer files base name."
+  (interactive "P")
+  (or
+   (-some->> (+yank/buffer-filename)
+     (file-name-base)
+     ((lambda (x) (+yank/execute-action x insert))))
+   (user-error "Error: Not a file bufer!")))
+
+(defun +yank|directory (&optional insert)
+  "Yank the buffer files directory."
+  (interactive "P")
+  (or
+   (-some->> (+yank/buffer-path)
+     (file-name-directory)
+     ((lambda (x) (+yank/execute-action x insert))))
+   (user-error "Error: Not a file bufer!")))
+
+(defun +yank|path (&optional insert)
+  "Yank the buffer files path."
+  (interactive "P")
+  (or
+   (-some->> (+yank/buffer-path)
+     ((lambda (x) (+yank/execute-action x insert))))
+   (user-error "Error: Not a file bufer!")))
+
+(defun +yank|relative-to-project (&optional insert)
+  "Yank the buffer path relative to the projectile-project-root."
+  (interactive "P")
+  (or
+   (-some->> (+yank/buffer-path)
+     (f-full)
+     ((lambda (x)
+        (or
+         (->> (s-replace (projectile-project-root) "" x)
+              (-id-when #'s-present?))
+         x)))
+     ((lambda (x) (+yank/execute-action x insert))))
+   (user-error "Error: Not a file bufer!")))
+
+(map!
+ :leader
+ (:prefix-map ("y" . "Yank")
+  :desc "filename"            "f" #'+yank|filename
+  :desc "base"                "b" #'+yank|base
+  :desc "directory"           "d" #'+yank|directory
+  :desc "path"                "p" #'+yank|path
+  :desc "path"                "y" #'+yank|path
+  :desc "relative to project" "r" #'+yank|relative-to-project))
+#+END_SRC
+
+** Local-Leader
+*** Eshell
+
+#+BEGIN_SRC elisp
+(defun my::eshell/init-keymap ()
+  "Setup additional custom eshell keybindings to already existing doom bindings. This must be done in a hook because eshell-mode
+redefines its keys every time `eshell-mode' is enabled."
+  (map! :map eshell-mode-map
+        :in "C-p"         #'eshell-previous-input
+        :in "C-n"         #'eshell-next-input
+
+        :localleader "l"  #'eshell/clear))
+
+(add-hook 'eshell-first-time-mode-hook #'my::eshell/init-keymap)
+#+END_SRC
+
+*** Elisp
+
+#+BEGIN_SRC elisp
+(map! :map emacs-lisp-mode-map
+      :gni "M-;"   #'symex-mode-interface
+      :n "s-k"   (cmd! (sp-transpose-sexp)
+                     (evil-previous-line))
+      :n "s-j"   (cmd! (sp-push-hybrid-sexp)
+                     (evil-next-line))
+      :n "s-r" #'eval-buffer
+      :n "g]"  #'sp-slurp-hybrid-sexp
+      :n "g["  #'sp-forward-barf-sexp
+      :localleader
+      :desc "Ly Mode"                 "l"  #'+ly-mode
+      :desc "Jump to tangled source"  "j"  #'org-babel-tangle-jump-to-org
+      :desc "Symex Mode"              "s" #'symex-mode-interface
+      :desc "Raise sexp"              "<" #'raise-sexp
+      :desc "Barf Sexp"               ">" #'barf-sexp)
+#+END_SRC
+
+*** Haskell
+
+#+BEGIN_SRC elisp
+(map! :map haskell-mode-map
+      :localleader
+      :desc "Stylish" "s" #'my::haskell|autofix)
+#+END_SRC
+
+*** Bash
+
+#+BEGIN_SRC elisp
+(map! :map sh-mode-map
+      :localleader
+      :desc "Eval Region"  "e" #'sh-execute-region
+      :desc "Eval Region"  "E" #'executable-interpret)
+#+END_SRC
+
+*** Git
+
+#+BEGIN_SRC elisp
+(map! :map magit-mode-map
+      :localleader
+      :desc "Toggle Magit Buffer Lock" "#" #'magit-toggle-buffer-lock)
+#+END_SRC
+
+*** Reasonml
+
+#+BEGIN_SRC elisp
+(map! :map reason-mode-map
+      :localleader
+      :desc "Eval Region"  "r" #'refmt)
+#+END_SRC
+
+*** Mail
+
+#+BEGIN_SRC elisp
+(map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
+      :localleader
+      :g "x" (cmd!
+              (require 'org-mu4e)
+              (org-mu4e-store-and-capture)))
+#+END_SRC
+
+*** mail
+
+#+BEGIN_SRC elisp
+(map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
+      :localleader
+      :g "x" (cmd!
+              (require 'org-mu4e)
+              (org-mu4e-store-and-capture)))
+#+END_SRC
+*** Images
+
+#+BEGIN_SRC elisp
+(map! :map 'image-mode-map
+      :desc "Zoom in" :gn "+" #'image-increase-size
+      :desc "Zoom in" :gn "-" #'image-decrease-size
+      :desc "Zoom in" :gn "0" (cmd! (image-transform-set-scale 1)))
+#+END_SRC
+
+** Minibuffer
+*** Copy and Paste from the minibuffer
+
+Since the minibuffer has no evil mode, i've got these bindings to help out:
+- ~M-c~: Copy the minibuffer line
+- ~M-v~: Paste from clipboard to minibuffer (Same as ~C-r 0~)
+         This also removes trailing newlines
+
+#+BEGIN_SRC elisp
+(defun my::evil|paste-pruned ()
+  "Paste the current clipboard pruned from newlines"
+  (interactive)
+  (insert (s-trim (shell-command-to-string "pbpaste")))
+  (doom/forward-to-last-non-comment-or-eol))
+
+(defun my::minibuffer|copy-line ()
+  "Copies the minibuffer content to the clipboard"
+  (interactive)
+  (save-excursion
+    (doom/forward-to-last-non-comment-or-eol)
+    (set-mark-command nil)
+    (doom/backward-to-bol-or-indent)
+    (kill-ring-save (mark) (point))))
+
+(defun my::minibuffer/setup-copy-bindings ()
+  "Set up keybindings for the minibuffer"
+  (local-set-key (kbd "s-v") 'my::evil|paste-pruned)
+  (local-set-key (kbd "s-c") 'my::minibuffer|copy-line))
+
+(add-hook 'minibuffer-setup-hook 'my::minibuffer/setup-copy-bindings)
+
+;; (define-key! :keymaps +default-minibuffer-maps
+;;   "C-w" 'sp-backward-delete-word)
+#+END_SRC
+
 
 * Hacks
 ** Override default browser
@@ -5260,330 +6555,6 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 
 
 * Configuration
-** Custom Functions & Modes
-*** Unfill Paragraph
-
-Fix a paragraph that was formatted to a fill column.
-
-#+BEGIN_SRC elisp
-(defun my|unfill-paragraph ()
-  "Fix a paragraph that was formatted to a fill column."
-  (interactive)
-  (let ((fill-column (point-max)))
-    (fill-paragraph nil)))
-#+END_SRC
-
-*** Jump to definition for tangled files
-
-Take me to the literate source file when using ~find-function~ etc.
-
-#+BEGIN_SRC elisp
-(defadvice! +org|try-org-babel-tangle-jump-to-org (&optional arg1)
-  :after '(find-function
-           find-variable)
-  (ignore-errors
-    (org-babel-tangle-jump-to-org)))
-#+END_SRC
-
-*** Hydras
-**** Line Spacing
-
-Change and reset line-spacing for all buffers.
-
-#+BEGIN_SRC elisp
-(defvar +ui-default-line-spacing line-spacing)
-(defvar +ui-default-line-spacing-increment 1)
-(defvar +ui-big-line-spacing-increment 10)
-
-(defun +ui/set-line-spacing (&optional increment)
-  "Set the line spacing
-When no line spacing is given is the default-line-spacing"
-  (setq-default line-spacing (+ (or increment +ui-default-line-spacing-increment) line-spacing)))
-
-(defun +ui|reset-line-spacing ()
-  (interactive)
-  (setq-default line-spacing +ui-default-line-spacing))
-
-(defun +ui|increase-line-spacing ()
-  (interactive)
-  (+ui/set-line-spacing))
-
-(defun +ui|decrease-line-spacing ()
-  (interactive)
-  (+ui/set-line-spacing (- +ui-default-line-spacing-increment)))
-
-(defun +ui|increase-line-spacing-big ()
-  (interactive)
-  (+ui/set-line-spacing +ui-big-line-spacing-increment))
-
-(defun +ui|decrease-line-spacing-big ()
-  (interactive)
-  (+ui/set-line-spacing (- +ui-big-line-spacing-increment)))
-
-(evil-define-key 'normal 'global (kbd "]z") #'+line-spacing/step/body)
-
-;;;###autoload (autoload '+common-lisp/macrostep/body "lang/common-lisp/autoload/hydras" nil nil)
-(defhydra +line-spacing/step (:exit nil :hint nil :foreign-keys run :color pink)
-  "
-Macro Expansion
-^^Definitions                           ^^Compiler Notes             ^^Stickers
-^^^^^^─────────────────────────────────────────────────────────────────────────────────────
-[_r_] Reset
-[_]_] Expand
-[_[_] Collapse
-[_}_] Expand Big
-[_{_] Collapse Big
-"
-  ("r" +ui|reset-line-spacing)
-  ("]" +ui|increase-line-spacing)
-  ("[" +ui|decrease-line-spacing)
-  ("}" +ui|increase-line-spacing-big)
-  ("{" +ui|decrease-line-spacing-big)
-  ("q" nil "cancel" :color blue))
-#+END_SRC
-
-**** Expand Region
-:PROPERTIES:
-:SOURCE:   https://www.reddit.com/r/emacs/comments/also27/second_trial_for_a_weekly_tipstricksetc_thread/efi7pbj/
-:END:
-
-Expand visual region using a hydra.
-Double press ~v~ to enable.
-
-#+BEGIN_SRC elisp
-(defhydra hydra-expand-region ()
-   "region: "
-   ("f" er/mark-defun "defun")
-   ("v" er/expand-region "expand")
-   ("V" er/contract-region "contract"))
-
-(evil-define-key 'visual 'global (kbd "v") #'hydra-expand-region/body)
-#+END_SRC
-*** Custom Modes
-**** Evil edit register
-
-Edit registers with ~+evil-edit-register|counsel~.
-Mostly used to edit the macro registers ~q~.
-
-#+BEGIN_SRC elisp
-(defvar +evil-edit-register:register "")
-(defvar +evil-edit-register-mode-map (make-sparse-keymap))
-
-(define-minor-mode +evil-edit-register-mode
-  "Edit evil register and save it back to the register."
-  :keymap +evil-edit-register-mode-map)
-
-(map! :map +evil-edit-register-mode-map
-      "C-c C-c" #'+evil-edit-register|save-and-exit
-      "C-c C-k" #'kill-buffer-and-window)
-
-(defun +evil-edit-register|save-and-exit (&optional arg)
-  "Save the buffer content back to the register register"
-  (interactive)
-  (evil-set-register
-   (string-to-char +evil-edit-register:register)
-   (buffer-substring-no-properties (point-min) (point-max)))
-  (kill-buffer-and-window))
-
-(defun +evil-edit-register|counsel (register-string)
-  "Edit evil register in register"
-  (require 'noflet)
-  (interactive (noflet ((counsel-evil-registers-action (x) x))
-                 (list (counsel-evil-registers))))
-  (-when-let* ((register-string (substring-no-properties register-string))
-               (buffer (generate-new-buffer (t! "*Evil Register Edit: <<register-string>>*")))
-               ((_ reg register) (s-match "^\\[\\(.\\)\\]: \\(.*\\)$" register-string)))
-    (pop-to-buffer buffer)
-    (with-current-buffer buffer
-      (+evil-edit-register-mode 1)
-      (setq-local +evil-edit-register:register reg)
-      (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
-      (save-excursion
-        (insert register)))))
-#+END_SRC
-** UI
-*** Zen Mode & Variable Pitch Fonts
-
-#+BEGIN_SRC elisp
-(setq +zen-text-scale 1.5)
-
-(let ((height 140)
-      (size 23))
-  (setq doom-variable-pitch-font (font-spec :family "IBM Plex Sans" :size size)
-        doom-serif-font (font-spec :family "IBM Plex Sans" :size size)))
-#+END_SRC
-
-*** Frame padding
-
-#+BEGIN_SRC elisp
-(add-hook! '(window-setup-hook after-make-frame-functions)
-  (defun +ui/init-frame-ui (&optional frame)
-    (interactive)
-    "Re-enable menu-bar-lines in GUI frames."
-    (when-let (frame (or frame (selected-frame)))
-      (when (display-graphic-p frame)
-        (set-frame-parameter frame 'internal-border-width 15)))))
-#+END_SRC
-
-*** System specific window modifications
-
-Resize the window font size etc according to the system.
-This will be disabled in terminal mode.
-
-#+BEGIN_SRC elisp
-(when (display-graphic-p) (my::ui|adjust-ui-to-display))
-#+END_SRC
-
-*** Theme Toggle
-
-Toggle between a light and a dark theme.
-Bound to ~SPC t t~.
-
-#+BEGIN_SRC elisp
-(defconst light-theme 'doom-one)
-(defconst dark-theme  'doom-one-light)
-
-(defun +doom|toggle-theme ()
-  "Toggle between light and dark themes."
-  (interactive)
-  (cond ((eq doom-theme dark-theme)
-         (message "Toggling to light-theme: %s" light-theme)
-         (setq doom-theme light-theme)
-         (doom/reload-theme))
-        ((eq doom-theme light-theme)
-         (message "Toggling to dark-theme: %s" dark-theme)
-         (setq doom-theme dark-theme)
-         (doom/reload-theme))
-        (t (message "Toggling theme is not possible. Theme is not currently light-theme (%s) or dark-theme (%s)." light-theme dark-theme))))
-#+END_SRC
-
-*** Theme Modifications
-**** General
-
-#+BEGIN_SRC elisp
-(add-hook 'doom-load-theme-hook #'*doom-themes-custom-set-faces)
-#+END_SRC
-
-***** Function Start
-
-#+BEGIN_SRC elisp
-(defun *doom-themes-custom-set-faces ()
-  (set-face-attribute 'fringe nil
-                      :foreground (face-background 'default)
-                      :background (face-background 'default))
-  (custom-set-faces!
-#+END_SRC
-
-***** Bookmarks
-
-#+BEGIN_SRC elisp
-'(bookmark-face :background nil)
-#+END_SRC
-
-
-***** Dired Output
-
-Remove the rainbow colors from dired.
-
-#+BEGIN_SRC elisp
-'(diredfl-read-priv :foreground "#80899E")
-'(diredfl-write-priv :foreground "#80899E")
-'(diredfl-exec-priv :foreground "#80899E")
-'(diredfl-other-priv :foreground "#80899E")
-
-'(all-the-icons-dired-dir-face :foreground "#80899E")
-
-'(diredfl-dir-priv :foreground "#282C34")
-'(diredfl-k-modified :foreground "#FF8E90")
-
-'(diredfl-number :foreground "#80899E")
-'(diredfl-date-time :foreground "#49505F")
-`(diredfl-dir-name :foreground "#2DADF2")
-#+END_SRC
-
-***** Mu4E
-
-Switch the highlight.
-
-#+BEGIN_SRC elisp
-'(mu4e-highlight-face :inherit mu4e-unread-face)
-#+END_SRC
-
-***** Org Mode
-
-Remove the ugly grey background
-
-#+BEGIN_SRC elisp
-'(org-column :background nil)
-#+END_SRC
-
-***** Function End
-
-#+BEGIN_SRC elisp
-))
-#+END_SRC
-**** Hooks
-
-***** Diff Highlighting
-
-#+BEGIN_SRC elisp
-(add-hook! '(diff-hl-margin-minor-mode-hook)
-  (progn
-    (set-face-attribute 'smerge-refined-added nil
-                        :foreground (doom-blend "#98be65" "#3e493d" 0.15)
-                        :background (doom-lighten "#98bb5d" 0.2))
-    (set-face-attribute 'smerge-refined-removed nil
-                        :foreground (doom-blend "#ff6c6b" "#4f343a" 0.2)
-                        :background (doom-lighten "#ff6c6b" 0.1))))
-
-(add-hook! '(magit-status-mode-hook magit-diff-mode-hook)
-           (progn
-                   (set-face-attribute 'diff-refine-added nil
-                                       :foreground (doom-blend "#98be65" "#3e493d" 0.15)
-                                       :background (doom-lighten "#98bb5d" 0.2))
-                   (set-face-attribute 'diff-refine-removed nil
-                                       :foreground (doom-blend "#ff6c6b" "#4f343a" 0.2)
-                                       :background (doom-lighten "#ff6c6b" 0.1))))
-#+END_SRC
-
-*** Scrolloff
-
-Start scrolling X lines before the end of a screen.
-Disable for certain modes (terminal & ivy) where the window is to small.
-
-#+BEGIN_SRC elisp
-(setq scroll-conservatively 10)
-(setq scroll-margin 10)
-
-(add-hook 'term-mode-hook (cmd! (setq-local scroll-margin 0)))
-(add-hook 'ivy-mode-hook (cmd! (setq-local scroll-margin 0)))
-#+END_SRC
-
-*** (Visual) Fill Column
-
-#+BEGIN_SRC elisp :tangle no
-(setq-default fill-column 110)
-(setq fill-column 110)
-(setq visual-fill-column-width fill-column)
-
-(setq visual-fill-column-center-text t
-      visual-fill-column-width fill-column)
-#+END_SRC
-
-*** Disable trailing whitespace warning
-
-#+BEGIN_SRC elisp :tangle no
-(setq-hook! 'prog-mode-hook show-trailing-whitespace nil)
-#+END_SRC
-
-*** Fix underline
-
-Draw the underline at the bottom of the text, not at the end of line-spacing.
-
-#+BEGIN_SRC elisp
-(setq x-underline-at-descent-line nil)
-#+END_SRC
-
 ** Package Config
 *** Mail
 **** Config
@@ -5635,989 +6606,3 @@ Draw the underline at the bottom of the text, not at the end of line-spacing.
   :after org-babel)
 #+END_SRC
 
-** Bindings
-*** General
-
-#+BEGIN_SRC elisp
-(map! :g "C-±" #'+popup/raise)
-#+END_SRC
-
-**** Disable emacs-state-toggle
-
-#+BEGIN_SRC elisp
-(map! :nm "C-z" nil)
-#+END_SRC
-
-**** Auto indent bracket openings
-:PROPERTIES:
-:SOURCE:   [[https://xenodium.com/emacs-smartparens-auto-indent/][Emacs smartparens auto-indent]]
-:END:
-
-Automatically indent and format when opening area betwen to delimiters.
-
-#+begin_src elisp
-(defun indent-between-pair (&rest _ignored)
-  (newline)
-  (indent-according-to-mode)
-  (forward-line -1)
-  (indent-according-to-mode))
-
-(sp-local-pair 'prog-mode "{" nil :post-handlers '((indent-between-pair "RET")))
-(sp-local-pair 'prog-mode "[" nil :post-handlers '((indent-between-pair "RET")))
-(sp-local-pair 'prog-mode "(" nil :post-handlers '((indent-between-pair "RET")))
-#+end_src
-
-*** Super
-
-#+BEGIN_SRC elisp
-(map!
- (:map override
-   :g "s-n" #'evil-buffer-new
-   :g "s-;" #'eval-expression
-   :g "s-a" #'mark-whole-buffer
-   :g "s-s" #'save-buffer
-   :g "s-v" #'yank
-   :g "s-x" #'execute-extended-command
-   :g "s-y" #'helm-show-kill-ring
-
-   ;; Text scale
-   :g "s-="   #'doom/increase-font-size
-   :g "s--"   #'doom/decrease-font-size
-   :g "s-0"   #'doom/reset-font-size))
-#+END_SRC
-
-*** Evil
-**** Config
-***** Use global ex by default
-
-I almost always want global search and replace, doom changed this in [[orgit-rev:~/.emacs.d/::1a6f5086400d164178016784aac12114934c8245][1a6f50864]].
-To undo this behavior just add =g= flag
-
-#+BEGIN_SRC elisp
-(setq evil-ex-substitute-global t)
-#+END_SRC
-
-**** Motions
-***** Additional text objects
-
-- =q= for any type of quote
-- =B= for curly braces
-- =r= for square brackets
-
-#+BEGIN_SRC elisp
-(after! evil
-  (require 'evil-textobj-anyblock)
-  (evil-define-text-object my-evil-textobj-anyblock-inner-quote
-    (count &optional beg end type)
-    "Select the closest outer quote."
-    (let ((evil-textobj-anyblock-blocks
-           '(("'" . "'")
-             ("\"" . "\"")
-             ("`" . "`")
-             ("“" . "”"))))
-      (evil-textobj-anyblock--make-textobj beg end type count nil)))
-
-  (evil-define-text-object my-evil-textobj-anyblock-a-quote
-    (count &optional beg end type)
-    "Select the closest outer quote."
-    (let ((evil-textobj-anyblock-blocks
-           '(("'" . "'")
-             ("\"" . "\"")
-             ("`" . "`")
-             ("“" . "”"))))
-      (evil-textobj-anyblock--make-textobj beg end type count t)))
-
-  (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
-  (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
-  (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket)
-  (define-key evil-inner-text-objects-map "B" 'evil-inner-curly))
-#+END_SRC
-
-***** Up to next/previous indent
-
-Text objects for lines after or before the current line,
-that have the same or deeper indent.
-
-#+BEGIN_SRC elisp
-(defun evil-indent-plus--line-down-indent-range (&optional point)
-  (require 'evil-indent-plus)
-  (let* ((range (evil-indent-plus--same-indent-range point))
-         (base (point))
-         (begin (point)))
-    (list begin (cl-second range) base)))
-
-(evil-define-text-object evil-indent-plus-i-indent-line-down (&optional count beg end type)
-  "Text object describing the block with the same (or greater) indentation as the current line,
-and the line above, skipping empty lines."
-  :type line
-  (require 'evil-indent-plus)
-  (evil-indent-plus--linify (evil-indent-plus--line-down-indent-range)))
-
-(define-key evil-inner-text-objects-map "+" 'evil-indent-plus-i-indent-line-down)
-
-(defun evil-indent-plus--line-up-indent-range (&optional point)
-  (require 'evil-indent-plus)
-  (let* ((range (evil-indent-plus--same-indent-range point))
-         (base (point))
-         (begin (point)))
-    (list begin (cl-first range) base)))
-
-(evil-define-text-object evil-indent-plus-i-indent-line-up (&optional count beg end type)
-  "Text object describing the block with the same (or greater) indentation as the current line,
-and the line above, skipping empty lines."
-  :type line
-  (require 'evil-indent-plus)
-  (evil-indent-plus--linify (evil-indent-plus--line-up-indent-range)))
-
-(define-key evil-inner-text-objects-map "-" 'evil-indent-plus-i-indent-line-up)
-#+END_SRC
-
-***** Little Word Motion
-
-#+BEGIN_SRC elisp
-(defun load-evil-camel-case-motion ()
-  (require 'evil-little-word)
-  (define-key evil-normal-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-normal-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-operator-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "M-w") 'evil-forward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "M-b") 'evil-backward-little-word-begin)
-  (define-key evil-visual-state-map (kbd "i M-w") 'evil-inner-little-word))
-
-(load-evil-camel-case-motion)
-#+END_SRC
-***** Sort Motion
-
-#+BEGIN_SRC elisp
-(evil-define-operator +evil/sort (beg end)
-  "Sort lines with motion"
-  (interactive "<r>")
-  (sort-lines nil beg end))
-
-(map!
- (:after evil
-    :m "gS" #'+evil/sort))
-#+END_SRC
-
-***** Case Conversion
-
-Copied code from [[https://github.com/strickinato/evil-briefcase][strickinato/evil-briefcase]] since it's not maintained anymore.
-Convert case motion via ~Z~.
-
-Example pressing ~ZciW~ would convert the inner =Word= into =camelCase=
-
-#+BEGIN_SRC elisp
-(evil-define-operator +evil/case-upper (beg end type)
-  "Convert text to upper case."
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-upcase beg end nil)
-    (let ((str (s-upcase (buffer-substring-no-properties beg end))))
-      (delete-region beg end)
-      (insert str))))
-
-(evil-define-operator +evil/case-lower (beg end type)
-  "Convert text to lowercase."
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-downcase beg end nil)
-    (let ((str (s-downcase (buffer-substring-no-properties beg end))))
-      (delete-region beg end)
-      (insert str))))
-
-(evil-define-operator +evil/case-camel-upper (beg end type)
-  "Convert text to CamelCase with a Capital C"
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-upper-camel-case beg end nil)
-    (let ((str (s-upper-camel-case (buffer-substring-no-properties beg end))))
-      (delete-region beg end)
-      (insert str))))
-
-(evil-define-operator +evil/case-camel-lower (beg end type)
-  "Convert text to camelCase with a small C"
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-lower-camel-case beg end nil)
-    (let ((str (s-lower-camel-case (buffer-substring-no-properties beg end))))
-      (delete-region beg end)
-      (insert str))))
-
-(evil-define-operator +evil/case-snake-lower (beg end type)
-  "Convert text to snake_case, slithering"
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-snake-case beg end nil)
-    (let ((str (s-snake-case (buffer-substring-no-properties beg end))))
-      (delete-region beg end)
-      (insert str))))
-
-(evil-define-operator +evil/case-snake-upper (beg end type)
-  "Convert text to SNAKE_CASE, AKA SCREAMING_SNAKE_CASE"
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-snake-case beg end nil)
-    (let ((str (s-upcase (s-snake-case (buffer-substring-no-properties beg end)))))
-      (delete-region beg end)
-      (insert str))))
-
-(evil-define-operator +evil/case-kebab-upper (beg end type)
-  "Convert text to KEBAB-KASE, mmmm... THICK MEAT"
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-dashed-words beg end nil)
-    (let ((str (s-dashed-words (buffer-substring-no-properties beg end))))
-      (delete-region beg end)
-      (insert (upcase str)))))
-
-(evil-define-operator +evil/case-kebab-lower (beg end type)
-  "Convert text to kebab-kase, mmmm... hyphens"
-  (if (eq type 'block)
-      (evil-apply-on-block #'s-dashed-words beg end nil)
-    (let ((str (s-dashed-words (buffer-substring-no-properties beg end))))
-        (delete-region beg end)
-        (insert str))))
-
-(map!
- (:after evil
-  :m "Zu" #'+evil/case-upper
-  :m "Zl" #'+evil/case-lower
-  :m "ZC" #'+evil/case-camel-upper
-  :m "Zc" #'+evil/case-camel-lower
-  :m "ZS" #'+evil/case-snake-upper
-  :m "Zs" #'+evil/case-snake-lower
-  :m "ZK" #'+evil/case-kebab-upper
-  :m "Zk" #'+evil/case-kebab-lower))
-#+END_SRC
-
-***** Org Src Block
-
-Matches any block with ~BEGIN_~, e.g.: SRC blocks.
-
-#+BEGIN_SRC elisp
-(defun +evil-org/src-block ()
-  "Matches src blocks using org-element-context."
-  (-when-let* ((ctx (org-element-context))
-               (type (car ctx))
-               (ctx (cond
-                     ((equal type 'src-block) ctx)
-                     ((equal type 'example-block) ctx)
-                     ((equal type 'quote-block) ctx)
-                     ;; Inside quote blocks org-element-context matches the paragraphs
-                     ;; So we have to take the parent block to get the quote-block
-                     ((equal type 'paragraph)
-                      (-some->> ctx
-                        (nth 1)
-                        ((lambda (x) (doom-plist-get x :parent)))
-                        (--id-when (equal (car it) 'quote-block)))))))
-    ctx))
-
-(evil-define-text-object +evil-org-inner-src-block (count &optional beg end type)
-  "Select an org src/quote/example block object."
-  (evil-org-select-inner-element (+evil-org/src-block)))
-
-(evil-define-text-object +evil-org-an-src-block (count beg end type)
-  "An org object.
-Matches urls and table cells."
-  (evil-org-select-an-element (+evil-org/src-block)))
-
-(after! evil-org
-  (evil-define-key '(visual operator) evil-org-mode-map
-    "ib" #'+evil-org-inner-src-block
-    "ab" #'+evil-org-an-src-block))
-#+END_SRC
-
-**** Normal Bindings
-***** Window navigation
-
-Fix window navigation for various modes.
-I don't like pressing ~C-w~ or ~SPC w~ as leader to navigate,
-so I have to work around it:
-
-#+BEGIN_SRC elisp
-(map!
- :en "C-h"   #'evil-window-left
- :en "C-j"   #'evil-window-down
- :en "C-k"   #'evil-window-up
- :en "C-l"   #'evil-window-right)
-
-(map!
- :map (image-mode-map
-       magit-diff-mode-map
-       magit-revision-mode-map
-       magit-status-mode-map
-       eshell-mode-map
-       evil-org-mode-map)
- :en "C-h"   #'evil-window-left
- :en "C-j"   #'evil-window-down
- :en "C-k"   #'evil-window-up
- :en "C-l"   #'evil-window-right)
-
-(add-hook! 'eshell-first-time-mode-hook
-  (map!
-   :map eshell-mode-map
-   :en "C-h"   #'evil-window-left
-   :en "C-j"   #'evil-window-down
-   :en "C-k"   #'evil-window-up
-   :en "C-l"   #'evil-window-right))
-
-(map!
- :map org-agenda-mode-map
- "C-h"  #'evil-window-left
- "C-j"  #'evil-window-down
- "C-k"  #'evil-window-up
- "C-l"  #'evil-window-right)
-#+END_SRC
-
-***** History navigation in minibuffer
-
-#+BEGIN_SRC elisp
-(define-key minibuffer-local-map "\C-p" 'previous-history-element)
-(define-key minibuffer-local-map "\C-n" 'next-history-element)
-#+END_SRC
-
-***** Jump to last buffer
-
-#+BEGIN_SRC elisp
-(map! :n "gb" #'evil-switch-to-windows-last-buffer)
-#+END_SRC
-
-***** Select last paste
-:PROPERTIES:
-:SOURCE:   https://emacs.stackexchange.com/a/21093
-:END:
-
-#+BEGIN_SRC elisp
-(defun +evil|select-pasted ()
-  (interactive)
-  (let ((start-marker (evil-get-marker ?\[))
-        (end-marker (evil-get-marker ?\])))
-    (evil-visual-select start-marker end-marker)))
-
-(map! :n "gp" #'+evil|select-pasted)
-#+END_SRC
-
-***** Go up one directory from the current buffer
-
-#+BEGIN_SRC elisp
-(map! :m "-"  #'dired-jump)
-#+END_SRC
-
-***** Visual Line Mode Navigation
-
-#+BEGIN_SRC elisp
-(map! :map visual-line-mode-map
-      :nv "j" #'evil-next-visual-line
-      :nv "k" #'evil-previous-visual-line)
-#+END_SRC
-
-**** Insert Bindings
-
-Insert Mode bindings, mostly unicode insertion and workaround for german umlaut.
-
-***** Insert from the kill ring in insert mode
-
-#+BEGIN_SRC elisp
-(map! :i "A-y" #'helm-show-kill-ring)
-#+END_SRC
-
-***** Unicode Characters
-
-#+BEGIN_SRC elisp
-(map!
- :i "C-y"   #'helm-show-kill-ring
- :i "M-`"   (cmd! (insert "°"))
- :i "M-."   (cmd! (insert "…"))
- :i "M-^"   (cmd! (insert "°"))
- :i "M-l"   (cmd! (insert "λ"))
- :i "M-w"   (cmd! (insert "⚠"))
- :i "M-i"   (cmd! (insert "ℹ")))
-#+END_SRC
-
-**** Square Bracket Bindings
-
-Global ~[~ & ~]~ combinator bindings
-
-***** Dumb Jump
-
-#+BEGIN_SRC elisp
-(map!
- :n "]F" #'dumb-jump-go
- :n "[F" #'dumb-jump-back)
-#+END_SRC
-
-***** Flycheck Error Jumping
-
-#+BEGIN_SRC elisp
-(map!
- :n "]e" #'flycheck-next-error
- :n "[e" #'flycheck-previous-error)
-#+END_SRC
-***** Projectile Alternate file finding
-
-#+BEGIN_SRC elisp
-(map!
- :n "]1" #'projectile-toggle-between-implementation-and-test
- :n "[1" #'projectile-toggle-between-implementation-and-test)
-#+END_SRC
-
-**** Text Objects
-
-Custom evil text objects mostly stolen from [[https://github.com/jerryxgh/lambda-x/blob/master/lambda-evil.el#L236][Spacemacs|define-text-object-regexp]].
-
-***** Utils
-****** Define Text Objects
-
-#+BEGIN_SRC elisp
-(defmacro +evil/define-text-object-regexp (key name start-regexp end-regexp)
-  "Define a text object.
-START-REGEXP and END-REGEXP are the boundaries of the text object."
-  (let ((inner-name (make-symbol (concat "evil-inner-" name)))
-        (outer-name (make-symbol (concat "evil-outer-" name))))
-    `(progn
-       (evil-define-text-object ,inner-name (count &optional beg end type)
-         (evil-select-paren ,start-regexp ,end-regexp beg end type count nil))
-       (evil-define-text-object ,outer-name (count &optional beg end type)
-         (evil-select-paren ,start-regexp ,end-regexp beg end type count t))
-       (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
-       (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
-#+END_SRC
-***** Config
-
-#+BEGIN_SRC elisp
-(+evil/define-text-object-regexp "~" "tilde" "~" "~")
-(+evil/define-text-object-regexp "=" "equal" "=" "=")
-(+evil/define-text-object-regexp "|" "bar" "|" "|")
-(+evil/define-text-object-regexp "*" "star" "*" "*")
-(+evil/define-text-object-regexp "$" "dollar" "$" "$")
-(+evil/define-text-object-regexp "%" "percent" "%" "%")
-(+evil/define-text-object-regexp "/" "slash" "/" "/")
-(+evil/define-text-object-regexp "_" "underscore" "_" "_")
-(+evil/define-text-object-regexp "-" "hyphen" "-" "-")
-#+END_SRC
-
-***** Quotes Text Object
-
-Changes the text matching inside quotes with ~q~ motion (e.g. ~ciq~)
-Change inner bracket with ~r~
-
-#+BEGIN_SRC elisp
-(after! evil
-  (require 'evil-textobj-anyblock)
-  (evil-define-text-object my-evil-textobj-anyblock-inner-quote
-    (count &optional beg end type)
-    "Select the closest outer quote."
-    (let ((evil-textobj-anyblock-blocks
-           '(("'" . "'")
-             ("\"" . "\"")
-             ("`" . "'")
-             ("“" . "”"))))
-      (evil-textobj-anyblock--make-textobj beg end type count nil)))
-
-  (evil-define-text-object my-evil-textobj-anyblock-a-quote
-    (count &optional beg end type)
-    "Select the closest outer quote."
-    (let ((evil-textobj-anyblock-blocks
-           '(("'" . "'")
-             ("\"" . "\"")
-             ("`" . "'")
-             ("“" . "”"))))
-      (evil-textobj-anyblock--make-textobj beg end type count t)))
-
-  (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
-  (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
-  (define-key evil-inner-text-objects-map "r" 'evil-inner-bracket))
-#+END_SRC
-**** Ex Commands
-
-Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+commands.el::;;; editor/evil/+commands.el -*- lexical-binding: t; -*-][+commands.el]]
-
-#+BEGIN_SRC elisp
-(after! evil-ex
-  :config
-  (evil-ex-define-cmd "W" #'evil-write))
-#+END_SRC
-
-**** MultiEdit
-
-#+BEGIN_SRC elisp
-(map! :nv "C-M-d" #'evil-multiedit-match-all)
-#+END_SRC
-
-**** Jump with =tab=
-
-#+BEGIN_SRC elisp
-(map! :n [tab] (general-predicate-dispatch nil
-                 (and (featurep! :editor fold)
-                      (save-excursion (end-of-line) (invisible-p (point))))
-                 #'+fold/toggle
-                 (fboundp 'evil-jump-item)
-                 #'evil-jump-item)
-      :v [tab] (general-predicate-dispatch nil
-                 (and (bound-and-true-p yas-minor-mode)
-                      (or (eq evil-visual-selection 'line)
-                          (not (memq (char-after) (list ?\( ?\[ ?\{ ?\} ?\] ?\))))))
-                 #'yas-insert-snippet
-                 (fboundp 'evil-jump-item)
-                 #'evil-jump-item))
-#+END_SRC
-**** TODO Paste Fix
-
-Evil pastes at the current cursor, which I don't expect it to do.
-Most of the time it requires me to move into insert mode, move one character,
-and then do my function.
-
-#+BEGIN_SRC elisp
-(defun +evil/normal-mode-paste-fix (fn &optional insert-char)
-  "Move forward one character and then paste."
-  (interactive)
-  (if (and (evil-normal-state-p)
-           (my::buffer/line-contains "[^\s]"))
-      (progn
-        (forward-char 1)
-        (when (and insert-char (looking-at insert-char))
-          (insert insert-char))
-        (let ((line (substring-no-properties (thing-at-point 'line))))
-          (call-interactively fn)
-          (when (eq line (substring-no-properties (thing-at-point 'line)))
-            (delete-char 1))))
-    (call-interactively fn)))
-#+END_SRC
-
-**** TODO Store all yanks in extra register
-
-#+begin_src elisp :tangle no
-(defvar +evil:last-yank nil)
-
-(defun +evil/save-to-yank-register (&rest _rest)
-  "Save the last yank to a specific register that only gets overwritten by yanks.
-So deletes wont affect this register."
-  (setq +evil:last-yank (evil-get-register ?\")))
-
-(defun +evil/insert-from-yank-register ()
-  "Save the last yank to a specific register that only gets overwritten by yanks.
-So deletes wont affect this register."
-  (-some->> +evil:last-yank
-    (insert)))
-
-;; (advice-add 'evil-yank :after #'+evil/save-to-yank-register)
-#+end_src
-
-*** Leader
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- "RET"  #'+bookmarks|main
- "'"  #'+popup/toggle
- "au" #'undo-tree-visualize
- "-"  #'quick-calc)
-#+END_SRC
-
-**** Buffer
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("b" . "buffer")
-  :desc "Rename Buffer"  "r" #'rename-buffer
-  :desc "Rename Buffer"  "+" #'persp-add-buffer))
-#+END_SRC
-
-**** File / Goto
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("f" . "file")
-  :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
-  (:prefix-map ("g" . "goto")
-   :desc "Drive"                 "/" #'my::counsel|mounted-drives
-   :desc "Desktop"               "D" (cmd! (find-file "~/Desktop"))
-   :desc "Config"                "." (cmd! (find-file "~/.config"))
-   :desc "Code"                  "c" (cmd! (find-file "~/Code"))
-   :desc "Last captured"         "C" (cmd! (org-goto-marker-or-bmk org-capture-last-stored-marker))
-   :desc "Downloads"             "d" (cmd! (find-file "~/Downloads"))
-   :desc "Elfeed"                "e" (cmd! (find-file (car rmh-elfeed-org-files)))
-   :desc "Media"                 "m" (cmd! (find-file "~/Media"))
-   :desc "Music"                 "M" (cmd! (find-file "~/Media/Music"))
-   :desc "Notes"                 "n" (cmd! (find-file org-directory))
-   :desc "Project Root"          "p" (cmd! (find-file (projectile-project-root)))
-   :desc "Last refiled"          "r" (cmd! (org-refile-goto-last-stored))
-   :desc "Tmp"                   "t" (cmd! (find-file "/tmp"))
-   :desc "Home"                  "h" (cmd! (find-file "~"))
-   :desc "Run (Mounted Drives)"  "r" #'my::dired|find-mounted-drive)))
-#+END_SRC
-
-**** Git
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("g" . "git")
-  :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
-  :desc "Blame"                               "B" #'magit-blame
-  :desc "Changed Files"                       "F" #'my::magit|counsel-changed-files
-  :desc "New Branch"                          "N" #'magit-branch-spinoff
-  :desc "Show revision original File"         "O" #'my::magit|show-revision-original
-  :desc "Map-editor Changed Files"            "T" (cmd! (my::magit|counsel-changed-files "map-editor"))
-  :desc "Amend Commit"                        "a" #'magit-commit-amend
-  :desc "Checkout"                            "b" #'magit-checkout
-  :desc "Diff"                                "d" #'magit-diff
-  :desc "Push"                                "p" #'magit-push
-  :desc "Undo"                                "u" #'my::magit|git-undo
-  :desc "Worktree Popup"                      "w" #'magit-worktree
-  :desc "New Org Pr"                          "!" #'+MM|new-pr-from-branch
-  (:prefix ("f" . "file")
-   :desc "VC file"                            "F" #'vc-revision-other-window)
-  (:prefix ("l" . "list")
-   :desc "List gists"                         "g" #'+gist:list
-   :desc "List submodules"                    "n" #'magit-list-submodules
-   :desc "List issues"                        "p" #'forge-list-issues
-   :desc "List pull requests"                 "r" #'forge-list-pullreqs
-   :desc "List pull awaiting review requests" "R" #'forge-list-requested-reviews
-   :desc "List notifications"                 "s" #'forge-list-notifications)))
-#+END_SRC
-
-**** Insert
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("i" . "insert")
-   :desc "New Snippet"    "S" #'+snippets/new
-   :desc "Killring"       "y" #'helm-show-kill-ring))
-#+END_SRC
-
-**** Open
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:desc "open" :prefix "o"
-   :desc "Calc"            :g "c" #'calc
-   :desc "Calc"            :g "C" #'=calendar
-   :desc "Elfeed"          :g "e" #'+eshell/toggle
-   :desc "Eshell"          :g "E" #'my::elfeed|open
-   :desc "Irc"             :g "i" #'=irc
-   :desc "Mail"            :g "m" #'=mu4e
-   :desc "Proced"          :g "p" #'proced
-   :desc "Snippet"         :g "s" #'+snippets/edit
-   :desc "Flycheck Errors" :g "$" #'flycheck-list-errors))
-#+END_SRC
-
-**** Projects
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("p" . "project")
-  :desc "Workspace Project Files" "P" #'my::workspaces|find-workspace-project-file
-  :desc "Project VC"              "v" #'my::workspaces|workspace-project-vc
-  :desc "Project Bookmarks"       "RET" #'+bookmarks))
-#+END_SRC
-
-**** Search
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("s" . "search")
-  :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point
-  :desc "Occur" "o" #'occur
-  :desc "Web Lookup" "w" #'+lookup/online
-  :desc "Web Lookup with prompt" "W" #'+lookup/online-select))
-#+END_SRC
-
-**** Toggle
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("t" . "toggle")
-   :desc "Theme Dark/Light" "t" #'+doom|toggle-theme
-   :desc "Auto Completion" "c" #'+company/toggle-auto-completion))
-#+END_SRC
-
-**** Window
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- :desc  "Split Vertical"        "|"    #'evil-window-vsplit
- :desc  "Split Horizontal"      "-"    #'evil-window-split
-
- (:prefix-map ("w" . "window")
-  :desc  "Delete"               "d"    #'delete-window
-  :desc  "Ace Delete Windo"     "D"    #'ace-delete-window
-  :desc  "New"                  "n"    #'evil-window-new
-
-  :desc  "Undo"                 "u"    #'winner-undo
-  :desc  "Redo"                 "r"    #'winner-redo
-  :desc  "Enlargen"             "o"    #'doom/window-enlargen
-
-  :desc  "Toggle Split"         "T"    #'+window|toggle-split-direction
-
-  :desc  "Split Vertical"       "|"    #'evil-window-vsplit
-  :desc  "Split Horizontal"     "_"    #'evil-window-split
-
-  :desc  "Move Left"            "H"    #'+evil/window-move-left
-  :desc  "Move Down"            "U"    #'+evil/window-move-down
-  :desc  "Move Up"              "K"    #'+evil/window-move-up
-  :desc  "Move Right"           "L"    #'+evil/window-move-right
-
-  :desc  "Set Height"           "C-_"  #'evil-window-set-height
-  :desc  "Set Height"           "C-|"  #'evil-window-set-width
-
-  :desc  "Swap"                 "SPC"  #'ace-swap-window
-  :desc  "Toggle Locked"        "#"    #'my|toggle-window-dedicated
-  :desc "Toggle Locked"         "."    #'+popup/raise))
-#+END_SRC
-
-**** Workspace
-
-#+BEGIN_SRC elisp
-(map!
- :leader
- (:prefix-map ("TAB" . "workspace")
-  :desc "Switch to"     "." #'my::workspaces/switch-to
-  :desc "Close others"  "o" #'my::workspaces|close-others
-  :desc "Create"        "c" #'my::workspaces/new-named
-  :desc "Rename"        "," #'+workspace/rename
-  :desc "Project Files" "p" #'my::workspaces|find-workspace-project-file
-  :desc "Project VC"    "v" #'my::workspaces|workspace-project-vc
-  :desc "Clone"         "C" (cmd!
-                             (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
-                             (message "Cloned current workspace %s" (+workspace-current-name)))
-  :desc "Switch to last workspace" "0"   #'+workspace/other))
-#+END_SRC
-
-**** Yank
-
-#+BEGIN_SRC elisp
-(defun +yank/execute-action (x &optional insert)
-  "Copy the the yank or insert it during insert mode."
-  (interactive)
-  (cond
-   ((or (evil-insert-state-p) insert) (insert x))
-   (t (my/kill-and-message x)))
-  x)
-
-(defun +yank/dired-path ()
-  "Returns the current dired entry or the buffer directory."
-  (or (dired-file-name-at-point) dired-directory))
-
-(defun +yank/buffer-filename ()
-  "Returns the current buffers file name if possible."
-  (cond ((doom-dired-buffer-p (current-buffer)) (+yank/dired-path))
-        (buffer-file-name buffer-file-name)
-        (org-src-source-file-name org-src-source-file-name)
-        (t nil)))
-
-(defun +yank/buffer-path ()
-  "Returns the current buffers path."
-  (or (+yank/buffer-filename) default-directory))
-
-(defun +yank|filename (&optional insert)
-  "Yank the buffer file name."
-  (interactive "P")
-  (or
-   (-some->> (+yank/buffer-filename)
-     ;; When pointing at a directory at dired, I still take the directory
-     ((lambda (x) (if (f-file? x)
-                      (file-name-directory x)
-                    x)))
-     ((lambda (x) (+yank/execute-action x insert))))
-   (user-error "Error: Not a file bufer!")))
-
-(defun +yank|base (&optional insert)
-  "Yank the buffer files base name."
-  (interactive "P")
-  (or
-   (-some->> (+yank/buffer-filename)
-     (file-name-base)
-     ((lambda (x) (+yank/execute-action x insert))))
-   (user-error "Error: Not a file bufer!")))
-
-(defun +yank|directory (&optional insert)
-  "Yank the buffer files directory."
-  (interactive "P")
-  (or
-   (-some->> (+yank/buffer-path)
-     (file-name-directory)
-     ((lambda (x) (+yank/execute-action x insert))))
-   (user-error "Error: Not a file bufer!")))
-
-(defun +yank|path (&optional insert)
-  "Yank the buffer files path."
-  (interactive "P")
-  (or
-   (-some->> (+yank/buffer-path)
-     ((lambda (x) (+yank/execute-action x insert))))
-   (user-error "Error: Not a file bufer!")))
-
-(defun +yank|relative-to-project (&optional insert)
-  "Yank the buffer path relative to the projectile-project-root."
-  (interactive "P")
-  (or
-   (-some->> (+yank/buffer-path)
-     (f-full)
-     ((lambda (x)
-        (or
-         (->> (s-replace (projectile-project-root) "" x)
-              (-id-when #'s-present?))
-         x)))
-     ((lambda (x) (+yank/execute-action x insert))))
-   (user-error "Error: Not a file bufer!")))
-
-(map!
- :leader
- (:prefix-map ("y" . "Yank")
-  :desc "filename"            "f" #'+yank|filename
-  :desc "base"                "b" #'+yank|base
-  :desc "directory"           "d" #'+yank|directory
-  :desc "path"                "p" #'+yank|path
-  :desc "path"                "y" #'+yank|path
-  :desc "relative to project" "r" #'+yank|relative-to-project))
-#+END_SRC
-
-*** Local-Leader
-**** Eshell
-
-#+BEGIN_SRC elisp
-(defun floscr|+eshell|init-keymap ()
-  "Setup additional custom eshell keybindings to already existing doom bindings. This must be done in a hook because eshell-mode
-redefines its keys every time `eshell-mode' is enabled."
-  (map! :map eshell-mode-map
-        :in "C-p"         #'eshell-previous-input
-        :in "C-n"         #'eshell-next-input
-
-        :localleader "l"  #'eshell/clear))
-
-(add-hook 'eshell-first-time-mode-hook #'floscr|+eshell|init-keymap)
-#+END_SRC
-
-**** Elisp
-
-#+BEGIN_SRC elisp
-(map! :map emacs-lisp-mode-map
-      ;;
-      ;; Rearrange Sexps
-
-      :gni "M-;"   #'symex-mode-interface
-      :n "s-k"   (cmd! (sp-transpose-sexp)
-                     (evil-previous-line))
-      :n "s-j"   (cmd! (sp-push-hybrid-sexp)
-                     (evil-next-line))
-
-      ;; Eval Buffer
-      :n "s-r" #'eval-buffer
-
-      ;; Slurp and barf
-      :n "g]"  #'sp-slurp-hybrid-sexp
-      :n "g["  #'sp-forward-barf-sexp
-
-      :localleader
-      :desc "Ly Mode"                 "l"  #'+ly-mode
-      :desc "Jump to tangled source"  "j"  #'org-babel-tangle-jump-to-org
-      :desc "Symex Mode"              "s" #'symex-mode-interface
-      :desc "Raise sexp"              "<" #'raise-sexp
-      :desc "Barf Sexp"               ">" #'barf-sexp)
-#+END_SRC
-
-**** Haskell
-
-#+BEGIN_SRC elisp
-(map! :map haskell-mode-map
-      :localleader
-      :desc "Stylish" "s" #'my::haskell|autofix)
-#+END_SRC
-
-**** Bash
-
-#+BEGIN_SRC elisp
-(map! :map sh-mode-map
-      :localleader
-      :desc "Eval Region"  "e" #'sh-execute-region
-      :desc "Eval Region"  "E" #'executable-interpret)
-#+END_SRC
-
-**** Git
-
-#+BEGIN_SRC elisp
-(map! :map magit-mode-map
-      :localleader
-      :desc "Toggle Magit Buffer Lock" "#" #'magit-toggle-buffer-lock)
-#+END_SRC
-
-**** Reasonml
-
-#+BEGIN_SRC elisp
-(map! :map reason-mode-map
-      :localleader
-      :desc "Eval Region"  "r" #'refmt)
-#+END_SRC
-
-**** Mail
-
-#+BEGIN_SRC elisp
-(map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
-      :localleader
-      :g "x" (cmd!
-              (require 'org-mu4e)
-              (org-mu4e-store-and-capture)))
-#+END_SRC
-
-**** mail
-
-#+BEGIN_SRC elisp
-(map! :map (mu4e-view-mode-map mu4e-headers-mode-map)
-      :localleader
-      :g "x" (cmd!
-              (require 'org-mu4e)
-              (org-mu4e-store-and-capture)))
-#+END_SRC
-**** Images
-
-#+BEGIN_SRC elisp
-(map! :map 'image-mode-map
-      :desc "Zoom in" :gn "+" #'image-increase-size
-      :desc "Zoom in" :gn "-" #'image-decrease-size
-      :desc "Zoom in" :gn "0" (cmd! (image-transform-set-scale 1)))
-#+END_SRC
-
-*** Minibuffer
-**** Copy and Paste from the minibuffer
-
-Since the minibuffer has no evil mode, i've got these bindings to help out:
-- ~M-c~: Copy the minibuffer line
-- ~M-v~: Paste from clipboard to minibuffer (Same as ~C-r 0~)
-         This also removes trailing newlines
-
-#+BEGIN_SRC elisp
-(defun evil-get-register-string (REGISTER)
-  "Get evil-register pure text content
-Registers can be selected with ?letter
-E.g.: ?* -> Clipboard Contents"
-  (evil-vector-to-string (evil-get-register REGISTER)))
-
-(defun paste-evil-register-clipboard-pruned ()
-  "Paste the current clipboard pruned from newlines"
-  (interactive)
-  (insert (s-trim (shell-command-to-string "pbpaste")))
-  (doom/forward-to-last-non-comment-or-eol))
-
-(defun copy-minibuffer-line ()
-  "Copies the minibuffer content to the clipboard"
-  (interactive)
-  (save-excursion
-    (doom/forward-to-last-non-comment-or-eol)
-    (set-mark-command nil)
-    (doom/backward-to-bol-or-indent)
-    (kill-ring-save (mark) (point))))
-
-(defun setup-minibuffer ()
-  "Set up keybindings for the minibuffer"
-  (local-set-key (kbd "s-v") 'paste-evil-register-clipboard-pruned)
-  (local-set-key (kbd "s-c") 'copy-minibuffer-line))
-
-(add-hook 'minibuffer-setup-hook 'setup-minibuffer)
-
-;; (define-key! :keymaps +default-minibuffer-maps
-;;   "C-w" 'sp-backward-delete-word)
-#+END_SRC
-** Hacks
