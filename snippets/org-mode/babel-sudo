@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: babel-sudo
+# key: :s
+# --
+:dir /sudo::
