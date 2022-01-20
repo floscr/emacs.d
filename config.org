@@ -1719,6 +1719,20 @@ A JavaScript development environment for Emacs.
   (set-popup-rule! "^\\*JS REPL*" :size 0.3)
   (set-popup-rule! "^\\*JS Debugger Locals*" :size 0.3))
 #+END_SRC
+***** [[https://github.com/mojochao/npm-mode][npm]]
+
+****** Functions
+******* Add CI command
+
+No namespace here, so it matches the other commmands
+
+#+BEGIN_SRC elisp
+(defun npm-mode-npm-ci ()
+  "Run the 'npm install' command."
+  (interactive)
+  (npm-mode--exec-process "npm ci"))
+#+END_SRC
+
 **** Functions
 ***** Match const function name
 
@@ -5235,15 +5249,6 @@ Bindings
 #+END_SRC
 
 *** NPM Mode
-**** Add CI command
-
-#+BEGIN_SRC elisp
-(defun npm-mode-npm-ci ()
-  "Run the 'npm install' command."
-  (interactive)
-  (npm-mode--exec-process "npm ci"))
-#+END_SRC
-
 *** Magit Smerge Mode
 **** Fix Colors
 
