@@ -13,3 +13,4 @@ flycheck_config.el
 edbi-bridge.pl
 /custom.el
 /archive/*.el
+packages.el
