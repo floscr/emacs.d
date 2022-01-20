@@ -11,12 +11,12 @@
 Most of the code here will follow a functional mindset using [[https://github.com/magnars/dash.el][dash.el]] and [[https://github.com/magnars/s.el][s.el]].
 I will prefer those functions over built in functions if they are nicer to use.
 
-I often use my helper function [[file:autoload.org::*Template Literals][(template)]] for template strings.
+I often use my helper function [[*Template Literals][(t!)]] for template strings.
 
 ** Variable Naming
 
 All my private functions have the prefix ~my~.
-It's the only prefix where you can assume that packages or emacs won't override it and vice-versa.
+It's the only prefix where you can assume that packages/emacs/doom won't override it and vice-versa.
 
 *** Schema
 
