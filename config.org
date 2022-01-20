@@ -51,6 +51,9 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 ;; -*- no-byte-compile: t; -*-
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp :tangle "init.el" :comments no
+;; -*- no-byte-compile: t; -*-
+#+END_SRC
 
 * My Standard Library
 :PROPERTIES:
@@ -972,6 +975,12 @@ And I will load them on system start:
 #+END_SRC
 
 ** Emacs
+*** User Name
+
+#+begin_src elisp
+(setq user-full-name "Florian Schrödl")
+#+end_src
+
 *** Move items to trash on delete
 
 #+BEGIN_SRC elisp
@@ -1023,6 +1032,115 @@ which I name after the matching url.
 #+END_SRC
 
 ** Doom
+*** Init
+
+#+BEGIN_SRC emacs-lisp :tangle "init.el" :comments no
+(doom!
+ :completion
+ (company
+  +childframe)
+ (ivy
+  +childframe)
+
+ :ui
+ doom
+ modeline
+ doom-quit
+ hl-todo
+ (popup +all +defaults)
+ vc-gutter
+ vi-tilde-fringe
+ window-select
+ workspaces
+ zen
+
+ :email
+ (mu4e +gmail)
+
+ :editor
+ (evil +everywhere)
+ file-templates
+ fold
+ rotate-text
+ multiple-cursors
+ (parinfer +rust)
+ snippets
+
+ :term
+ eshell
+ term
+ ;; vterm
+
+ :emacs
+ (dired +icons)
+ electric
+ vc
+ (undo +tree)
+
+ :checkers
+ (syntax +childframe)
+ grammar
+ spell
+
+ :tools
+ direnv
+ (lookup
+  +devdocs
+  +docsets
+  +dictionary
+  +offline)
+ eval
+ editorconfig
+ (magit +forge)
+ rgb
+ pdf
+ pass
+ docker
+ lsp
+
+ :lang
+ lua
+ nix
+ rust
+ (ruby +rails)
+ rest
+ data
+ (haskell +lsp)
+ emacs-lisp
+ markdown
+ ocaml
+ nim
+ (clojure +lsp)
+ (javascript +lsp)
+ (org
+  +roam2
+  +dragndrop
+  +pretty
+  +present)
+ sh
+ yaml
+
+ :app
+ irc
+ calendar
+ (rss +org)
+
+ :config
+ (default +bindings +snippets +evil-commands)
+
+ :private
+ ;; rss
+ system
+ literate
+ reason
+ work
+ (email +org +gmail)
+ (org
+  +org-reading-list
+  +org-tags
+  +org-pinboard))
+
+#+END_SRC
 *** Garbage collection
 
 Set it to =32 MiB=.
@@ -1478,6 +1596,22 @@ Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
 
 ** Doom :DOOM:
 *** Popups
+
+**** Defaults
+
+These will be written to ~init.el~ so it overwrites the doom standard values.
+
+#+BEGIN_SRC emacs-lisp :tangle "init.el" :comments no
+(setq +popup-defaults
+  (list :side   'bottom
+        :height 0.45
+        :width  40
+        :quit   t
+        :select t
+        :ttl    5))
+#+END_SRC
+
+**** Rules
 
 #+BEGIN_SRC elisp
 (set-popup-rules!

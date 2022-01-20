@@ -14,3 +14,4 @@ edbi-bridge.pl
 /custom.el
 /archive/*.el
 packages.el
+init.el
