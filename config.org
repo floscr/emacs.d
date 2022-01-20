@@ -3828,6 +3828,34 @@ arguments can be set as a list via ‘nimpretty-args’."
   (cl-letf ((utop-command "rtop -emacs"))
     (utop)))
 #+end_src
+*** Clojure / Clojurescript
+
+**** [[https://github.com/noctuid/lispyville][lispyville]]
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! lispyville :recipe (:host github :repo "noctuid/lispyville"))
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! lispyville
+  :init
+  (add-hook! '(emacs-lisp-mode-hook lisp-mode-hook clojure-mode-hook cider-repl-mode-hook) #'lispyville-mode)
+  :config
+  (lispyville-set-key-theme '(operators
+                              text-objects
+                              wrap
+                              slurp/barf-cp
+                              additional
+                              additional-motions
+                              (additional-wrap normal visual insert)
+                              additional-insert)))
+
+#+END_SRC
+
 
 ** Git / Magit :GIT:
 *** Packages
