@@ -603,7 +603,6 @@ which I name after the matching url.
     ("^\\*helm" :vslot -100 :size 0.32 :ttl nil)
     ("^\\*helpful command" :side right :size 0.5 :select t :modeline t :ttl nil :quit nil)
     ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
-    ("^\\*jest" :select nil)
     ("^\\*projectile-files-errors" :ignore t)
     ("^\\*elfeed-entry" :modeline t :ttl nil)
     ("^\\*Flycheck checker" :size 0.2 :select nil)))
@@ -1611,6 +1610,26 @@ When enabling on read-only buffers it will throw an error."
 #+BEGIN_SRC elisp
 (put 'js-import-alias-map 'safe-local-variable (lambda (x) t))
 #+END_SRC
+***** [[https://github.com/Emiller88/emacs-jest][jest]] :FORK::UNIT_TESTING:
+
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! jest :recipe (:host github :repo "floscr/emacs-jest"))
+#+END_SRC
+
+****** Config
+
+#+begin_src emacs-lisp
+(use-package! jest
+  :after (js2-mode)
+  :hook (js2-mode . jest-minor-mode)
+  :config
+  (set-popup-rule! "^\\*jest\\*"
+    :side 'right
+    :size 0.5
+    :select nil :quit 'current :ttl nil))
+#+end_src
 
 *** Nix :NIXOS:NIX:
 **** Nixpkgs Fmt :AUTOFIX:
@@ -2872,7 +2891,6 @@ Move to ivy candidate with =C-'=
 ***** Jest: Test Runner
 
 #+BEGIN_SRC elisp
-(package! jest :recipe (:host github :repo "floscr/emacs-jest"))
 #+END_SRC
 **** Nim
 
@@ -4296,20 +4314,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** EWW Web Browser
-*** Jest
-
-#+BEGIN_SRC elisp
-(use-package! jest
-  :after (js2-mode)
-  :hook (js2-mode . jest-minor-mode)
-  :config
-  (set-popup-rule! "^\\*jest\\*"
-    :side 'right
-    :size 0.5
-    :select nil :quit 'current :ttl nil))
-#+END_SRC
-
 *** Git Lens
 
 #+BEGIN_SRC elisp
