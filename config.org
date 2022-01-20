@@ -282,7 +282,7 @@ No need, screws with entry buffer position and header display...
 Macros & Functions that extend my elisp standard library.
 If you copy any of my emacs-lisp code, you will need these functions.
 
-Tangles to [[file:autoload.el]]
+Tangles to [[file:autoload.el][autoload.el]]
 
 ** Required Package
 
@@ -305,6 +305,17 @@ Packages and utilities needed for this config.
 ;;;###autoload
 (defun my/noop (&optional args) nil)
 #+END_SRC
+
+*** Kill and Message
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my/kill-and-message (x)
+  "Executes kill-new but with a message log side effect."
+  (kill-new x)
+  (message "Copied to clipboard: %s" x))
+#+END_SRC
+
 ** Old
 *** Bookmarks
 
@@ -577,16 +588,6 @@ or manually traverse upwards until the .git directory is found."
 #+END_SRC
 *** Utils
 **** General
-***** Kill and Message
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my/kill-and-message (x)
-  "Executes kill-new but with a message log side effect."
-  (kill-new x)
-  (message "Copied to clipboard: %s" x))
-#+END_SRC
-
 ***** Without undo
 
 #+BEGIN_SRC elisp
