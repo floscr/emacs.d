@@ -680,7 +680,11 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 #+BEGIN_SRC elisp
 (require 'org-super-agenda)
 (org-super-agenda--def-auto-group parent-project "their parent project"
-  :key-sort-fn (lambda (a b) (string< a b))
+  :key-sort-fn (lambda (a b)
+                 (and
+                  (if (string= (get-text-property 0 'parent-heading a) (get-text-property 0 'parent-heading b))
+                      (< (get-text-property 0 'line-number a) (get-text-property 0 'line-number b))
+                    (string< (get-text-property 0 'parent-heading a) (get-text-property 0 'parent-heading b)))))
   :key-form (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
               (when (org-up-heading-safe)
                 (while (and
@@ -689,10 +693,13 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                 (-some->> (org-get-heading 'notags 'notodo)
                      (substring-no-properties)
                      (--id-when (org-get-todo-state))
-                     (s-concat (save-excursion
-                                 (org-up-heading-safe)
-                                 (org-get-heading 'notags 'notodo))
-                               " / ")))))
+                     ((lambda (x)
+                        (propertize x 'parent-heading (save-excursion
+                                                        (org-up-heading-safe)
+                                                        (org-get-heading 'notags 'notodo))
+                                      'line-number (line-number-at-pos))))
+
+                     (--id-when (not (eq "Tasks" (get-text-property 0 'parent-heading it))))))))
 
 (after! org-agenda
   (+org/add-to-agenda-custom-commands
