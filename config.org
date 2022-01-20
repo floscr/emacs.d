@@ -1463,22 +1463,17 @@ Toggle between a light and a dark theme.
 Bound to ~SPC t t~.
 
 #+BEGIN_SRC elisp
-(defconst light-theme 'doom-one)
-(defconst dark-theme  'doom-one-light)
-
 (defun my::ui|toggle-theme ()
   "Toggle between light and dark themes."
   (interactive)
-  (cond ((eq doom-theme dark-theme)
-         (message "Toggling to light-theme: %s" light-theme)
-         (setq doom-theme light-theme)
-         (doom/reload-theme))
-        ((eq doom-theme light-theme)
-         (message "Toggling to dark-theme: %s" dark-theme)
-         (setq doom-theme dark-theme)
-         (doom/reload-theme))
-        (t (message "Toggling theme is not possible. Theme is not currently light-theme (%s) or dark-theme (%s)." light-theme dark-theme))))
+  (-when-let* ((theme (pcase doom-theme
+                        (`doom-one 'doom-one-light)
+                        (`doom-one-light 'doom-one))))
+    (message (t! "Toggling to theme: <<theme>>"))
+    (setq doom-theme theme)
+    (load-theme theme)))
 #+END_SRC
+
 *** Configuration
 **** Zen mode & variable pitch fonts
 
