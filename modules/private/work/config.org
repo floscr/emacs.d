@@ -348,7 +348,7 @@ module.exports = measure;
 (defun +MM|npm-start-kits-app (&optional arg)
   (interactive "P")
   (npm-mode)
-  (let* ((dir (or (->> (f-join (+my/project-root) "src/apps/")
+  (let* ((dir (or (->> (f-join (my/project-root) "src/apps/")
                        (-id-when #'f-exists?))
                   (f-expand "~/Code/Meisterlabs/kits-2.0/src/apps/")))
          (root (doom-project-root dir))
@@ -614,7 +614,7 @@ To commit call +MM|kits-package-update."
       (magit-refresh)
       ;; Kill with install message just for my purposes
       (kill-new (t! "npm i @meisterlabs/<<name>>@<<v>>"))
-      (+my/kill-and-message (t! "📦 <<msg>>
+      (my/kill-and-message (t! "📦 <<msg>>
 `npm i @meisterlabs/<<name>>@<<v>>`"))
       (magit-push-current-to-upstream nil)
       (let ((default-directory package-path))
@@ -1146,7 +1146,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
                      ((-contains? +MM-Rules:fonts prop) prop)
                      ;; String
                      (t (template "'<<prop>>'"))))
-         (has-trailing-semi (+my/buffer-line-has ",$")))
+         (has-trailing-semi (my/buffer-line-has ",$")))
 
     (if has-trailing-semi
         (while

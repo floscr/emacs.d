@@ -760,9 +760,9 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp :tangle no
 (defun +org/org-set-active-state (&optional args args2)
   "Set the active state for the current item."
-  (cond ((+my/buffer-line-has "PROJECT") nil)
-        ((+my/buffer-line-has "\\[.\\]") (org-todo "[!]"))
-        ((not (+my/buffer-line-has (rx (or "ACTIVE" "NEXT" "DONE" "TODO" "WAITING" "SOMEDAY" "CANCELLED" "PROJECT")))) nil)
+  (cond ((my/buffer-line-has "PROJECT") nil)
+        ((my/buffer-line-has "\\[.\\]") (org-todo "[!]"))
+        ((not (my/buffer-line-has (rx (or "ACTIVE" "NEXT" "DONE" "TODO" "WAITING" "SOMEDAY" "CANCELLED" "PROJECT")))) nil)
         (t (org-todo "ACTIVE"))))
 
 (advice-add #'org-clock-in :after #'+org/org-set-active-state)
@@ -1183,7 +1183,7 @@ Take the host as the base and either the TITLE or the path from the URL."
         (s-prepend ".")
         ((lambda (x) (template "[[<<x>>]]\n")))
         ((lambda (x)
-           (+my/delete-current-line)
+           (my/delete-current-line)
            (insert x)
            x))))))
 #+END_SRC
@@ -1623,14 +1623,14 @@ So we replace them all with the code block TYPE"
       (while (re-search-forward "#\\+begin_example" nil t nil)
         (let ((beg (match-beginning 1))
               (end (match-end 1)))
-          (+my/delete-current-line)
+          (my/delete-current-line)
           (save-excursion
             (insert "#+begin_src " lang "\n"))
           (setq start (point))
           (re-search-forward "#\\+end_example")
           (let ((beg (match-beginning 1))
                 (end (match-end 1)))
-            (+my/delete-current-line)
+            (my/delete-current-line)
             (save-excursion
               (insert "#+end_src\n"))
             (setq stop (point))))
@@ -2365,7 +2365,7 @@ This will be encrypted and in a different directory than org-roam.
   (let ((org-journal-encrypt-journal t)
         (org-journal-dir +private-journal:dir))
       (call-interactively #'org-journal-new-entry)
-      (setq-local epa-file-encrypt-to +my:gpg-simple-key)))
+      (setq-local epa-file-encrypt-to my:gpg-simple-key)))
 #+END_SRC
 
 *** Org Caldav

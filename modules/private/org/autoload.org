@@ -185,7 +185,7 @@ POS to match:
 
 (defun +org/copy-or-cut-link (match-fn &optional cut?)
   "Copy or cut the current link under the cursor"
-  (+my/kill-and-message (car (funcall match-fn)))
+  (my/kill-and-message (car (funcall match-fn)))
   (when cut?
     (-when-let ((link . (beg . end)) (+org/match-org-link-entire))
       (delete-region beg end))))

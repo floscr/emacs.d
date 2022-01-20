@@ -97,12 +97,12 @@ I don't want some processes to exit, when I close emacs.
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my/start-inferior-process-shell-command (command)
+(defun my/start-inferior-process-shell-command (command)
   (let ((name (format "*nohup: %s*" command)))
     (start-process-shell-command name nil (format "nohup %s" command))))
 
 ;;;###autoload
-(defun +my/start-inferior-process (name buffer program &rest program-args)
+(defun my/start-inferior-process (name buffer program &rest program-args)
   (let ((nohup-name (lambda (&optional text)
                       (if (not (null text))
                           (format "*nohup: %s*" text)
@@ -117,7 +117,7 @@ I don't want some processes to exit, when I close emacs.
      (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
 
 ;;;###autoload
-(defun +my/nohup-shell-command (cmd &optional &rest args)
+(defun my/nohup-shell-command (cmd &optional &rest args)
   "Launch a shell command, without opening a message buffer.
 The proram persists when emacs is closed."
   (let ((args-str (or (-some->> args
@@ -141,7 +141,7 @@ The proram persists when emacs is closed."
                                 (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
                               "")))
     (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
-    (+my/nohup-shell-command "mpv" quality-arg (s-wrap url "\""))))
+    (my/nohup-shell-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
 
 * Utils
@@ -157,7 +157,7 @@ The proram persists when emacs is closed."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my/kill-and-message (x)
+(defun my/kill-and-message (x)
   "Executes kill-new but with a message log side effect."
   (kill-new x)
   (message "Copied to clipboard: %s" x))
@@ -181,7 +181,7 @@ modifications."
 *** Convert bool to enabled/disabled string
 
 #+BEGIN_SRC elisp
-(defun +my/bool-to-enabled-string (x)
+(defun my/bool-to-enabled-string (x)
   "Convert bool X to string for messaging.
 t   -> \"Enabled\")
 nil -> \"Disabled\""
@@ -191,10 +191,10 @@ nil -> \"Disabled\""
 *** Variable t/nil toggle message
 
 #+BEGIN_SRC elisp
-(defun +my/bool-state-message (x)
+(defun my/bool-state-message (x)
   "Log message if a bool is enabled or not"
   (interactive)
-  (message (t! "<<(symbol-name x)>>: <<(+my/bool-to-enabled-string (symbol-value x))>>")))
+  (message (t! "<<(symbol-name x)>>: <<(my/bool-to-enabled-string (symbol-value x))>>")))
 #+END_SRC
 
 ** Dash Extensions
@@ -339,7 +339,7 @@ shuffling is done in place."
 *** Check if buffer has line
 
 #+BEGIN_SRC elisp
-(defun +my/buffer-contains-line (string)
+(defun my/buffer-contains-line (string)
   (save-excursion
     (save-match-data
       (goto-char (point-min))
@@ -350,7 +350,7 @@ shuffling is done in place."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my/line-indent ()
+(defun my/line-indent ()
   "Get the indent of the current line."
   (interactive)
   (or (-some->> (substring-no-properties (thing-at-point 'line))
@@ -364,7 +364,7 @@ shuffling is done in place."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my/buffer-line-has (regexp)
+(defun my/buffer-line-has (regexp)
   "Check for REGEXP at current line."
   (save-excursion
     (goto-char (point-at-bol))
@@ -375,7 +375,7 @@ shuffling is done in place."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my/delete-current-line ()
+(defun my/delete-current-line ()
   "Delete (not kill) the current line."
   (interactive)
   (save-excursion
@@ -388,7 +388,7 @@ shuffling is done in place."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my/map-lines (fun &optional start end)
+(defun my/map-lines (fun &optional start end)
   "Map lines in buffer with FUN, fn gets called with the line contents."
   (let ((start (or start (point-min)))
         (end (or end (point-max)))
@@ -453,7 +453,7 @@ Return the first found file when one is found."
 ** Find Git Root
 
 #+BEGIN_SRC elisp
-(defun +my/project-root ()
+(defun my/project-root ()
   "Find the project root either via projectile (not available in certain buffers like dired)
 or manually traverse upwards until the .git directory is found."
   (interactive)
@@ -470,7 +470,7 @@ or manually traverse upwards until the .git directory is found."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my|toggle-window-split-direction ()
+(defun my|toggle-window-split-direction ()
   "Toggle current window split between horizontal and vertical."
   (interactive)
   (if (= (count-windows) 2)
@@ -506,7 +506,7 @@ Lock a window so the buffer can't be changed or it cant be deleted.
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +my|toggle-window-dedicated ()
+(defun my|toggle-window-dedicated ()
   "Control whether or not Emacs is allowed to display another
 buffer in current window."
   (interactive)

@@ -11,14 +11,14 @@
 * Code Style
 ** Variable Naming
 
-All my private functions have the prefix ~+my~.
+All my private functions have the prefix ~my~.
 If I extend a module I will prefix it with the ~+module~.
 
 Furthermore the naming schema follows these rules:
 
-- ~+my:variable~: Variable
-- ~+my/function~: A private function
-- ~+my|function~: An interactive function
+- ~my:variable~: Variable
+- ~my/function~: A private function
+- ~my|function~: An interactive function
 
 ** Code style
 
@@ -578,20 +578,20 @@ Config files that I don't want to share with the world.
 They will be stored in here:
 
 #+BEGIN_SRC elisp
-(defvar +my:secrets-config-file nil
+(defvar my:secrets-config-file nil
   "My private config file.")
-(setq +my:secrets-config-file "~/.config/secrets.el")
+(setq my:secrets-config-file "~/.config/secrets.el")
 #+END_SRC
 
 And I will load them on system start:
 
 #+BEGIN_SRC elisp
-(defun +my/load-secrets-config ()
-  (-some->> +my:secrets-config-file
+(defun my/load-secrets-config ()
+  (-some->> my:secrets-config-file
     (-id-when 'file-exists-p)
     (load-library)))
 
-(+my/load-secrets-config)
+(my/load-secrets-config)
 #+END_SRC
 
 ** Defaults
@@ -733,7 +733,7 @@ The optional argument NEW-WINDOW is not used."
 Fix a paragraph that was formatted to a fill column.
 
 #+BEGIN_SRC elisp
-(defun +my|unfill-paragraph ()
+(defun my|unfill-paragraph ()
   "Fix a paragraph that was formatted to a fill column."
   (interactive)
   (let ((fill-column (point-max)))
@@ -3551,7 +3551,7 @@ respectively."
   (interactive)
   (let ((file-list (or file (dired-get-marked-files)))
         (process-connection-type nil))
-    (--map (+my/nohup-shell-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
+    (--map (my/nohup-shell-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
 
 (defun +dired|open-dwim (&optional file)
   (interactive)
@@ -3562,7 +3562,7 @@ respectively."
                        (let* ((path (expand-file-name x))
                               (ext (f-ext path)))
                          (if (-contains? +dired:open-external-extensions ext)
-                             (+my/nohup-shell-command "xdg-open" (s-wrap path "\""))
+                             (my/nohup-shell-command "xdg-open" (s-wrap path "\""))
                            (dired-find-file)))))))
 #+END_SRC
 
@@ -4147,7 +4147,7 @@ which is really unacceptable, but works for now.
   "Is the next line the last json key."
   (save-excursion
     (forward-line)
-    (+my/buffer-line-has "}")))
+    (my/buffer-line-has "}")))
 #+END_SRC
 
 ***** Insert JSON Key
@@ -4158,7 +4158,7 @@ This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# -
 #+BEGIN_SRC elisp
 (defun +json/insert-key (&optional above?)
   "Adds a new JSON key pair."
-  (let ((last-line? (+my/buffer-line-has ",$")))
+  (let ((last-line? (my/buffer-line-has ",$")))
     ;; Insert comma
     (if (and (not last-line?) (not above?))
         (replace-regexp "$" "," nil (point-at-bol) (point-at-eol)))
@@ -4584,7 +4584,7 @@ This also works for worktrees that are in a nested directory.
 ***** Lock git buffer :ADVICE:
 
 #+BEGIN_SRC elisp
-(advice-add #'magit-toggle-buffer-lock :after (lambda () (+my/bool-state-message 'magit-buffer-locked-p)))
+(advice-add #'magit-toggle-buffer-lock :after (lambda () (my/bool-state-message 'magit-buffer-locked-p)))
 #+END_SRC
 ***** Check for merge conflicts
 :PROPERTIES:
@@ -4949,7 +4949,7 @@ the projects cwd to find a file.
   (interactive)
   (let ((default-directory
           (or (+workspace/workspace-project-root)
-              (+my/project-root))))
+              (my/project-root))))
     (magit-status)))
 #+END_SRC
 
@@ -5007,7 +5007,7 @@ the projects cwd to find a file.
 
  :localleader
  :desc "Remove line" "d" (cmd! (let ((inhibit-read-only t))
-                                 (+my/delete-current-line))))
+                                 (my/delete-current-line))))
 #+END_SRC
 
 *** Yasnippet
@@ -5695,7 +5695,7 @@ and then do my function.
   "Move forward one character and then paste."
   (interactive)
   (if (and (evil-normal-state-p)
-           (+my/buffer-line-has "[^\s]"))
+           (my/buffer-line-has "[^\s]"))
       (progn
         (forward-char 1)
         (when (and insert-char (looking-at insert-char))
@@ -5895,7 +5895,7 @@ So deletes wont affect this register."
   :desc  "Set Height"           "C-|"  #'evil-window-set-width
 
   :desc  "Swap"                 "SPC"  #'ace-swap-window
-  :desc  "Toggle Locked"        "#"    #'+my|toggle-window-dedicated
+  :desc  "Toggle Locked"        "#"    #'my|toggle-window-dedicated
   :desc "Toggle Locked"         "."    #'+popup/raise))
 #+END_SRC
 
@@ -5925,7 +5925,7 @@ So deletes wont affect this register."
   (interactive)
   (cond
    ((or (evil-insert-state-p) insert) (insert x))
-   (t (+my/kill-and-message x)))
+   (t (my/kill-and-message x)))
   x)
 
 (defun +yank/dired-path ()
