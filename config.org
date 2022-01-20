@@ -1255,6 +1255,8 @@ Community collection of snippets for command line tools.
           (nim-mode . "nim"))))
 #+END_SRC
 **** [[https://github.com/smihica/emmet-mode][emmet-mode]] :CSS:
+
+
 ***** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
@@ -1321,6 +1323,43 @@ Pretty print colors string with the color as the background.
   :config
   ;; Always enable rgb, etc colors
   (setq rainbow-html-colors t))
+#+END_SRC
+**** [[https://github.com/skeeto/impatient-mode][impatient-mode]]
+
+A live reload server directly in emacs for quickly editing css.
+Launch using [[*Launch][my::impatient-mode|launch]].
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! impatient-mode)
+#+END_SRC
+
+***** Functions
+
+****** Launch
+
+#+begin_src emacs-lisp
+(defun my::impatient-mode|launch ()
+  "Launch server with impatient mode and open the browser."
+  (interactive)
+  (httpd-start)
+  (impatient-mode)
+  (let ((file-name (f-filename (+yank/buffer-filename))))
+    (browse-url (t! "http://localhost:8080/imp/live/<<file-name>>"))))
+
+(defun my::impatient-mode|stop ()
+  "Launch server with impatient mode and open the browser."
+  (interactive)
+  (httpd-stop)
+  (impatient-mode -1))
+#+end_src
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! impatient-mode
+  :commands impatient-mode)
 #+END_SRC
 
 *** Database
@@ -2961,7 +3000,6 @@ Move to ivy candidate with =C-'=
 ***** Impatient Mode: Live editing of html
 
 #+BEGIN_SRC elisp
-(package! impatient-mode)
 #+END_SRC
 
 ***** Jest: Test Runner
@@ -4378,15 +4416,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** Impatient-Mode
-
-Serves the current buffer live over http.
-
-#+BEGIN_SRC elisp
-(use-package! impatient-mode
-  :commands impatient-mode)
-#+END_SRC
-
 *** Narrow To Defun Indirect
 
 When narrowing to region or defun, make it in an indirect other window.
