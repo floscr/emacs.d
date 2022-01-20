@@ -5692,6 +5692,21 @@ These don't work if you have a big line-height.
 #+End_SRC
 *** [[https://www.gnu.org/software/emacs/manual/html_mono/eww.html][EWW web browser]]
 **** Config
+***** Pretty buffer setup
+
+#+begin_src elisp
+(defun my::eww*pretty-buffer-setup ()
+  "Function docstring"
+  (setq-local truncate-lines t)
+  (setq-local shr-width 120)
+  (setq fill-column 120)
+  (setq-local visual-fill-column-center-text t)
+  (visual-line-mode 1)
+  (visual-fill-column-mode 1))
+
+(add-hook! 'eww-mode-hook #'my::eww*pretty-buffer-setup)
+#+end_src
+
 ***** Set the max page width
 
 #+BEGIN_SRC elisp
