@@ -3812,6 +3812,15 @@ Loads commit template from ~./git/TEMPLATE~ if the file exist.
      (-find (lambda (x) (string= branch-template (f-base x))) entries)
      (-find (lambda (x) (string= "TEMPLATE" (f-base x))) entries))))
 
+(defun my::magit::commit-template|remove-template-file ()
+  "Open an existing template file or create a new one."
+  (interactive)
+  (-when-let* ((file (my::magit::commit-template/find-template-file (magit-get-current-branch))))
+    (when (save-window-excursion
+            (find-file file)
+            (y-or-n-p "Delete commit template file?"))
+      (f-delete file))))
+
 (defun my::magit::commit-template|edit-template-file ()
   "Open an existing template file or create a new one."
   (interactive)
