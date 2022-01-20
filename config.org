@@ -1068,60 +1068,6 @@ Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
 (package! noflet)
 #+END_SRC
 
-*** Completion
-**** [[https://github.com/raxod502/prescient.el][company-prescient]] :EMACS:
-
-Better sorting for company
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! prescient)
-(package! company-prescient)
-#+end_src
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package! prescient
-  :config
-  (prescient-persist-mode 1))
-
-(use-package! company-prescient
-  :after company
-  :config
-  (company-prescient-mode 1))
-#+END_SRC
-*** Spell Checking
-**** Flyspell
-***** Defer flyspell until first ~evil-insert-state~
-
-Flyspell most of the time is an annoyance when opening a file just for reading.
-I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
-
-So I defer it until the first text change has been done (or the first insert state).
-I've tried it on the ~first-change-hook~, but that is also affected by changing todo states for example in ~org-mode~.
-
-#+begin_src elisp
-(defun +flyspell/load-after-first-insert--activate ()
-  "Turns on flyspell after the first buffer change or evil-insert state."
-  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert)
-  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate)
-  (spell-fu-mode 1))
-
-(defun +flyspell/load-after-first-insert ()
-  "Turns on flyspell after the first buffer evil-insert state.
-Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set."
-  (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
-        (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
-
-(use-package! flyspell
-  :init
-  (remove-hook! '(org-mode-hook markdown-mode-hook) #'flyspell-mode)
-  (remove-hook! '(org-mode-hook markdown-mode-hook text-mode-hook) #'spell-fu-mode)
-  (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
-#+end_src
-
 ** Doom :DOOM:
 *** Workspaces
 **** Functions
@@ -1257,7 +1203,55 @@ I want buffers added whenever I visit a buffer.
 
   (add-hook 'doom-switch-buffer-hook #'my::workspaces*add-special-buffer))
 #+END_SRC
+** Evil :EVIL:
+*** Packages
+**** INACTIVE [[https://github.com/tarao/evil-plugins][tarao/evil-plugins]]
+***** Package
 
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
+#+END_SRC
+**** [[https://github.com/emacsmirror/evil-replace-with-register][evil-replace-with-register: Replace with register motion]]
+
+Replace the current selection with a register.
+Press =gr= with a following motion character like =w=.
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! evil-replace-with-register)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! evil-replace-with-register
+  :config
+  (setq evil-replace-with-register-key (kbd "gr"))
+  (define-key evil-normal-state-map
+    evil-replace-with-register-key 'evil-replace-with-register)
+  (define-key evil-visual-state-map
+    evil-replace-with-register-key 'evil-replace-with-register))
+#+END_SRC
+**** [[https://github.com/urbint/evil-text-objects-javascript][evil-text-objects-javascript: Javascript motions]]
+
+- "f" - function
+- "c" - single-line comment
+- "C" - multi-line comment
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
+#+END_SRC
+**** [[https://github.com/hlissner/evil-snipe][evil-snipe: 2-char searching ala vim-sneak & vim-seek, for evil-mode]]
+***** Config
+****** Repeat snipe after further key press
+
+#+BEGIN_SRC elisp
+(after! evil-snipe
+  (setq evil-snipe-repeat-keys t))
+#+END_SRC
 ** Text Editing :TEXT:
 *** Packages
 **** [[https://github.com/btford/write-good][btford/write-good: Naive linter for English prose]] :LINTING:DOOM:
@@ -1327,7 +1321,6 @@ I want buffers added whenever I visit a buffer.
 
 (add-hook! 'writeroom-mode-hook #'my::writeroom/setup)
 #+END_SRC
-
 ** Programming :PROGRAMMING:
 *** General Purpose
 **** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
@@ -2593,93 +2586,6 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
        :n "<"    #'markdown-promote
        :n ">"    #'markdown-demote))
 #+end_src
-
-** System :SYSTEM:
-*** Packages
-**** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
-
-Explore disk usage in emacs
-
-***** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! disk-usage)
-#+end_src
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package! disk-usage
-  :commands (disk-usage)
-  :config
-  (map! :map disk-usage-mode-map
-        :n "-" #'disk-usage-up))
-#+END_SRC
-**** [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] :BROWSER:
-
-Edit browser input fields with emacs.
-
-***** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! atomic-chrome)
-#+END_SRC
-***** Config
-
-#+begin_src elisp
-(use-package! atomic-chrome
-  :commands (atomic-chrome-start-server)
-  :config
-  (setq
-   atomic-chrome-url-major-mode-alist
-   '(("github\\.com" . gfm-mode))))
-#+end_src
-
-**** [[https://github.com/cbowdon/daemons.el][cbowdon/daemons.el Systemd UI]] :LINUX:
-
-Manage systemd from emacs
-
-***** Package
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! daemons)
-#+END_SRC
-***** Config
-
-#+begin_src elisp
-(use-package! daemons
-  :commands (daemons))
-#+end_src
-**** [[https://doc.endlessparentheses.com/Fun/proced-mode.html][proced]] :UNIX:
-***** Functions
-****** Shorten nixos path names in proced
-
-Nixos paths can be very long, which is distracting in proced.
-This shortens the nixos paths to ~{nix}~.
-
-#+BEGIN_SRC elisp
-(defun my::proced/remove-nixos-path-name (oldformat &rest xs)
-  (let ((xs (--map (->> it
-                        (s-replace-regexp "/nix/store/[^/]+" "{nix}")
-                        (s-replace-regexp (template "^/home/<<(user-login-name)>>") "~")
-                        ((lambda (x) (if (s-contains? "chromium" x) "{chromium}" x))))
-                  xs)))
-    (apply oldformat xs)))
-
-(advice-add #'proced-format-args :around #'my::proced/remove-nixos-path-name)
-#+END_SRC
-
-***** Bindings
-
-#+begin_src elisp
-(map! :map proced-mode-map
-      :n "/" #'proced-narrow
-      :n "gr" #'proced)
-
-(map! :map process-menu-mode-map
-      :n "gr" #'list-processes)
-#+end_src
-
 ** Git :GIT:
 *** Packages
 **** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
@@ -3184,7 +3090,6 @@ To append something, just state the flag that you see in the transient popup as 
   (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" my::magit|checkout-review-branches))
   (transient-append-suffix 'magit-branch "l" '("U" "My Branches" my::magit|branches-by-user)))
 #+END_SRC
-
 ** Dired :DIRED:ORGANIZATION:
 *** Packages
 **** [[https://github.com/Fuco1/dired-hacks#dired-filter][dired-hacks - dired-filter]]
@@ -3666,6 +3571,91 @@ I undo this option with the interactive prefix argument, which can be accessed v
       :map dired-mode-map
       :n "p" 'my::dired|paste-dwim)
 #+END_SRC
+** System :SYSTEM:
+*** Packages
+**** [[https://github.com/emacs-straight/disk-usage][disk-usage]]
+
+Explore disk usage in emacs
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! disk-usage)
+#+end_src
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! disk-usage
+  :commands (disk-usage)
+  :config
+  (map! :map disk-usage-mode-map
+        :n "-" #'disk-usage-up))
+#+END_SRC
+**** [[https://github.com/alpha22jp/atomic-chrome][atomic-chrome]] :BROWSER:
+
+Edit browser input fields with emacs.
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! atomic-chrome)
+#+END_SRC
+***** Config
+
+#+begin_src elisp
+(use-package! atomic-chrome
+  :commands (atomic-chrome-start-server)
+  :config
+  (setq
+   atomic-chrome-url-major-mode-alist
+   '(("github\\.com" . gfm-mode))))
+#+end_src
+
+**** [[https://github.com/cbowdon/daemons.el][cbowdon/daemons.el Systemd UI]] :LINUX:
+
+Manage systemd from emacs
+
+***** Package
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! daemons)
+#+END_SRC
+***** Config
+
+#+begin_src elisp
+(use-package! daemons
+  :commands (daemons))
+#+end_src
+**** [[https://doc.endlessparentheses.com/Fun/proced-mode.html][proced]] :UNIX:
+***** Functions
+****** Shorten nixos path names in proced
+
+Nixos paths can be very long, which is distracting in proced.
+This shortens the nixos paths to ~{nix}~.
+
+#+BEGIN_SRC elisp
+(defun my::proced/remove-nixos-path-name (oldformat &rest xs)
+  (let ((xs (--map (->> it
+                        (s-replace-regexp "/nix/store/[^/]+" "{nix}")
+                        (s-replace-regexp (template "^/home/<<(user-login-name)>>") "~")
+                        ((lambda (x) (if (s-contains? "chromium" x) "{chromium}" x))))
+                  xs)))
+    (apply oldformat xs)))
+
+(advice-add #'proced-format-args :around #'my::proced/remove-nixos-path-name)
+#+END_SRC
+
+***** Bindings
+
+#+begin_src elisp
+(map! :map proced-mode-map
+      :n "/" #'proced-narrow
+      :n "gr" #'proced)
+
+(map! :map process-menu-mode-map
+      :n "gr" #'list-processes)
+#+end_src
 ** Projectile :PROJECTILE:
 *** Config
 **** Ignored Projects
@@ -3698,57 +3688,6 @@ but I dont want them added to my ~projectile-known-projects~.
     (projectile-cleanup-known-projects)
     (projectile-discover-projects-in-search-path)))
 #+END_SRC
-
-** Evil :EVIL:
-*** Packages
-**** INACTIVE [[https://github.com/tarao/evil-plugins][tarao/evil-plugins]]
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(package! evil-plugin :recipe (:host github :repo "tarao/evil-plugins"))
-#+END_SRC
-**** [[https://github.com/emacsmirror/evil-replace-with-register][evil-replace-with-register: Replace with register motion]]
-
-Replace the current selection with a register.
-Press =gr= with a following motion character like =w=.
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(package! evil-replace-with-register)
-#+END_SRC
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package! evil-replace-with-register
-  :config
-  (setq evil-replace-with-register-key (kbd "gr"))
-  (define-key evil-normal-state-map
-    evil-replace-with-register-key 'evil-replace-with-register)
-  (define-key evil-visual-state-map
-    evil-replace-with-register-key 'evil-replace-with-register))
-#+END_SRC
-**** [[https://github.com/urbint/evil-text-objects-javascript][evil-text-objects-javascript: Javascript motions]]
-
-- "f" - function
-- "c" - single-line comment
-- "C" - multi-line comment
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
-#+END_SRC
-**** [[https://github.com/hlissner/evil-snipe][evil-snipe: 2-char searching ala vim-sneak & vim-seek, for evil-mode]]
-***** Config
-****** Repeat snipe after further key press
-
-#+BEGIN_SRC elisp
-(after! evil-snipe
-  (setq evil-snipe-repeat-keys t))
-#+END_SRC
-
 ** Documents :DOCUMENTS:
 *** Pdf :PDF:
 **** Config
@@ -3798,6 +3737,35 @@ Major mode for reading EPUBs in Emacs
   (add-hook 'nov-mode-hook 'my::nov/setup))
 #+END_SRC
 
+** Spell Checking
+*** Flyspell
+**** Defer flyspell until first ~evil-insert-state~
+
+Flyspell most of the time is an annoyance when opening a file just for reading.
+I mostly only need it when writing text (sometimes when reviewing, but then I can toggle it manually).
+
+So I defer it until the first text change has been done (or the first insert state).
+I've tried it on the ~first-change-hook~, but that is also affected by changing todo states for example in ~org-mode~.
+
+#+begin_src elisp
+(defun +flyspell/load-after-first-insert--activate ()
+  "Turns on flyspell after the first buffer change or evil-insert state."
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert)
+  (remove-hook! '(first-change-hook evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate)
+  (spell-fu-mode 1))
+
+(defun +flyspell/load-after-first-insert ()
+  "Turns on flyspell after the first buffer evil-insert state.
+Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set."
+  (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
+        (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
+
+(use-package! flyspell
+  :init
+  (remove-hook! '(org-mode-hook markdown-mode-hook) #'flyspell-mode)
+  (remove-hook! '(org-mode-hook markdown-mode-hook text-mode-hook) #'spell-fu-mode)
+  (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert))
+#+end_src
 ** Flycheck :LINTING:
 *** Config
 **** Disabled Checkers
@@ -3916,6 +3884,29 @@ Find file on enter press for ~ivy-occur-mode~
 #+BEGIN_SRC elisp
 (map! :map ivy-occur-mode-map
       :gni "RET" #'ivy-occur-press-and-switch)
+#+END_SRC
+**** [[https://github.com/raxod502/prescient.el][company-prescient]]
+
+Better sorting for company
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! prescient)
+(package! company-prescient)
+#+end_src
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! prescient
+  :config
+  (prescient-persist-mode 1))
+
+(use-package! company-prescient
+  :after company
+  :config
+  (company-prescient-mode 1))
 #+END_SRC
 **** [[https://company-mode.github.io/][company]]
 ***** Functions
@@ -5599,6 +5590,7 @@ Source:
 #+BEGIN_SRC elisp
 (map! :nm "C-z" nil)
 #+END_SRC
+
 **** Auto indent bracket openings
 :PROPERTIES:
 :SOURCE:   [[https://xenodium.com/emacs-smartparens-auto-indent/][Emacs smartparens auto-indent]]
