@@ -1067,6 +1067,7 @@ Pretty much only used in [[*Expand snippet by name][Expand snippet by name]].
 #+BEGIN_SRC elisp :tangle "packages.el" :comments link
 (package! noflet)
 #+END_SRC
+
 *** Completion
 **** [[https://github.com/raxod502/prescient.el][company-prescient]] :EMACS:
 
@@ -1144,6 +1145,22 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 
 (add-hook! 'spell-fu-mode-hook :after #'+spell-fu/activate-writegood-mode-hook)
 #+END_SRC
+**** [[https://github.com/sulami/literate-calc-mode.el][literate-calc-mode]]
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! literate-calc-mode)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! literate-calc-mode
+  :commands (literate-calc-mode literate-calc-minor-mode))
+#+END_SRC
+
+
 **** [[https://github.com/joostkremers/writeroom-mode][joostkremers/writeroom-mode: Writeroom-mode: distraction-free writing for Emacs.]] :DOOM:
 ***** Config
 
@@ -2259,7 +2276,6 @@ Press =gr= with a following motion character like =w=.
 (package! evil-text-objects-javascript :recipe (:host github :repo "urbint/evil-text-objects-javascript"))
 #+END_SRC
 
-
 ** Pdf :PDF:
 *** Config
 
@@ -2294,7 +2310,6 @@ Press =gr= with a following motion character like =w=.
   (setq flycheck-disabled-checkers '(nim-nimsuggest))
   (flycheck-select-checker 'nim-1-6-0))
 #+END_SRC
-
 
 ** Web :WEB:
 *** [[https://github.com/skeeto/elfeed][Elfeed]] :DOOM:
@@ -2666,14 +2681,6 @@ Quickly download and browser repositories from github
 #+BEGIN_SRC elisp
 (package! nov)
 #+END_SRC
-**** Literate Calc Mode
-
-Inline Calculation
-
-#+BEGIN_SRC elisp
-(package! literate-calc-mode)
-#+END_SRC
-
 *** Overrides
 **** Doom Snippets
 
@@ -4065,18 +4072,6 @@ pkgs.mkShell {
 #+END_SRC
 
 ** Package Config
-*** IRC
-
-
-#+RESULTS:
-
-*** Literate Calc Mode
-
-#+BEGIN_SRC elisp
-(use-package! literate-calc-mode
-  :commands (literate-calc-mode literate-calc-minor-mode))
-#+END_SRC
-
 *** Calendar
 **** Utils
 ***** Filtered Calendars
