@@ -1446,7 +1446,9 @@ Resize the window font size etc according to the system.
 This will be disabled in terminal mode.
 
 #+BEGIN_SRC elisp
-(when (display-graphic-p) (my::ui|adjust-ui-to-display))
+(add-hook! '(doom-init-ui-hook after-make-frame-functions)
+  (defun my::ui*after-make-frame (&rest _)
+    (when (display-graphic-p) (my::ui|adjust-ui-to-display))))
 #+END_SRC
 **** Scrolloff
 
