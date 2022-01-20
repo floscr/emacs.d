@@ -489,6 +489,58 @@ shuffling is done in place."
   "Replace the HOME directory in path"
   (s-replace-regexp (t! "^<<(getenv \"HOME\")>>") "~" path))
 #+END_SRC
+** Tangling
+
+#+begin_src elisp
+(defvar my::config:literate-config-file
+  (concat doom-private-dir "config.org")
+  "The file path of your literate config file.")
+
+(defvar my::config:literate-config-file-cache
+  (concat doom-cache-dir "literate-last-compile")
+  "The file path that `my::config:literate-config-file' will be tangled to, then
+byte-compiled from.")
+
+;;;###autoload
+(defun my::config/tangle-literate-config (&optional force-p file)
+  "Tangles the current buffer FILE if it has changed."
+  (let* ((default-directory doom-private-dir)
+         (src-file (expand-file-name (or file buffer-file-name)))
+         (dst-file (concat (file-name-sans-extension src-file) ".el")))
+    (when (or (file-newer-than-file-p src-file
+                                      dst-file)
+              force-p)
+      (message "Compiling your literate config...")
+      (start-process
+       "org-tangle" nil "emacs"
+       "-q" "--batch"
+       "-l" "ob-tangle"
+       "--eval" (format "(org-babel-tangle-file %S %S)"
+                        src-file dst-file)))))
+
+;;;###autoload
+(defalias 'my::config/reload-litarate-config-file #'doom/reload)
+
+;;;###autoload
+(defun my::config/recompile-literate-config-maybe ()
+  "Recompile config.org if we're editing an org file in our DOOMDIR.
+
+We assume any org file in `doom-private-dir' is connected to your literate
+config, and should trigger a recompile if changed."
+  (when (and (eq major-mode 'org-mode)
+             (file-in-directory-p buffer-file-name doom-private-dir))
+    (my::config/tangle-literate-config 'force)))
+
+;; Recompile our literate config if we modify it
+;;;###autoload
+(after! org (add-hook 'after-save-hook #'my::config/recompile-literate-config-maybe))
+
+;;;###autoload
+(defun my::config|tangle ()
+  "Tangle the current org buffer."
+  (interactive)
+  (my::config/tangle-literate-config t))
+#+end_src
 
 * Custom Packages
 ** TODO Custom Bookmarks
@@ -1127,7 +1179,6 @@ which I name after the matching url.
 
  :private
  system
- literate
  work
  (org
   +org-reading-list
