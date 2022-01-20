@@ -503,127 +503,126 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                   (org-get-heading 'notags 'notodo)))))
 #+END_SRC
 
-***** Opening tag
-
-#+BEGIN_SRC elisp
-(after! org-agenda
-#+END_SRC
-
 ***** All todos ~x~
 
 #+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("x" "Todo Items"
-   ((agenda
-     "a"
-     ((org-agenda-span 3)
-      (org-agenda-start-day ".")
-      (org-agenda-show-all-dates nil)
-      (org-agenda-prefix-format '((agenda . "%11s%?-t")))
-      (org-super-agenda-header-separator "")
-      (org-agenda-sorting-strategy '(time-up scheduled-up todo-state-up priority-down user-defined-up))
-      (org-super-agenda-groups '((:name "\nHabits" :habit t :order 1000)
-                                 (:name "Work Meetings" :and (:tag ("MEETING") :not (:tag ("REPEATING"))))
-                                 (:name nil :discard (:tag "WORK" :todo "PROJECT"))
-                                 (:name none :date today :time-grid t)
-                                 (:name "\nOverdue" :deadline past :scheduled past)
-                                 (:name "Future" :anything (:scheduled future))))))
-    (tags-todo
-     "-WORK-BACKLOG"
-     ((org-agenda-prefix-format "  %?-12t% s")
-      (org-agenda-sorting-strategy '(priority-down user-defined-down timestamp-down todo-state-down))
-      (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
-                                 (:name nil :discard (:file-path "projects.org"))
-                                 (:name nil :discard (:scheduled t :deadline t :file-path "gtd-reoccuring-events.org"))
-                                 (:name "Inbox Links" :regexp "TODO \\(\\[\\[\\\|https?:\\)" :order 2)
-                                 (:name "Inbox" :file-path ".*inbox.org$" :order 2)
-                                 (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
-                                 (:name "Overdue" :scheduled past))))))))
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   '("x" "Todo Items"
+     ((agenda
+       "a"
+       ((org-agenda-span 3)
+        (org-agenda-start-day ".")
+        (org-agenda-show-all-dates nil)
+        (org-agenda-prefix-format '((agenda . "%11s%?-t")))
+        (org-super-agenda-header-separator "")
+        (org-agenda-sorting-strategy '(time-up scheduled-up todo-state-up priority-down user-defined-up))
+        (org-super-agenda-groups '((:name "\nHabits" :habit t :order 1000)
+                                   (:name "Work Meetings" :and (:tag ("MEETING") :not (:tag ("REPEATING"))))
+                                   (:name nil :discard (:tag "WORK" :todo "PROJECT"))
+                                   (:name none :date today :time-grid t)
+                                   (:name "\nOverdue" :deadline past :scheduled past)
+                                   (:name "Future" :anything (:scheduled future))))))
+      (tags-todo
+       "-WORK-BACKLOG"
+       ((org-agenda-prefix-format "  %?-12t% s")
+        (org-agenda-sorting-strategy '(priority-down user-defined-down timestamp-down todo-state-down))
+        (org-super-agenda-groups '((:name "Next" :todo ("ACTIVE"))
+                                   (:name nil :discard (:file-path "projects.org"))
+                                   (:name nil :discard (:scheduled t :deadline t :file-path "gtd-reoccuring-events.org"))
+                                   (:name "Inbox Links" :regexp "TODO \\(\\[\\[\\\|https?:\\)" :order 2)
+                                   (:name "Inbox" :file-path ".*inbox.org$" :order 2)
+                                   (:name "Unscheduled" :and (:todo "TODO" :scheduled nil :not (:tag "BACKLOG")) :order 1)
+                                   (:name "Overdue" :scheduled past)))))))))
 #+END_SRC
 
 ***** Backlog
 
 #+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("b" "Backlog Items"
-   ((tags-todo
-     "+BACKLOG-WORK"
-     ((org-agenda-prefix-format "  %?-12t% s")
-      (org-agenda-todo-ignore-scheduled t)
-      (org-agenda-sorting-strategy '(priority-down todo-state-up user-defined-down timestamp-down))
-      (org-super-agenda-groups '((:discard (:scheduled t))
-                                 (:name "Emacs" :tag ("EMACS"))
-                                 (:name "Linux" :tag ("LINUX"))
-                                 (:name "Digital" :tag ("DIGITAL"))
-                                 (:name "Personal" :tag ("PERSONAL") :order 1)
-                                 (:name "Home" :tag ("HOME") :order -1)
-                                 (:name "To Buy" :tag ("TO_BUY") :order 2)
-                                 (:name "Untagged" :order -3 :anything))))))
-   ((org-agenda-hide-tags-regexp "BACKLOG")
-    (org-agenda-files (--map (f-join org-directory it) '("Main/gtd.org"))))))
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   '("b" "Backlog Items"
+     ((tags-todo
+       "+BACKLOG-WORK"
+       ((org-agenda-prefix-format "  %?-12t% s")
+        (org-agenda-todo-ignore-scheduled t)
+        (org-agenda-sorting-strategy '(priority-down todo-state-up user-defined-down timestamp-down))
+        (org-super-agenda-groups '((:discard (:scheduled t))
+                                   (:name "Emacs" :tag ("EMACS"))
+                                   (:name "Linux" :tag ("LINUX"))
+                                   (:name "Digital" :tag ("DIGITAL"))
+                                   (:name "Personal" :tag ("PERSONAL") :order 1)
+                                   (:name "Home" :tag ("HOME") :order -1)
+                                   (:name "To Buy" :tag ("TO_BUY") :order 2)
+                                   (:name "Untagged" :order -3 :anything))))))
+     ((org-agenda-hide-tags-regexp "BACKLOG")
+      (org-agenda-files (--map (f-join org-directory it) '("Main/gtd.org")))))))
 #+END_SRC
 
 ***** Today
 
 #+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("d" "Day View" ((agenda "a"
-                           ((org-agenda-prefix-format "  %?-12t% s")
-                            (org-agenda-start-on-weekday nil)
-                            (org-agenda-span 1)
-                            (org-agenda-start-day ".")
-                            (org-agenda-skip-scheduled-if-done t)
-                            (org-agenda-sorting-strategy '(timestamp-up time-up))
-                            (org-super-agenda-header-separator "")
-                            (org-agenda-day-view)
-                            (org-super-agenda-groups '((:name none :date today :time-grid t)
-                                                       (:name "\nOverdue" :deadline past :scheduled past)
-                                                       (:name "Future" :anything (:scheduled future)))))))))
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   '("d" "Day View" ((agenda "a"
+                             ((org-agenda-prefix-format "  %?-12t% s")
+                              (org-agenda-start-on-weekday nil)
+                              (org-agenda-span 1)
+                              (org-agenda-start-day ".")
+                              (org-agenda-skip-scheduled-if-done t)
+                              (org-agenda-sorting-strategy '(timestamp-up time-up))
+                              (org-super-agenda-header-separator "")
+                              (org-agenda-day-view)
+                              (org-super-agenda-groups '((:name none :date today :time-grid t)
+                                                         (:name "\nOverdue" :deadline past :scheduled past)
+                                                         (:name "Future" :anything (:scheduled future))))))))))
 #+END_SRC
 
 ***** Week
 
 #+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("c" "Calendar" agenda ""
-   ((org-agenda-span 7)
-    (org-agenda-start-on-weekday nil)
-    (org-agenda-start-day "-1d")
-    (org-agenda-tag-filter-preset '("+CALENDAR")))))
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   '("c" "Calendar" agenda ""
+     ((org-agenda-span 7)
+      (org-agenda-start-on-weekday nil)
+      (org-agenda-start-day "-1d")
+      (org-agenda-tag-filter-preset '("+CALENDAR"))))))
 #+END_SRC
 
 ***** Work
 ****** Main
 
 #+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- `("w" "Work Agenda"
-   ((agenda "a" ((org-agenda-sorting-strategy '(time-up todo-state-up priority-down scheduled-up user-defined-up))
-                 (org-agenda-span ,(+org/work-week-agenda-span))
-                 (org-agenda-start-on-weekday t)
-                 (org-agenda-start-day ,(+org/work-start-day))
-                 (org-super-agenda-header-separator "")
-                 (org-super-agenda-groups '((:name "Tasks" :tag "TASK" :order 1)
-                                            (:name "Reviews" :tag "REVIEW" :order 2)
-                                            (:anything)))))
-    (alltodo ""
-             ((org-agenda-todo-list-sublevels nil)
-              (org-agenda-sorting-strategy '(priority-down time-up todo-state-up user-defined-down))
-              (org-super-agenda-groups '((:discard (:todo ("[ ]" "[|]") :tag "HIDE_FROM_AGENDA"))
-                                         (:name "Yak Shave" :tag "YAK_SHAVE" :order 30)
-                                         (:name "Notes" :todo "NOTE")
-                                         (:name "Inbox" :category "Inbox" :order 5)
-                                         (:name "Meetings" :tag "MEETING" :order 2)
-                                         (:name "Reviews" :tag "REVIEW" :order 4)
-                                         (:name "Backlog" :tag "BACKLOG" :order 11)
-                                         (:name "Tasks" :tag "TASK" :order 3)
-                                         (:name "Time Management" :and (:tag "TIME_MANAGEMENT") :order 3)
-                                         (:name "GTD (Not Scheduled)" :and (:tag "GTD" :scheduled nil :not (:todo "WAITING")))
-                                         (:name "GTD" :and (:tag "GTD"))
-                                         (:name "Reading List" :tag "TEXT" :order 10))))))
-   ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
-    (org-agenda-tag-filter-preset '("+WORK"))
-    (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org"))))))
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   `("w" "Work Agenda"
+     ((agenda "a" ((org-agenda-sorting-strategy '(time-up todo-state-up priority-down scheduled-up user-defined-up))
+                   (org-agenda-span ,(+org/work-week-agenda-span))
+                   (org-agenda-start-on-weekday t)
+                   (org-agenda-start-day ,(+org/work-start-day))
+                   (org-super-agenda-header-separator "")
+                   (org-super-agenda-groups '((:name "Tasks" :tag "TASK" :order 1)
+                                              (:name "Reviews" :tag "REVIEW" :order 2)
+                                              (:anything)))))
+      (alltodo ""
+               ((org-agenda-todo-list-sublevels nil)
+                (org-agenda-sorting-strategy '(priority-down time-up todo-state-up user-defined-down))
+                (org-super-agenda-groups '((:discard (:todo ("[ ]" "[|]") :tag "HIDE_FROM_AGENDA"))
+                                           (:name "Yak Shave" :tag "YAK_SHAVE" :order 30)
+                                           (:name "Notes" :todo "NOTE")
+                                           (:name "Inbox" :category "Inbox" :order 5)
+                                           (:name "Meetings" :tag "MEETING" :order 2)
+                                           (:name "Reviews" :tag "REVIEW" :order 4)
+                                           (:name "Backlog" :tag "BACKLOG" :order 11)
+                                           (:name "Tasks" :tag "TASK" :order 3)
+                                           (:name "Time Management" :and (:tag "TIME_MANAGEMENT") :order 3)
+                                           (:name "GTD (Not Scheduled)" :and (:tag "GTD" :scheduled nil :not (:todo "WAITING")))
+                                           (:name "GTD" :and (:tag "GTD"))
+                                           (:name "Reading List" :tag "TEXT" :order 10))))))
+     ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
+      (org-agenda-tag-filter-preset '("+WORK"))
+      (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org")))))))
 #+END_SRC
 
 ****** Meistertask Meistermacs
@@ -631,92 +630,70 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
 #+BEGIN_SRC elisp
 (setq +MM:my-meistertask-name-tag "+@FLORIAN_SCHROEDL")
 
-(+org/add-to-agenda-custom-commands
- '("ys" "Sprint"
-   ((alltodo ""
-             ((org-super-agenda-groups '((:auto-category t))))))
-   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mind_meister_sprint.org"))))
-   ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+     '("ys" "Sprint"
+         ((alltodo ""
+                     ((org-super-agenda-groups '((:auto-category t))))))
+         ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mind_meister_sprint.org"))))
+         ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
 
-(+org/add-to-agenda-custom-commands
- '("yb" "Beta"
-   ((alltodo ""
-             ((org-super-agenda-groups '((:auto-category t))))))
-   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mm_panda.org")))
-    (org-agenda-hide-tags-regexp "meistertask_mm_panda"))
-   ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
+  (+org/add-to-agenda-custom-commands
+     '("yb" "Beta"
+         ((alltodo ""
+                     ((org-super-agenda-groups '((:auto-category t))))))
+         ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_mm_panda.org"))
+            (org-agenda-hide-tags-regexp "meistertask_mm_panda")))
+         ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
 
-(+org/add-to-agenda-custom-commands
- '("yk" "Kits"
-   ((alltodo ""
-             ((org-super-agenda-groups '((:auto-category t))))))
-   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_platform_kits.org")))
-    (org-agenda-hide-tags-regexp "meistertask_platform_kits"))
-   ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
+  (+org/add-to-agenda-custom-commands
+     '("yk" "Kits"
+         ((alltodo ""
+                     ((org-super-agenda-groups '((:auto-category t))))))
+         ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_platform_kits.org"))
+            (org-agenda-hide-tags-regexp "meistertask_platform_kits")))
+         ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
 
-(+org/add-to-agenda-custom-commands
- '("yl" "Log"
-   ((alltodo ""
-             ((org-super-agenda-groups '((:auto-category t))))))
-   ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_platform_backlog.org")))
-    (org-agenda-hide-tags-regexp "meistertask_platform_backlog"))
-   ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
+  (+org/add-to-agenda-custom-commands
+     '("yl" "Log"
+         ((alltodo ""
+                     ((org-super-agenda-groups '((:auto-category t))))))
+         ((org-agenda-files (list (f-join doom-cache-dir "meistertask" "meistertask_platform_backlog.org"))
+            (org-agenda-hide-tags-regexp "meistertask_platform_backlog")))
+         ((org-agenda-tag-filter-preset `(,+MM:my-meistertask-name-tag)))))
 
-(+org/add-to-agenda-custom-commands
- '("ya" "Assigned Tasks"
-   ((alltodo ""
-             ((org-agenda-tag-filter `(,+MM:my-meistertask-name-tag))
-              (org-super-agenda-groups '((:discard (:category "Done"
-                                                    :category "Live (deployed)"
-                                                    :not (:tag "@FLORIAN_SCHRODL")))
-                                         (:auto-category)
-                                         (:discard (:anything t)))))))
-   ((org-agenda-files (--map (f-join doom-cache-dir "meistertask" it)
-                             '("meistertask_mind_meister_sprint.org" "meistertask_mm_core_sprint.org"))))))
+  (+org/add-to-agenda-custom-commands
+     '("ya" "Assigned Tasks"
+         ((alltodo ""
+                     ((org-agenda-tag-filter `(,+MM:my-meistertask-name-tag)
+                        (org-super-agenda-groups '((:discard (:category "Done"
+                                                                :category "Live (deployed)"
+                                                                :not (:tag "@FLORIAN_SCHRODL"))
+                                                     (:auto-category)
+                                                     (:discard (:anything t)))))))))
+         ((org-agenda-files (--map (f-join doom-cache-dir "meistertask" it
+                                     '("meistertask_mind_meister_sprint.org" "meistertask_mm_core_sprint.org"))))))))
 #+END_SRC
 
 ***** Personal projects
 
 #+BEGIN_SRC elisp
-(after! org-super-agenda
-  (org-super-agenda--def-auto-group parent-project "their parent project"
-    :key-sort-fn (lambda (a b) b)
-    :key-form (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
-                (when (org-up-heading-safe)
-                  (while (and
-                          (not (org-get-todo-state))
-                          (org-up-heading-safe)))
-                  (->> (org-get-heading 'notags 'notodo)
-                       (substring-no-properties))))))
-
-(+org/add-to-agenda-custom-commands
- '("p" "Personal Projects"
-   ((alltodo ""
-     ((org-agenda-files (list (+org/expand-org-file-name "Main/projects.org")))
-      (org-agenda-prefix-format '((todo . "  ")))
-      (org-agenda-sorting-strategy '(todo-state-up priority-down time-up user-defined-down))
-      (org-super-agenda-groups
-       '((:auto-parent-project))))))))
 #+END_SRC
 
 ***** Books
 
 #+BEGIN_SRC elisp
-(+org/add-to-agenda-custom-commands
- '("l" "Literature (Books)"
-   ((alltodo ""
-     ((org-agenda-files (--map (f-join org-directory it) '("Main/books.org")))
-      (org-super-agenda-groups '((:name "Fiction" :tag ("FICTION"))
-                                 (:name "Non-Fiction" :tag ("NON_FICTION"))
-                                 (:name "Self Help" :tag ("SELF_HELP"))
-                                 (:name "Comics" :tag ("COMIC")))))))))
+(after! org-agenda
+  (+org/add-to-agenda-custom-commands
+   '("l" "Literature (Books)"
+     ((alltodo ""
+               ((org-agenda-files (--map (f-join org-directory it) '("Main/books.org")))
+                (org-super-agenda-groups '((:name "Fiction" :tag ("FICTION"))
+                                           (:name "Non-Fiction" :tag ("NON_FICTION"))
+                                           (:name "Self Help" :tag ("SELF_HELP"))
+                                           (:name "Comics" :tag ("COMIC"))))))))))
 #+END_SRC
 
-***** Closing Tag
-
-#+BEGIN_SRC elisp
-)
-#+END_SRC
 *** Clocking
 **** Automatically set clocking or todo state
 :PROPERTIES:
