@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Raw result output
+# key: :r
+# --
+:results raw
