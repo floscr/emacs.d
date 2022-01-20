@@ -1758,6 +1758,74 @@ An evil way to edit Lisp symbolic expressions (symexes) as trees in Emacs
 #+END_SRC
 
 *** MySQL
+*** JSON
+**** Functions
+***** Is Last JSON key at point
+
+#+BEGIN_SRC elisp
+(defun my::json/is-last-key? ()
+  "Is the next line the last json key."
+  (save-excursion
+    (forward-line)
+    (my::buffer/line-contains "}")))
+#+END_SRC
+
+***** Insert JSON Key
+
+Insert JSON key in a JSON document
+This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# --][key]]
+
+#+BEGIN_SRC elisp
+(defun my::json/insert-key (&optional above?)
+  "Adds a new JSON key pair."
+  (let ((last-line? (my::buffer/line-contains ",$")))
+    ;; Insert comma
+    (if (and (not last-line?) (not above?))
+        (replace-regexp "$" "," nil (point-at-bol) (point-at-eol)))
+    (end-of-line)
+    (if above?
+        (evil-insert-newline-above)
+      (evil-insert-newline-below))
+    (indent-according-to-mode)
+    (yas/insert-by-name "key")))
+
+(defun my::json|insert-key-above ()
+  "Function docstring"
+  (interactive)
+  (my::json/insert-key t))
+
+(defun my::json|insert-key-below ()
+  "Function docstring"
+  (interactive)
+  (my::json/insert-key nil))
+#+END_SRC
+
+***** Autofix JSON
+
+Uses [[https://www.npmjs.com/package/json-fix][json-fix]] to autofix JSON files.
+
+#+BEGIN_SRC bash :tangle no
+npm i -g json-fix
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(defun my::json|autofix-buffer ()
+  "Autofix json buffer"
+  (interactive)
+  (let ((b (if mark-active (min (point) (mark)) (point-min)))
+        (e (if mark-active (max (point) (mark)) (point-max))))
+    (shell-command-on-region b e
+     (template "json-fix --no-sort --spaces <<tab-width>>") (current-buffer) t)))
+#+END_SRC
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after json-mode
+ :map json-mode-map
+ :gni "<C-return>" #'my::json|insert-key-below
+ :gni "<C-S-return>" #'my::json|insert-key-above)
+#+END_SRC
 
 ** System :SYSTEM:
 *** Packages
@@ -4504,76 +4572,6 @@ Source:
   :init
   (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
   (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
-#+END_SRC
-
-*** JSON
-**** Utils
-***** Is Last JSON key at point
-
-#+BEGIN_SRC elisp
-(defun +json/is-last-key? ()
-  "Is the next line the last json key."
-  (save-excursion
-    (forward-line)
-    (my::buffer/line-contains "}")))
-#+END_SRC
-
-***** Insert JSON Key
-
-Insert JSON key in a JSON document
-This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# --][key]]
-
-#+BEGIN_SRC elisp
-(defun +json/insert-key (&optional above?)
-  "Adds a new JSON key pair."
-  (let ((last-line? (my::buffer/line-contains ",$")))
-    ;; Insert comma
-    (if (and (not last-line?) (not above?))
-        (replace-regexp "$" "," nil (point-at-bol) (point-at-eol)))
-    (end-of-line)
-    (if above?
-        (evil-insert-newline-above)
-      (evil-insert-newline-below))
-    (indent-according-to-mode)
-    (yas/insert-by-name "key")))
-
-(defun +json|insert-key-above ()
-  "Function docstring"
-  (interactive)
-  (+json/insert-key t))
-
-(defun +json|insert-key-below ()
-  "Function docstring"
-  (interactive)
-  (+json/insert-key nil))
-#+END_SRC
-
-***** Autofix JSON
-
-Uses [[https://www.npmjs.com/package/json-fix][json-fix]] to autofix JSON files.
-
-#+BEGIN_SRC bash :tangle no
-npm i -g json-fix
-#+END_SRC
-
-#+BEGIN_SRC elisp
-(defun +json|autofix-buffer ()
-  "Autofix json buffer"
-  (interactive)
-  (let ((b (if mark-active (min (point) (mark)) (point-min)))
-        (e (if mark-active (max (point) (mark)) (point-max))))
-    (shell-command-on-region b e
-     (template "json-fix --no-sort --spaces <<tab-width>>") (current-buffer) t)))
-#+END_SRC
-
-**** Bindings
-
-#+BEGIN_SRC elisp
-(map!
- :after json-mode
- :map json-mode-map
- :gni "<C-return>" #'+json|insert-key-below
- :gni "<C-S-return>" #'+json|insert-key-above)
 #+END_SRC
 
 *** LSP

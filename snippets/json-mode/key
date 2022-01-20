@@ -3,4 +3,4 @@
 # key: k
 # condition: t                              
 # --
-"$1": "$2"`(unless (+json/is-last-key?) ",")`
+"$1": "$2"`(unless (my::json/is-last-key?) ",")`
