@@ -487,12 +487,11 @@ shuffling is done in place."
 #+END_SRC
 
 
-
 ** UI
-
 *** Adjust font to display
 
 #+BEGIN_SRC elisp
+;;;###autoload
 (defun my::ui/adjust-font (size line-space &optional font-family weight)
   (let* ((font-family (or font-family)))
     (setq-default line-spacing line-space)
@@ -502,6 +501,7 @@ shuffling is done in place."
     (doom/reload-font)
     (run-hooks 'after-setting-font-hook)))
 
+;;;###autoload
 (defun my::ui/get-x-screen ()
   "Get a list of all connected screens."
   (-> "xrandr | grep ' connected ' | cut -d ' ' -f 1"
@@ -515,10 +515,12 @@ shuffling is done in place."
                        ((string-match-p "^eDP" b) nil)
                        (t nil))))))
 
+;;;###autoload
 (defun my::ui/has-display-connected? (screen)
   "Check if SCREEN is connected."
   (-contains? (my::ui/get-x-screen) screen))
 
+;;;###autoload
 (defun my::ui|adjust-ui-to-display ()
   "Adjust the UI to the current attached display."
   (interactive)
@@ -534,6 +536,60 @@ shuffling is done in place."
       (my::ui/adjust-font 15 4 "Fira Code" 'medium)))
    ((string= (system-name) "Florians-MacBook-Air.local")
     (my::ui/adjust-font 14 10 "Menlo"))))
+#+END_SRC
+** Window management
+*** Toggle split style
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
+:END:
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::ui|toggle-window-split-direction ()
+  "Toggle current window split between horizontal and vertical."
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+#+END_SRC
+
+*** Toggle dedicated
+:PROPERTIES:
+:SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
+:END:
+
+Lock a window so the buffer can't be changed or it cant be deleted.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::ui|toggle-window-dedicated ()
+  "Control whether or not Emacs is allowed to display another
+buffer in current window."
+  (interactive)
+  (let* ((window (get-buffer-window (current-buffer)))
+         (is-locked (window-dedicated-p window))
+         (txt (if is-locked "Window unlocked" "Window locked")))
+    (set-window-dedicated-p window (not is-locked))
+    (message (template "<<(current-buffer)>>: <<txt>>!"))))
 #+END_SRC
 
 * Custom Packages
@@ -5100,63 +5156,6 @@ error in process filter: End of buffer
     ("gc"     "git commit")
     ("grha"   "git reset --hard; git clean -f -d")
     ("clear"  "clear-scrollback")))
-#+END_SRC
-
-
-* Needs to be restrucutred
-** Window management
-*** Toggle split style
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/46664/switch-between-horizontal-and-vertical-splitting][Switch between horizontal and vertical splitting? - Emacs Stack Exchange]]
-:END:
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my|toggle-window-split-direction ()
-  "Toggle current window split between horizontal and vertical."
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
-#+END_SRC
-
-*** Toggle dedicated
-:PROPERTIES:
-:SOURCE:   [[https://emacs.stackexchange.com/questions/2189/how-can-i-prevent-a-command-from-using-specific-windows][buffers - How can I prevent a command from using specific windows? - Emacs Stack Exchange]]
-:END:
-
-Lock a window so the buffer can't be changed or it cant be deleted.
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my|toggle-window-dedicated ()
-  "Control whether or not Emacs is allowed to display another
-buffer in current window."
-  (interactive)
-  (let* ((window (get-buffer-window (current-buffer)))
-         (is-locked (window-dedicated-p window))
-         (txt (if is-locked "Window unlocked" "Window locked")))
-    (set-window-dedicated-p window (not is-locked))
-    (message (template "<<(current-buffer)>>: <<txt>>!"))))
 #+END_SRC
 
 
