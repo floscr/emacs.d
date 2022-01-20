@@ -20,6 +20,15 @@ Furthermore the naming schema follows these rules:
 - ~my/function~: A private function
 - ~my|function~: An interactive function
 
+*** Exceptions
+
+There are only a few exceptions, which I'm keeping without the prefix for ease of writing/reading:
+
+- [[*Dash Extensions][Dash Extensions]]
+  Prefixed with a ~-~
+- [[*Template Literals][Template Literals]]
+  ~template~ or ~t~ macros
+
 ** Code style
 
 Most of the code here will follow a functional mindset using [[https://github.com/magnars/dash.el][dash.el]] and [[https://github.com/magnars/s.el][s.el]].
@@ -298,6 +307,53 @@ Packages and utilities needed for this config.
 (require 'noflet)
 #+END_SRC
 
+** Macros
+*** Template Literals
+:PROPERTIES:
+:SOURCE:   https://gist.github.com/cbowdon/012d623920bd28453bf8
+:END:
+
+#+BEGIN_SRC elisp :tangle no
+(template "2 = <<(+ 1 1)>>")
+#+END_SRC
+
+#+RESULTS:
+: 2 = 2
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defmacro template (text)
+  "Template literals"
+  (let ((pattern "<<\\(.*?\\)>>"))
+    ;; The regexp matches anything between delimiters, non-greedily
+    (with-temp-buffer
+      (save-excursion (insert text))
+      (let ((matches '()))
+        (while (re-search-forward pattern nil t)
+          (push (match-string 1) matches)
+          (replace-match "%s" t t))
+        `(format ,(buffer-string) ,@(reverse (mapcar 'read matches)))))))
+
+;;;###autoload
+(defalias 't! 'template)
+#+END_SRC
+
+*** Ignore Arguments
+:PROPERTIES:
+:SOURCE:   https://emacs.stackexchange.com/a/33063
+:END:
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defmacro ignore-args (fnc)
+  "Return function that ignores its arguments and invokes FNC."
+  `(lambda (&rest _rest)
+     (funcall ,fnc)))
+
+;;;###autoload
+(defalias 'η 'ignore-args)
+#+END_SRC
+
 ** General
 *** Noop
 
@@ -350,6 +406,124 @@ nil -> \"Disabled\""
   (interactive)
   (message (t! "<<(symbol-name x)>>: <<(my/bool-to-enabled-string (symbol-value x))>>")))
 #+END_SRC
+
+** Dash Extensions
+*** -tap
+
+Run a side effect ~fn~ on the initial input ~x~.
+But Return the original input ~x~.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -tap (fn x)
+  "Function docstring"
+  (funcall fn x)
+  x)
+
+;;;###autoload
+(defmacro --tap (fn it)
+  "Anaphoric form of `-tap'."
+  `(-tap (lambda (it) ,fn) ,it))
+#+END_SRC
+
+*** -log
+
+Log the current input without breaking the pipe.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -log (x)
+  "Function docstring"
+  (--tap (message "%s" it) x))
+#+END_SRC
+
+*** -when
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -when (pred fn x)
+  "When FN equals t forward X."
+  (if pred
+      (funcall fn x)
+    x))
+
+;;;###autoload
+(defmacro --when (pred form xs)
+  "Anaphoric form of -id-when"
+  (declare (debug (form form)))
+  `(let ((it ,xs))
+     (if ,pred
+         ,form
+       ,xs)))
+#+END_SRC
+
+*** -id-when
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -id-when (fn x)
+  "When FN equals t forward X."
+  (when (funcall fn x) x))
+
+;;;###autoload
+(defmacro --id-when (form xs)
+  "Anaphoric form of -id-when"
+  (declare (debug (form form)))
+  `(let ((it ,xs))
+     (when ,form ,xs)))
+#+END_SRC
+
+*** -append
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -append (elem list)
+  "Append ELEM to the end of list.
+
+This is like -snoc but it takes the ELEM as the first argument for easier composition"
+  (-snoc list elem))
+#+END_SRC
+
+*** -shuffle
+:PROPERTIES:
+:SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
+:END:
+
+#+BEGIN_SRC elisp
+(defun swap-list-items (LIST el1 el2)
+  "in LIST swap indices EL1 and EL2 in place"
+  (let ((tmp (elt LIST el1)))
+    (setf (elt LIST el1) (elt LIST el2))
+    (setf (elt LIST el2) tmp)))
+
+;;;###autoload
+(defun -shuffle (LIST)
+  "Shuffle the elements in LIST.
+shuffling is done in place."
+  (loop for i in (reverse (number-sequence 1 (1- (length LIST))))
+        do (let ((j (random (+ i 1))))
+             (swap-list-items LIST i j)))
+  LIST)
+#+END_SRC
+
+*** -f-join
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -f-join (x path)
+  "Reversed argument order for f-join"
+  (f-join path x))
+#+END_SRC
+
+*** -f-tildify
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun f-tildify (path)
+  "Replace the HOME directory in path"
+  (s-replace-regexp (t! "^<<(getenv \"HOME\")>>") "~" path))
+#+END_SRC
+
 
 ** Old
 *** Bookmarks
@@ -622,123 +796,6 @@ or manually traverse upwards until the .git directory is found."
    (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
 #+END_SRC
 *** Utils
-**** Dash Extensions
-***** -tap
-
-Run a side effect ~fn~ on the initial input ~x~.
-But Return the original input ~x~.
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun -tap (fn x)
-  "Function docstring"
-  (funcall fn x)
-  x)
-
-;;;###autoload
-(defmacro --tap (fn it)
-  "Anaphoric form of `-tap'."
-  `(-tap (lambda (it) ,fn) ,it))
-#+END_SRC
-
-***** -log
-
-Log the current input without breaking the pipe.
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun -log (x)
-  "Function docstring"
-  (--tap (message "%s" it) x))
-#+END_SRC
-
-***** -when
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun -when (pred fn x)
-  "When FN equals t forward X."
-  (if pred
-      (funcall fn x)
-    x))
-
-;;;###autoload
-(defmacro --when (pred form xs)
-  "Anaphoric form of -id-when"
-  (declare (debug (form form)))
-  `(let ((it ,xs))
-     (if ,pred
-         ,form
-       ,xs)))
-#+END_SRC
-
-***** -id-when
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun -id-when (fn x)
-  "When FN equals t forward X."
-  (when (funcall fn x) x))
-
-;;;###autoload
-(defmacro --id-when (form xs)
-  "Anaphoric form of -id-when"
-  (declare (debug (form form)))
-  `(let ((it ,xs))
-     (when ,form ,xs)))
-#+END_SRC
-
-***** -append
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun -append (elem list)
-  "Append ELEM to the end of list.
-
-This is like -snoc but it takes the ELEM as the first argument for easier composition"
-  (-snoc list elem))
-#+END_SRC
-
-***** -shuffle
-:PROPERTIES:
-:SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
-:END:
-
-#+BEGIN_SRC elisp
-(defun swap-list-items (LIST el1 el2)
-  "in LIST swap indices EL1 and EL2 in place"
-  (let ((tmp (elt LIST el1)))
-    (setf (elt LIST el1) (elt LIST el2))
-    (setf (elt LIST el2) tmp)))
-
-;;;###autoload
-(defun -shuffle (LIST)
-  "Shuffle the elements in LIST.
-shuffling is done in place."
-  (loop for i in (reverse (number-sequence 1 (1- (length LIST))))
-        do (let ((j (random (+ i 1))))
-             (swap-list-items LIST i j)))
-  LIST)
-#+END_SRC
-
-***** -f-join
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun -f-join (x path)
-  "Reversed argument order for f-join"
-  (f-join path x))
-#+END_SRC
-
-***** -f-tildify
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun f-tildify (path)
-  "Replace the HOME directory in path"
-  (s-replace-regexp (t! "^<<(getenv \"HOME\")>>") "~" path))
-#+END_SRC
-
 **** String
 ***** String Match
 
@@ -906,55 +963,6 @@ The proram persists when emacs is closed."
     (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
     (my/nohup-shell-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
-*** Macros
-**** Template Literals
-:PROPERTIES:
-:SOURCE:   https://gist.github.com/cbowdon/012d623920bd28453bf8
-:END:
-
-#+BEGIN_SRC elisp :tangle no
-(template "2 = <<(+ 1 1)>>")
-#+END_SRC
-
-#+RESULTS:
-: 2 = 2
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defmacro template (text)
-  "Template literals"
-  (let ((pattern "<<\\(.*?\\)>>"))
-    ;; The regexp matches anything between delimiters, non-greedily
-    (with-temp-buffer
-      (save-excursion (insert text))
-      (let ((matches '()))
-        (while (re-search-forward pattern nil t)
-          (push (match-string 1) matches)
-          (replace-match "%s" t t))
-        `(format ,(buffer-string) ,@(reverse (mapcar 'read matches)))))))
-
-;;;###autoload
-(defalias 't! 'template)
-#+END_SRC
-
-**** Ignore Arguments
-:PROPERTIES:
-:SOURCE:   https://emacs.stackexchange.com/a/33063
-:END:
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defmacro ignore-args (fnc)
-  "Return function that ignores its arguments and invokes FNC."
-  `(lambda (&rest _rest)
-     (funcall ,fnc)))
-
-;;;###autoload
-(defalias 'η 'ignore-args)
-#+END_SRC
-
-
-
 * New Configuration
 
 
