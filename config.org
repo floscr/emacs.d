@@ -2297,8 +2297,9 @@ Press =gr= with a following motion character like =w=.
 
 
 ** Web :WEB:
-*** Packages
-**** DISABLED [[https://github.com/algernon/elfeed-goodies][algernon/elfeed-goodies: Various goodies for Elfeed]] :DISABLED:
+*** [[https://github.com/skeeto/elfeed][Elfeed]] :DOOM:
+**** Packages
+***** DISABLED [[https://github.com/algernon/elfeed-goodies][algernon/elfeed-goodies: Various goodies for Elfeed]] :DISABLED:
 
 No need, screws with entry buffer position and header display...
 
@@ -2306,9 +2307,8 @@ No need, screws with entry buffer position and header display...
 (package! elfeed-goodies :disable t)
 #+end_src
 
-**** [[https://github.com/skeeto/elfeed][skeeto/elfeed: An Emacs web feeds client]] :DOOM:
-***** Functions
-****** Open elfeed
+**** Functions
+***** Open elfeed
 
 #+BEGIN_SRC elisp
 (defun my::elfeed|open ()
@@ -2319,7 +2319,7 @@ No need, screws with entry buffer position and header display...
   (my::rss|hydra/body))
 #+END_SRC
 
-****** Filter by unread
+***** Filter by unread
 
 #+BEGIN_SRC elisp
 (defun my::rss/filter-by-unread ()
@@ -2328,7 +2328,7 @@ No need, screws with entry buffer position and header display...
   (elfeed-search-set-filter "@6-months-ago +unread"))
 #+END_SRC
 
-****** Visit entry DWIM
+***** Visit entry DWIM
 
 Open the current entry:
 - With the browser
@@ -2350,7 +2350,7 @@ Open the current entry:
         (elfeed-show-visit)))))
 #+END_SRC
 
-****** Visit entry with MPV
+***** Visit entry with MPV
 
 #+BEGIN_SRC elisp
 (defvar my::rss:visit-entry-mpv-pattern
@@ -2366,7 +2366,7 @@ whether to use mpv to visit the link.")
     (my::shell/mpv-youtube-url url)))
 #+END_SRC
 
-****** Visit entry with EWW
+***** Visit entry with EWW
 
 #+BEGIN_SRC elisp
 (defun my::rss::visit-entry-eww ()
@@ -2379,7 +2379,7 @@ whether to use mpv to visit the link.")
     (switch-to-buffer buffer)))
 #+END_SRC
 
-****** Wrap Elfeed
+***** Wrap Elfeed
 
 #+BEGIN_SRC elisp
 (defun my::rss/wrap-entry ()
@@ -2397,7 +2397,7 @@ whether to use mpv to visit the link.")
 (add-hook 'elfeed-show-mode-hook #'my::rss/wrap-entry)
 #+END_SRC
 
-****** Update feeds when saving org-elfeed file :ORG_MODE:
+***** Update feeds when saving org-elfeed file :ORG_MODE:
 
 When I save the elfeed org-mode file I want to automatically update the feed list.
 Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/elfeed-org.el::rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id)][elfeed package]].
@@ -2411,7 +2411,7 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
 
 (add-hook! 'after-save-hook #'my::rss/update-feeds-on-save)
 #+END_SRC
-****** Capture entry :ORG_MODE:
+***** Capture entry :ORG_MODE:
 
 #+BEGIN_SRC elisp
 (defun my::rss::capture/stringify-entry (entry)
@@ -2443,7 +2443,7 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
         (org-capture nil "er"))))
 #+END_SRC
 
-****** Hydra
+***** Hydra
 
 #+BEGIN_SRC elisp
 (defun my::rss/toggle-filter (tag)
@@ -2479,14 +2479,14 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
    ("v" (my::rss|visit-entry-dwim) "Visit")
    ("q" nil "Quit" :color blue))
 #+END_SRC
-***** Config
-****** elfeed-org file
+**** Config
+***** elfeed-org file
 
 #+BEGIN_SRC elisp
 (setq rmh-elfeed-org-files (list (+org/expand-org-file-name "Elfeed/Elfeed.org")))
 #+END_SRC
 
-****** Disable sliced images
+***** Disable sliced images
 
 These don't work if you have a big line-height.
 
@@ -2494,15 +2494,15 @@ These don't work if you have a big line-height.
 (setq +rss-enable-sliced-images nil)
 #+END_SRC
 
-****** Default search
+***** Default search
 
 #+BEGIN_SRC elisp
 (setq +rss:default-search-filter "@2-week-ago +unread -YOUTUBE")
 (setq-default elfeed-search-filter +rss:default-search-filter)
 #+END_SRC
 
-***** Bindings
-****** Search Mode Bindings
+**** Bindings
+***** Search Mode Bindings
 
 #+BEGIN_SRC elisp
 (map!
@@ -2515,7 +2515,7 @@ These don't work if you have a big line-height.
   :desc "Month"   :gn "m" (cmd! (elfeed-search-set-filter "@1-month-ago +unread"))))
 #+END_SRC
 
-****** Show Mode Bindings
+***** Show Mode Bindings
 
 #+BEGIN_SRC elisp
 (map!
@@ -2524,7 +2524,7 @@ These don't work if you have a big line-height.
  :gn "r" #'elfeed-update)
 #+END_SRC
 
-****** LocalLeader
+***** LocalLeader
 
 #+BEGIN_SRC elisp
 (map! :map (elfeed-search-mode-map elfeed-show-mode-map)
