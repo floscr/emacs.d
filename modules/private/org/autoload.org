@@ -210,7 +210,7 @@ POS to match:
 (defun +org|mpv-link-at-point ()
   (interactive)
   (-some->> (+org|offer-links-at-point)
-    (+mpv/play-external-url)))
+    (my::shell/mpv-youtube-url)))
 #+END_SRC
 
 ** Parse Link

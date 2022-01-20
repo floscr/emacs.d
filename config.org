@@ -466,7 +466,7 @@ modifications."
            (s-join "\n")
            insert))))
 #+END_SRC
-** Shell Commands & Processes
+** Shell Commands & Aliases
 *** Async Command No Window
 :PROPERTIES:
 :SOURCE:   [[https://stackoverflow.com/a/47910509/2298462][How to avoid pop-up of *Async Shell Command* buffer in Emacs?]]
@@ -506,11 +506,11 @@ The proram persists when emacs is closed."
        (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args-str>> &") nil nil)))
 #+END_SRC
 
-*** Open Link with MPV
+*** Open youtube link with MPV
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun +mpv/play-external-url (url)
+(defun my::shell/mpv-youtube-url (url)
   (-when-let* ((quality-val
                 (-some->> (completing-read
                             "Max height resolution (0 for unlimited): "
@@ -3605,7 +3605,7 @@ whether to use mpv to visit the link.")
   (interactive)
   (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
         (url (elfeed-entry-link entry)))
-    (+mpv/play-external-url url)))
+    (my::shell/mpv-youtube-url url)))
 #+END_SRC
 
 ***** Capture Elfeed Entries
