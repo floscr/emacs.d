@@ -2459,6 +2459,132 @@ Press =gr= with a following motion character like =w=.
   (setq flycheck-disabled-checkers '(nim-nimsuggest))
   (flycheck-select-checker 'nim-1-6-0))
 #+END_SRC
+** Completion :COMPLETION:
+*** [[https://github.com/abo-abo/swiper][ivy / counsel]]
+**** Actions
+***** Search from ~counsel-find-file~
+
+#+begin_src elisp
+(defun my::counsel/search-from-find-file-counsel (x)
+  "Function docstring"
+  (let ((default-directory (if (f-dir? x) x (f-dirname x))))
+    (+default/search-cwd)))
+
+(after! ivy
+ (setq my::counsel::action:search-from-find-file
+  '(("s" my::counsel/search-from-find-file-counsel "Search in directory")))
+ (ivy-add-actions 'counsel-find-file my::counsel::action:search-from-find-file))
+#+end_src
+**** Functions
+***** Counsel Project File Jump
+
+#+BEGIN_SRC elisp
+(defun my::counsel|project-file-jump (x)
+  "Jump to file in project"
+  (interactive)
+  (counsel-file-jump nil (f-join (projectile-project-root) x)))
+#+END_SRC
+
+***** Counsel Grep Buffers
+
+#+BEGIN_SRC elisp
+(defun +ivy|search-buffers (buffer-list)
+  "Grep workspace buffers."
+  (interactive)
+  (-->
+   (or buffer-list (+workspace-buffer-list))
+   (cl-remove-if-not #'buffer-file-name it)
+   (-map #'buffer-file-name it)
+   (-map #'shell-quote-argument it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun +ivy/search-buffer-list (&optional buffer-list)
+  (--> (or buffer-list ivy--old-cands)
+   (-log it)
+   (-map #'shell-quote-argument it)
+   (--map (f-join (doom-project-root) it) it)
+   (s-join " " it)
+   (counsel-grep-files it)))
+
+(defun counsel-grep-files (buffer-file-names)
+  "Grep for a string in the file visited by the current buffer."
+  (interactive)
+  (counsel-require-program counsel-grep-base-command
+   (setq counsel-grep-command
+         (format counsel-grep-base-command "%s" buffer-file-names))
+   (message "%s" counsel-grep-command)
+   (let ((init-point (point))
+         res)
+     (unwind-protect
+         (setq res (ivy-read "grep: " #'counsel-grep-function
+                             :dynamic-collection t
+                             :require-match t
+                             :keymap counsel-grep-map
+                             :history 'counsel-grep-history
+                             :re-builder #'ivy--regex
+                             :action #'counsel-grep-action
+                             :caller 'counsel-grep))
+       (unless res
+         (goto-char init-point))))))
+
+(after! ivy
+  (ivy-set-actions
+   '+git|ivy-changed-files
+   '(("/" (lambda (&optional arg)
+            (+ivy/search-buffer-list))
+      "Grep Forward"))))
+#+END_SRC
+
+***** Counsel External Drives
+
+#+BEGIN_SRC elisp
+(defun my::counsel|mounted-drives ()
+  "Counsel of mounted drives from udiskie."
+  (interactive)
+  (counsel-find-file (concat "/run/media/" (user-login-name) "/")))
+#+END_SRC
+
+**** Config
+***** Always show actions in hydra.
+
+#+BEGIN_SRC elisp
+(setq ivy-read-action-function #'ivy-hydra-read-action)
+#+END_SRC
+
+***** Banish mouse cursor :HACK:
+
+The cursor will steal the focus from ivy-posframe, breaking ivy completely...
+
+This option moves the mouse cursor to 0x0,
+which is really unacceptable, but works for now.
+
+#+BEGIN_SRC elisp
+(setq posframe-mouse-banish t)
+#+END_SRC
+
+**** Bindings
+
+Adds general bindings to ivy.
+~MOD + ↩~ will insert the current item and continue with a new instance of the same ivy buffer.
+~CTRL + ↩~ will abort completion and insert the inserted text.
+
+#+BEGIN_SRC elisp
+(map!
+ :after ivy
+ :map ivy-minibuffer-map
+  "<s-return>" 'ivy-call
+  "<C-tab>" 'minibuffer-complete
+  "<C-return>" 'ivy-immediate-done
+  "M-m" 'ivy-mark)
+#+END_SRC
+
+Find file on enter press for ~ivy-occur-mode~
+
+#+BEGIN_SRC elisp
+(map! :map ivy-occur-mode-map
+      :gni "RET" #'ivy-occur-press-and-switch)
+#+END_SRC
 
 ** Web :WEB:
 *** [[https://github.com/skeeto/elfeed][Elfeed]] :DOOM:
@@ -4431,147 +4557,6 @@ Source:
   (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
 #+END_SRC
 
-*** Ivy / Counsel
-**** Config
-
-Always show actions in hydra.
-
-#+BEGIN_SRC elisp
-(setq ivy-read-action-function #'ivy-hydra-read-action)
-#+END_SRC
-
-**** Bindings
-
-Adds general bindings to ivy.
-~MOD + ↩~ will insert the current item and continue with a new instance of the same ivy buffer.
-~CTRL + ↩~ will abort completion and insert the inserted text.
-
-#+BEGIN_SRC elisp
-(map!
- :after ivy
- :map ivy-minibuffer-map
-  "<s-return>" 'ivy-call
-  "<C-tab>" 'minibuffer-complete
-  "<C-return>" 'ivy-immediate-done
-  "M-m" 'ivy-mark)
-#+END_SRC
-
-Find file on enter press for ~ivy-occur-mode~
-
-#+BEGIN_SRC elisp
-(map! :map ivy-occur-mode-map
-      :gni "RET" #'ivy-occur-press-and-switch)
-#+END_SRC
-
-**** Functions
-***** Counsel Project File Jump
-
-#+BEGIN_SRC elisp
-(defun +ivy/counsel-project-file-jump (x)
-  "Jump to file in project"
-  (interactive)
-  (counsel-file-jump nil (f-join (projectile-project-root) x)))
-#+END_SRC
-
-***** Counsel Grep Buffers
-
-#+BEGIN_SRC elisp
-(defun +ivy|search-buffers (buffer-list)
-  "Grep workspace buffers."
-  (interactive)
-  (-->
-   (or buffer-list (+workspace-buffer-list))
-   (cl-remove-if-not #'buffer-file-name it)
-   (-map #'buffer-file-name it)
-   (-map #'shell-quote-argument it)
-   (s-join " " it)
-   (counsel-grep-files it)))
-
-(defun +ivy/search-buffer-list (&optional buffer-list)
-  (--> (or buffer-list ivy--old-cands)
-   (-log it)
-   (-map #'shell-quote-argument it)
-   (--map (f-join (doom-project-root) it) it)
-   (s-join " " it)
-   (counsel-grep-files it)))
-
-(defun counsel-grep-files (buffer-file-names)
-  "Grep for a string in the file visited by the current buffer."
-  (interactive)
-  (counsel-require-program counsel-grep-base-command
-   (setq counsel-grep-command
-         (format counsel-grep-base-command "%s" buffer-file-names))
-   (message "%s" counsel-grep-command)
-   (let ((init-point (point))
-         res)
-     (unwind-protect
-         (setq res (ivy-read "grep: " #'counsel-grep-function
-                             :dynamic-collection t
-                             :require-match t
-                             :keymap counsel-grep-map
-                             :history 'counsel-grep-history
-                             :re-builder #'ivy--regex
-                             :action #'counsel-grep-action
-                             :caller 'counsel-grep))
-       (unless res
-         (goto-char init-point))))))
-
-(after! ivy
-  (ivy-set-actions
-   '+git|ivy-changed-files
-   '(("/" (lambda (&optional arg)
-            (+ivy/search-buffer-list))
-      "Grep Forward"))))
-#+END_SRC
-
-***** Counsel External Drives
-
-#+BEGIN_SRC elisp
-(defun +ivy|counsel-mounted-drives ()
-  "Counsel of mounted drives from udiskie."
-  (interactive)
-  (counsel-find-file (concat "/run/media/" (user-login-name) "/")))
-#+END_SRC
-
-**** Hacks
-***** Banish mouse cursor
-
-The cursor will steal the focus from ivy-posframe, breaking ivy completely...
-
-This option moves the mouse cursor to 0x0,
-which is really unacceptable, but works for now.
-
-#+BEGIN_SRC elisp
-(setq posframe-mouse-banish t)
-#+END_SRC
-
-***** Fix case-insensitive wgrep
-
-#+BEGIN_SRC elisp :tangle no
-(after! ivy
-  (defadvice! respect-case-fold-search (args)
-    :filter-return #'counsel--ag-extra-switches
-    (concat args (pcase ivy-case-fold-search
-                   (`auto " -S ")
-                   (`t " -i ")
-                   (`nil " -s ")))))
-#+END_SRC
-**** Actions
-
-***** Search from ~counsel-find-file~
-
-#+begin_src elisp
-(defun +counsel/search-from-find-file (x)
-  "Function docstring"
-  (let ((default-directory (if (f-dir? x) x (f-dirname x))))
-    (+default/search-cwd)))
-
-(after! ivy
- (setq +counsel:search-from-find-file-action
-  '(("s" +counsel/search-from-find-file "Search in directory")))
- (ivy-add-actions 'counsel-find-file +counsel:search-from-find-file-action))
-#+end_src
-
 *** JSON
 **** Utils
 ***** Is Last JSON key at point
@@ -6229,7 +6214,7 @@ So deletes wont affect this register."
  (:prefix-map ("f" . "file")
   :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
   (:prefix-map ("g" . "goto")
-   :desc "Drive"                 "/" #'+ivy|counsel-mounted-drives
+   :desc "Drive"                 "/" #'my::counsel|mounted-drives
    :desc "Desktop"               "D" (cmd! (find-file "~/Desktop"))
    :desc "Config"                "." (cmd! (find-file "~/.config"))
    :desc "Code"                  "c" (cmd! (find-file "~/Code"))
