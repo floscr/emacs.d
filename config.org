@@ -17,8 +17,11 @@ If I extend a module I will prefix it with the ~+module~.
 Furthermore the naming schema follows these rules:
 
 - ~my:variable~: Variable
-- ~my/function~: A private function
-- ~my|function~: An interactive function
+- ~my/function~: Private function
+  - ~my::namespace/function~: Private function with namespace
+- ~my|function~: Interactive function
+  - ~my::namespace|function~: Interactive function
+- ~my@function~: Macro
 
 *** Exceptions
 
@@ -345,13 +348,10 @@ Packages and utilities needed for this config.
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defmacro ignore-args (fnc)
-  "Return function that ignores its arguments and invokes FNC."
+(defmacro my@ignore-args (fn)
+  "Return function that ignores its arguments and invokes FN."
   `(lambda (&rest _rest)
-     (funcall ,fnc)))
-
-;;;###autoload
-(defalias 'η 'ignore-args)
+     (funcall ,fn)))
 #+END_SRC
 
 ** General
@@ -376,6 +376,171 @@ modifications."
      (unwind-protect
          (progn ,@forms)
        (set-buffer-modified-p modified)) ()))
+#+END_SRC
+*** INACTIVE String match or original
+
+#+BEGIN_SRC elisp :tangle no
+;;;###autoload
+(defun my/s-match-or (regex x)
+  "Return match groups or original"
+  (interactive)
+  (-if-let ((match (s-match regex x)))
+      (cdr match)
+    (list x)))
+
+;;;###autoload
+(defun my/s-match-or-1 (regex x)
+  "Return 1st match group or original."
+  (interactive)
+  (-if-let ((match (s-match regex x)))
+      (car (cdr match))
+    x))
+#+END_SRC
+** Buffer
+*** Check if buffer has line
+
+#+BEGIN_SRC elisp
+(defun my::buffer/contains-line (string)
+  (save-excursion
+    (save-match-data
+      (goto-char (point-min))
+      (search-forward string nil t))))
+#+END_SRC
+
+*** Get current line indentation
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::buffer/line-indent ()
+  "Get the indent of the current line."
+  (interactive)
+  (or (-some->> (substring-no-properties (thing-at-point 'line))
+        (s-match "^\\(\s*\\).*\n$")
+        (nth 1)
+        (length))
+      0))
+#+END_SRC
+
+*** Check current line for regex
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::buffer/line-contains (regexp)
+  "Check for REGEXP at current line."
+  (save-excursion
+    (goto-char (point-at-bol))
+    (search-forward-regexp regexp (point-at-eol) t)))
+#+END_SRC
+
+*** Delete current line
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::buffer/delete-current-line ()
+  "Delete (not kill) the current line."
+  (interactive)
+  (save-excursion
+    (delete-region
+     (progn (forward-visible-line 0) (point))
+     (progn (forward-visible-line 1) (point)))))
+#+END_SRC
+
+*** INACTIVE Map buffer lines
+
+#+BEGIN_SRC elisp :tangle no
+;;;###autoload
+(defun my::buffer/map-lines (fun &optional start end)
+  "Map lines in buffer with FUN, fn gets called with the line contents."
+  (let ((start (or start (point-min)))
+        (end (or end (point-max)))
+        (lines (list)))
+    (save-excursion
+      (goto-char start)
+      (while (< (point) end)
+        (add-to-list 'lines
+          (funcall fun (buffer-substring (line-beginning-position) (line-end-position))))
+        (forward-line 1))
+      (erase-buffer)
+      (->> lines
+           reverse
+           (s-join "\n")
+           insert))))
+#+END_SRC
+** Shell Commands & Processes
+*** Async Command No Window
+:PROPERTIES:
+:SOURCE:   [[https://stackoverflow.com/a/47910509/2298462][How to avoid pop-up of *Async Shell Command* buffer in Emacs?]]
+:END:
+
+Prevent ~async-shell-command~ displaying a popup or a buffer.
+
+#+BEGIN_SRC elisp
+(defun my::shell/async-command-no-window (command)
+  "Execute async command without showing the result buffer."
+  (interactive)
+  (let ((display-buffer-alist (list (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))))
+    (async-shell-command command)))
+#+END_SRC
+
+*** Shell command to list
+
+#+BEGIN_SRC elisp
+(defun my::shell/command-to-list (cmd)
+  "Split output from shell-command to list"
+  (split-string (shell-command-to-string cmd) "\n" t))
+#+END_SRC
+
+*** Start Process with Nohup
+
+I don't want some processes to exit, when I close emacs.
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my/start-inferior-process-shell-command (command)
+  (let ((name (format "*nohup: %s*" command)))
+    (start-process-shell-command name nil (format "nohup %s" command))))
+
+;;;###autoload
+(defun my/start-inferior-process (name buffer program &rest program-args)
+  (let ((nohup-name (lambda (&optional text)
+                      (if (not (null text))
+                          (format "*nohup: %s*" text)
+                        nil)))
+        (args (-some->> program-args
+                (s-join " "))))
+    (start-process
+     (funcall nohup-name name)
+     (funcall nohup-name buffer)
+     shell-file-name
+     shell-command-switch
+     (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
+
+;;;###autoload
+(defun my::shell/no-exit-command (cmd &optional &rest args)
+  "Launch a shell command, without opening a message buffer.
+The proram persists when emacs is closed."
+  (let ((args-str (or (-some->> args
+                        (s-join " "))
+                      "")))
+    (call-process-shell-command
+       (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args-str>> &") nil nil)))
+#+END_SRC
+
+*** Open Link with MPV
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun +mpv/play-external-url (url)
+  (-when-let* ((quality-val
+                (-some->> (completing-read
+                            "Max height resolution (0 for unlimited): "
+                            '("720" "0" "480" "1080"))
+                  (string-to-number)))
+               (quality-arg (if (> 0 quality-val)
+                                (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
+                              "")))
+    (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
+    (my::shell/no-exit-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
 ** Debugging / Logging
 *** Kill and Message
@@ -794,174 +959,6 @@ or manually traverse upwards until the .git directory is found."
   (or
    projectile-project-root
    (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
-#+END_SRC
-*** Utils
-**** String
-***** String Match
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun s-match-or (regex x)
-  "Return match groups or original"
-  (interactive)
-  (-if-let ((match (s-match regex x)))
-      (cdr match)
-    (list x)))
-
-;;;###autoload
-(defun s-match-or-1 (regex x)
-  "Return 1st match group or original."
-  (interactive)
-  (-if-let ((match (s-match regex x)))
-      (car (cdr match))
-    x))
-#+END_SRC
-
-**** Buffer
-***** Check if buffer has line
-
-#+BEGIN_SRC elisp
-(defun my/buffer-contains-line (string)
-  (save-excursion
-    (save-match-data
-      (goto-char (point-min))
-      (search-forward string nil t))))
-#+END_SRC
-
-***** Get the line Indent
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my/line-indent ()
-  "Get the indent of the current line."
-  (interactive)
-  (or (-some->> (substring-no-properties (thing-at-point 'line))
-        (s-match "^\\(\s*\\).*\n$")
-        (nth 1)
-        (length))
-      0))
-#+END_SRC
-
-***** Check current line for regex
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my/buffer-line-has (regexp)
-  "Check for REGEXP at current line."
-  (save-excursion
-    (goto-char (point-at-bol))
-    (search-forward-regexp regexp (point-at-eol) t)))
-#+END_SRC
-
-***** Delete Current Line
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my/delete-current-line ()
-  "Delete (not kill) the current line."
-  (interactive)
-  (save-excursion
-    (delete-region
-     (progn (forward-visible-line 0) (point))
-     (progn (forward-visible-line 1) (point)))))
-#+END_SRC
-
-***** Map Lines
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my/map-lines (fun &optional start end)
-  "Map lines in buffer with FUN, fn gets called with the line contents."
-  (let ((start (or start (point-min)))
-        (end (or end (point-max)))
-        (lines (list)))
-    (save-excursion
-      (goto-char start)
-      (while (< (point) end)
-        (add-to-list 'lines
-          (funcall fun (buffer-substring (line-beginning-position) (line-end-position))))
-        (forward-line 1))
-      (erase-buffer)
-      (->> lines
-           reverse
-           (s-join "\n")
-           insert))))
-#+END_SRC
-*** General Utils
-**** Async Command No Window
-:PROPERTIES:
-:SOURCE:   [[https://stackoverflow.com/a/47910509/2298462][How to avoid pop-up of *Async Shell Command* buffer in Emacs?]]
-:END:
-
-Prevent ~async-shell-command~ displaying a popup or a buffer.
-
-#+BEGIN_SRC elisp
-(defun async-shell-command-no-window (command)
-  "Execute async command without showing the result buffer."
-  (interactive)
-  (let ((display-buffer-alist (list (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))))
-    (async-shell-command command)))
-#+END_SRC
-
-**** Shell command to list
-
-#+BEGIN_SRC elisp
-(defun shell-command-to-list (cmd)
-  "Split output from shell-command to list"
-  (split-string (shell-command-to-string cmd) "\n" t))
-#+END_SRC
-
-**** Start Process with Nohup
-
-I don't want some processes to exit, when I close emacs.
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun my/start-inferior-process-shell-command (command)
-  (let ((name (format "*nohup: %s*" command)))
-    (start-process-shell-command name nil (format "nohup %s" command))))
-
-;;;###autoload
-(defun my/start-inferior-process (name buffer program &rest program-args)
-  (let ((nohup-name (lambda (&optional text)
-                      (if (not (null text))
-                          (format "*nohup: %s*" text)
-                        nil)))
-        (args (-some->> program-args
-                (s-join " "))))
-    (start-process
-     (funcall nohup-name name)
-     (funcall nohup-name buffer)
-     shell-file-name
-     shell-command-switch
-     (template "nohup 1>/dev/null 2>/dev/null <<program>> <<args>>"))))
-
-;;;###autoload
-(defun my/nohup-shell-command (cmd &optional &rest args)
-  "Launch a shell command, without opening a message buffer.
-The proram persists when emacs is closed."
-  (let ((args-str (or (-some->> args
-                        (s-join " "))
-                      "")))
-    (call-process-shell-command
-       (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args-str>> &") nil nil)))
-#+END_SRC
-
-**** Open Link with MPV
-
-#+BEGIN_SRC elisp
-;;;###autoload
-(defun +mpv/play-external-url (url)
-  (-when-let* ((quality-val
-                (-some->> (completing-read
-                            "Max height resolution (0 for unlimited): "
-                            '("720" "0" "480" "1080"))
-                  (string-to-number)))
-               (quality-arg (if (> 0 quality-val)
-                                (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
-                              "")))
-    (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
-    (my/nohup-shell-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
 * New Configuration
 
@@ -4240,7 +4237,7 @@ respectively."
   (interactive)
   (let ((file-list (or file (dired-get-marked-files)))
         (process-connection-type nil))
-    (--map (my/nohup-shell-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
+    (--map (my::shell/no-exit-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
 
 (defun +dired|open-dwim (&optional file)
   (interactive)
@@ -4251,7 +4248,7 @@ respectively."
                        (let* ((path (expand-file-name x))
                               (ext (f-ext path)))
                          (if (-contains? +dired:open-external-extensions ext)
-                             (my/nohup-shell-command "xdg-open" (s-wrap path "\""))
+                             (my::shell/no-exit-command "xdg-open" (s-wrap path "\""))
                            (dired-find-file)))))))
 #+END_SRC
 
@@ -4836,7 +4833,7 @@ which is really unacceptable, but works for now.
   "Is the next line the last json key."
   (save-excursion
     (forward-line)
-    (my/buffer-line-has "}")))
+    (my::buffer/line-contains "}")))
 #+END_SRC
 
 ***** Insert JSON Key
@@ -4847,7 +4844,7 @@ This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# -
 #+BEGIN_SRC elisp
 (defun +json/insert-key (&optional above?)
   "Adds a new JSON key pair."
-  (let ((last-line? (my/buffer-line-has ",$")))
+  (let ((last-line? (my::buffer/line-contains ",$")))
     ;; Insert comma
     (if (and (not last-line?) (not above?))
         (replace-regexp "$" "," nil (point-at-bol) (point-at-eol)))
@@ -5056,11 +5053,11 @@ For now only works on branches that were directly forked from master.
 #+BEGIN_SRC elisp
 (defun +git/new-files ()
   "List of added files in the current branch."
-  (shell-command-to-list "git ls-files -om --exclude-standard"))
+  (my::shell/command-to-list "git ls-files -om --exclude-standard"))
 
 (defun +git/modfied-files (&optional branch)
   "Get a list of modified files from the BRANCH to head."
-  (shell-command-to-list
+  (my::shell/command-to-list
    (template "git --no-pager diff --no-renames --name-only --no-merges <<(magit-rev-parse \"HEAD\")>> <<branch>>;")))
 
 (defun +git/changed-branch-files (branch)
@@ -5291,8 +5288,8 @@ TARGET-BRANCH defaults to origin/master."
   (interactive)
   (let* ((source-branch (or source-branch (magit-get-current-branch)))
          (target-branch (or target-branch "origin/master"))
-         (merge-base (shell-command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
-    (shell-command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
+         (merge-base (my::shell/command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
+    (my::shell/command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
 #+END_SRC
 ***** Copy over changes from diff
 
@@ -5696,7 +5693,7 @@ the projects cwd to find a file.
 
  :localleader
  :desc "Remove line" "d" (cmd! (let ((inhibit-read-only t))
-                                 (my/delete-current-line))))
+                                 (my::buffer/delete-current-line))))
 #+END_SRC
 
 *** Yasnippet
@@ -6384,7 +6381,7 @@ and then do my function.
   "Move forward one character and then paste."
   (interactive)
   (if (and (evil-normal-state-p)
-           (my/buffer-line-has "[^\s]"))
+           (my::buffer/line-contains "[^\s]"))
       (progn
         (forward-char 1)
         (when (and insert-char (looking-at insert-char))
