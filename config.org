@@ -2793,11 +2793,6 @@ Example:
 When you would call the function on the ~foo~ inside the console.log,
 It would wrap it like this ~console.log(`${foo}`)~.
 
-#+BEGIN_SRC js :tangle no
-const foo = 'Foo'
-console.log(`${foo}`)
-#+END_SRC
-
 #+BEGIN_SRC elisp
 (defun +js|convert-sexp-to-template-string ()
   "Wrap sexp into a template string"
