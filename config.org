@@ -602,7 +602,7 @@ config, and should trigger a recompile if changed."
     (name . "Vagrant: mindmeister magit status"))
    ((org . "[[orgit:/ssh:mm-web-vagrant:/home/vagrant/mindmeister-web/][/ssh:mm-web-vagrant:/home/vagrant/mindmeister-web/ (magit-status)]]")
     (name . "Vagrant: mindmeister-web magit status"))
-   ((file . "~/Documents/Scans/Scans.org")
+   ((file . "~/Media/Scans/Scans.org")
     (name . "Scans"))
    ((fn . org-capture-goto-last-stored)
     (name . "Capture: Last Stored Marker"))))
