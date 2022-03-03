@@ -3830,33 +3830,97 @@ arguments can be set as a list via ‘nimpretty-args’."
     (utop)))
 #+end_src
 *** Clojure / Clojurescript
+**** Packages
+***** [[https://github.com/noctuid/lispyville][lispyville]]
 
-**** [[https://github.com/noctuid/lispyville][lispyville]]
-
-***** Package
+****** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! lispyville :recipe (:host github :repo "noctuid/lispyville"))
 #+END_SRC
 
-***** Config
+****** Config
 
 #+BEGIN_SRC elisp
 (use-package! lispyville
   :init
-  (add-hook! '(emacs-lisp-mode-hook lisp-mode-hook clojure-mode-hook cider-repl-mode-hook) #'lispyville-mode)
-  :config
+  (add-hook! '(emacs-lisp-mode-hook lisp-mode-hook clojure-mode-hook cider-repl-mode-hook) #'lispyville-mode))
+
+#+END_SRC
+
+******* Set key theme
+
+Initialize it via a hook, otherwise it clashes with [[*Little Word Motion][Little Word Motion]] and throws an error on launch if we would do it in an ~after!~.
+
+#+begin_src elisp
+(add-hook! lispyville-mode-hook
   (lispyville-set-key-theme '(operators
                               text-objects
                               wrap
+                              raise
                               slurp/barf-cp
                               additional
                               additional-motions
                               (additional-wrap normal visual insert)
                               additional-insert)))
+#+end_src
 
+******* Jumps
+
+Define jump points for lispyville functions
+
+#+begin_src elisp
+(advice-add #'lispyville-beginning-of-defun :around #'doom-set-jump-a)
+(advice-add #'lispyville-end-of-defun :around #'doom-set-jump-a)
+(advice-add #'lispyville-backward-up-list :around #'doom-set-jump-a)
+(advice-add #'lispyville-up-list :around #'doom-set-jump-a)
+(advice-add #'lispyville-insert-at-beginning-of-list :around #'doom-set-jump-a)
+(advice-add #'lispyville-insert-at-end-of-list :around #'doom-set-jump-a)
+(advice-add #'lispyville-open-below-list :around #'doom-set-jump-a)
+(advice-add #'lispyville-open-above-list :around #'doom-set-jump-a)
+#+end_src
+
+
+**** Config
+
+#+begin_src elisp
+(use-package! lsp-mode
+  :commands lsp
+  :hook ((clojurescript-mode . lsp)
+         (clojure-mode . lsp))
+  :config
+  (setq lsp-file-watch-ignored-directories
+        (cl-union lsp-file-watch-ignored-directories
+                  '("[/\\\\]build\\'"
+                    "[/\\\\]deployment\\'"
+                    "[/\\\\]public\\'"
+                    "[/\\\\]resource\\'"
+                    "[/\\\\]target\\'"
+                    "[/\\\\]tmp\\'"
+                    "[/\\\\].log\\'"
+                    "[/\\\\].clj-kondo\\'"
+                    "[/\\\\].git\\'"
+                    "[/\\\\].shadow-cljs\\'"
+                    "[/\\\\]src/js\\'"
+                    "[/\\\\]src/less\\'"
+                    "[/\\\\]src/tailwind\\'"
+                    "[/\\\\]test/e2e/screenshots\\'"))))
+#+end_src
+
+**** Bindings
+
+#+BEGIN_SRC elisp
+(map!
+ :after lsp-mode
+ :map lsp-mode-map
+ :gni "M-<RET>" #'lsp-find-references)
+
+(map!
+ :map (clojure-mode-map clojurescript-mode-map)
+ :desc "Goto parent function" :n "gh" (cmd! (lispyville-backward-function-begin))
+ :desc "Goto parent function" :n "[[" (cmd! (lispyville-backward-function-begin))
+ :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin)))
 #+END_SRC
-
 
 ** Git / Magit :GIT:
 *** Packages
@@ -6407,6 +6471,23 @@ Global ~[~ & ~]~ combinator bindings
  :n "]1" #'projectile-toggle-between-implementation-and-test
  :n "[1" #'projectile-toggle-between-implementation-and-test)
 #+END_SRC
+*** Comman Bindings
+
+#+begin_src elisp
+(map!
+ :map (clojurescript-mode-map clojure-mode-map)
+ :n ",r" #'raise-sexp
+ :n ",f" #'sp-forward-barf-sexp
+ :n ",b" #'sp-backward-barf-sexp
+ :n ",d" #'sp-kill-sexp
+ :n ",," #'sp-forward-sexp
+ :n ",n" #'sp-next-sexp
+ :n ",y" #'sp-clone-sexp
+ :n ",<" #'transpose-sexps
+ :n ",u" #'sp-backward-up-sexp
+ :n ",T" #'clojure-thread
+ :n ",T" #'clojure-thread)
+#+end_src
 
 *** Text Objects
 
