@@ -3897,6 +3897,12 @@ Define jump points for lispyville functions
 (advice-add #'lispyville-open-above-list :around #'doom-set-jump-a)
 #+end_src
 
+****** Bindings
+
+#+begin_src elisp
+(map! :map lispyville-mode-map
+      :desc "description" "C-x C-e" #'lispy-eval)
+#+end_src
 
 **** Config
 
