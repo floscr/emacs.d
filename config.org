@@ -983,8 +983,25 @@ Mostly used to edit the macro registers ~q~.
 *** Window Listing
 
 #+BEGIN_SRC elisp
- (setq my::wm:window-list-re
-  "^\\(0x[0-9a-f]+\\)  \\([0-9]+\\) \\(.+\\)\\.\\([^ ]+\\)  +\\(\\w*\\) \\(.*\\)$")
+(defvar my::wm:window-list-re nil "Regex to parse wmctrl list output.
+Example output:
+0x014000fb  0 brave-browser.Brave-browser  thinknixx1 The Borrowed by Chan Ho-Kei :: www.goodreads.com/ - Brave")
+
+(setq my::wm:window-list-re
+      (rx (seq
+           bol
+           ;; window id (0x014000fb)
+           (submatch "0x" (+ (any digit "a-f"))) "  "
+           ;; index
+           (submatch (+ (any digit))) " "
+           ;; title (brave-browser.Brave-browser)
+           (submatch (+ nonl)) "." (submatch (+ (not (any " "))))
+           ;; right aligned column for username
+           " " (+ " ")
+           ;; username (thinknixx1)
+           (submatch (literal (system-name))) " "
+           ;; Window title
+           (submatch (* nonl)) eol)))
 
 (defun my::wm/match-wm-string (x)
   (-let* ((xs (-drop 1 (s-match my::wm:window-list-re x)))
