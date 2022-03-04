@@ -3923,6 +3923,7 @@ Define jump points for lispyville functions
          (clojure-mode . lsp))
   :config
   (remove-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+  (setq lsp-enable-file-watchers nil)
   (setq lsp-file-watch-ignored-directories
         (cl-union lsp-file-watch-ignored-directories
                   '("[/\\\\]build\\'"
