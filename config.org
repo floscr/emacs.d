@@ -984,7 +984,7 @@ Mostly used to edit the macro registers ~q~.
 
 #+BEGIN_SRC elisp
  (setq my::wm:window-list-re
-  "^\\(0x[0-9a-f]+\\)  \\([0-9]+\\) \\(.+\\)\\.\\([^ ]+\\)  +\\([a-z]*\\) \\(.*\\)$")
+  "^\\(0x[0-9a-f]+\\)  \\([0-9]+\\) \\(.+\\)\\.\\([^ ]+\\)  +\\(\\w*\\) \\(.*\\)$")
 
 (defun my::wm/match-wm-string (x)
   (-let* ((xs (-drop 1 (s-match my::wm:window-list-re x)))
