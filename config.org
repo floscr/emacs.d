@@ -2663,6 +2663,16 @@ An evil way to edit Lisp symbolic expressions (symexes) as trees in Emacs
 (use-package! symex
   :commands (symex-mode symex-mode-interface))
 #+END_SRC
+**** Config
+
+***** Remove Rainbow Delimiters
+
+I don't need them with parinfer and lispyville, they're just distracting.
+
+#+begin_src elisp
+(remove-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+#+end_src
+
 
 *** Json :JSON:
 **** Functions
@@ -3912,6 +3922,7 @@ Define jump points for lispyville functions
   :hook ((clojurescript-mode . lsp)
          (clojure-mode . lsp))
   :config
+  (remove-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
   (setq lsp-file-watch-ignored-directories
         (cl-union lsp-file-watch-ignored-directories
                   '("[/\\\\]build\\'"
