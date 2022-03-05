@@ -295,10 +295,10 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                    :keys "b")
                   ("Chrome Window"
                    :keys "c"
-                   :title "%(my::wm/last-chromium-org-link-url)")
+                   :title "%(my::wm/last-browser-url-org-link)")
                   ("Reading List"
                    :keys "r"
-                   :title "%(my::wm/last-chromium-org-link-url)"
+                   :title "%(my::wm/last-browser-url-org-link)"
                    :headline "Reading List"
                    :file +org:reading-list-file)
                   ("Elfeed"
@@ -322,9 +322,9 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                    :keys "R"
                    :headline "Recipes"
                    :file ,(f-join org-directory "Main/cooking.org")
-                   :template ("* %(car (my::wm/last-chromium-window))"
+                   :template ("* %(car (my::wm/last-browser-window))"
                               ":PROPERTIES:"
-                              ":SOURCE: %(nth 1 (my::wm/last-chromium-window))"
+                              ":SOURCE: %(nth 1 (my::wm/last-browser-window))"
                               ":END:"
                               "** Prep"
                               "%?"
@@ -339,23 +339,23 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                      :keys "t")
                     ("Task (Chrome)"
                      :keys "c"
-                     :title "%(my::wm/last-chromium-org-link-url-formatted)")
+                     :title "%(my::wm/last-browser-url-org-link-formatted)")
                     ("Job Application (Chrome)"
                      :keys "j"
-                     :title "%(my::wm/last-chromium-org-link-url-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
+                     :title "%(my::wm/last-browser-url-org-link-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
                     ("Meeting (Chrome)"
                      :keys "m"
-                     :title "%(my::wm/last-chromium-org-link-url-formatted) :MEETING:")
+                     :title "%(my::wm/last-browser-url-org-link-formatted) :MEETING:")
                     ("Review (Chrome)"
                      :keys "r"
-                     :title "%(my::wm/last-chromium-org-link-url-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
+                     :title "%(my::wm/last-browser-url-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
                 ("Bookmarks"
                  :keys "p"
                  :file +org:bookmarks-file
                  :headline "Bookmarks"
-                 :template ("* %(nth 0 (my::wm/last-chromium-window))"
+                 :template ("* %(nth 0 (my::wm/last-browser-window))"
                             ":PROPERTIES:"
-                            ":URL: %(nth 1 (my::wm/last-chromium-window))"
+                            ":URL: %(nth 1 (my::wm/last-browser-window))"
                             ":CREATED: %U"
                             ":END:"))))))
 
@@ -1716,7 +1716,7 @@ So we replace them all with the code block TYPE"
 (defun +org-web-tools|read-url-from-chrome ()
   "Open the url under the cursor"
   (interactive)
-  (->> (my::wm/last-chromium-url)
+  (->> (my::wm/last-browser-url)
        (org-web-tools-read-url-as-org))
   (visual-line-mode)
   (visual-fill-column-mode)
@@ -1810,7 +1810,7 @@ Copied from [[https://github.com/spegoraro/org-alert][spegoraro/org-alert: Syste
 (defun +org|source-properties-key-from-browser ()
   "Add the link from the frontmost chrome tab as a source property."
   (interactive)
-  (org-set-property "SOURCE" (my::wm/last-chromium-org-link-url)))
+  (org-set-property "SOURCE" (my::wm/last-browser-url-org-link)))
 #+END_SRC
 
 *** Add created date to new items
@@ -1918,7 +1918,7 @@ E.g.: (Brackets signal the cursor position)
 (defun +org|paste-chrome-link ()
   "Paste the frontmost chrome link."
   (interactive)
-  (insert (my::wm/last-chromium-org-link-url)))
+  (insert (my::wm/last-browser-url-org-link)))
 #+END_SRC
 
 *** Paste Markdown as org

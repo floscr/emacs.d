@@ -1036,49 +1036,56 @@ Example output:
 *** Chrome Window Listing
 
 #+BEGIN_SRC elisp
-(setq my::wm:chromium-window-title-re "^\\(.*?\\)? ?\\(:: \\)?\\(https?.*\\) - \\(Chromium\\|Brave\\)$")
+(defvar my::wm:browser-title-delimiter-char " ​::​ "
+  "The delimiter inserted by the tab title formating extension to seperate the url from the title.
+To make sure it is our own delimiter the characters are prefixed and suffixed with zero-width space characters.")
 
-(defun my::wm/is-chromium? (x)
+(setq my::wm:browser-url-suffixes '(" - Chromium"
+                                    " - Brave"))
+(defun my::wm/browser-chop-suffix (url)
+  (s-chop-suffixes my::wm:browser-url-suffixes url))
+
+(defun my::wm/is-browser? (x)
   (or
    (my::wm/-process-eq? "chromium-browser" x)
    (my::wm/-process-eq? "brave-browser" x)))
 
-(defun my::wm/list-chromium-windows ()
+(defun my::wm/list-browser-windows ()
   (->> (my::wm/list-windows)
-       (-filter #'my::wm/is-chromium?)))
+       (-filter #'my::wm/is-browser?)))
 
-(defun my::wm/prev-chromium-window ()
+(defun my::wm/prev-browser-window ()
   "Try either current or previous window to get the chrome id
 Everything further down the line would have to be parsed from bspc history,
 and most of the time it's not worth it.
 If the current or previous windows are not chrome, just get the first one from the list."
-  (--> (my::wm/list-chromium-windows)
+  (--> (my::wm/list-browser-windows)
        (car it)))
 
-(defun my::wm/last-chromium-window ()
-  (-some--> (my::wm/prev-chromium-window)
-    (plist-get it ':title)
-    (->> (s-match my::wm:chromium-window-title-re it)
-         (-drop 1)
-         (-remove-at 1))))
+(defun my::wm/last-browser-window ()
+  (-when-let*
+      ((window (my::wm/prev-browser-window))
+       ((title url) (-some->> (plist-get window ':title)
+                      ((lambda (x)
+                         (pcase (s-split my::wm:browser-title-delimiter-char x)
+                           (`(,title ,url) (list title (my::wm/browser-chop-suffix url)))
+                           (`(,title) (list title ""))))))))
+    (list
+     title
+     (if (s-blank? url) nil url))))
 
-(defun my::wm/last-chromium-url ()
-  (-some--> (my::wm/last-chromium-window)
-    (let ((url (nth 1 it)))
-      url)))
+(defun my::wm/last-browser-url ()
+  (-let* (((title url) (my::wm/last-browser-window)))
+    url))
 
-(defun my::wm/last-chromium-org-link-url ()
-  (-some--> (my::wm/last-chromium-window)
-    (let ((title (nth 0 it))
-          (url (nth 1 it)))
-      (if (s-blank-str? title)
-          url
-        (template "[[<<url>>][<<title>>]]")))))
+(defun my::wm/last-browser-url-org-link ()
+  (let ((data (my::wm/last-browser-window)))
+    (-if-let* (((description link) data))
+        (org-make-link-string link description)
+      (user-error "Error: Could not get browser url %s" data))))
 
-(defun my::wm/last-chromium-org-link-url-formatted ()
-  (and-let* ((window (my::wm/last-chromium-window))
-             (title (nth 0 window))
-             (url (nth 1 window))
+(defun my::wm/last-browser-url-org-link-formatted ()
+  (-if-let* (((title url) (my::wm/last-browser-window))
              (title-formatted
                 (cond
                  ;; Custom Pull request Formatting
@@ -1089,7 +1096,8 @@ If the current or previous windows are not chrome, just get the first one from t
                           (pr-id (nth 3 match)))
                      (template "PR <<pr-id>>: <<pr-title>> by @<<pr-user>>")))
                   (t title))))
-    (template "[[<<url>>][<<title-formatted>>]]")))
+      (template "[[<<url>>][<<title-formatted>>]]")
+    (user-error "Error: Could not get browser url %s" data)))
 #+END_SRC
 * Default Configuration
 ** Temp
@@ -3909,13 +3917,6 @@ Define jump points for lispyville functions
 (advice-add #'lispyville-insert-at-end-of-list :around #'doom-set-jump-a)
 (advice-add #'lispyville-open-below-list :around #'doom-set-jump-a)
 (advice-add #'lispyville-open-above-list :around #'doom-set-jump-a)
-#+end_src
-
-****** Bindings
-
-#+begin_src elisp
-(map! :map lispyville-mode-map
-      :desc "description" "C-x C-e" #'lispy-eval)
 #+end_src
 
 **** Config
