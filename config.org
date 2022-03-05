@@ -6124,6 +6124,43 @@ Take me to the literate source file when using ~find-function~ etc.
   (ignore-errors
     (org-babel-tangle-jump-to-org)))
 #+END_SRC
+**** Fetch link title
+
+Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/nim-utils#get_url_title][floscr/nim-utils: A bunch of simple tools to use with my nixos setup written in nim.]]
+
+#+begin_src elisp
+(defun my::org|fetch-this-org-link-title ()
+  "Fetches the title for the plain link under the cursor.
+Needs get_url_title script"
+  (interactive)
+  (require 'org-ml)
+  (-when-let* ((el (->> (org-ml-parse-this-object)
+                        (--id-when (and (org-ml-is-type 'link it)
+                                        (eq (org-ml-get-property :format it) 'plain)))))
+               (url (org-ml-get-property :raw-link el))
+               (title (->> (shell-command-to-string (t! "get_url_title \"<<url>>\""))
+                           (s-trim)))
+               (from (org-element-property :begin el))
+               (to (org-element-property :end el)))
+    (delete-region from to)
+    (insert (t! "[[<<url>>][<<title>>]]"))))
+
+(defun my::org-agenda|fetch-this-org-link-title ()
+  "Fetches the title for the plain link under the cursor.
+Needs get_url_title script"
+  (interactive)
+  (require 'org-ml)
+  (save-window-excursion
+    (org-agenda-switch-to)
+    (-when-let* ((link-pos (-some->> (org-ml-parse-this-headline)
+                             (org-ml-get-property :title)
+                             (--find (org-ml-is-type 'link it))
+                             (org-ml-get-property :begin))))
+      (goto-char link-pos)
+      (my::org|fetch-this-org-link-title)))
+  (org-agenda-redo))
+#+end_src
+
 ** Hydras
 
 * Bindings
