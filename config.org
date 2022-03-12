@@ -4870,6 +4870,18 @@ respectively."
           (kill-buffer (process-buffer process)))))
      (dired-map-over-marks (dired-get-filename) arg))))
 #+END_SRC
+**** Shred File
+
+#+begin_src elisp
+(defun my::dired|do-shred ()
+  "Run shred on marked files.
+This will erase them."
+  (interactive)
+  (yes-or-no-p "Do you REALLY want to shred these files forever? ")
+  (save-window-excursion
+    (dired-do-async-shell-command "shred -zu" nil (dired-get-marked-files))))
+#+end_src
+
 *** Bindings
 
 #+BEGIN_SRC elisp
