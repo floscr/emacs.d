@@ -979,6 +979,20 @@ Mostly used to edit the macro registers ~q~.
       (save-excursion
         (insert register)))))
 #+END_SRC
+** TODO Scan Management
+
+#+begin_src elisp
+(defun my::scan|dired-file-document ()
+  (interactive)
+  (let ((file (car (dired-get-marked-files)))
+        (bin (f-expand "~/Code/Projects/org_print_scan/result/bin/org_print_scan"))
+        (headline (read-string "Headline: ")))
+    (shell-command-to-string (t! "<<bin>> copy \"<<file>>\" --headline \"<<headline>>\""))
+    (find-file "~/Media/Scans/Scans.org")
+    (goto-char (max-char))
+    (+org|counsel-org-tag)))
+#+end_src
+
 ** Window Management
 *** Window Listing
 
