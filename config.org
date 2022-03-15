@@ -1033,7 +1033,7 @@ Example output:
   (string= id (plist-get x ':pid)))
 #+END_SRC
 
-*** Chrome Window Listing
+*** Browser Window Listing
 
 #+BEGIN_SRC elisp
 (defvar my::wm:browser-title-delimiter-char " ​::​ "
@@ -2090,6 +2090,37 @@ When narrowing to region or defun, make it in an indirect other window.
 #+END_SRC
 *** Functions
 
+** UI :UI:
+*** Higlight indent guides
+
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! highlight-indent-guides :pin "cf352c85cd15dd18aa096ba9d9ab9b7ab493e8f6")
+#+END_SRC
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! highlight-indent-guides
+  :hook ((stylus-mode) . highlight-indent-guides-mode)
+  :init
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-suppress-auto-error t)
+  :config
+  (defun +indent-guides-init-faces-h (&rest _)
+    (when (display-graphic-p)
+      (highlight-indent-guides-auto-set-faces)))
+
+  ;; HACK `highlight-indent-guides' calculates its faces from the current theme,
+  ;;      but is unable to do so properly in terminal Emacs, where it only has
+  ;;      access to 256 colors. So if the user uses a daemon we must wait for
+  ;;      the first graphical frame to be available to do.
+  (add-hook 'doom-load-theme-hook #'+indent-guides-init-faces-h)
+  (when doom-theme
+    (+indent-guides-init-faces-h)))
+#+END_SRC
+
 ** Programming :PROGRAMMING:
 *** General Purpose
 **** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
@@ -2684,7 +2715,6 @@ I don't need them with parinfer and lispyville, they're just distracting.
 #+begin_src elisp
 (remove-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 #+end_src
-
 
 *** Json :JSON:
 **** Functions
