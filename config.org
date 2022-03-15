@@ -3384,7 +3384,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
   "Function formats haskell buffer with brittany on save."
   (interactive)
   (when (eq major-mode 'haskell-mode)
-    (shell-command-to-string (format "brittany --write-mode inplace %s" buffer-file-name))
+    (shell-command-to-string (format "brittany --config-file .brittany.yaml --write-mode inplace %s" buffer-file-name))
     (revert-buffer :ignore-auto :noconfirm)
     (haskell-mode-stylish-buffer)
     (save-buffer)))
