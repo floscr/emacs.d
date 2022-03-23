@@ -1076,14 +1076,16 @@ If the current or previous windows are not chrome, just get the first one from t
   (--> (my::wm/list-browser-windows)
        (car it)))
 
+(defun my::wm/browser-split-url (x)
+  (pcase (s-split my::wm:browser-title-delimiter-char x)
+     (`(,title ,url) (list title (my::wm/browser-chop-suffix url)))
+     (`(,title) (list title ""))))
+
 (defun my::wm/last-browser-window ()
   (-when-let*
       ((window (my::wm/prev-browser-window))
        ((title url) (-some->> (plist-get window ':title)
-                      ((lambda (x)
-                         (pcase (s-split my::wm:browser-title-delimiter-char x)
-                           (`(,title ,url) (list title (my::wm/browser-chop-suffix url)))
-                           (`(,title) (list title ""))))))))
+                      my::wm/browser-split-url)))
     (list
      title
      (if (s-blank? url) nil url))))
