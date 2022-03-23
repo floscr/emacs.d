@@ -4005,7 +4005,7 @@ Define jump points for lispyville functions
  :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin)))
 #+END_SRC
 
-** Git / Magit :GIT:
+** Git / Magit :GIT:MAGIT:
 *** Packages
 **** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
 
@@ -4074,6 +4074,13 @@ Automatically adds ~.projectfile~ and opens a new doom workspace.
     (projectile-add-known-project path)
     path))
 #+END_SRC
+
+***** Transient binding :TRANSIENT:
+
+#+begin_src elisp
+(after! magit
+  (transient-append-suffix 'magit-worktree "b" '("c" "Create branch and worktree" my::magit|create-worktree-project-from-branch)))
+#+end_src
 
 **** Revision show original file
 
@@ -4498,7 +4505,7 @@ For now only the toggle functionality is needed.
       :n [tab] #'magit-section-toggle)
 #+END_SRC
 
-**** Transient Bindings
+*** Transient Bindings :TRANSIENT:
 
 You can add flags or commands to the magit interface transient here.
 To append something, just state the flag that you see in the transient popup as the 2nd argument.
