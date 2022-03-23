@@ -286,9 +286,6 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                  :children
                  (("Task"
                    :keys "t")
-                  ("Org Protocol"
-                   :keys "p"
-                   :template "* [[%:link][%:description]]")
                   ("Backlog Task"
                    :file ,(+org/expand-org-file-name "Main/gtd.org")
                    :headline "GTD"
@@ -349,6 +346,13 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                     ("Review (Chrome)"
                      :keys "r"
                      :title "%(my::wm/last-browser-url-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
+                ("Org Protocol"
+                 :keys "l"
+                 :file org-default-notes-file
+                 :template ("* TODO [[%:link][%(car (my::wm/browser-split-url \"%:description\"))]]"
+                            ":PROPERTIES:"
+                            ":CREATED: %U"
+                            ":END:"))
                 ("Bookmarks"
                  :keys "p"
                  :file +org:bookmarks-file
