@@ -6175,6 +6175,11 @@ ob-async enables asynchronous execution of org-babel src blocks via the ~:async~
 (setq org-roam-directory (+org/expand-org-file-name "Roam"))
 (setq org-roam-db-location (+org/expand-org-file-name "org-roam.db"))
 #+END_SRC
+**** org-protocol
+
+#+begin_src elisp
+(use-package! org-protocol)
+#+end_src
 
 *** Functions
 **** Jump to definition for tangled files
