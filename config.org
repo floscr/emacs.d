@@ -1322,7 +1322,6 @@ which I name after the matching url.
 
  :private
  system
- work
  (org
   +org-reading-list
   +org-tags
