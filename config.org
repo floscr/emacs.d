@@ -565,7 +565,7 @@ config, and should trigger a recompile if changed."
 
 #+begin_src elisp
 (setq
- +bookmarks:main
+ my::bookmarks:main
  '(((file . "~/.config/doom/modules/private/work/config.org")
     (name . "Config: Work")
     (goto . "* Configuration")
@@ -577,7 +577,7 @@ config, and should trigger a recompile if changed."
     (name . "Config: Autoloads"))
    ((file . "~/.config/doom/modules/private/org/config.org")
     (name . "Config: Org"))
-   ((fn . (lambda () (find-file +bookmarks:local-bookmarks-file)))
+   ((fn . (lambda () (find-file my::bookmarks:local-bookmarks-file)))
     (name . "Bookmarks: Local"))
    ((file . "~/.config/doom/config.org")
     (name . "Bookmarks: Main")
@@ -610,18 +610,18 @@ config, and should trigger a recompile if changed."
 *** Functions
 
 #+BEGIN_SRC elisp
-(defun +bookmarks|main ()
+(defun my::bookmarks|main ()
   (interactive)
-  (+bookmarks (-concat +bookmarks:main (+bookmarks/local/list))))
+  (my::bookmarks|launch (-concat my::bookmarks:main (my::bookmarks/local-list))))
 #+END_SRC
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
 
 #+BEGIN_SRC elisp
-(defvar +bookmarks:local-bookmarks-file nil)
-(setq +bookmarks:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
+(defvar my::bookmarks:local-bookmarks-file nil)
+(setq my::bookmarks:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
 
-(defun +bookmarks/find-bookmarks (x &optional &key other-window?)
+(defun my::bookmarks/goto-bookmark-dwim (x &optional &key other-window?)
   "Jump to a X relative to the project root, go to character POS."
   (require 'link-hint)
   (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
@@ -667,66 +667,66 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (-some--> (alist-get 'goto-bol item)
         (evil-first-non-blank)))))
 
-(defun +bookmarks/local/save (xs)
-  "Save an alist as json to the +bookmarks:local-bookmarks-file"
-  (->> xs
-       (json-encode)
-       ((lambda (x) (f-write x 'utf-8 +bookmarks:local-bookmarks-file)))))
-
-(defun +bookmarks/find-bookmarks-other-window (x)
-  "Open bookmark X in other window, used with ivy action 'j'."
-  (+bookmarks/find-bookmarks (cdr x) :other-window? t))
-
-(defun +bookmarks/local|save ()
-  (interactive)
-  (let ((entry `((file . ,(buffer-file-name))
-                 (goto . ,(line-number-at-pos))
-                 (name . ,(read-string "Bookmark Name: ")))))
-    (->> (+bookmarks/local/list)
-      (-append entry)
-      (+bookmarks/local/save))))
-
-(defun +bookmarks/local/kill (x)
-  (->>
-   (--remove (cl-equalp (car (cdr x)) it) (+bookmarks/local/list))
-   (+bookmarks/local/save)))
-
-(defun +bookmarks/local/rename (x)
-  (require 'a)
-  (-let ((item (car (cdr x))))
-    (-log (a-get (cdr item) :name))
-    (->>
-     (+bookmarks/local/list)
-     (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
-     (+bookmarks/local/save))))
-
-(defun +bookmarks/local/list ()
-  (-some->> +bookmarks:local-bookmarks-file
+(cl-defun my::bookmarks/local-list (&optional file my::bookmarks:local-bookmarks-file)
+  (-some->> file
     (-id-when #'f-exists?)
     (json-read-file)
     (-map 'identity)))
 
+(cl-defun my::bookmarks/local-save (xs &optional (file my::bookmarks:local-bookmarks-file))
+  "Save an alist as json to the file"
+  (->> xs
+       (json-encode)
+       ((lambda (x) (f-write x 'utf-8file)))))
+
+(cl-defun my::bookmarks/local-remove (x &optional (file my::bookmarks:local-bookmarks-file))
+  (->>
+   (--remove (cl-equalp (car (cdr x)) it) (my::bookmarks/local-list))
+   ((lambda (xs) (my::bookmarks/local-save xs file)))))
+
+(cl-defun my::bookmarks/local-rename (x &optional (file my::bookmarks:local-bookmarks-file))
+  (require 'a)
+  (-let ((item (car (cdr x))))
+    (-log (a-get (cdr item) :name))
+    (->>
+     (my::bookmarks/local-list)
+     (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
+     ((lambda (xs) (my::bookmarks/local-save xs file))))))
+
+(cl-defun my::bookmarks|local-save (&optional (file my::bookmarks:local-bookmarks-file))
+  (interactive)
+  (let ((entry `((file . ,(buffer-file-name))
+                 (goto . ,(line-number-at-pos))
+                 (name . ,(read-string "Bookmark Name: ")))))
+    (->> (my::bookmarks/local-list file)
+      (-append entry)
+      ((lambda (xs) (my::bookmarks/local-save xs file))))))
+
+(defun my::bookmarks/goto-bookmark-dwim-other-window (x)
+  "Open bookmark X in other window, used with ivy action 'j'."
+  (my::bookmarks/goto-bookmark-dwim (cdr x) :other-window? t))
+
 ;;;###autoload
-(defun +bookmarks (&optional bookmarks-list)
+(defun my::bookmarks|launch (&optional bookmarks-list)
   "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
 If found, show an ivy window with the bookmarks"
   (interactive)
   (-if-let*
       ((bookmarks
         (or bookmarks-list
-            (+bookmarks/local/list)))
+            (my::bookmarks/local-list)))
        (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
       (ivy-read "Bookmark: " bookmarks
-                :action (lambda (x) (+bookmarks/find-bookmarks (cdr x)))
-                :caller #'+bookmarks|find-bookmarks)
+                :action (lambda (x) (my::bookmarks/goto-bookmark-dwim (cdr x)))
+                :caller #'my::bookmarks|find-bookmarks)
     (user-error "No bookmarks file found at project root.")))
 
 (after! ivy
   (ivy-set-actions
-   '+bookmarks|find-bookmarks
-   '(("j" +bookmarks/find-bookmarks-other-window "open in other window")
-     ("k" +bookmarks/local/kill "Remove")
-     ("r" +bookmarks/local/rename "Rename"))))
+   'my::bookmarks|find-bookmarks
+   '(("j" my::bookmarks/goto-bookmark-dwim-other-window "open in other window")
+     ("k" my::bookmarks/local-remove "Remove")
+     ("r" my::bookmarks/local-rename "Rename"))))
 #+END_SRC
 ** TODO LY: Evil Lisp Navigation
 
@@ -984,10 +984,15 @@ Mostly used to edit the macro registers ~q~.
 #+begin_src elisp
 (defun my::scan|dired-file-document ()
   (interactive)
-  (let ((file (car (dired-get-marked-files)))
-        (bin (f-expand "~/Code/Projects/org_print_scan/result/bin/org_print_scan"))
-        (headline (read-string "Headline: ")))
-    (shell-command-to-string (t! "<<bin>> copy \"<<file>>\" --headline \"<<headline>>\""))
+  (let* ((files (->> (dired-get-marked-files)
+                     (-sort #'string<)
+                     (-map #'shell-quote-argument)
+                     (s-join " ")))
+         (bin (f-expand "~/Code/Projects/org_print_scan/result/bin/org_print_scan"))
+         (headline (read-string "Headline: "))
+         (command (t! "<<bin>> copy <<files>> --headline \"<<headline>>\"")))
+    (-log command)
+    (shell-command-to-string command)
     (find-file "~/Media/Scans/Scans.org")
     (goto-char (max-char))
     (+org|counsel-org-tag)))
@@ -1115,6 +1120,24 @@ If the current or previous windows are not chrome, just get the first one from t
       (template "[[<<url>>][<<title-formatted>>]]")
     (user-error "Error: Could not get browser url %s" data)))
 #+END_SRC
+** Shopping list management
+
+#+begin_src elisp :tangle no
+(defun my::org-db/get-db ()
+  ""
+  (let* (($headlines (->> (org-ml-parse-headlines 'all)))
+         (keywords (->> $headlines
+                        (--reject (or (eq (org-ml-get-property :level it) 1)
+                                      (org-ml-get-children it)
+                                      (string= (org-ml-get-property :raw-value (org-ml--get-parent it)) "Incoming")))
+                        (--map (org-ml-get-property :raw-value it)))))
+    keywords))
+
+(save-window-excursion
+  (with-current-buffer (find-file (+org/expand-org-file-name "Db/Shopping.org"))
+    (-log (my::org-db/get-db))))
+#+end_src
+
 * Default Configuration
 ** Temp
 
@@ -3937,7 +3960,9 @@ arguments can be set as a list via ‘nimpretty-args’."
 Initialize it via a hook, otherwise it clashes with [[*Little Word Motion][Little Word Motion]] and throws an error on launch if we would do it in an ~after!~.
 
 #+begin_src elisp
-(add-hook! lispyville-mode-hook
+(defun my::lispyville|load ()
+  "Function docstring"
+  (interactive)
   (lispyville-set-key-theme '(operators
                               text-objects
                               wrap
@@ -3947,6 +3972,8 @@ Initialize it via a hook, otherwise it clashes with [[*Little Word Motion][Littl
                               additional-motions
                               (additional-wrap normal visual insert)
                               additional-insert)))
+
+(add-hook! lispyville-mode-hook #'my::lispyville|load)
 #+end_src
 
 ******* Jumps
@@ -6153,7 +6180,7 @@ error in process filter: End of buffer
     ("clear"  "clear-scrollback")))
 #+END_SRC
 
-** Org
+** Org Mode
 *** Packages
 **** [[https://github.com/astahlman/ob-async][ob-aysnc]] :DOOM:
 
@@ -6816,7 +6843,7 @@ So deletes wont affect this register."
 #+BEGIN_SRC elisp
 (map!
  :leader
- "RET"  #'+bookmarks|main
+ "RET"  #'my::bookmarks|main
  "'"  #'+popup/toggle
  "au" #'undo-tree-visualize
  "-"  #'quick-calc)
@@ -6922,7 +6949,7 @@ So deletes wont affect this register."
  (:prefix-map ("p" . "project")
   :desc "Workspace Project Files" "P" #'my::workspaces|find-workspace-project-file
   :desc "Project VC"              "v" #'my::workspaces|workspace-project-vc
-  :desc "Project Bookmarks"       "RET" #'+bookmarks))
+  :desc "Project Bookmarks"       "RET" #'my::bookmarks|launch))
 #+END_SRC
 
 *** Search

@@ -475,7 +475,7 @@ bookmarks are not helpful since they're not relative.
 #+BEGIN_SRC elisp
 (defun +MM|bookmarks ()
   (interactive)
-  (+bookmarks +MM-dynamic-bookmarks))
+  (my::bookmarks|launch +MM-dynamic-bookmarks))
 #+END_SRC
 
 *** Build Package
