@@ -349,7 +349,10 @@ or manually traverse upwards until the .git directory is found."
   (or
    projectile-project-root
    (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
+(defun my::file/git-root ()
+  (f--traverse-upwards (f-dir? (f-expand ".git" it))))
 #+END_SRC
+
 ** Debugging / Logging
 *** Kill and Message
 
@@ -675,9 +678,11 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 
 (cl-defun my::bookmarks/local-save (xs &optional (file my::bookmarks:local-bookmarks-file))
   "Save an alist as json to the file"
-  (->> xs
-       (json-encode)
-       ((lambda (x) (f-write x 'utf-8file)))))
+  (let ((json (with-temp-buffer
+                (insert (json-encode xs))
+                (json-pretty-print (point-min) (point-max))
+                (buffer-substring-no-properties (point-min) (point-max)))))
+       (f-write json 'utf-8 file)))
 
 (cl-defun my::bookmarks/local-remove (x &optional (file my::bookmarks:local-bookmarks-file))
   (->>
@@ -686,10 +691,11 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 
 (cl-defun my::bookmarks/local-rename (x &optional (file my::bookmarks:local-bookmarks-file))
   (require 'a)
+  (-log x)
   (-let ((item (car (cdr x))))
     (-log (a-get (cdr item) :name))
     (->>
-     (my::bookmarks/local-list)
+     (my::bookmarks/local-list file)
      (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
      ((lambda (xs) (my::bookmarks/local-save xs file))))))
 
@@ -706,8 +712,25 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
   "Open bookmark X in other window, used with ivy action 'j'."
   (my::bookmarks/goto-bookmark-dwim (cdr x) :other-window? t))
 
+(defun my::jj::project/file-path ()
+  (f-join (my::file/git-root) "bookmarks.json"))
+
+(defun my::jj::project|save ()
+  (interactive)
+  (let ((file (my::jj::project/file-path))
+        (entry `((file . ,(buffer-file-name))
+                 (goto . ,(line-number-at-pos))
+                 (name . ,(read-string "Bookmark Name: ")))))
+    (->> (my::bookmarks/local-list file)
+      (-append entry)
+      ((lambda (xs) (my::bookmarks/local-save xs file))))))
+
+(defun my::jj::project|launch ()
+  (interactive)
+  (my::bookmarks|launch (my::bookmarks/local-list (my::jj::project/file-path)) #'my::jj::project|launch))
+
 ;;;###autoload
-(defun my::bookmarks|launch (&optional bookmarks-list)
+(cl-defun my::bookmarks|launch (&optional bookmarks-list (caller #'my::bookmarks|launch))
   "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
 If found, show an ivy window with the bookmarks"
   (interactive)
@@ -718,15 +741,22 @@ If found, show an ivy window with the bookmarks"
        (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
       (ivy-read "Bookmark: " bookmarks
                 :action (lambda (x) (my::bookmarks/goto-bookmark-dwim (cdr x)))
-                :caller #'my::bookmarks|find-bookmarks)
-    (user-error "No bookmarks file found at project root.")))
+                :caller caller)
+    (user-error "No bookmarks file found.")))
 
 (after! ivy
   (ivy-set-actions
-   'my::bookmarks|find-bookmarks
+   'my::bookmarks|launch
    '(("j" my::bookmarks/goto-bookmark-dwim-other-window "open in other window")
      ("k" my::bookmarks/local-remove "Remove")
      ("r" my::bookmarks/local-rename "Rename"))))
+
+(after! ivy
+  (ivy-set-actions
+   'my::jj::project|launch
+   '(("j" my::bookmarks/goto-bookmark-dwim-other-window "open in other window")
+     ("k" (lambda (x) (my::bookmarks/local-remove x (my::jj::project/file-path))) "Remove")
+     ("r" (lambda (x) (my::bookmarks/local-rename x (my::jj::project/file-path))) "Rename"))))
 #+END_SRC
 ** TODO LY: Evil Lisp Navigation
 
