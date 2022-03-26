@@ -6252,6 +6252,16 @@ Needs get_url_title script"
       (my::org|fetch-this-org-link-title)))
   (org-agenda-redo))
 #+end_src
+**** Read timestamp to string
+
+Use the interactive timestamp interface to read an org string
+
+#+begin_src elisp
+(defun my::org/read-timestamp-inactive-str ()
+  (with-temp-buffer
+    (org-time-stamp-inactive)
+    (buffer-substring-no-properties (point-min) (point-max))))
+#+end_src
 
 ** Hydras
 
