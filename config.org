@@ -562,7 +562,8 @@ config, and should trigger a recompile if changed."
 #+end_src
 
 * Custom Packages
-** TODO Custom Bookmarks
+** TODO Jumpy - Custom Bookmarks
+
 *** Config
 **** Disable Emacs bookmarks
 
@@ -577,7 +578,7 @@ config, and should trigger a recompile if changed."
 
 #+begin_src elisp
 (setq
- my::bookmarks:main
+ my::jumpy:main
  '(((file . "~/.config/doom/modules/private/work/config.org")
     (name . "Config: Work")
     (goto . "* Configuration")
@@ -589,7 +590,7 @@ config, and should trigger a recompile if changed."
     (name . "Config: Autoloads"))
    ((file . "~/.config/doom/modules/private/org/config.org")
     (name . "Config: Org"))
-   ((fn . (lambda () (find-file my::bookmarks:local-bookmarks-file)))
+   ((fn . (lambda () (find-file my::jumpy:local-bookmarks-file)))
     (name . "Bookmarks: Local"))
    ((file . "~/.config/doom/config.org")
     (name . "Bookmarks: Main")
@@ -622,18 +623,18 @@ config, and should trigger a recompile if changed."
 *** Functions
 
 #+BEGIN_SRC elisp
-(defun my::bookmarks|main ()
+(defun my::jumpy|main ()
   (interactive)
-  (my::bookmarks|launch (-concat my::bookmarks:main (my::bookmarks/local-list))))
+  (my::jumpy|launch (-concat my::jumpy:main (my::jumpy/local-list))))
 #+END_SRC
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
 
 #+BEGIN_SRC elisp
-(defvar my::bookmarks:local-bookmarks-file nil)
-(setq my::bookmarks:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
+(defvar my::jumpy:local-bookmarks-file nil)
+(setq my::jumpy:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
 
-(defun my::bookmarks/goto-bookmark-dwim (x &optional &key other-window?)
+(defun my::jumpy/goto-bookmark-dwim (x &optional &key other-window?)
   "Jump to a X relative to the project root, go to character POS."
   (require 'link-hint)
   (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
@@ -679,13 +680,13 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (-some--> (alist-get 'goto-bol item)
         (evil-first-non-blank)))))
 
-(cl-defun my::bookmarks/local-list (&optional file my::bookmarks:local-bookmarks-file)
+(cl-defun my::jumpy/local-list (&optional file my::jumpy:local-bookmarks-file)
   (-some->> file
     (-id-when #'f-exists?)
     (json-read-file)
     (-map 'identity)))
 
-(cl-defun my::bookmarks/local-save (xs &optional (file my::bookmarks:local-bookmarks-file))
+(cl-defun my::jumpy/local-save (xs &optional (file my::jumpy:local-bookmarks-file))
   "Save an alist as json to the file"
   (let ((json (with-temp-buffer
                 (insert (json-encode xs))
@@ -693,79 +694,79 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
                 (buffer-substring-no-properties (point-min) (point-max)))))
        (f-write json 'utf-8 file)))
 
-(cl-defun my::bookmarks/local-remove (x &optional (file my::bookmarks:local-bookmarks-file))
+(cl-defun my::jumpy/local-remove (x &optional (file my::jumpy:local-bookmarks-file))
   (->>
-   (--remove (cl-equalp (car (cdr x)) it) (my::bookmarks/local-list))
-   ((lambda (xs) (my::bookmarks/local-save xs file)))))
+   (--remove (cl-equalp (car (cdr x)) it) (my::jumpy/local-list))
+   ((lambda (xs) (my::jumpy/local-save xs file)))))
 
-(cl-defun my::bookmarks/local-rename (x &optional (file my::bookmarks:local-bookmarks-file))
+(cl-defun my::jumpy/local-rename (x &optional (file my::jumpy:local-bookmarks-file))
   (require 'a)
   (-log x)
   (-let ((item (car (cdr x))))
     (-log (a-get (cdr item) :name))
     (->>
-     (my::bookmarks/local-list file)
+     (my::jumpy/local-list file)
      (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
-     ((lambda (xs) (my::bookmarks/local-save xs file))))))
+     ((lambda (xs) (my::jumpy/local-save xs file))))))
 
-(cl-defun my::bookmarks|local-save (&optional (file my::bookmarks:local-bookmarks-file))
+(cl-defun my::jumpy|local-save (&optional (file my::jumpy:local-bookmarks-file))
   (interactive)
   (let ((entry `((file . ,(buffer-file-name))
                  (goto . ,(line-number-at-pos))
                  (name . ,(read-string "Bookmark Name: ")))))
-    (->> (my::bookmarks/local-list file)
+    (->> (my::jumpy/local-list file)
       (-append entry)
-      ((lambda (xs) (my::bookmarks/local-save xs file))))))
+      ((lambda (xs) (my::jumpy/local-save xs file))))))
 
-(defun my::bookmarks/goto-bookmark-dwim-other-window (x)
+(defun my::jumpy/goto-bookmark-dwim-other-window (x)
   "Open bookmark X in other window, used with ivy action 'j'."
-  (my::bookmarks/goto-bookmark-dwim (cdr x) :other-window? t))
+  (my::jumpy/goto-bookmark-dwim (cdr x) :other-window? t))
 
-(defun my::jj::project/file-path ()
+(defun my::jumpy::project/file-path ()
   (f-join (my::file/git-root) "bookmarks.json"))
 
-(defun my::jj::project|save ()
+(defun my::jumpy::project|save ()
   (interactive)
-  (let ((file (my::jj::project/file-path))
+  (let ((file (my::jumpy::project/file-path))
         (entry `((file . ,(buffer-file-name))
                  (goto . ,(line-number-at-pos))
                  (name . ,(read-string "Bookmark Name: ")))))
-    (->> (my::bookmarks/local-list file)
+    (->> (my::jumpy/local-list file)
       (-append entry)
-      ((lambda (xs) (my::bookmarks/local-save xs file))))))
+      ((lambda (xs) (my::jumpy/local-save xs file))))))
 
-(defun my::jj::project|launch ()
+(defun my::jumpy::project|launch ()
   (interactive)
-  (my::bookmarks|launch (my::bookmarks/local-list (my::jj::project/file-path)) #'my::jj::project|launch))
+  (my::jumpy|launch (my::jumpy/local-list (my::jumpy::project/file-path)) #'my::jumpy::project|launch))
 
 ;;;###autoload
-(cl-defun my::bookmarks|launch (&optional bookmarks-list (caller #'my::bookmarks|launch))
+(cl-defun my::jumpy|launch (&optional bookmarks-list (caller #'my::jumpy|launch))
   "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
 If found, show an ivy window with the bookmarks"
   (interactive)
   (-if-let*
       ((bookmarks
         (or bookmarks-list
-            (my::bookmarks/local-list)))
+            (my::jumpy/local-list)))
        (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
       (ivy-read "Bookmark: " bookmarks
-                :action (lambda (x) (my::bookmarks/goto-bookmark-dwim (cdr x)))
+                :action (lambda (x) (my::jumpy/goto-bookmark-dwim (cdr x)))
                 :caller caller)
     (user-error "No bookmarks file found.")))
 
 (after! ivy
   (ivy-set-actions
-   'my::bookmarks|launch
-   '(("j" my::bookmarks/goto-bookmark-dwim-other-window "open in other window")
-     ("k" my::bookmarks/local-remove "Remove")
-     ("r" my::bookmarks/local-rename "Rename"))))
+   'my::jumpy|launch
+   '(("j" my::jumpy/goto-bookmark-dwim-other-window "open in other window")
+     ("k" my::jumpy/local-remove "Remove")
+     ("r" my::jumpy/local-rename "Rename"))))
 
 (after! ivy
   (ivy-set-actions
-   'my::jj::project|launch
-   '(("j" my::bookmarks/goto-bookmark-dwim-other-window "open in other window")
-     ("k" (lambda (x) (my::bookmarks/local-remove x (my::jj::project/file-path))) "Remove")
-     ("r" (lambda (x) (my::bookmarks/local-rename x (my::jj::project/file-path))) "Rename"))))
+   'my::jumpy::project|launch
+   '(("j" my::jumpy/goto-bookmark-dwim-other-window "open in other window")
+     ("k" (lambda (x) (my::jumpy/local-remove x (my::jumpy::project/file-path))) "Remove")
+     ("r" (lambda (x) (my::jumpy/local-rename x (my::jumpy::project/file-path))) "Rename"))))
 #+END_SRC
 ** TODO LY: Evil Lisp Navigation
 
@@ -6858,7 +6859,7 @@ So deletes wont affect this register."
 #+BEGIN_SRC elisp
 (map!
  :leader
- "RET"  #'my::bookmarks|main
+ "RET"  #'my::jumpy|main
  "'"  #'+popup/toggle
  "au" #'undo-tree-visualize
  "-"  #'quick-calc)
@@ -6964,7 +6965,7 @@ So deletes wont affect this register."
  (:prefix-map ("p" . "project")
   :desc "Workspace Project Files" "P" #'my::workspaces|find-workspace-project-file
   :desc "Project VC"              "v" #'my::workspaces|workspace-project-vc
-  :desc "Project Bookmarks"       "RET" #'my::bookmarks|launch))
+  :desc "Project Bookmarks"       "RET" #'my::jumpy|launch))
 #+END_SRC
 
 *** Search
