@@ -768,6 +768,16 @@ If found, show an ivy window with the bookmarks"
      ("k" (lambda (x) (my::jumpy/local-remove x (my::jumpy::project/file-path))) "Remove")
      ("r" (lambda (x) (my::jumpy/local-rename x (my::jumpy::project/file-path))) "Rename"))))
 #+END_SRC
+*** Bindings
+
+#+begin_src elisp
+(map!
+ :leader
+ (:prefix-map ("j" . "jumpy")
+  :desc "Project"  "j" #'my::jumpy|main
+  :desc "Project"  "p" #'my::jumpy::project|launch))
+#+end_src
+
 ** TODO LY: Evil Lisp Navigation
 
 A navigation system for lisp languages that I'm comfortable with,
