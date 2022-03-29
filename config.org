@@ -349,8 +349,10 @@ or manually traverse upwards until the .git directory is found."
   (or
    projectile-project-root
    (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
-(defun my::file/git-root ()
-  (f--traverse-upwards (f-dir? (f-expand ".git" it))))
+
+(cl-defun my::file/git-root (&optional (skip-worktree? t))
+  (let ((checker-fn (if skip-worktree? #'f-dir? #'f-exists?)))
+    (f--traverse-upwards (funcall checker-fn (f-expand ".git" it)))))
 #+END_SRC
 
 ** Debugging / Logging
@@ -638,7 +640,7 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
                (item (car x)))
     (let* ((file (-some->> (alist-get 'file item)
                    (--when (alist-get 'relative item)
-                           (f-join (projectile-project-root) it))))
+                           (f-join (my::file/project-root) it))))
            (buffer-is-open (when file (get-file-buffer file))))
       (when file
         (funcall find-fn file)
