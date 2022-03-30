@@ -4081,7 +4081,10 @@ Define jump points for lispyville functions
  :map (clojure-mode-map clojurescript-mode-map)
  :desc "Goto parent function" :n "gh" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "[[" (cmd! (lispyville-backward-function-begin))
- :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin)))
+ :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin))
+ :localleader
+ "s" #'clojure-sort-ns)
+
 #+END_SRC
 
 ** Git / Magit :GIT:MAGIT:
