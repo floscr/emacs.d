@@ -5586,28 +5586,29 @@ All are these are distracting and not helpful.
 - Remove lsp flycheck
 
 #+BEGIN_SRC elisp
-(setq lsp-eldoc-render-all nil
-      lsp-eldoc-enable-hover nil
-      lsp-eldoc-enable-signature-help nil
-      lsp-eldoc-prefer-signature-help nil
-      lsp-inhibit-message t
+(use-package! lsp
+  :config
+  (setq lsp-eldoc-render-all nil
+        lsp-eldoc-enable-hover nil
+        lsp-eldoc-enable-signature-help nil
+        lsp-eldoc-prefer-signature-help nil
+        lsp-inhibit-message t
 
-      lsp-eldoc-enable-hover nil
-      ;; Disable Signature
-      lsp-signature-auto-activate nil
-      lsp-signature-render-documentation nil
-      lsp-signature-doc-lines 1
+        lsp-enable-file-watchers nil
 
-      ;; Disable flycheck override
-      lsp-diagnostic-package :none
+        lsp-eldoc-enable-hover nil
+        lsp-signature-auto-activate nil
+        lsp-signature-render-documentation nil
+        lsp-signature-doc-lines 1
 
-      lsp-highlight-symbol-at-point nil
-      ;; Disable make error highlighting
-      lsp-prefer-flymake nil)
+        lsp-diagnostics-provider :none
+        lsp-modeline-diagnostics-enable nil
+        lsp-modeline-code-actions-enable nil
 
-;; (setq-hook! 'js2-mode lsp-eldoc-enable-hover nil)
+        lsp-highlight-symbol-at-point nil
+        lsp-prefer-flymake nil
 
-(setq lsp-on-idle-hook nil)
+        lsp-on-idle-hook nil))
 #+END_SRC
 
 **** Fix flycheck for js buffers :FIX:
