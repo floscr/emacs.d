@@ -6311,6 +6311,36 @@ Use the interactive timestamp interface to read an org string
 #+end_src
 
 ** Hydras
+** Work
+
+*** Convert to ~gridSize~
+
+#+begin_src elisp
+(defun my::pitch|insert-grid-size-from-px ()
+  "Convert px to gridSize macro and insert result."
+  (interactive)
+  (let* ((size (read-number "Size: "))
+         (base-size 12.0)
+         (new-size (/ size base-size))
+         (can-floor (not (/= new-size (floor new-size))))
+         (new-size (if can-floor (floor new-size) new-size)))
+    (insert (t! "gridSize(<<new-size>>)"))))
+#+end_src
+
+
+*** Fix Clojure
+
+#+begin_src elisp
+(defun my::pitch|autofix-clojure-buffer ()
+  "Autofix the "
+  (interactive)
+  (let ((buffer (current-buffer)))
+    (deferred:$
+      (deferred:process-shell (s-join " " (list "clojure" "-M:nsorg-fix" "-M:cljfmt-fix" "<" buffer-file-name)))
+      (deferred:nextc it
+        (with-current-buffer buffer (revert-buffer))
+        (message "Autofixed buffer!")))))
+#+end_src
 
 * Bindings
 ** General
