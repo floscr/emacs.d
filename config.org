@@ -342,13 +342,13 @@ Return the first found file when one is found."
 *** Find project root
 
 #+BEGIN_SRC elisp
-(defun my::file/project-root ()
+(defun my::file/project-root (&optional dir)
   "Find the project root either via projectile (not available in certain buffers like dired)
 or manually traverse upwards until the .git directory is found."
-  (interactive)
-  (or
-   projectile-project-root
-   (f--traverse-upwards (f-exists? (f-expand ".git" it)))))
+  (let ((default-directory (or dir default-directory)))
+    (or
+     projectile-project-root
+     (f--traverse-upwards (f-exists? (f-expand ".git" it))))))
 
 (cl-defun my::file/git-root (&optional (skip-worktree? t))
   (let ((checker-fn (if skip-worktree? #'f-dir? #'f-exists?)))
