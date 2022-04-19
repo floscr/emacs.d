@@ -4041,6 +4041,42 @@ Define jump points for lispyville functions
 (advice-add #'lispyville-open-above-list :around #'doom-set-jump-a)
 #+end_src
 
+**** Functions
+
+#+begin_src elisp
+(defun my::clojure::format|sort-keys ()
+  "Convert set of keys to multiline."
+  (interactive)
+  (-let* (((beg end) (evil-select-inner-object 'lispyville-list nil nil nil))
+          (text (buffer-substring-no-properties (+ beg 1) (- end 1)))
+          (new-text (->> text
+                         (s-split " ")
+                         (-sort #'string<)
+                         (s-join " "))))
+    (save-excursion
+      (delete-region beg end)
+      (goto-char beg)
+      (insert (concat "[" new-text "]")))))
+
+(defun my::clojure::format|keys-to-multi-line ()
+  "Convert set of keys to multiline."
+  (interactive)
+  (-let* ((prev-rust-parinfer-mode (symbol-value 'parinfer-rust--mode))
+          ((beg end) (evil-select-inner-object 'lispyville-list nil nil nil))
+          (text (buffer-substring-no-properties (+ beg 1) (- end 1)))
+          (new-text (->> text
+                         (s-split " ")
+                         (-sort #'string<)
+                         (s-join "\n"))))
+    (save-excursion
+      (parinfer-rust--switch-mode "paren")
+      (delete-region beg end)
+      (goto-char beg)
+      (insert (concat "[" new-text "]"))
+      (indent-region (-1 beg) (+1 end))
+      (parinfer-rust--switch-mode prev-rust-parinfer-mode))))
+#+end_src
+
 **** Config
 
 #+begin_src elisp
