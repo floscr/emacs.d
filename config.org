@@ -2316,6 +2316,24 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   :config
   (when (require 'yasnippet nil t)
     (add-hook 'emmet-mode-hook #'yas-minor-mode-on))
+
+  (setq emmet-css-major-modes '(css-mode
+                                scss-mode
+                                stylus-mode
+                                sass-mode
+                                less-mode
+                                less-css-mode))
+
+  (setq-hook! 'stylus-mode-hook emmet-use-sass-syntax t)
+  (setq emmet-indent-after-insert nil)
+
+  (defadvice! my::emmet/fix-stylus-colon (&optional arg1)
+     :after '(emmet-expand-yas emmet-expand-line)
+     (when (eq major-mode 'stylus-mode)
+       (save-excursion
+        (search-backward ":" nil nil)
+        (delete-char 1))))
+
   (setq emmet-move-cursor-between-quotes t)
   (map! :map emmet-mode-keymap
         :v [tab] #'emmet-wrap-with-markup
