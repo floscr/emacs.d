@@ -5499,6 +5499,28 @@ Better sorting for company
 #+END_SRC
 **** [[https://company-mode.github.io/][company]]
 ***** Functions
+****** Complete line for all project files
+
+#+begin_src elisp
+(cl-defun my::grep/search-in-project (str &optional (dir default-directory))
+  (let ((default-directory (my::file/project-root dir)))
+    (->> (shell-command-to-string (s-join " " (list "rg" "--no-filename"
+                                                    (concat "\"" (shell-quote-argument str) "\""))))
+         (counsel--split-string)
+         (-uniq)
+         (-map #'s-trim-left))))
+
+(defun my::company/complete-line-project (command &optional arg &rest ignored)
+  "Complete line in all project files."
+  (interactive (list 'interactive))
+  (require 'company)
+  (pcase command
+    (`interactive (company-begin-backend 'my::company/complete-line-project))
+    (`prefix      (company-grab-line "^[\t\s]*\\(.+\\)" 1))
+    (`candidates  (my::grep/search-in-project arg))))
+#+end_src
+
+
 ****** Complete line for all buffers
 
 Complete a whole line with all lines from buffers matching the current major-mode.
@@ -5551,6 +5573,7 @@ Bindings
 #+BEGIN_SRC elisp
 (map!
  (:prefix "C-x"
+   :i "C-p" #'my::company/complete-line-project
    :i "C-l" #'my::company/complete-line-all-buffers
    :i "C-." #'+company/whole-lines))
 #+END_SRC
