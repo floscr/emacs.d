@@ -4529,6 +4529,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
      "Save and bury buffer" :color blue)
     ("q" nil "cancel" :color blue))
   :hook (magit-diff-visit-file . (lambda ()
+                                   ;; Prevent parinfer triggering on diff files
+                                   (parinfer-rust-mode -1)
                                    (when smerge-mode
                                      (flycheck-mode -1)
                                      (unpackaged/smerge-hydra/body)))))
