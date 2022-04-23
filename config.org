@@ -4078,6 +4078,8 @@ Define jump points for lispyville functions
 
 **** Functions
 
+***** Key formatting sorting
+
 #+begin_src elisp
 (defun my::clojure::format|sort-keys ()
   "Convert set of keys to multiline."
