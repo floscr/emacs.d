@@ -1309,6 +1309,7 @@ which I name after the matching url.
  (company
   +childframe)
  (ivy
+  +hydra
   +childframe)
 
  :ui
