@@ -2180,7 +2180,20 @@ When narrowing to region or defun, make it in an indirect other window.
   (global-set-key (kbd "C-x n n") 'ni-narrow-to-region-indirect-other-window)
   (global-set-key (kbd "C-x n d") 'ni-narrow-to-defun-indirect-other-window))
 #+END_SRC
-*** Functions
+
+**** [[https://github.com/eraserhd/parinfer-rust][parinfer-rust]]
+
+***** Functions
+
+****** Save parinfer excursion
+
+#+begin_src elisp
+(defmacro my::parinfer/save-excursion (mode &rest body)
+  `(let ((prev-mode (symbol-value 'parinfer-rust--mode)))
+     (parinfer-rust--switch-mode ,mode)
+     ,@body
+     (parinfer-rust--switch-mode prev-mode)))
+#+end_src
 
 ** UI :UI:
 *** Higlight indent guides
