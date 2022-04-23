@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: if (file exists)
+# key: iff
+# --
+FILE=${1:/tmp/file}
+if [[ -f "$FILE" ]]; then
+    echo "$FILE exists."
+else
+    echo "$FILE does not exist."
+fi
