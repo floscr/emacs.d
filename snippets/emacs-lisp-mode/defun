@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: defun
-# key: d                   
+# key: d
 # --
 (defun my::${1:function-name} ()
     "${3:Function docstring}"
