@@ -6414,6 +6414,37 @@ Use the interactive timestamp interface to read an org string
         (with-current-buffer buffer (revert-buffer))
         (message "Autofixed buffer!")))))
 #+end_src
+*** Debug
+
+#+begin_src elisp
+(defun my::pitch|debug-statement ()
+  (interactive)
+  (let* ((name "dd")
+         (snippet (s-join "\n"
+                          (list
+                           ""
+                           (t! "(defn <<name>> [x]")
+                           (t! "  (js/console.log x)")
+                           (t! "  (set! js/global-debug-<<name>> x) x)")
+                           ""
+                           (t! "(comment js/global-debug-<<name>>)")
+                           ""))))
+    (save-excursion
+      (lispyville-wrap-round 1)
+      (insert (t! "<<name>> "))
+      (lispyville-backward-function-begin)
+      (previous-line 1)
+      (insert snippet))))
+
+(defun my::pitch|eval-debug-statement ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward "(comment js/global-debug" nil nil nil)
+    (lispyville-up-list)
+    (goto-char (- (point) 1))
+    (cider-eval-last-sexp)))
+#+end_src
 
 * Bindings
 ** General
@@ -7306,6 +7337,16 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Symex Mode"              "s" #'symex-mode-interface
       :desc "Raise sexp"              "<" #'raise-sexp
       :desc "Barf Sexp"               ">" #'barf-sexp)
+#+END_SRC
+
+*** Clojurescript
+
+#+BEGIN_SRC elisp
+(map! :map clojurescript-mode-map
+      :localleader
+      (:prefix ("d" . "debug")
+       :desc "Add debug statement" "a" #'my::pitch|debug-statement
+       :desc "Add debug statement" "d" #'my::pitch|eval-debug-statement))
 #+END_SRC
 
 *** Haskell
