@@ -4035,31 +4035,30 @@ arguments can be set as a list via ‘nimpretty-args’."
 
 #+BEGIN_SRC elisp
 (use-package! lispyville
+  :hook
+  ((emacs-lisp-mode . lispyville-mode)
+   (lisp-mode . lispyville-mode)
+   (clojure-mode . lispyville-mode)
+   (clojurescript-mode . lispyville-mode)
+   (cider-repl-mode . lispyville-mode))
   :init
-  (add-hook! '(emacs-lisp-mode-hook lisp-mode-hook clojure-mode-hook cider-repl-mode-hook) #'lispyville-mode))
+  (setq lispyville-key-theme
+        '(
+          ;; operators
+          ;; text-objects
+          wrap
+          raise
+          c-w
+          ;; (prettify insert)
 
+          slurp/barf-cp
+          additional
+          additional-insert
+          additional-motions
+          (additional-wrap normal visual insert)))
+  :config
+  (lispyville-set-key-theme))
 #+END_SRC
-
-******* Set key theme
-
-Initialize it via a hook, otherwise it clashes with [[*Little Word Motion][Little Word Motion]] and throws an error on launch if we would do it in an ~after!~.
-
-#+begin_src elisp
-(defun my::lispyville|load ()
-  "Function docstring"
-  (interactive)
-  (lispyville-set-key-theme '(operators
-                              text-objects
-                              wrap
-                              raise
-                              slurp/barf-cp
-                              additional
-                              additional-motions
-                              (additional-wrap normal visual insert)
-                              additional-insert)))
-
-(add-hook! lispyville-mode-hook #'my::lispyville|load)
-#+end_src
 
 ******* Jumps
 
@@ -6401,7 +6400,6 @@ Use the interactive timestamp interface to read an org string
          (new-size (if can-floor (floor new-size) new-size)))
     (insert (t! "gridSize(<<new-size>>)"))))
 #+end_src
-
 
 *** Fix Clojure
 
