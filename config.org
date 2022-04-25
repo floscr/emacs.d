@@ -1064,7 +1064,7 @@ Example output:
            ;; index
            (submatch (+ (any digit))) " "
            ;; title (brave-browser.Brave-browser)
-           (submatch (+ nonl)) "." (submatch (+ (not (any " "))))
+           (submatch (+ nonl)) "." (submatch (+ anychar))
            ;; right aligned column for username
            " " (+ " ")
            ;; username (thinknixx1)
