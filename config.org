@@ -1115,9 +1115,10 @@ To make sure it is our own delimiter the characters are prefixed and suffixed wi
   (s-chop-suffixes my::wm:browser-url-suffixes url))
 
 (defun my::wm/is-browser? (x)
-  (or
-   (my::wm/-process-eq? "chromium-browser" x)
-   (my::wm/-process-eq? "brave-browser" x)))
+  (and (or
+        (my::wm/-process-eq? "chromium-browser" x)
+        (my::wm/-process-eq? "brave-browser" x))
+       (not (s-starts-with? "DevTools - " (plist-get x ':title)))))
 
 (defun my::wm/list-browser-windows ()
   (->> (my::wm/list-windows)
