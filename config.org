@@ -2342,6 +2342,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
                                 less-mode
                                 less-css-mode))
 
+  (add-hook! 'stylus-mode-hook #'emmet-mode)
   (setq-hook! 'stylus-mode-hook emmet-use-sass-syntax t)
   (setq emmet-indent-after-insert nil)
 
