@@ -7249,8 +7249,8 @@ So deletes wont affect this register."
    (-some->> (+yank/buffer-filename)
      ;; When pointing at a directory at dired, I still take the directory
      ((lambda (x) (if (f-file? x)
-                      x
-                    (file-name-directory x))))
+                      (concat (f-base x) "." (f-ext x))
+                    (f-base (file-name-directory x)))))
      ((lambda (x) (+yank/execute-action x insert))))
    (user-error "Error: Not a file bufer!")))
 
