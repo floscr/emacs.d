@@ -825,7 +825,7 @@ Set the active state when clocking in.
          (content (with-current-buffer buffer (buffer-substring-no-properties (point-min) (point-max))))
          (links (s-match-strings-all org-bracket-link-regexp content))
          (items (-map (lambda (x)
-                        (-let* (((_ title link) x)
+                        (-let* (((_ link title) x)
                                 (item (if (and title link)
                                           (t! "<<title>>\n<<link>>")
                                         (or link title))))
@@ -833,7 +833,8 @@ Set the active state when clocking in.
     (kill-buffer buffer)
     (ivy-read "Open Link: " items
               :action (lambda (x)
-                        (browse-url (car x))))))
+                        (-log (car x))
+                        (browse-url (-last-item x))))))
 #+END_SRC
 
 *** Tables
