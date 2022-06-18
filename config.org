@@ -1302,7 +1302,7 @@ which I name after the matching url.
 #+END_SRC
 
 ** Doom
-*** Init
+*** Init Modules :INIT:
 
 #+BEGIN_SRC emacs-lisp :tangle "init.el" :comments no
 (doom!
