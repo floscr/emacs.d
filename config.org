@@ -1370,6 +1370,7 @@ which I name after the matching url.
  lsp
 
  :lang
+ beancount
  lua
  nix
  rust
