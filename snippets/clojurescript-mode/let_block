@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: let block
+# uuid: let_block
+# key: l
+# --
+(let [$1]
+  $0)
