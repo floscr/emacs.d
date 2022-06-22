@@ -6398,6 +6398,18 @@ Use the interactive timestamp interface to read an org string
 ** Hydras
 ** Work
 
+*** Convert to uix
+
+#+begin_src elisp
+(defun my::pitch/convert-hiccup-to-uix ()
+  (interactive)
+  (save-excursion
+    (clojure-convert-collection-to-list)
+    (forward-char 1)
+    (insert "$ ")))
+#+end_src
+
+
 *** Convert to ~gridSize~
 
 #+begin_src elisp
