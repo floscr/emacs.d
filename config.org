@@ -3522,6 +3522,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
     (visual-line-mode)
     (visual-fill-column-mode)
     (outline-minor-mode)
+    (setq markdown-hide-urls t)
     (setq visual-fill-column-width 90
           display-line-numbers nil)
     (setq line-spacing 2
