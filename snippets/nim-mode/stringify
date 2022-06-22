@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: $ stringify
+# uuid:
+# key: $
+# --
+proc \`\$\`*(x: $1): string =
+  &"""$0"""
