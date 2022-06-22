@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: uix/use-effect
+# uuid: uix_use_effect
+# key: ue
+# --
+(uix/use-effect
+  (fn [] ($0))
+  [$1])

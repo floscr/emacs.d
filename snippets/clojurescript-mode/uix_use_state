@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: uix/use-state
+# uuid: uix_use_state
+# key: us
+# --
+[${1:state} set-$1!] (uix/use-state $0)

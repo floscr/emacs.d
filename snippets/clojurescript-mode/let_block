@@ -3,5 +3,4 @@
 # uuid: let_block
 # key: l
 # --
-(let [$1]
-  $0)
+(let [$1] $0)
