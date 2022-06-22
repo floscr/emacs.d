@@ -1416,6 +1416,13 @@ Set it to =32 MiB=.
 #+BEGIN_SRC elisp
 (setq doom-gc-cons-threshold 33554432)
 #+END_SRC
+*** Package overrides
+
+**** Fix poppler issue in ~pdf-tools~
+
+#+begin_src elisp :tangle "packages.el" :comments link
+(package! pdf-tools :pin "f9ccdf99e560bae70d3a13325cec9dc0e3cc45b0")
+#+end_src
 
 ** UI
 *** Functions
