@@ -1279,11 +1279,14 @@ Variables that I want to safely set from ~.dir-locals~ files.
 
 *** Buffer naming :INIT:
 
-#+BEGIN_SRC elisp :tangle "init.el" :comments no
-(setq uniquify-buffer-name-style 'post-forward)
-(setq uniquify-separator "/")
-(setq uniquify-after-kill-buffer-p t)
-(setq uniquify-ignore-buffers-re "^\\*")
+#+BEGIN_SRC elisp
+(defun my::*set-uniquify-buffer-name-style ()
+  (setq uniquify-buffer-name-style 'post-forward)
+  (setq uniquify-separator "/")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*"))
+
+(add-hook! 'persp-mode-hook #'my::*set-uniquify-buffer-name-style)
 #+END_SRC
 
 *** Load ~.authinfo.gpg~ for authentication :AUTH:
