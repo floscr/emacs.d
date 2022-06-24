@@ -596,6 +596,8 @@ config, and should trigger a recompile if changed."
     (name . "Bookmarks: Main")
     (goto . "*** Main Bookmarks")
     (goto-bol . t))
+   ((file . "~/FP3 Sync")
+    (name . "FP3 Sync"))
    ((fn . (lambda () (find-file (getenv "HISTFILE"))))
     (name . "Shell History")
     (goto-bol . t))
