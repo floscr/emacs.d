@@ -4040,6 +4040,22 @@ arguments can be set as a list via ‘nimpretty-args’."
 #+end_src
 *** Clojure / Clojurescript
 **** Packages
+***** Cider
+
+****** Fix cider for 28.1
+
+[[https://github.com/clojure-emacs/cider/issues/3029][Problem starting cider in clj/cljs `(cl-no-applicable-method map-into ((right-margin 80)) hash-table)` · Issue #3029 · clojure-emacs/cider]]
+
+Fixes cider from breaking with newest emacs, for this isseu
+
+#+BEGIN_QUOTE
+condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--connected-handler, (cl-no-applicable-method map-into (("nrepl.middleware.print/stream?" "1")) (hash-table :test equal))
+#+END_QUOTE
+
+#+begin_src elisp :tangle "packages.el" :comments link
+(package! map :pin "bb50dba")
+#+end_src
+
 ***** [[https://github.com/noctuid/lispyville][lispyville]]
 
 ****** Package
