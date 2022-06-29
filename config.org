@@ -6474,6 +6474,20 @@ Use the interactive timestamp interface to read an org string
     (goto-char (- (point) 1))
     (cider-eval-last-sexp)))
 #+end_src
+*** Custom builder
+
+#+begin_src elisp
+(defun my::pitch|apply-custom-dev-script ()
+  "Applies custom dev-script and assumes it unchanged in git."
+  (interactive)
+  (let* ((script-path "desktop-app/scripts/dev-all.py")
+         (content (->> (f-expand "~/Code/Work/Pitch/dev-overwrite/dev-all.py")
+                       f-read))
+         (dst-path (f-join (my::file/git-root) script-path)))
+    (f-write content 'utf-8 dst-path)
+    (magit-assume-unchanged script-path)))
+#+end_src
+
 
 * Bindings
 ** General
