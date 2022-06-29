@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: cider/add_namespace
+# uuid: cider/add_namespace
+# key: ns
+# --
+[${1:$$(yas-choose-value (ignore-errors (cider-sync-request:ns-list)))} :refer ${2:[$3]}]
