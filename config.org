@@ -780,162 +780,6 @@ If found, show an ivy window with the bookmarks"
   :desc "Project"  "p" #'my::jumpy::project|launch))
 #+end_src
 
-** TODO LY: Evil Lisp Navigation
-
-A navigation system for lisp languages that I'm comfortable with,
-like evil but with a more =sexp= based navigation.
-
-Alternatives I've used:
-
-- [[https://github.com/countvajhula/symex.el][countvajhula/symex.el]]
-  My main inspiration.
-  Too tree based for my taste, I after have to think about the code structure before I can execute actions.
-
-*** Minor Mode
-
-#+BEGIN_SRC elisp
-(set-frame-parameter nil 'internal-border-width 15)
-(defvar +ly-mode-map (make-sparse-keymap))
-
-(define-minor-mode +ly-mode
-  "Open org headlines in an indirect window buffer."
-  :keymap +ly-mode-map)
-
-(map! :map +ly-mode-map
-      :n "gj"     #'evil-next-line
-      :n "gk"     #'evil-previous-line
-      :n "M-j"    #'+ly|forward-line
-      :n "M-k"    #'+ly|backward-line
-      :n "M-u"    #'+ly|up-atom
-      :n "M-f"    #'+ly|forward-atom
-      :n "M-b"    #'+ly|backward-atom
-      :n "M-l"    #'+ly|forward-brace
-      :n "M-h"    #'+ly|backward-brace
-      :n "M-,"    #' symex-shift-backward
-      :n "M-."    #'symex-shift-forward
-      :n "M-o"    #'symex-open-line-after
-      :ni "<C-return>" #'+ly|add-atom
-      :n "M-RET" (cmd!
-                  (parinfer-toggle-mode)
-                  (parinfer-lispy:newline)
-                  (parinfer-toggle-mode))
-      :n "M-Y" (cmd!
-                (symex-yank)
-                (symex-paste-after)
-                (symex-insert-newline)))
-
-;; HACK: map not working intially
-(defun +ly/activate-mode-hook ()
-  (require 'symex)
-  (evil-insert-state)
-  (evil-normal-state))
-
-;; Mappings only get applied after reinserting normal mode
-(add-hook '+ly-mode-hook #'+ly/activate-mode-hook)
-#+END_SRC
-
-*** Utils
-**** Sexp Navigation
-
-#+BEGIN_SRC elisp
-(setq +ly:brace-regexp "([^() ]")
-(setq +ly:atom-regexp "[^() ]")
-
-(defun +ly|forward-atom ()
-  "Go to next atom."
-  (interactive)
-  (require 'symex)
-  (symex-traverse-forward)
-  (while (or (eq ?\( (char-after)))
-    (symex-traverse-forward)))
-
-(defun +ly|backward-atom ()
-  "Go to next atom."
-  (interactive)
-  (require 'symex)
-  (symex-traverse-backward)
-  (while (or (eq ?\( (char-after)))
-    (symex-traverse-backward)))
-
-(defun +ly|forward-brace ()
-  "Go to next sexp brace."
-  (interactive)
-  (require 'symex)
-  (symex-go-up)
-  (search-forward-regexp +ly:brace-regexp nil t)
-  (backward-char 2))
-
-(defun +ly|backward-brace ()
-  "Go to previous sexp brace."
-  (interactive)
-  (require 'symex)
-  (unless (eq ?\( (char-after))
-    (symex-go-down))
-  (search-backward-regexp +ly:brace-regexp nil t))
-
-(defun +ly|up-atom ()
-  "Go up the tree"
-  (interactive)
-  (require 'symex)
-  (symex-go-down))
-#+END_SRC
-
-**** Line Navigation
-
-#+BEGIN_SRC elisp
-(defun +ly|forward-line ()
-  "Function docstring"
-  (interactive)
-  (next-line 1)
-  (goto-char (point-at-bol))
-  (search-forward-regexp "\s*[^\s]" nil t)
-  (backward-char 1))
-
-(defun +ly|backward-line ()
-  "Function docstring"
-  (interactive)
-  (previous-line 1)
-  (goto-char (point-at-bol))
-  (search-forward-regexp "\s*[^\s]" nil t)
-  (backward-char 1))
-#+END_SRC
-**** List Modification
-
-***** Add to list
-
-#+BEGIN_SRC elisp
-(defun +ly/inside-string? ()
-  "Returns non-nil if inside string, else nil.
-Result depends on syntax table's string quote character."
-  (nth 3 (syntax-ppss)))
-
-(defun +ly|add-atom (&optional same-line?)
-  "Add atom in the current sexp. If the cursor is under a string match the type and insert another string."
-  (interactive "P")
-  (let ((was-parinfer-list-mode (eq 'paren parinfer--mode)))
-    (up-list 1 t)
-    (unless same-line?
-      (parinfer-lispy:newline))
-    (when same-line? (insert " "))
-    (cond ((+ly/inside-string?)
-           (insert (t! "\"\""))
-           (backward-char 1)))
-    (evil-insert-state)))
-#+END_SRC
-
-*** Hydra
-
-#+BEGIN_SRC elisp
-(defhydra +ly|hydra ()
-   "Ly Navigation"
-   ("f" (+ly|forward-brace) "Forward ()" :column "Navigate")
-   ("b" (+ly|backward-brace) "Backward ()")
-   ("f" (+ly|forward-brace) "forward ()" :column "Navigate")
-   ("b" (+ly|backward-brace) "Backward ()")
-   ("j" (+ly|forward-line) "Next Line")
-   ("k" (+ly|backward-line) "Backward Line"))
-#+END_SRC
-
 ** TODO Indirect Indent Mode
 
 Adds minor mode for editing indented source code in an indirect buffer,
@@ -2828,22 +2672,6 @@ No namespace here, so it matches the other commmands
 
 *** Emacs Lisp (Elisp) :ELISP:
 **** Packages
-***** [[https://github.com/countvajhula/symex.el][symex]]
-
-An evil way to edit Lisp symbolic expressions (symexes) as trees in Emacs
-
-****** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! symex)
-#+END_SRC
-
-****** Config
-
-#+BEGIN_SRC elisp
-(use-package! symex
-  :commands (symex-mode symex-mode-interface))
-#+END_SRC
 **** Config
 
 ***** Remove Rainbow Delimiters
@@ -6370,6 +6198,7 @@ Take me to the literate source file when using ~find-function~ etc.
   (ignore-errors
     (org-babel-tangle-jump-to-org)))
 #+END_SRC
+
 **** Fetch link title
 
 Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/nim-utils#get_url_title][floscr/nim-utils: A bunch of simple tools to use with my nixos setup written in nim.]]
@@ -6406,6 +6235,7 @@ Needs get_url_title script"
       (my::org|fetch-this-org-link-title)))
   (org-agenda-redo))
 #+end_src
+
 **** Read timestamp to string
 
 Use the interactive timestamp interface to read an org string
@@ -6419,7 +6249,6 @@ Use the interactive timestamp interface to read an org string
 
 ** Hydras
 ** Work
-
 *** Convert to uix
 
 #+begin_src elisp
@@ -6430,7 +6259,6 @@ Use the interactive timestamp interface to read an org string
     (forward-char 1)
     (insert "$ ")))
 #+end_src
-
 
 *** Convert to ~gridSize~
 
@@ -6503,7 +6331,6 @@ Use the interactive timestamp interface to read an org string
     (f-write content 'utf-8 dst-path)
     (magit-assume-unchanged script-path)))
 #+end_src
-
 
 * Bindings
 ** General
@@ -7382,7 +7209,6 @@ redefines its keys every time `eshell-mode' is enabled."
 
 #+BEGIN_SRC elisp
 (map! :map emacs-lisp-mode-map
-      :gni "M-;"   #'symex-mode-interface
       :n "s-k"   (cmd! (sp-transpose-sexp)
                      (evil-previous-line))
       :n "s-j"   (cmd! (sp-push-hybrid-sexp)
@@ -7391,9 +7217,7 @@ redefines its keys every time `eshell-mode' is enabled."
       :n "g]"  #'sp-slurp-hybrid-sexp
       :n "g["  #'sp-forward-barf-sexp
       :localleader
-      :desc "Ly Mode"                 "l"  #'+ly-mode
       :desc "Jump to tangled source"  "j"  #'org-babel-tangle-jump-to-org
-      :desc "Symex Mode"              "s" #'symex-mode-interface
       :desc "Raise sexp"              "<" #'raise-sexp
       :desc "Barf Sexp"               ">" #'barf-sexp)
 #+END_SRC
