@@ -5389,6 +5389,8 @@ which is really unacceptable, but works for now.
 
 ***** Bindings
 
+****** Minibuffer
+
 #+BEGIN_SRC elisp
 (map!
  :after ivy
@@ -5400,7 +5402,7 @@ which is really unacceptable, but works for now.
   "M-SPC" 'ivy-restrict-to-matches)
 #+END_SRC
 
-Find file on enter press for ~ivy-occur-mode~
+****** Occur Mode
 
 #+BEGIN_SRC elisp
 (map! :map ivy-occur-mode-map
