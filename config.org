@@ -5400,7 +5400,8 @@ Adds general bindings to ivy.
   "<s-return>" 'ivy-call
   "<C-tab>" 'minibuffer-complete
   "<C-return>" 'ivy-immediate-done
-  "M-m" 'ivy-mark)
+  "M-m" 'ivy-mark
+  "M-SPC" 'ivy-restrict-to-matches)
 #+END_SRC
 
 Find file on enter press for ~ivy-occur-mode~
