@@ -1112,18 +1112,27 @@ Take the host as the base and either the TITLE or the path from the URL."
         "--reject" "css,woff,ttf,js"
         url)))
 
+(defun +org-backup/cleanup-remove-inline-svgs (path)
+  "Removes inline svgs like [[data:image/svg.]] that are note useful when reading org files."
+  (-> (s-replace-regexp "\\[\\[data:image/svg.+?\\]\\][\n\s]?" "" (f-read path))
+      (f-write 'utf-8 path)))
+
+(defun +org-backup/get-wget-html-file (path)
+  "Get the html file that was downloaded by wget,
+by getting the first html file in the target folder."
+  (->> (f-entries path)
+       (--filter (f-ext? it "html"))
+       (-first-item)))
+
 (defun +org-backup/convert-html-to-org (path)
   "Convert html files at PATH to org documents."
-  (--> (f-entries path)
-       (--filter (f-ext? it "html") it)
-       (-first-item it)
-       (deferred:process
-         "pandoc"
-         "--wrap=none"
-         "-f" "html"
-         "-t" "org"
-         it
-         "-o" (f-swap-ext it "org"))))
+  (deferred:process
+    "pandoc"
+    "--wrap=none"
+    "-f" "html"
+    "-t" "org"
+    path
+    "-o" (f-swap-ext path "org")))
 
 (defun +org-backup/convert-html-to-epub (path)
   "Convert html files at PATH to org documents."
@@ -1153,7 +1162,13 @@ Take the host as the base and either the TITLE or the path from the URL."
     (deferred:$
       (+org-backup/wget-link dir)
       (deferred:nextc it `(lambda ()
-                            (+org-backup/convert-html-to-org ,dir)))
+                            (->>
+                             (+org-backup/get-wget-html-file ,dir)
+                             (+org-backup/convert-html-to-org))))
+      (deferred:nextc it `(lambda ()
+                            (->>
+                             (f-swap-ext (+org-backup/get-wget-html-file ,dir) "org")
+                             (+org-backup/cleanup-remove-inline-svgs))))
       (deferred:nextc it `(lambda ()
                             (when ,to-epub?
                               (+org-backup/convert-html-to-epub ,dir))))
@@ -1161,8 +1176,8 @@ Take the host as the base and either the TITLE or the path from the URL."
                             (when ,to-epub?
                               (-some->> (f-files ,dir)
                                         (--find (f-ext? it "epub"))
-                                        (s-prepend "file:")
-                                        (org-set-property "BACKUP_EPUB"))))))))
+                                        (s-prepend "file:"))
+                              (org-set-property "BACKUP_EPUB")))))))
 
 (defun +org-backup|backup-dwim-epub ()
   "Function docstring"
