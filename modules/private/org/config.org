@@ -2744,6 +2744,7 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
       :desc  "Schedule"                  "s"  #'org-schedule
       :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
+      :desc  "Fetch link title"          "u"  #'my::org|fetch-this-org-link-title
       :desc  "MPV Link at point"         "v"  #'+org|mpv-link-at-point
       :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
@@ -2790,6 +2791,7 @@ Set my preferred clipboard paste method to ~xclip~.
       :localleader
       "q" #'+org|counsel-org-tag
       "v" #'+org|mpv-link-at-point
+      "u" #'my::org-agenda|fetch-this-org-link-title
       "." #'counsel-org-agenda-headlines
       "t" nil ; Overwrite doom binding
       (:prefix ("t" . "toggle")
