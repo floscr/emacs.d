@@ -1070,8 +1070,9 @@ Take the host as the base and either the TITLE or the path from the URL."
                   (s-replace-regexp "^/" "")
                   (s-replace-regexp "/$" "")
                   (s-replace "/" "_")
-                  (s-replace-regexp "\\.[a-zA-Z]+$" "")))))
-    (f-join +org-backup:link-backup-directory host path)))
+                  (s-replace-regexp "\\.[a-zA-Z]+$" ""))))
+         (normalized-path (s-replace-regexp "[^-_a-zA-Z0-9]" "" path)))
+    (f-join +org-backup:link-backup-directory host normalized-path)))
 
 (defun +org-backup/create-directory (url &optional title)
   "Create backup target directory from URL and TITLE."
