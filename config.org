@@ -719,6 +719,7 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
   (interactive)
   (let ((entry `((file . ,(buffer-file-name))
                  (goto . ,(line-number-at-pos))
+                 (relative . t)
                  (name . ,(read-string "Bookmark Name: ")))))
     (->> (my::jumpy/local-list file)
       (-append entry)
