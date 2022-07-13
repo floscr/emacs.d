@@ -3,4 +3,4 @@
 # uuid: uix_use_state
 # key: us
 # --
-[${1:state} set-$1!] (uix/use-state $0)
+[${1:state} set-$1!] (uix/use-state ${1:$(when (and yas-text (s-ends-with? "?" yas-text)) "false")}$0)
