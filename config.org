@@ -6255,7 +6255,22 @@ Use the interactive timestamp interface to read an org string
 
 ** Hydras
 ** Work
-*** Convert to uix
+*** Pitch
+**** Create worktree
+
+#+begin_src elisp
+(defun my::pitch|create-worktree ()
+  (interactive)
+  (when-let* ((path (call-interactively #'my::magit|create-worktree-project-from-branch)))
+    (my::pitch|apply-custom-dev-script)))
+#+end_src
+
+#+BEGIN_SRC elisp
+(after! magit
+  (transient-append-suffix 'magit-worktree "b" '("p" "Pitch worktree" my::pitch|create-worktree)))
+#+END_SRC
+
+**** Convert to uix
 
 #+begin_src elisp
 (defun my::pitch/convert-hiccup-to-uix ()
