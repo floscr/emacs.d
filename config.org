@@ -219,6 +219,23 @@ modifications."
      (progn (forward-visible-line 0) (point))
      (progn (forward-visible-line 1) (point)))))
 #+END_SRC
+*** Insert above/below current line
+
+#+begin_src elisp
+(defun my::buffer/insert-line-below (&optional str)
+  "Insert an empty line below the current line."
+  (interactive)
+  (save-excursion
+    (end-of-line)
+    (insert (concat "\n" str))))
+
+(defun my::buffer/insert-line-above (&optional str)
+  "Insert an empty line above the current line."
+  (interactive)
+  (save-excursion
+    (end-of-line 0)
+    (insert (concat str "\n"))))
+#+end_src
 
 *** INACTIVE Map buffer lines
 
