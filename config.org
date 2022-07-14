@@ -4087,7 +4087,10 @@ Automatically adds ~.projectfile~ and opens a new doom workspace.
       (mkdir worktree-path t))
     (magit-run-git "worktree" "add" (if force "-B" "-b") branch (expand-file-name path) start-point)
     (f-touch (f-join path ".projectile"))
-    (+workspace-new branch)
+    ;; Ignore existing workspace
+    (condition-case nil
+        (+workspace-new branch)
+      (error nil))
     (+workspace-switch branch)
     (magit-diff-visit-directory path)
     (projectile-add-known-project path)
