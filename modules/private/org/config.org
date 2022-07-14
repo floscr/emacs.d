@@ -1144,21 +1144,43 @@ by getting the first html file in the target folder."
          it
          (f-swap-ext it "epub"))))
 
+(defun +org-backup/headline-url-title ()
+  "Get the title of the current headline"
+  (->> (org-ml-parse-this-headline)
+       (org-ml-get-property :raw-value)
+       (+org/link-title-or-original)))
+
+(defun +org-backup/element-title ()
+  "Get the title of the thing at point.
+If it is at the headline get either the headline or the headline link title
+If it is at a regular link, get the link title or query for one.
+Returns a cons of the (cons title url) and the matched element type (any of: link, headline)."
+  (cl-case (nth 0 (org-element-at-point))
+    ('paragraph
+     (let ((el (org-ml-parse-this-object)))
+       (if (org-ml-is-type 'link el)
+           (-let* (((url . title) (->> (org-ml-parse-this-object)
+                                       (my::org/org-element-link)))
+                   (title (or title (my::org|fetch-link-title-command url) (read-string "Title for the backup: "))))
+             (cons (cons title url) 'link))
+         (cons (cons (+org-backup/headline-url-title) nil) 'headline))))
+    (t (cons (cons (+org-backup/headline-url-title) nil) 'headline))))
+
 (defun +org-backup|backup-dwim (&optional to-epub?)
   "Backup the first link under the cursor and set the property."
   (interactive)
   (require 'deferred)
   (require 'org-ml)
-  (let* ((header (org-ml-parse-this-headline))
-         (url (->> (org-offer-links-in-entry (current-buffer) (point) 0)
-                   (car)
-                   (substring-no-properties)
-                   (+org/link-url-or-original)))
-         (title (->> header
-                  (org-ml-get-property :raw-value)
-                  (+org/link-title-or-original)))
-         (dir (+org-backup/create-directory url title)))
-    (org-set-property "BACKUP" (template "[[<<dir>>]]"))
+  (-let* ((url (->> (org-offer-links-in-entry (current-buffer) (point) 0)
+                    (car)
+                    (substring-no-properties)
+                    (+org/link-url-or-original)))
+          (((title . inline-url) . type) (+org-backup/element-title))
+          (url (or inline-url url))
+          (dir (+org-backup/create-directory url title)))
+    (cl-case type
+      ('link (my::buffer|insert-line-above (template "#+BACKUP: [[<<dir>>]]")))
+      (t (org-set-property "BACKUP" (template "[[<<dir>>]]"))))
     (deferred:$
       (+org-backup/wget-link dir)
       (deferred:nextc it `(lambda ()
