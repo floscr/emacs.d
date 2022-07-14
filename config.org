@@ -4079,7 +4079,7 @@ Automatically adds ~.projectfile~ and opens a new doom workspace.
 (defun my::magit|create-worktree-project-from-branch (branch start-point &optional force)
   "Create a new BRANCH and check it out in a new worktree at PATH in a new workspace."
   (interactive
-   `(,@(butlast (magit-branch-read-args "Create and checkout branch"))
+   `(,@(magit-branch-read-args "Create and checkout branch")
      ,current-prefix-arg))
   (let* ((worktree-path (f-join (projectile-project-root) ".worktrees"))
          (path (f-join (projectile-project-root) ".worktrees" branch)))
