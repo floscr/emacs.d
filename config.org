@@ -6253,6 +6253,8 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
                (title (my::org|fetch-link-title-command url))
                (from (org-element-property :begin el))
                (to (org-element-property :end el)))
+    (when (string= title "Could not find title in html")
+      (user-error (t! "Error: Could not fetch title for url <<url>>")))
     (delete-region from to)
     (insert (t! "[[<<url>>][<<title>>]]"))))
 
