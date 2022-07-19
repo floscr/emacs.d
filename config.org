@@ -6250,7 +6250,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
                         (--id-when (and (org-ml-is-type 'link it)
                                         (eq (org-ml-get-property :format it) 'plain)))))
                (url (org-ml-get-property :raw-link el))
-               (title (my::org|fetch-link-title-command))
+               (title (my::org|fetch-link-title-command url))
                (from (org-element-property :begin el))
                (to (org-element-property :end el)))
     (delete-region from to)
