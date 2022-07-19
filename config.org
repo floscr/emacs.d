@@ -371,6 +371,16 @@ or manually traverse upwards until the .git directory is found."
   (let ((checker-fn (if skip-worktree? #'f-dir? #'f-exists?)))
     (f--traverse-upwards (funcall checker-fn (f-expand ".git" it)))))
 #+END_SRC
+*** Find node_modules executable
+
+#+begin_src elisp
+(defun my::file/node-modules-executable-find (name)
+  "Find an executable bin in the projects node_modules/.bin directory with NAME
+Returns nil when no executable was found."
+  (-some->> (projectile-project-root)
+    (-f-join (f-join "node_modules/.bin" name))
+    (-id-when #'f-exists?)))
+#+end_src
 
 ** Debugging / Logging
 *** Kill and Message
