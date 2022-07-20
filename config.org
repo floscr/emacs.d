@@ -4050,7 +4050,8 @@ Define jump points for lispyville functions
  :desc "Goto parent function" :n "[[" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin))
  :localleader
- "s" #'clojure-sort-ns)
+ "s" #'clojure-sort-ns
+ "l" #'my::pitch|l10n-jump)
 
 #+END_SRC
 
@@ -6384,6 +6385,20 @@ Use the interactive timestamp interface to read an org string
          (dst-path (f-join (my::file/git-root) script-path)))
     (f-write content 'utf-8 dst-path)
     (magit-assume-unchanged script-path)))
+#+end_src
+
+**** Goto l10n
+
+#+begin_src elisp
+(defun my::pitch|l10n-jump (identifier &optional arg)
+  (interactive
+   (list (doom-thing-at-point-or-region)
+         current-prefix-arg))
+  (let ((l10n-dir (f-join (projectile-project-root) "l10n/src"))
+        (id (->> identifier
+                 substring-no-properties
+                 (s-replace-regexp "^:" ""))))
+    (+ivy-file-search :query id :in l10n-dir)))
 #+end_src
 
 * Bindings
