@@ -2087,6 +2087,14 @@ When narrowing to region or defun, make it in an indirect other window.
      (parinfer-rust--switch-mode prev-mode)))
 #+end_src
 
+**** format-all
+
+#+begin_src elisp
+;; Set formatter to empty list which should be defined per mode
+(setq +format-on-save-enabled-modes '())
+#+end_src
+
+
 ** UI :UI:
 *** Higlight indent guides
 
