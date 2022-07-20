@@ -4054,6 +4054,25 @@ Define jump points for lispyville functions
  "l" #'my::pitch|l10n-jump)
 
 #+END_SRC
+*** Stylus
+
+#+begin_src elisp
+(defun my::stylus|fmt ()
+  (interactive)
+  (when-let ((bin (my::file/node-modules-executable-find "stylus-supremacy"))
+             (default-directory (projectile-project-root)))
+    (shell-command (t! "<<bin>> format <<buffer-file-name>> -r -p stylus.json"))))
+
+(set-formatter! 'stylus-supremacy
+  '(("%s" (my::file/node-modules-executable-find "stylus-supremacy"))
+    "format" ("%s" buffer-file-name)
+    "-p" ("%s/stylus.json" (projectile-project-root)))
+  :modes '(stylus-mode))
+
+(setq-hook! 'stylus-mode-hook +format-with 'stylus-supremacy)
+
+(add-to-list '+format-on-save-enabled-modes 'stylus-mode t)
+#+end_src
 
 ** Git / Magit :GIT:MAGIT:
 *** Packages
