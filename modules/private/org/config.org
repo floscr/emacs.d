@@ -18,9 +18,9 @@
   (setq org-directory "~/Documents/Org")
   (setq org-default-notes-file (+org/expand-org-file-name "Main/inbox.org")))
 
-(setq +org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
-(setq +org:reading-list-file (+org/expand-org-file-name "Main/reading-list.org"))
-(setq +org:bookmarks-file (+org/expand-org-file-name "Bookmarks/bookmarks.org"))
+(setq my::org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
+(setq my::org:reading-list-file (+org/expand-org-file-name "Main/reading-list.org"))
+(setq my::org/bookmarks-file (+org/expand-org-file-name "Bookmarks/bookmarks.org"))
 #+END_SRC
 
 **** Fix date compatibility before 1970
@@ -289,7 +289,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                    :keys "r"
                    :title "%(my::wm/last-browser-url-org-link)"
                    :headline "Reading List"
-                   :file +org:reading-list-file)
+                   :file my::org:reading-list-file)
                   ("Elfeed"
                    :keys "e"
                    :children
@@ -297,16 +297,16 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                      :keys "w"
                      :title "%(pop kill-ring)"
                      :headline "Watching List"
-                     :file +org:reading-list-file)
+                     :file my::org:reading-list-file)
                     ("Read"
                      :keys "r"
                      :title "%(pop kill-ring)"
                      :headline "Reading List"
-                     :file +org:reading-list-file)))
+                     :file my::org:reading-list-file)))
                   ("Shopping"
                    :keys "s"
                    :headline "Supermarket"
-                   :file +org:shopping-list-file)
+                   :file my::org:shopping-list-file)
                   ("Recipe"
                    :keys "R"
                    :headline "Recipes"
@@ -347,7 +347,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                             ":END:"))
                 ("Bookmarks"
                  :keys "p"
-                 :file +org:bookmarks-file
+                 :file my::org/bookmarks-file
                  :headline "Bookmarks"
                  :template ("* %(nth 0 (my::wm/last-browser-window))"
                             ":PROPERTIES:"
@@ -992,7 +992,7 @@ title can be nil."
                 (org-ml-headline-set-node-property "URL" url it)
                 (org-ml-to-string it))))
     (call-interactively #'org-cut-subtree)
-    (find-file +org:bookmarks-file)
+    (find-file my::org/bookmarks-file)
     (goto-char (point-max))
     (insert "\n")
     (insert new-item)
@@ -1030,7 +1030,7 @@ Remove the underline from the links.
 (after! org-agenda
   (+org/add-to-agenda-custom-commands
    '("r" "Reading List" alltodo ""
-     ((org-agenda-files (list +org:reading-list-file))
+     ((org-agenda-files (list my::org:reading-list-file))
       (org-agenda-buffer-name +org-reading-list:agenda-buffer-name)
       (org-agenda-prefix-format "  %?-12t% s")
       (org-agenda-hide-tags-regexp "TEXT\\|VIDEO\\|RESEARCH")
@@ -2159,7 +2159,7 @@ Moves a todo item from the agenda to the shopping list as a list item.
   (save-window-excursion
     (save-excursion
       (let ((title (nth 1 (s-match "^.*TODO \\(.*\\)$" (thing-at-point 'line t))))
-            (buffer (find-file +org:shopping-list-file)))
+            (buffer (find-file my::org:shopping-list-file)))
         (with-current-buffer buffer
           (org-narrow-to-subtree)
           (goto-char (point-max))
@@ -2701,7 +2701,7 @@ Set my preferred clipboard paste method to ~xclip~.
   :desc "Projects"                   "p" #'+org|search-projects
 
   (:prefix-map ("b" . "Bookmarks")
-   :desc "Goto Bookmarks File"       "b" (cmd! (find-file +org:bookmarks-file))
+   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my::org/bookmarks-file))
    :desc "Search bookmarks"          "s" #'helm-org-pinboard)
 
   (:prefix-map ("r" . "Roam")
@@ -2720,7 +2720,7 @@ Set my preferred clipboard paste method to ~xclip~.
   :desc "Work"                       "w" (cmd! (+org/find-in-files "Work/work.org"))
 
   (:prefix-map ("g" . "Goto")
-   :desc "Goto Bookmarks File"       "b" (cmd! (find-file +org:bookmarks-file))
+   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my::org/bookmarks-file))
    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
    :desc "Work"                      "w" (cmd! (+org/find-in-files "Work/work.org"))
    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))

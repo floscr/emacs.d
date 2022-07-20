@@ -161,7 +161,7 @@ Items sorted by where they are grouped in the super market.
 
 (defun +cooking|add-to-shopping-list (item)
   (interactive)
-  (with-temp-buffer (insert-file-contents +org:shopping-list-file)))
+  (with-temp-buffer (insert-file-contents my::org:shopping-list-file)))
 
     ;; (->> (org-ml-parse-subtree-at 1)
     ;;      (org-ml-update (lambda (tree)
