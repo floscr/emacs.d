@@ -1984,6 +1984,23 @@ Press =gr= with a following motion character like =w=.
 (after! evil-snipe
   (setq evil-snipe-repeat-keys t))
 #+END_SRC
+*** Functions
+
+**** Evil ex search for string
+
+#+begin_src elisp
+(defun my::evil/ex-search-str (str)
+  "Evil Ex search for STR."
+  (setq evil-ex-search-pattern
+        (let (evil-ex-search-vim-style-regexp)
+          (evil-ex-make-search-pattern str))
+        evil-ex-search-offset nil
+        evil-ex-last-was-search t)
+  (unless (equal (car-safe evil-ex-search-history) str)
+    (push str evil-ex-search-history))
+  (evil-ex-search-next))
+#+end_src
+
 *** Config
 **** Enable fine undo
 
@@ -5431,6 +5448,29 @@ If prefix ARG is set, prompt for a known project to search from."
   (+ivy/project-search nil symbol dir))
 
 (advice-add #'+default/search-project-for-symbol-at-point :override #'my::ivy|search-project-for-symbol-at-point)
+#+end_src
+****** Occur modify for last search
+
+In the occur buffer I quickly want to change the text I searched for.
+With these functions I can quickly do an ~evil-ex~ replacement or a multicursor edit.
+
+#+begin_src elisp
+(defun my::ivy-occur|evil-ex-last-search ()
+  "Evil Ex search for the occur grepped text."
+  (interactive)
+  (let ((str (ivy-state-text ivy-occur-last)))
+    (my::evil/ex-search-str str)
+    (evil-ex "%s//")))
+
+(defun my::ivy-occur|evil-mutliedit-last-search ()
+  "Evil Ex search for the occur grepped text."
+  (interactive)
+  (ivy-wgrep-change-to-wgrep-mode)
+  (let ((str (ivy-state-text ivy-occur-last)))
+    (when (search-forward-regexp str)
+      (forward-char (- (- (length str) 1)))
+      (setq evil-multiedit--dont-recall t)
+      (evil-multiedit--start-regexp str (point-min) (point-max)))))
 #+end_src
 
 ***** Config
