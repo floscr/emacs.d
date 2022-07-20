@@ -6401,7 +6401,7 @@ Use the interactive timestamp interface to read an org string
   (let* ((script-path "desktop-app/scripts/dev-all.py")
          (content (->> (f-expand "~/Code/Work/Pitch/dev-overwrite/dev-all.py")
                        f-read))
-         (dst-path (f-join (my::file/git-root) script-path)))
+         (dst-path (f-join (my::file/git-root nil) script-path)))
     (f-write content 'utf-8 dst-path)
     (magit-assume-unchanged script-path)))
 #+end_src
