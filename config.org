@@ -5836,12 +5836,14 @@ whether to use mpv to visit the link.")
 (add-hook 'elfeed-show-mode-hook #'my::rss/wrap-entry)
 #+END_SRC
 
-***** Update feeds when saving org-elfeed file :ORG_MODE:
+***** INACTIVE Update feeds when saving org-elfeed file :ORG_MODE:
 
 When I save the elfeed org-mode file I want to automatically update the feed list.
 Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/elfeed-org.el::rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id)][elfeed package]].
 
-#+BEGIN_SRC elisp
+⚠ Disabled for now as it leaks to other modes
+
+#+BEGIN_SRC elisp :tangle no
 (defun my::rss/update-feeds-on-save ()
   (when (and (eq major-mode 'org-mode)
              (string= buffer-file-name (car rmh-elfeed-org-files))))
