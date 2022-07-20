@@ -6334,7 +6334,7 @@ Use the interactive timestamp interface to read an org string
     (insert "$ ")))
 #+end_src
 
-*** Convert to ~gridSize~
+**** Convert to ~gridSize~
 
 #+begin_src elisp
 (defun my::pitch|insert-grid-size-from-px ()
@@ -6348,7 +6348,7 @@ Use the interactive timestamp interface to read an org string
     (insert (t! "gridSize(<<new-size>>)"))))
 #+end_src
 
-*** Fix Clojure
+**** Fix Clojure
 
 #+begin_src elisp
 (defun my::pitch|autofix-clojure-buffer ()
@@ -6361,7 +6361,7 @@ Use the interactive timestamp interface to read an org string
         (with-current-buffer buffer (revert-buffer))
         (message "Autofixed buffer!")))))
 #+end_src
-*** Debug
+**** Debug
 
 #+begin_src elisp
 (defun my::pitch|debug-statement ()
@@ -6392,7 +6392,7 @@ Use the interactive timestamp interface to read an org string
     (goto-char (- (point) 1))
     (cider-eval-last-sexp)))
 #+end_src
-*** Custom builder
+**** Custom builder
 
 #+begin_src elisp
 (defun my::pitch|apply-custom-dev-script ()
