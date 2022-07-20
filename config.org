@@ -1211,6 +1211,7 @@ which I name after the matching url.
  (mu4e +gmail)
 
  :editor
+ (format +onsave)
  (evil +everywhere)
  file-templates
  fold
