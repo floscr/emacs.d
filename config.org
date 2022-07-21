@@ -5468,6 +5468,7 @@ With these functions I can quickly do an ~evil-ex~ replacement or a multicursor 
 (defun my::ivy-occur|evil-mutliedit-last-search ()
   "Evil Ex search for the occur grepped text."
   (interactive)
+  (require 'evil-multiedit)
   (ivy-wgrep-change-to-wgrep-mode)
   (let ((str (ivy-state-text ivy-occur-last)))
     (when (search-forward-regexp str)
