@@ -6485,6 +6485,42 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
                  (s-replace-regexp "^:" ""))))
     (+ivy-file-search :query id :in l10n-dir)))
 #+end_src
+**** Convert string to l10n
+
+#+begin_src elisp
+(defun my::clojure/string-content-at-point ()
+  "Returns a list with the string content at point without quotes and the begin and end positions of the string with quotes."
+  (if (clojure--in-string-p)
+    (save-excursion
+      (let ((beg (progn (goto-char (clojure-string-start))
+                        (forward-char 1)
+                        (point)))
+            (end (progn
+                   (search-forward-regexp "\"" (point-at-eol) nil)
+                   (backward-char 1)
+                   (point))))
+        (list (buffer-substring-no-properties beg end) (cons (- beg 1) (+ 1 end)))))
+    (user-error "Cursor not positioned on a clojure string.")))
+
+(defun my::pitch|convert-string-to-l10n ()
+  "Convert the string under the cursor to l10n"
+  (interactive)
+  (-let* (((original-string (original-beg . original-end)) (my::clojure/string-content-at-point))
+          (clojure-key (concat ":" (s-dashed-words original-string))))
+    (delete-region original-beg original-end)
+    (insert clojure-key)
+    (lispy-wrap-round 1)
+    (insert "l10n/t")
+    (search-forward ":")
+    (-let* (((beg . end) (bounds-of-thing-at-point 'symbol))
+            (l10n-key (->> (buffer-substring-no-properties beg end)
+                           (s-replace ":" "")
+                           (read-string "l10n key: "))))
+      (delete-region beg end)
+      (insert ":" l10n-key)
+      (kill-new (concat l10n-key " = " original-string)))))
+#+end_src
+
 
 * Bindings
 ** General
