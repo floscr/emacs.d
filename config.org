@@ -4506,12 +4506,15 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
             (bury-buffer))
      "Save and bury buffer" :color blue)
     ("q" nil "cancel" :color blue))
-  :hook (magit-diff-visit-file . (lambda ()
-                                   ;; Prevent parinfer triggering on diff files
-                                   (when parinfer-rust-mode (parinfer-rust-mode-disable))
-                                   (when smerge-mode
-                                     (flycheck-mode -1)
-                                     (unpackaged/smerge-hydra/body)))))
+  (add-hook! 'magit-diff-visit-file-hook
+    (defun my::smerge-mode*init-smerge-mode ()
+      "Reveal the point if in an invisible region."
+      (when smerge-mode
+        ;; Prevent parinfer triggering on diff files
+        (when parinfer-rust-mode (parinfer-rust-mode-disable))
+        ;; Disable flycheck for diff buffers
+        (flycheck-mode -1)
+        (unpackaged/smerge-hydra/body)))))
 #+END_SRC
 
 *** Config
