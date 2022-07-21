@@ -1175,6 +1175,10 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
       (t (org-set-property "BACKUP" (template "[[<<dir>>]]"))))
     (deferred:$
       (+org-backup/wget-link dir)
+      (deferred:error it `(lambda (err)
+                            (if (+org-backup/get-wget-html-file ,dir)
+                                (deferred:next (lambda () (message "Error during wget, but html file exist, so we continue")))
+                              (message "Wget Error: %s" err))))
       (deferred:nextc it `(lambda ()
                             (->>
                              (+org-backup/get-wget-html-file ,dir)
@@ -1272,6 +1276,8 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
            (insert x)
            x))))))
 #+END_SRC
+
+
 **** Send To Device
 
 #+BEGIN_SRC elisp
