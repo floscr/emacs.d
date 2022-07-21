@@ -6379,6 +6379,16 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (transient-append-suffix 'magit-worktree "b" '("p" "Pitch worktree" my::pitch|create-worktree)))
 #+END_SRC
 
+**** Start terminal
+
+#+begin_src elisp
+(defun my::pitch|start-dev-terminal ()
+  (interactive)
+  (let ((default-directory (my::file/project-root)))
+    (my::pitch|apply-custom-dev-script)
+    (call-process-shell-command (t! "alacritty -e $SHELL -c './scripts/pit dev'&") nil 0 nil)))
+#+end_src
+
 **** Convert to uix
 
 #+begin_src elisp
