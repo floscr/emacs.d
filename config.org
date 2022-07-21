@@ -7392,6 +7392,14 @@ So deletes wont affect this register."
   :desc "path"                "y" #'+yank|path
   :desc "relative to project" "r" #'+yank|relative-to-project))
 #+END_SRC
+*** Work
+
+#+begin_src elisp
+(map!
+ :leader
+ (:prefix-map ("0" . "Work")
+  :desc "Open dev terminatl"     "0" #'my::pitch|start-dev-terminal))
+#+end_src
 
 ** Local-Leader
 *** Eshell
