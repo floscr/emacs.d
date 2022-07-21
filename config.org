@@ -6370,7 +6370,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (my::pitch|apply-custom-dev-script)
     (let ((src (my::file/git-root))
           (dst (my::file/project-root)))
-      (call-process-shell-command (t! "rsync -ravE <<src>>/node_modules/ <<dst>>&") nil 0 nil)
+      (call-process-shell-command (t! "rsync -ravE <<src>>/node_modules <<dst>>&") nil 0 nil)
       (call-process-shell-command (t! "rsync -ravE <<src>>/.cpcache <<dst>>&") nil 0 nil))))
 #+end_src
 
