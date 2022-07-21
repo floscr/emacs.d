@@ -6535,6 +6535,15 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
       (kill-new (concat l10n-key " = " original-string)))))
 #+end_src
 
+**** Create pull request
+
+#+begin_src elisp
+(defun my::pitch|ghub-create-pull-request ()
+  "Function docstring"
+  (interactive)
+  (shell-command "gh pr create --label \"Team Play / Present\" --web"))
+#+end_src
+
 
 * Bindings
 ** General
