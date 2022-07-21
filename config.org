@@ -6509,6 +6509,11 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   "A prefix to always use for l10n string conversion in a buffer.")
 (make-local-variable 'my::pitch:l10n-key)
 
+(defun my::pitch|set-l10n-key-from-region ()
+  "Sets the l10n buffer prefix from the region."
+  (interactive)
+  (setq my::pitch:l10n-key (buffer-substring-no-properties (region-beginning) (region-end))))
+
 (defun my::pitch|convert-string-to-l10n ()
   "Convert the string under the cursor to l10n"
   (interactive)
