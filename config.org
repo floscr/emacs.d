@@ -3971,6 +3971,8 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
           c-w
           ;; (prettify insert)
 
+          commentary
+
           slurp/barf-cp
           additional
           additional-insert
