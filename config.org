@@ -3928,6 +3928,14 @@ arguments can be set as a list via ‘nimpretty-args’."
 *** Clojure / Clojurescript
 **** Packages
 ***** Cider
+****** Config
+
+#+begin_src elisp
+(use-package! cider
+  :config
+  (setq cider-repl-pop-to-buffer-on-connect nil))
+#+end_src
+
 
 ****** Fix cider for 28.1
 
