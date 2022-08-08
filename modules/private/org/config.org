@@ -941,6 +941,13 @@ When supplied with numerical argument, take the number as the limit."
                                                (goto-char marker)
                                                (org-show-entry))))))
 #+END_SRC
+*** Fix cache error
+
+[[https://github.com/nobiot/org-transclusion/issues/105][Warning (emacs): org-element--cache: Unregistered buffer modifications detected. Resetting · Issue #105 · nobiot/org-transclusion]]
+
+#+begin_src elisp
+(setq warning-suppress-types (append warning-suppress-types '((org-element-cache))))
+#+end_src
 
 ** Modules
 
