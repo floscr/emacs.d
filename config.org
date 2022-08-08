@@ -2000,6 +2000,24 @@ Press =gr= with a following motion character like =w=.
 #+END_SRC
 *** Functions
 
+**** Evil Insert
+
+#+begin_src elisp
+(defun my::evil/insert-dwim (str)
+  "The evil normal cursor does not visually represent the emacs insert cursor.
+So inserting things will be off by one character.
+This function will insert how I would expect to insert depending on the mode.
+In normal/visual mode -> After the character
+In insert mode -> at the character"
+  (if (eq evil-state 'insert)
+      (insert str)
+    (evil-append 1)
+    (insert str)
+    (evil-change-to-previous-state)
+    (unless (string= "" str) (backward-char 1))))
+#+end_src
+
+
 **** Evil ex search for string
 
 #+begin_src elisp
