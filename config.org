@@ -588,6 +588,20 @@ config, and should trigger a recompile if changed."
   (interactive)
   (my::config/tangle-literate-config t))
 #+end_src
+** Dates
+
+*** Insert current date
+
+#+begin_src elisp
+(defun my::date|insert-today (&optional arg)
+  "Insert the current date as YYYY-MM-DD.
+When ARG is passed, query for a custom delimiter."
+  (interactive "P")
+  (let ((delimiter (if arg
+                       (read-string "Date delimiter: " "-")
+                     "-")))
+    (my::evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
+#+end_src
 
 * Custom Packages
 ** TODO Jumpy - Custom Bookmarks
