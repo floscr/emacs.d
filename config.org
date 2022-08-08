@@ -6374,6 +6374,55 @@ Use the interactive timestamp interface to read an org string
     (buffer-substring-no-properties (point-min) (point-max))))
 #+end_src
 
+**** Copy link under Cursor
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun my::org/match-link (pos)
+  "Return cons of link under point and its position.
+POS to match:
+0: the entire org link,
+1: the url,
+2: the title."
+  (let ((pos (org-in-regexp org-link-bracket-re 1))
+        (str (org-link-unescape (match-string-no-properties pos))))
+    (cons str pos)))
+
+;;;###autoload
+(defun my::org/match-org-link-entire ()
+  "Match the link under the cursor as (str . pos)"
+  (my::org/match-link 0))
+
+;;;###autoload
+(defun my::org/match-org-link-url ()
+  "Match the link url under the cursor as (str . pos)"
+  (my::org/match-link 1))
+
+;;;###autoload
+(defun my::org/match-org-link-title ()
+  "Match the link title under the cursor as (str . pos)"
+  (my::org/match-link 2))
+
+(defun my::org/copy-or-cut-link (match-fn &optional cut?)
+  "Copy or cut the current link under the cursor"
+  (my/kill-and-message (car (funcall match-fn)))
+  (when cut?
+    (-when-let ((link . (beg . end)) (my::org/match-org-link-entire))
+      (delete-region beg end))))
+
+(defun my::org|copy-entire-link (&optional cut?)
+  (interactive "P")
+  (my::org/copy-or-cut-link #'my::org/match-org-link-entire cut?))
+
+(defun my::org|copy-link-url (&optional cut?)
+  (interactive "P")
+  (my::org/copy-or-cut-link #'my::org/match-org-link-url cut?))
+
+(defun my::org|copy-link-title (&optional cut?)
+  (interactive "P")
+  (my::org/copy-or-cut-link #'my::org/match-org-link-title cut?))
+#+END_SRC
+
 ** Hydras
 ** Work
 *** Pitch
