@@ -4078,6 +4078,15 @@ Define jump points for lispyville functions
          (insert (concat "[" new-text "]"))
          (indent-region (- 1 beg) (+ 1 end)))))))
 #+end_src
+***** Paste in paren mode
+
+#+begin_src elisp
+(defun my::clojure|parinfer-yank ()
+  "Yank with temporary paren mode enabled."
+  (interactive)
+  (my::parinfer/save-excursion "paren"
+   (call-interactively #'yank)))
+#+end_src
 
 **** Config
 
@@ -4120,6 +4129,7 @@ Define jump points for lispyville functions
  :desc "Goto parent function" :n "gh" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "[[" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin))
+ :g "s-v" #'my::clojure|parinfer-yank
  :localleader
  "s" #'clojure-sort-ns
  "l" #'my::pitch|l10n-jump)
