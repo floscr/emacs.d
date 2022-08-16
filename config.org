@@ -6648,6 +6648,28 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (interactive)
   (shell-command "gh pr create --label \"Team Play / Present\" --web"))
 #+end_src
+****
+
+#+begin_src elisp
+(defun my::pitch|create-pull-request-md ()
+  "Create a markdown document for the currently open branch."
+  (interactive)
+  (let* ((branch-name (magit-get-current-branch))
+         (branch-name (if (magit-name-remote-branch branch-name)
+                          (->> branch-name
+                               (magit-name-remote-branch)
+                               (magit-split-branch-name)
+                               (cdr)
+                               (s-replace "florian/" ""))
+                        (concat  (format-time-string "%y-%m") "-" branch-name)))
+         (file (f-join "/home/floscr/Code/Work/Pitch/pr-docs" (concat branch-name ".org")))
+         ;; Prevent file template being applied for file
+         (+file-templates-alist nil))
+    (find-file-other-window file)
+    (when (eq (buffer-size) 0)
+      ;; (my::snippets/insert-by-name "Pull Request Template")
+      (goto-char (point-min)))))
+#+end_src
 
 
 * Bindings
