@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: js-console-log
+# key: jc
+# --
+(js/console.log "$1" ${1:var})
