@@ -6682,6 +6682,17 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
       ;; (my::snippets/insert-by-name "Pull Request Template")
       (goto-char (point-min)))))
 #+end_src
+**** Format buffer
+
+#+begin_src elisp
+(defun my::pitch|format-buffer ()
+  "Formats the current buffer."
+  (interactive)
+  (let* ((bin (f-join (my::file/project-root) "./scripts/pit"))
+         (cmd (concat bin " fmt2 " (shell-quote-argument buffer-file-name))))
+    (shell-command cmd nil nil)
+    (revert-buffer)))
+#+end_src
 
 
 * Bindings
@@ -7546,7 +7557,8 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("0" . "Work")
-  :desc "Open dev terminatl"     "0" #'my::pitch|start-dev-terminal))
+  :desc "Open dev terminatl" "0" #'my::pitch|start-dev-terminal
+  :desc "Format buffer"      "f" #'my::pitch|format-buffer))
 #+end_src
 
 ** Local-Leader
