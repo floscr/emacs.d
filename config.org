@@ -4609,14 +4609,18 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   ;; This fixes the smerge diff color is really bright an ugly
   (set-face-attribute 'smerge-refined-added nil :foreground nil :background nil))
 #+END_SRC
-**** Fix ~normal-mode~ bindgings for ~magit-find-file~
+
+**** ~magit-find-file~ customizations
 
 ~magit-blob-mode~ overrides loads of evil bindings, making it very annoying to use.
 The mode doesn't really bring big advantages so I remove the hook.
 
 #+begin_src elisp
 (after! magit
-  (remove-hook 'magit-find-file-hook #'magit-blob-mode))
+  ;; Fix binding overrides with evil
+  (remove-hook 'magit-find-file-hook #'magit-blob-mode)
+  ;; Add line-numbers
+  (add-hook! 'magit-find-file-hook #'display-line-numbers-mode))
 #+end_src
 
 *** Bindings
