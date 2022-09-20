@@ -1089,6 +1089,8 @@ Take the host as the base and either the TITLE or the path from the URL."
   (let ((default-directory dir))
     (deferred:process
         "wget"
+        ;; Fake user agent
+        "--user-agent" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36"
         ;; Disable Robots
         "-e" "robots=off"
         ;; Disable generation of host directories which might be nested
