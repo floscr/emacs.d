@@ -6403,6 +6403,20 @@ ob-async enables asynchronous execution of org-babel src blocks via the ~:async~
 #+begin_src elisp
 (use-package! org-protocol)
 #+end_src
+**** org-src-mode
+
+***** Bindings
+
+****** Go to source buffer instead of dired
+
+#+begin_src elisp
+(defun my::org-src-mode/goto-source-marker-buffer ()
+  "Go to the source file for a org-src-mode buffer instead of dired."
+  (org-goto-marker-or-bmk org-src--beg-marker))
+
+(evil-define-key 'motion org-src-mode-map
+  "-" 'my::org-src-mode/goto-source-marker-buffer)
+#+end_src
 
 *** Functions
 **** Jump to definition for tangled files
