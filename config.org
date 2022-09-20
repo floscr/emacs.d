@@ -259,6 +259,17 @@ modifications."
            (s-join "\n")
            insert))))
 #+END_SRC
+*** Jump to source
+
+#+begin_src elisp
+(defun my::buffer|jump-source-dwim (&optional other-window file-name)
+  "Jump to the buffer source depending on the mode."
+  (interactive)
+  (cond
+   ((bound-and-true-p org-src-mode) (org-goto-marker-or-bmk org-src--beg-marker))
+   (t (dired-jump other-window file-name))))
+#+end_src
+
 ** Shell Commands & Aliases
 *** Async Command No Window
 :PROPERTIES:
@@ -7108,10 +7119,10 @@ so I have to work around it:
 (map! :n "gp" #'+evil|select-pasted)
 #+END_SRC
 
-**** Go up one directory from the current buffer
+**** Jump source dwim
 
 #+BEGIN_SRC elisp
-(map! :m "-"  #'dired-jump)
+(map! :m "-" #'my::buffer|jump-source-dwim)
 #+END_SRC
 
 **** Visual Line Mode Navigation
