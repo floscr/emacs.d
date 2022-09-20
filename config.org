@@ -7437,6 +7437,7 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("s" . "search")
+  :desc "Search Marks" "r" #'evil-show-marks
   :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point
   :desc "Occur" "o" #'occur
   :desc "Web Lookup" "w" #'+lookup/online
