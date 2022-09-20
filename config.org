@@ -3967,9 +3967,8 @@ arguments can be set as a list via ‘nimpretty-args’."
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil))
 #+end_src
-
-
-****** Fix cider for 28.1
+****** Hacks
+******* Fix cider for 28.1
 
 [[https://github.com/clojure-emacs/cider/issues/3029][Problem starting cider in clj/cljs `(cl-no-applicable-method map-into ((right-margin 80)) hash-table)` · Issue #3029 · clojure-emacs/cider]]
 
@@ -3981,6 +3980,35 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 
 #+begin_src elisp :tangle "packages.el" :comments link
 (package! map :pin "bb50dba")
+#+end_src
+****** Functions
+******* Fix ~cider-connect~ checking ~.authinfo.gpp~ -> password
+
+#+begin_src elisp
+(defun my::cider|connect-clj (&optional params)
+  "Custom cider connect function that doesn't trigger authinfo.gpg password query."
+  (interactive "P")
+  (require 'noflet)
+  (noflet ((cider--ssh-hosts () nil))
+    (cider-connect-clj params)))
+
+(defun my::cider|connect-cljs (&optional params)
+  "custom cider-connect-cljs function that doesn't trigger authinfo.gpg password query."
+  (interactive "P")
+  (require 'noflet)
+  (noflet ((cider--ssh-hosts () nil))
+    (cider-connect-cljs params)))
+#+end_src
+
+****** Bindings
+
+#+begin_src elisp
+(use-package! clojure-mode
+  :config
+  (map! (:localleader
+          (:map (clojure-mode-map clojurescript-mode-map clojurec-mode-map)
+            "c"  #'my::cider|connect-clj
+            "C"  #'my::cider|connect-cljs))))
 #+end_src
 
 ***** [[https://github.com/noctuid/lispyville][lispyville]]
