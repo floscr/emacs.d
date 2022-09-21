@@ -2771,6 +2771,19 @@ No namespace here, so it matches the other commmands
   "Returns the current function name at the current line"
   (my::javascript/match-const-function-name (thing-at-point 'line t)))
 #+END_SRC
+***** Setup test files
+
+- add it/it-only text rotate
+
+#+begin_src elisp
+(add-hook! 'js2-mode-hook
+  (defun my::javascript/setup-test-file-vars ()
+    "Sets up variables for test files (cypress, jest)."
+    (when (-some->> (buffer-file-name)
+            (string-match "\\.\\(test\\|spec\\|cy\\)\\.js$"))
+      ;; Rotate it/it.only
+      (add-to-list 'rotate-text-local-patterns '("it\\(\\.only\\)?" (lambda (x y) (if (string= x "it") "it.only" "it")))))))
+#+end_src
 
 *** Emacs Lisp (Elisp) :ELISP:
 **** Packages
