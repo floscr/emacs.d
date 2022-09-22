@@ -4637,6 +4637,16 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
         (flycheck-mode -1)
         (unpackaged/smerge-hydra/body)))))
 #+END_SRC
+**** Merge master
+
+#+begin_src elisp
+(defun my::magit|merge-master ()
+  "Merges origin master to the current branch."
+  (interactive)
+  (magit-merge-plain "origin/master"))
+#+end_src
+
+
 *** Config
 
 #+BEGIN_SRC elisp
@@ -4755,6 +4765,8 @@ To append something, just state the flag that you see in the transient popup as 
 
   (transient-append-suffix 'magit-commit
     "-R" '("-D" "Override the author date" "--date=" transient-read-date))
+  (transient-append-suffix 'magit-merge
+    "m" '("M" "Merge master" my::magit|merge-master))
 
   (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" my::magit|checkout-review-branches))
   (transient-append-suffix 'magit-branch "l" '("U" "My Branches" my::magit|branches-by-user)))
