@@ -2154,7 +2154,6 @@ When narrowing to region or defun, make it in an indirect other window.
 (setq +format-on-save-enabled-modes '())
 #+end_src
 
-
 ** UI :UI:
 *** Higlight indent guides
 
@@ -6527,12 +6526,14 @@ ob-async enables asynchronous execution of org-babel src blocks via the ~:async~
 ****** Go to source buffer instead of dired
 
 #+begin_src elisp
-(defun my::org-src-mode/goto-source-marker-buffer ()
+(defun my::org-src-mode/goto-source-marker-buffer (&optional other-window file-name)
   "Go to the source file for a org-src-mode buffer instead of dired."
+  (interactive)
   (org-goto-marker-or-bmk org-src--beg-marker))
 
-(evil-define-key 'motion org-src-mode-map
-  "-" 'my::org-src-mode/goto-source-marker-buffer)
+(map!
+ :map org-src-mode-map
+ :m "-"  #'my::org-src-mode/goto-source-marker-buffer)
 #+end_src
 
 *** Functions
@@ -6834,7 +6835,8 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (interactive)
   (shell-command "gh pr create --label \"Team Play / Present\" --web"))
 #+end_src
-****
+
+**** Create pull request md
 
 #+begin_src elisp
 (defun my::pitch|create-pull-request-md ()
@@ -6856,6 +6858,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
       ;; (my::snippets/insert-by-name "Pull Request Template")
       (goto-char (point-min)))))
 #+end_src
+
 **** Format buffer
 
 #+begin_src elisp
