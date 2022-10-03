@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: after
+# key: af
+# expand-env: ((yas-indent-line 'fixed))
+# --
+&:after
+  content ''

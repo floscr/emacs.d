@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: [pitch] grid size
+# key: gz
+# expand-env: ((yas-indent-line 'fixed))
+# --
+gridSize(${0:1})

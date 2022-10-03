@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# name: [pitch] var
+# key: v
+# expand-env: ((yas-indent-line 'fixed))
+# --
+var(${1:$$(yas-choose-value '(
+"--grey0"
+"--grey1"
+"--grey2"
+"--grey3"
+"--grey4"
+"--grey5"
+"--grey6"
+"--grey7"
+"--grey8"
+"--grey9"
+"--white"
+"--black"
+"--red"
+"--border"
+"--action"
+"--app-bar"
+"--success"
+"--form-success"
+"--error"
+"--warning"
+))})

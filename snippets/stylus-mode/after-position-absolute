@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: after absolute position
+# key: afp
+# expand-env: ((yas-indent-line 'fixed))
+# --
+&:after
+  content ''
+  position absolute
+  top 0
+  left 0
+  right 0
+  bottom 0
