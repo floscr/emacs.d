@@ -4733,7 +4733,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :config
   (setq
    magit-save-repository-buffers 'dontask
-   magit-clone-default-directory "~/Code/Repositories"
+   magit-clone-default-directory "~/Code/Repositories/"
    magithub-clone-default-directory magit-clone-default-directory
    git-commit-summary-max-length 120))
 
