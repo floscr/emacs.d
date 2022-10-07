@@ -4153,8 +4153,8 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
   (lispyville-set-key-theme)
   ;; Override paragraph jumping from additional key theme
   (map! :map lispyville-mode-map
-        :n "{" #'evil-backward-paragraph
-        :n "}" #'evil-forward-paragraph))
+        :nm "{" #'evil-backward-paragraph
+        :nm "}" #'evil-forward-paragraph))
 #+END_SRC
 
 ******* Jumps
