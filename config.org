@@ -1092,6 +1092,55 @@ If the current or previous windows are not chrome, just get the first one from t
   (with-current-buffer (find-file (+org/expand-org-file-name "Db/Shopping.org"))
     (-log (my::org-db/get-db))))
 #+end_src
+** Compile project
+
+My custom solution for caching compile commands between sessions.
+I store the cached commands per directory in [[file:~/.emacs.d/.local/project-compile-cache-file.json][this json file]].
+
+#+begin_src elisp
+(defvar my::project-compile:cache-file nil)
+(setq my::project-compile:cache-file (f-join doom-local-dir "project-compile-cache-file.json"))
+
+(defun my::project-compile/update-ht-vector (k v m)
+  "Merge the vector on key K in the hashtable M with V.
+Removes the key before so the new value will be appended.
+This function will mutate the hashtable M."
+  (let ((xs (->> (seq-into (or (ht-get m k) []) 'list)
+                 (-remove (lambda (x) (string= v x)))
+                 (-append v))))
+    (ht-set m k (seq-into xs 'vector)))
+  m)
+
+(defun my::project-compile/read-cache-file (&optional cache-file)
+  (-some->> (or cache-file my::project-compile:cache-file)
+    (-id-when #'f-exists?)
+    (json-read-file)))
+
+(defun my::project-compile/get-cache-items (key &optional cache-file)
+  (or (-some->> (my::project-compile/read-cache-file (or cache-file my::project-compile:cache-file))
+        (ht-from-alist)
+        ((lambda (m) (ht-get m key))))
+      []))
+
+(defun my::project-compile/update-cache (cmd dir &optional cache-file)
+  (let ((cache (->> (my::project-compile/read-cache-file)
+                    (ht-from-alist)
+                    (my::project-compile/update-ht-vector (intern dir) cmd)
+                    (json-encode))))
+    (f-write cache 'utf-8 (or cache-file my::project-compile:cache-file))))
+
+(defun my::project-compile/compile-cmd (cmd dir &optional cache-file)
+  (counsel-compile--action cmd)
+  (my::project-compile/update-cache cmd dir cache-file))
+
+(defun my::project-compile|compile ()
+  (interactive)
+  (let* ((dir (my::file/project-root))
+         (items (->> (my::project-compile/get-cache-items (intern dir))
+                     (reverse))))
+    (ivy-read "Compile: " (seq-into items 'list)
+              :action (lambda (cmd) (my::project-compile/compile-cmd cmd dir)))))
+#+end_src
 
 * Default Configuration
 ** Temp
