@@ -3996,6 +3996,14 @@ arguments can be set as a list via ‘nimpretty-args’."
 #+end_src
 *** Clojure / Clojurescript
 **** Packages
+***** clj-kondo
+
+#+begin_src elisp 
+(use-package! flycheck-clj-kondo
+  :when t
+  :after flycheck)
+#+end_src
+
 ***** Cider
 ****** Config
 
