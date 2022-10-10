@@ -7528,6 +7528,14 @@ So deletes wont affect this register."
   :desc "Rename Buffer"  "r" #'rename-buffer
   :desc "Rename Buffer"  "+" #'persp-add-buffer))
 #+END_SRC
+*** Compile
+
+#+begin_src elisp
+(map!
+ :leader
+ (:prefix-map ("c" . "Compile")
+  :desc "Compile" "c"   #'my::project-compile|compile))
+#+end_src
 
 *** File / Goto
 
@@ -7619,7 +7627,8 @@ So deletes wont affect this register."
  (:prefix-map ("p" . "project")
   :desc "Workspace Project Files" "P" #'my::workspaces|find-workspace-project-file
   :desc "Project VC"              "v" #'my::workspaces|workspace-project-vc
-  :desc "Project Bookmarks"       "RET" #'my::jumpy|launch))
+  :desc "Project Bookmarks"       "RET" #'my::jumpy|launch
+  :desc "Recompile"       "C" #'recompile))
 #+END_SRC
 
 *** Search
