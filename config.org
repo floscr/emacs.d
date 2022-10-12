@@ -4859,6 +4859,17 @@ Then use ~]~ to navigate the sections
   :nv "{" (cmd! (my::magit/jumpunfold-section))))
 #+END_SRC
 
+**** Code Review
+
+#+begin_src elisp
+(map!
+ :after code-review
+ :map code-review-mode-map
+ :ng "RET" #'magit-diff-visit-file
+ :ng "TAB" #'magit-section-toggle
+ :ng "<tab>" #'magit-section-toggle)
+#+end_src
+
 **** Time Machine Navigation
 
 #+BEGIN_SRC elisp
