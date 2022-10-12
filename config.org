@@ -4867,7 +4867,9 @@ Then use ~]~ to navigate the sections
  :map code-review-mode-map
  :ng "RET" #'magit-diff-visit-file
  :ng "TAB" #'magit-section-toggle
- :ng "<tab>" #'magit-section-toggle)
+ :ng "<tab>" #'magit-section-toggle
+ :n "[[" #'code-review-comment-jump-previous
+ :n "]]" #'code-review-comment-jump-next)
 #+end_src
 
 **** Time Machine Navigation
