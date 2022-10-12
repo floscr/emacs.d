@@ -7539,12 +7539,13 @@ So deletes wont affect this register."
   :desc "Rename Buffer"  "r" #'rename-buffer
   :desc "Rename Buffer"  "+" #'persp-add-buffer))
 #+END_SRC
-*** Compile
+
+*** Code
 
 #+begin_src elisp
 (map!
  :leader
- (:prefix-map ("c" . "Compile")
+ (:prefix-map ("c" . "Code")
   :desc "Compile" "c"   #'my::project-compile|compile))
 #+end_src
 
