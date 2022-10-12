@@ -4400,6 +4400,17 @@ Package override that fixes multiple remotes:
 (use-package! git-lens
   :commands (git-lens))
 #+END_SRC
+**** [[https://github.com/wandersoncferreira/code-review][code-review]]
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! code-review
+  :config
+  (setq code-review-auth-login-marker 'forge))
+#+END_SRC
+
+
 *** Functions
 **** Create worktree workspace
 
