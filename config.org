@@ -4321,8 +4321,20 @@ Define jump points for lispyville functions
  :localleader
  "s" #'clojure-sort-ns
  "l" #'my::pitch|l10n-jump)
-
 #+END_SRC
+
+***** Test rotation words
+
+#+begin_src elisp
+(add-hook! 'clojurescript-mode-hook
+  (defun my::clojure/setup-test-file-vars ()
+    "Sets up variables for test files (cypress, jest)."
+    (when (-some->> (buffer-file-name)
+            (string-match "\\.*_spec.cljs$"))
+      ;; Rotate it/it.only
+      (add-to-list 'rotate-text-local-symbols '("it" "j/only")))))
+#+end_src
+
 *** Stylus
 
 #+begin_src elisp
