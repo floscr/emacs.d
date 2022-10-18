@@ -4435,8 +4435,8 @@ Automatically adds ~.projectfile~ and opens a new doom workspace.
   (interactive
    `(,@(magit-branch-read-args "Create and checkout branch")
      ,current-prefix-arg))
-  (let* ((worktree-path (f-join (projectile-project-root) ".worktrees"))
-         (path (f-join (projectile-project-root) ".worktrees" branch)))
+  (let* ((worktree-path (f-join (my::file/git-root) ".worktrees"))
+         (path (f-join worktree-path branch)))
     (when (not (f-exists-p worktree-path))
       (mkdir worktree-path t))
     (magit-run-git "worktree" "add" (if force "-B" "-b") branch (expand-file-name path) start-point)
