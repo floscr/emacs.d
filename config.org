@@ -2369,6 +2369,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (puthash "aic" "align-items:center;" emmet-css-snippets)
   (puthash "brd" "border-radius:|;" emmet-css-snippets)
   (puthash "df" "display:flex;" emmet-css-snippets)
+  (puthash "dn" "display:none;" emmet-css-snippets)
   (puthash "fdc" "flex-direction:column;" emmet-css-snippets)
   (puthash "fdr" "flex-direction:row;" emmet-css-snippets)
   (puthash "g" "gap:|;" emmet-css-snippets)
