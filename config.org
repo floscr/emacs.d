@@ -2366,19 +2366,19 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
         [tab] #'my:emmet/indent-or-yas-or-emmet-expand
         "M-E" #'emmet-expand-line)
 
-  (puthash "posr" "position:relative;" emmet-css-snippets)
+  (puthash "aic" "align-items:center;" emmet-css-snippets)
+  (puthash "brd" "border-radius:|;" emmet-css-snippets)
+  (puthash "df" "display:flex;" emmet-css-snippets)
+  (puthash "fdc" "flex-direction:column;" emmet-css-snippets)
+  (puthash "fdr" "flex-direction:row;" emmet-css-snippets)
+  (puthash "g" "gap:|;" emmet-css-snippets)
+  (puthash "jcc" "justify-content:center;" emmet-css-snippets)
+  (puthash "ov" "overflow:hidden;" emmet-css-snippets)
+  (puthash "pen" "pointer-events:none;" emmet-css-snippets)
+  (puthash "po" "top: 0;\nleft: 0;\nright: 0;\nbottom: 0;" emmet-css-snippets)
   (puthash "posa" "position:absolute;" emmet-css-snippets)
   (puthash "posf" "position:fixed;" emmet-css-snippets)
-  (puthash "po" "top: 0;\nleft: 0;\nright: 0;\nbottom: 0;" emmet-css-snippets)
-  (puthash "brd" "border-radius:|;" emmet-css-snippets)
-  (puthash "pen" "pointer-events:none;" emmet-css-snippets)
-  (puthash "df" "display:flex;" emmet-css-snippets)
-  (puthash "jcc" "justify-content:center;" emmet-css-snippets)
-  (puthash "aic" "align-items:center;" emmet-css-snippets)
-  (puthash "g" "gap:|;" emmet-css-snippets)
-  (puthash "ov" "overflow:hidden;" emmet-css-snippets)
-  (puthash "fdc" "flex-direction:column;" emmet-css-snippets)
-  (puthash "fdr" "flex-direction:row;" emmet-css-snippets))
+  (puthash "posr" "position:relative;" emmet-css-snippets))
 #+END_SRC
 **** [[https://elpa.gnu.org/packages/rainbow-mode.html][rainbow-mode]] :UI:
 
