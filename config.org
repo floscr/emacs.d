@@ -7375,6 +7375,7 @@ Global ~[~ & ~]~ combinator bindings
  :n "]e" #'flycheck-next-error
  :n "[e" #'flycheck-previous-error)
 #+END_SRC
+
 **** Projectile Alternate file finding
 
 #+BEGIN_SRC elisp
