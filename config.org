@@ -6773,8 +6773,8 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 (defun my::pitch|start-dev-terminal ()
   (interactive)
   (let ((default-directory (my::file/project-root)))
-    (my::pitch|apply-custom-dev-script)
-    (call-process-shell-command "alacritty -e $SHELL -c './scripts/pit dev'&" nil 0 nil)))
+    ;; (my::pitch|apply-custom-dev-script)
+    (call-process-shell-command "alacritty -e $SHELL -c './scripts/pit dev --desktop'&" nil 0 nil)))
 #+end_src
 
 **** Convert to uix
