@@ -613,7 +613,6 @@ When ARG is passed, query for a custom delimiter."
                      "-")))
     (my::evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
 #+end_src
-
 * Custom Packages
 ** TODO Jumpy - Custom Bookmarks
 
