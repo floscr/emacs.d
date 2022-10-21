@@ -4275,6 +4275,35 @@ Define jump points for lispyville functions
   (my::parinfer/save-excursion "paren"
    (call-interactively #'yank)))
 #+end_src
+***** Spy
+
+#+begin_src elisp
+(defun my::clojure/spy-buffer-fns ()
+  "Get buffer functions"
+  (-map
+   (lambda (x) (->> x
+                    (cdr)
+                    (car)
+                    (substring-no-properties)
+                    ((lambda (x) (s-split-up-to ": " x 1)))
+                    (cdr)
+                    (car)))
+   (counsel--imenu-candidates)))
+
+(defun my::clojure|spy ()
+  "Wrap element with spy function and insert function into file if not already available in namespace."
+  (interactive)
+  (save-excursion
+    (let* ((fns (my::clojure/fns))
+           (spy? (-contains? fns "spy")))
+     (lispyville-wrap-round t)
+     (insert "spy ")
+     (when (not spy?)
+       (lispyville-backward-function-begin)
+       (insert "(defn spy" "\n"
+               "  ([val] (js/console.log val) val)" "\n"
+               "  ([val desc] (js/console.log desc val) val))" "\n" "\n")))))
+#+end_src
 
 **** Config
 
