@@ -4059,7 +4059,8 @@ arguments can be set as a list via ‘nimpretty-args’."
 #+begin_src elisp
 (use-package! cider
   :config
-  (setq cider-repl-pop-to-buffer-on-connect nil))
+  (setq cider-repl-pop-to-buffer-on-connect nil)
+  (setq cider-words-of-inspiration nil))
 #+end_src
 ****** Hacks
 ******* Fix cider for 28.1
