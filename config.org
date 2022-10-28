@@ -6849,7 +6849,9 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 #+begin_src elisp
 (defun my::pitch|debug-statement ()
   (interactive)
-  (let* ((name (read-string "Debug var name: " "dd"))
+  (let* ((clojure-symbol (doom-thing-at-point-or-region))
+         (placeholder (if clojure-symbol (concat "dd-" (substring-no-properties clojure-symbol)) "dd"))
+         (name (read-string "Debug var name: " placeholder))
          (suffix (-some->> (s-split-up-to "-" name 1)
                    (-second-item)
                    ((lambda (x) (s-wrap x "\"")))))
