@@ -7607,7 +7607,9 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("c" . "Code")
-  :desc "Compile" "c"   #'my::project-compile|compile))
+  :desc "Compile" "c"   #'my::project-compile|compile
+  :desc "Rename" "r"   #'lsp-rename
+  :desc "Execute code action" "a"   #'lsp-execute-code-action))
 #+end_src
 
 *** File / Goto
