@@ -4231,6 +4231,32 @@ Define jump points for lispyville functions
 #+end_src
 
 **** Functions
+***** Keywords to map
+
+#+begin_src elisp
+(defun my::clojure|region-keywords-to-map ()
+  "Convert keywords in region to a clojure map."
+  (interactive)
+  (let* ((beg (region-beginning))
+         (end (region-end))
+         (input (buffer-substring-no-properties beg end))
+         (output (->> input
+                      (s-replace-all '(("(" . "")
+                                       (")" . "")
+                                       ("[" . "")
+                                       ("]" . "")))
+                      (s-split "\s")
+                      (-sort #'string<)
+                      (-map (fn! (concat ":" % " " %)))
+                      (s-join (if (> (length input) 20) "\n" " "))
+                      ((lambda (x) (s-wrap x "{" "}"))))))
+    (save-excursion
+      (my::parinfer/save-excursion
+       "paren"
+       (progn
+         (delete-region beg end)
+         (insert output))))))
+#+end_src
 
 ***** Key formatting sorting
 
