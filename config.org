@@ -6440,7 +6440,7 @@ These don't work if you have a big line-height.
 #+BEGIN_SRC elisp
 (defun my::calendar::filtered|personal (&rest args)
   (interactive)
-  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK")))
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK-HIDE_CALENDAR")))
       (call-interactively #'=calendar)))
 #+END_SRC
 
@@ -6468,7 +6468,7 @@ These don't work if you have a big line-height.
 #+BEGIN_SRC elisp
 (defun my::calendar::filtered|no-family (&rest args)
   (interactive)
-  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-FAMILY-WORK")))
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-FAMILY-WORK-HIDE_CALENDAR")))
       (call-interactively #'=calendar)))
 #+END_SRC
 
@@ -6477,7 +6477,7 @@ These don't work if you have a big line-height.
 #+BEGIN_SRC elisp
 (defun my::calendar::filtered|work (&rest args)
   (interactive)
-  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+WORK")))
+  (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+WORK-HIDE_CALENDAR")))
       (call-interactively #'=calendar)))
 #+END_SRC
 *** Config
