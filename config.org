@@ -2926,6 +2926,7 @@ npm i -g json-fix
     (shell-command-on-region b e
      (template "json-fix --no-sort --spaces <<tab-width>>") (current-buffer) t)))
 #+END_SRC
+
 **** Bindings
 
 #+BEGIN_SRC elisp
@@ -6878,6 +6879,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
         (with-current-buffer buffer (revert-buffer))
         (message "Autofixed buffer!")))))
 #+end_src
+
 **** Debug
 
 #+begin_src elisp
@@ -6943,6 +6945,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
                  (s-replace-regexp "^:" ""))))
     (+ivy-file-search :query id :in l10n-dir)))
 #+end_src
+
 **** Convert string to l10n
 
 #+begin_src elisp

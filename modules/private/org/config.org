@@ -1082,6 +1082,8 @@ Take the host as the base and either the TITLE or the path from the URL."
 
 **** Main
 
+- Don't use ~--mirror~ as it downloads too much
+
 #+BEGIN_SRC elisp
 (defun +org-backup/wget-link (dir)
   "Wget the given URL to the +org-backup:link-backup-directory"
