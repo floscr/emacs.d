@@ -54,6 +54,7 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 #+BEGIN_SRC emacs-lisp :tangle "init.el" :comments no
 ;; -*- no-byte-compile: t; -*-
 #+END_SRC
+
 ** Required Packages
 
 Packages and utilities needed for this config.
@@ -7039,11 +7040,33 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 *** Pairing mode
 
 #+begin_src elisp
+(defun my::pitch*activate-lsp-header ()
+  (when lsp-mode
+    (setq-local lsp-headerline-breadcrumb-segments '(symbols))
+    (lsp-headerline-breadcrumb-mode 1)))
+
+(defvar my::pitch:pairing-mode nil)
+
 (defun my::pitch|start-pairing ()
   (interactive)
   (doom-big-font-mode 1)
-  (setq lsp-headerline-breadcrumb-segments '(symbols))
-  (lsp-headerline-breadcrumb-mode))
+  (add-hook! 'window-configuration-change-hook #'my::pitch*activate-lsp-header)
+  (my::pitch*activate-lsp-header)
+  (setq my::pitch:pairing-mode t)
+  (set-face-attribute 'line-number nil :foreground (face-attribute 'line-number-current-line :foreground)))
+
+(defun my::pitch|stop-pairing ()
+  (interactive)
+  (doom-big-font-mode 0)
+  (remove-hook! 'window-configuration-change-hook #'my::pitch*activate-lsp-header)
+  (lsp-headerline-breadcrumb-mode -1)
+  (setq my::pitch:pairing-mode nil))
+
+(defun my::pitch|toggle-pairing ()
+  (interactive)
+  (if my::pitch:pairing-mode
+      (my::pitch|stop-pairing)
+    (my::pitch|start-pairing)))
 #+end_src
 
 * Bindings
