@@ -7052,6 +7052,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (doom-big-font-mode 1)
   (add-hook! 'window-configuration-change-hook #'my::pitch*activate-lsp-header)
   (my::pitch*activate-lsp-header)
+  (tab-bar-mode 1)
   (setq my::pitch:pairing-mode t)
   (set-face-attribute 'line-number nil :foreground (face-attribute 'line-number-current-line :foreground)))
 
@@ -7060,6 +7061,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (doom-big-font-mode 0)
   (remove-hook! 'window-configuration-change-hook #'my::pitch*activate-lsp-header)
   (lsp-headerline-breadcrumb-mode -1)
+  (tab-bar-mode -1)
   (setq my::pitch:pairing-mode nil)
   (doom/reload-theme))
 
