@@ -1085,7 +1085,7 @@ Take the host as the base and either the TITLE or the path from the URL."
 - Don't use ~--mirror~ as it downloads too much
 
 #+BEGIN_SRC elisp
-(defun +org-backup/wget-link (dir)
+(defun +org-backup/wget-link (dir url)
   "Wget the given URL to the +org-backup:link-backup-directory"
   (require 'deferred)
   (let ((default-directory dir))
@@ -1115,10 +1115,9 @@ Take the host as the base and either the TITLE or the path from the URL."
         "--reject" "css,woff,ttf,js"
         url)))
 
-(defun +org-backup/cleanup-remove-inline-svgs (path)
+(defun +org-backup/cleanup-remove-inline-svgs (content)
   "Removes inline svgs like [[data:image/svg.]] that are note useful when reading org files."
-  (-> (s-replace-regexp "\\[\\[data:image/svg.+?\\]\\][\n\s]?" "" (f-read path))
-      (f-write 'utf-8 path)))
+  (s-replace-regexp "\\[\\[data:image/svg.+?\\]\\][\n\s]?" "" content))
 
 (defun +org-backup/get-wget-html-file (path)
   "Get the html file that was downloaded by wget,
@@ -1185,7 +1184,7 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
       ('link (my::buffer|insert-line-above (template "#+BACKUP: [[<<dir>>]]")))
       (t (org-set-property "BACKUP" (template "[[<<dir>>]]"))))
     (deferred:$
-      (+org-backup/wget-link dir)
+      (+org-backup/wget-link dir url)
       (deferred:error it `(lambda (err)
                             (if (+org-backup/get-wget-html-file ,dir)
                                 (deferred:next (lambda () (message "Error during wget, but html file exist, so we continue")))
@@ -1195,9 +1194,10 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
                              (+org-backup/get-wget-html-file ,dir)
                              (+org-backup/convert-html-to-org))))
       (deferred:nextc it `(lambda ()
-                            (->>
-                             (f-swap-ext (+org-backup/get-wget-html-file ,dir) "org")
-                             (+org-backup/cleanup-remove-inline-svgs))))
+                            (let* ((path (f-swap-ext (+org-backup/get-wget-html-file ,dir) "org")))
+                              (->> (f-read path)
+                                   (+org-backup/cleanup-remove-inline-svgs)
+                                   ((lambda (content) (f-write content 'utf-8 path)))))))
       (deferred:nextc it `(lambda ()
                             (when ,to-epub?
                               (+org-backup/convert-html-to-epub ,dir))))
@@ -2421,15 +2421,19 @@ Cant remove them with:
                (f-expand)
                (-id-when #'f-exists?)
                (+org/attach-file-and-insert-link))))
-          ((--find (s-contains? "image/png" it) targets)
-           (+org/attach-file-and-insert-link))
+          ;; ((--find (s-contains? "image/png" it) targets)
+          ;;  (+org/attach-file-and-insert-link))
           (t (let* ((txt (shell-command-to-string (t! "<<timeout>> xclip -o -selection clipboard"))))
-               (cond ((or (string= "End of file during parsing" txt)
-                          (string= "" txt))
-                      (-log "xclip timed out"))
-                     ((s-matches-p url-handler-regexp txt)
-                      (+org/attach-file-and-insert-link txt))
-                     (t (user-error "Could not save clipboard contents:\n%s" txt))))))))
+               (cond
+                ;; Timeout for xclip
+                ((or (string= "End of file during parsing" txt)
+                     (string= "" txt))
+                 (-log "xclip timed out"))
+                ;; URL
+                ((s-matches-p url-handler-regexp txt)
+                 (+org/attach-file-and-insert-link txt))
+                ;; Image
+                (t (user-error "Could not save clipboard contents:\n%s" txt))))))))
 #+END_SRC
 
 **** Journal
