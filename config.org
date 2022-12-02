@@ -7060,7 +7060,8 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (doom-big-font-mode 0)
   (remove-hook! 'window-configuration-change-hook #'my::pitch*activate-lsp-header)
   (lsp-headerline-breadcrumb-mode -1)
-  (setq my::pitch:pairing-mode nil))
+  (setq my::pitch:pairing-mode nil)
+  (doom/reload-theme))
 
 (defun my::pitch|toggle-pairing ()
   (interactive)
