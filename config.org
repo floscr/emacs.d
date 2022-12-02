@@ -692,6 +692,14 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 (defvar my::jumpy:local-bookmarks-file nil)
 (setq my::jumpy:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
 
+(defun my::jumpy::project/file-path ()
+  (f-join (my::file/git-root) "bookmarks.json"))
+
+(defun my::jumpy/project-bookmarks-file-bookmark ()
+  "Bookmarks entry for the project bookmarks file."
+  `((file . ,(my::jumpy::project/file-path))
+    (name . "bookmarks")))
+
 (defun my::jumpy/goto-bookmark-dwim (x &optional &key other-window?)
   "Jump to a X relative to the project root, go to character POS."
   (require 'link-hint)
@@ -781,9 +789,6 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
   "Open bookmark X in other window, used with ivy action 'j'."
   (my::jumpy/goto-bookmark-dwim (cdr x) :other-window? t))
 
-(defun my::jumpy::project/file-path ()
-  (f-join (my::file/git-root) "bookmarks.json"))
-
 (defun my::jumpy::project|save ()
   (interactive)
   (let ((file (my::jumpy::project/file-path))
@@ -796,7 +801,10 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
 
 (defun my::jumpy::project|launch ()
   (interactive)
-  (my::jumpy|launch (my::jumpy/local-list (my::jumpy::project/file-path)) #'my::jumpy::project|launch))
+  (let ((bookmarks (->> (my::jumpy::project/file-path)
+                        (my::jumpy/local-list)
+                        (-append (my::jumpy/project-bookmarks-file-bookmark)))))
+    (my::jumpy|launch bookmarks #'my::jumpy::project|launch)))
 
 ;;;###autoload
 (cl-defun my::jumpy|launch (&optional bookmarks-list (caller #'my::jumpy|launch))
