@@ -2066,6 +2066,27 @@ Press =gr= with a following motion character like =w=.
 (after! evil-snipe
   (setq evil-snipe-repeat-keys t))
 #+END_SRC
+**** [[https://github.com/NicholasBHubbard/clean-kill-ring.el][clean-kill-ring.el: Keep your kill ring clean]]
+
+Filters out whitespace from the kill ring
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! clean-kill-ring
+  :recipe (:type git
+           :host github
+           :repo "NicholasBHubbard/clean-kill-ring.el")
+  :pin "3338a186329a1bef19e6781aa75befa5a0d031be")
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! clean-kill-ring
+  :config (clean-kill-ring-mode 1))
+#+END_SRC
+
 *** Functions
 
 **** Evil Insert
