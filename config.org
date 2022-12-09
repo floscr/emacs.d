@@ -4243,7 +4243,9 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
   ;; Override paragraph jumping from additional key theme
   (map! :map lispyville-mode-map
         :nm "{" #'evil-backward-paragraph
-        :nm "}" #'evil-forward-paragraph))
+        :nm "}" #'evil-forward-paragraph
+        :nm "M-J" #'my::lispyville|drag-2-forward
+        :nm "M-K" #'my::lispyville|drag-2-backward))
 #+END_SRC
 
 ******* Jumps
@@ -4259,6 +4261,27 @@ Define jump points for lispyville functions
 (advice-add #'lispyville-insert-at-end-of-list :around #'doom-set-jump-a)
 (advice-add #'lispyville-open-below-list :around #'doom-set-jump-a)
 (advice-add #'lispyville-open-above-list :around #'doom-set-jump-a)
+#+end_src
+****** Functions
+
+******* Drag two items forward/backward
+
+#+begin_src elisp
+(defun my::lispyville|drag-2-backward ()
+  "Drags two items backward, useful for maps to drag the key and the value around."
+  (interactive)
+  (lispyville--drag #'lispy-move-up 2)
+  (lispyville-forward-sexp-alt2 3)
+  (lispyville--drag #'lispy-move-up 2)
+  (lispyville-backward-sexp))
+
+(defun my::lispyville|drag-2-forward ()
+  "Drags two items backward, useful for maps to drag the key and the value around."
+  (interactive)
+  (lispyville--drag #'lispy-move-down 2)
+  (lispyville-backward-sexp)
+  (lispyville--drag #'lispy-move-down 2)
+  (lispyville-backward-sexp))
 #+end_src
 
 **** Functions
