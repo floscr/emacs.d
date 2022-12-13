@@ -1143,7 +1143,8 @@ This function will mutate the hashtable M."
 
 (defun my::project-compile|compile ()
   (interactive)
-  (let* ((dir (my::file/project-root))
+  (let* ((dir (->> (my::file/project-root)
+                   (f-full)))
          (items (->> (my::project-compile/get-cache-items (intern dir))
                      (reverse))))
     (ivy-read "Compile: " (seq-into items 'list)
