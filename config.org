@@ -4355,7 +4355,9 @@ Define jump points for lispyville functions
   "Yank with temporary paren mode enabled."
   (interactive)
   (my::parinfer/save-excursion "paren"
-   (call-interactively #'yank)))
+   (call-interactively #'yank)
+   (+evil|select-pasted)
+   (evil-indent)))
 #+end_src
 ***** Spy
 
