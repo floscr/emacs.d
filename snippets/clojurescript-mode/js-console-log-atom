@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: js-console-log-atom
+# key: log
+# --
+js/console.log
