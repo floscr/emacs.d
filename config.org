@@ -7081,6 +7081,22 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (shell-command cmd nil nil)
     (revert-buffer)))
 #+end_src
+**** Stylus Variables
+
+#+begin_src elisp
+(defun my::pitch/get-css-variables ()
+  (let* ((path (f-join (projectile-project-root) "desktop-app/src/app/pitch/styles/helpers.styl"))
+         (content (f-read path)))
+    (->> (s-lines content)
+         (--filter (s-starts-with? "$" it)))))
+
+(defun my::pitch/get-css-variables-value (line)
+  (->> line
+       (s-split " ")
+       (car)))
+#+end_src
+
+
 
 *** Pairing mode
 
