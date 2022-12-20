@@ -643,8 +643,6 @@ When ARG is passed, query for a custom delimiter."
     (name . "Xmonad"))
    ((file . "~/.config/dotfiles/config/xmonad/xmonad.hs")
     (name . "Xmonad"))
-   ((file . "~/.config/doom/autoload.org")
-    (name . "Config: Autoloads"))
    ((file . "~/.config/doom/modules/private/org/config.org")
     (name . "Config: Org"))
    ((fn . (lambda () (find-file my::jumpy:local-bookmarks-file)))
