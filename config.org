@@ -676,6 +676,8 @@ When ARG is passed, query for a custom delimiter."
     (name . "Vagrant: mindmeister-web magit status"))
    ((file . "~/Media/Scans/Scans.org")
     (name . "Scans"))
+   ((file . "~/Documents/Books/Programming/Clojure_The_Essential_Reference_v31.pdf")
+    (name . "Clojure: The Essential Guide"))
    ((fn . org-capture-goto-last-stored)
     (name . "Capture: Last Stored Marker"))))
 #+end_src
