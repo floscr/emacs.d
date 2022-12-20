@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: user.packages
+# key: up
+# --
+user.packages = with pkgs; [ $0 ];
