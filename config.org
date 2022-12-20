@@ -4387,8 +4387,36 @@ Define jump points for lispyville functions
                "  ([val] (js/console.log val) val)" "\n"
                "  ([val desc] (js/console.log desc val) val))" "\n" "\n")))))
 #+end_src
+***** Inspect cleaned up expression
+
+#+begin_src elisp
+(defun my::cider|inspect-expr (expr ns)
+  "Evaluate EXPR in NS and inspect its value.
+Interactively, EXPR is read from the minibuffer, and NS the
+current buffer's namespace."
+  (interactive (list (cider-read-from-minibuffer "Inspect expression: " (cider-sexp-at-point))
+                     (cider-current-ns)))
+  (setq cider-inspector--current-repl (cider-current-repl))
+  (when-let* ((value (cider-sync-request:inspect-expr
+                      expr ns
+                      cider-inspector-page-size
+                      cider-inspector-max-atom-length
+                      cider-inspector-max-coll-size)))
+    (cider-inspector--render-value value)
+    (with-current-buffer cider-inspector-buffer
+      (let ((content (->> (buffer-substring-no-properties (point-min) (point-max))
+                          (s-replace "\nInspector error for: " "")
+                          (s-replace-regexp ",$" ""))))
+        (read-only-mode -1)
+        (erase-buffer)
+        (insert content)
+        (zprint-format-buffer)
+        (clojurescript-mode)
+        (goto-char (point-min))))))
+#+end_src
 
 **** Config
+
 
 #+begin_src elisp
 (use-package! lsp-mode
