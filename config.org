@@ -1338,7 +1338,7 @@ which I name after the matching url.
  :lang
  beancount
  lua
- nix
+ (nix +lsp)
  rust
  (ruby +rails)
  rest
