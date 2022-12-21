@@ -4197,10 +4197,15 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 #+begin_src elisp
 (use-package! clojure-mode
   :config
-  (map! (:localleader
-          (:map (clojure-mode-map clojurescript-mode-map clojurec-mode-map)
-            "c"  #'my::cider|connect-clj
-            "C"  #'my::cider|connect-cljs))))
+  (map!
+   (:localleader
+     (:map (clojure-mode-map clojurescript-mode-map clojurec-mode-map)
+       "c"  #'my::cider|connect-clj
+       "C"  #'my::cider|connect-cljs
+       (:prefix ("i" . "inspect")
+                "e" #'cider-enlighten-mode
+                "i" #'my::cider|inspect-expr
+                "r" #'cider-inspect-last-result)))))
 #+end_src
 
 ***** [[https://github.com/noctuid/lispyville][lispyville]]
