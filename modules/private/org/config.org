@@ -390,6 +390,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
          '("Main/gtd.org"
            "Main/gtd-reoccuring-events.org"
            "Main/inbox.org"
+           "Main/mobile-inbox.org"
            "Main/projects.org"
            "Main/contacts.org"
            "Main/calendar-family.org"
@@ -529,6 +530,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
        ((org-agenda-prefix-format "  %?-12t% s")
         (org-agenda-sorting-strategy '(priority-down user-defined-down timestamp-down todo-state-down))
         (org-super-agenda-groups '((:name nil :discard (:and (:file-path "projects.org" :not (:todo ("ACTIVE")))))
+                                   (:name "Mobile Inbox" :file-path ".*mobile-inbox.org$" :order 3)
                                    (:name "Projects" :tag ("PROJECT") :order 1000)
                                    (:name "Next" :todo ("ACTIVE"))
                                    (:name nil :discard (:scheduled t :deadline t :file-path "gtd-reoccuring-events.org"))
