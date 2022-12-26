@@ -4204,8 +4204,11 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
        "C"  #'my::cider|connect-cljs
        (:prefix ("i" . "inspect")
                 "e" #'cider-enlighten-mode
-                "i" #'my::cider|inspect-expr
-                "r" #'cider-inspect-last-result)))))
+                "i" #'cider-inspect
+                "r" #'cider-inspect-last-result))
+     (:map (clojurescript-mode-map)
+      (:prefix ("i" . "inspect")
+               "i" #'my::cider|inspect-expr)))))
 #+end_src
 
 ***** [[https://github.com/noctuid/lispyville][lispyville]]
