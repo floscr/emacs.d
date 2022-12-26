@@ -5682,7 +5682,8 @@ This shortens the nixos paths to ~{nix}~.
 (defun my::proced/remove-nixos-path-name (oldformat &rest xs)
   (let ((xs (--map (->> it
                         (s-replace-regexp "/nix/store/[^/]+" "{nix}")
-                        (s-replace-regexp (template "^/home/<<(user-login-name)>>") "~")
+                        (s-replace-regexp (concat "^/home/" (user-login-name)) "~")
+                        (s-replace-regexp (concat "^/etc/profiles/per-user/" (user-login-name)) "~")
                         ((lambda (x) (if (s-contains? "chromium" x) "{chromium}" x))))
                   xs)))
     (apply oldformat xs)))
