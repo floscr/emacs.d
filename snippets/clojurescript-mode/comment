@@ -1,6 +1,5 @@
 # -*- mode: snippet -*-
-# name: comment
-# uuid: comment
-# key: c
+# name:
+# key: trigger-key
+# condition: t
 # --
-(comment $0)
