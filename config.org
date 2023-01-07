@@ -4487,19 +4487,18 @@ current buffer's namespace."
 (after! clojure-mode
   (font-lock-add-keywords
    'clojurescript-mode
-   `(;; Definitions.
-       (,(concat "(\\(?:clojure.core/\\)?\\("
-                  (regexp-opt '("defui" "$"))
-                  ;; Function declarations.
-                  "\\)\\>"
-                  ;; Any whitespace
-                  "[ \r\n\t]*"
-                  ;; Possibly type or metadata
-                  "\\(?:#^\\(?:{[^}]*}\\|\\sw+\\)[ \r\n\t]*\\)?"
+   `((,(concat "(\\(?:clojure.core/\\)?\\("
+                (regexp-opt '("defui" "$" "defn*"))
+                ;; Function declarations.
+                "\\)\\>"
+                ;; Any whitespace
+                "[ \r\n\t]*"
+                ;; Possibly type or metadata
+                "\\(?:#^\\(?:{[^}]*}\\|\\sw+\\)[ \r\n\t]*\\)?"
 
-                  "\\(\\sw+\\)?")
-        (1 font-lock-keyword-face)
-        (2 font-lock-function-name-face nil t)))
+                "\\(\\sw+\\)?")
+      (1 font-lock-keyword-face)
+      (2 font-lock-function-name-face nil t)))
    t))
 #+end_src
 
