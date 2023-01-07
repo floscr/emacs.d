@@ -4125,7 +4125,15 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
   (noflet ((cider--ssh-hosts () nil))
     (cider-connect-cljs params)))
 #+end_src
+
 ******* Eval clojure org blocks with ~babashka~
+
+Executes clojure with [[https://babashka.org/][Babashka]] and clojurescript with [[https://github.com/babashka/nbb][babashka/nbb]].
+nbb needs to be installed via npm
+
+#+begin_src sh :tangle no
+npm i -g nbb
+#+end_src
 
 #+begin_src elisp
 (with-eval-after-load 'ob-clojure
@@ -4148,19 +4156,35 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
     "Evaluate EXPANDED code block with PARAMS using babashka."
     (unless (executable-find "bb")
       (user-error "Babashka not installed"))
-    (let* ((stdin (let ((stdin (cdr (assq :stdin params))))
+    (let* ((target (a-get params :target))
+           (clojurescript? (string= target 'cljs))
+           (stdin (let ((stdin (cdr (assq :stdin params))))
                     (when stdin
                       (elisp->clj
                        (org-babel-ref-resolve stdin)))))
            (input (cdr (assq :input params)))
+           ;; Wrap clojurescript in print statement since nbb doesn't print the last result (like node)
+           (expanded (if clojurescript?
+                         (format "(print %s)" expanded)
+                       expanded))
            (file (make-temp-file "ob-clojure-bb" nil nil expanded))
+           (executable (or (cond
+                            (clojurescript? (executable-find "nbb"))
+                            (t "bb"))
+                           (user-error "Could not find executable for target %s!" target)))
            (command (concat (when stdin (format "echo %s | " (shell-quote-argument stdin)))
-                            (format "bb %s -f %s"
-                                    (cond
-                                     ((equal input "edn") "")
-                                     ((equal input "text") "-i")
-                                     (t ""))
-                                    (shell-quote-argument file))))
+                            ;; nbb has different input params...
+                            (if clojurescript?
+                              (format "%s %s"
+                                      executable
+                                      (shell-quote-argument file))
+                              (format "%s %s -f %s"
+                                      executable
+                                      (cond
+                                       ((equal input "edn") "")
+                                       ((equal input "text") "-i")
+                                       (t ""))
+                                      (shell-quote-argument file)))))
            (result (shell-command-to-string command)))
       (s-trim result)))
 
