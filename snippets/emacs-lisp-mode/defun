@@ -1,7 +1,5 @@
 # -*- mode: snippet -*-
-# name: defun
-# key: d
+# name: defvar
+# key: v
 # --
-(defun my::${1:function-name} ()
-    "${3:Function docstring}"
-    ${2:(message)})
+(defvar $0)

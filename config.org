@@ -1150,6 +1150,46 @@ This function will mutate the hashtable M."
     (ivy-read "Compile: " (seq-into items 'list)
               :action (lambda (cmd) (my::project-compile/compile-cmd cmd dir)))))
 #+end_src
+** Comment header
+
+#+begin_src elisp
+(defvar my-comment-header:col-count 80
+  "Of how many cols should the header consist.")
+
+(defvar my-comment-header:col-char "-"
+  "With which character to fill the comment header.")
+
+(defvar my-comment-header:mode-comment-start
+  '((clojurescript-mode . ";;")))
+
+(defun my-comment-header/comment-start ()
+  "Return the `comment-start' either defined by `my-comment-header/comment-start' or by the `major-mode'."
+  (or (alist-get major-mode my-comment-header:mode-comment-start)
+      comment-start))
+
+(defun my-comment-header/read-string ()
+  "Helper function to read the comment header string."
+  (read-string (format "Comment header (%s): "
+                       (my-comment-header/comment-start))))
+
+(defun my-comment-header/fill (str)
+  "Fill the string with the comment header char"
+  (let ((n (- my-comment-header:col-count (length str))))
+    (concat str (s-repeat n my-comment-header:col-char))))
+
+(defun my-comment-header|insert (title)
+  "Insert a comment header on the current line."
+  (interactive (list (my-comment-header/read-string)))
+  (let* ((str-beg (concat (my-comment-header/comment-start) " "))
+         (str (->> (concat str-beg title " ")
+                   (my-comment-header/fill))))
+    (insert str)
+    (goto-char (line-beginning-position))
+    (forward-char (length (concat str-beg title)))
+    (evil-insert-state)
+    (overwrite-mode 1)))
+#+end_src
+
 
 * Default Configuration
 ** Temp
