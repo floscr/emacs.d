@@ -6784,8 +6784,21 @@ ob-async enables asynchronous execution of org-babel src blocks via the ~:async~
 #+begin_src elisp
 (use-package! org-protocol)
 #+end_src
-**** org-babel
+**** [[https://codeberg.org/theesm/ob-nix][org-babel: nix]]
 
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! ob-nix)
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! ob-nix)
+#+END_SRC
+
+**** org-babel
 ***** Functions
 
 ****** Eval clojure org blocks with ~babashka~ :CLOJURE:
@@ -6876,7 +6889,6 @@ npm i -g nbb
 
 (add-hook 'org-mode-hook (lambda () (require 'ob-clojure)))
 #+end_src
-
 
 
 
