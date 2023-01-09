@@ -6790,7 +6790,7 @@ ob-async enables asynchronous execution of org-babel src blocks via the ~:async~
 ***** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! ob-nix)
+(package! ob-nix :recipe (:host codeberg :repo "theesm/ob-nix") :pin "76d71b37fb")
 #+END_SRC
 
 ***** Config
