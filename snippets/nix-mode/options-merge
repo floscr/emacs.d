@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Options: Merge (mkMerge)
+# key: mm
+# --
+mkMerge [
+  $0
+];

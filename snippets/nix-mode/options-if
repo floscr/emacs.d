@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Options: If (mkIf)
+# key: mi
+# --
+(mkIf ${1:cfg.enable} {
+  $0
+})
