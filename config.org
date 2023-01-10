@@ -8299,6 +8299,15 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Zoom in" :gn "0" (cmd! (image-transform-set-scale 1)))
 #+END_SRC
 
+*** Wgrep Mode
+
+#+BEGIN_SRC elisp
+(map! :map 'wgrep-mode-map
+      :localleader
+      :desc "Occur" :gn "o" #'my::ivy-occur|evil-mutliedit-last-search
+      :desc "Occur" :gn "s" #'my::ivy-occur|evil-ex-last-search)
+#+END_SRC
+
 ** Minibuffer
 *** Copy and Paste from the minibuffer
 
