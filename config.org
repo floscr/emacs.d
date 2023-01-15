@@ -1160,7 +1160,8 @@ This function will mutate the hashtable M."
   "With which character to fill the comment header.")
 
 (defvar my-comment-header:mode-comment-start
-  '((clojurescript-mode . ";;")))
+  '((clojurescript-mode . ";;")
+    (clojure-mode . ";;")))
 
 (defun my-comment-header/comment-start ()
   "Return the `comment-start' either defined by `my-comment-header/comment-start' or by the `major-mode'."
