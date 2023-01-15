@@ -5946,6 +5946,7 @@ If prefix ARG is set, prompt for a known project to search from."
 
 (advice-add #'+default/search-project-for-symbol-at-point :override #'my::ivy|search-project-for-symbol-at-point)
 #+end_src
+
 ****** Occur modify for last search
 
 In the occur buffer I quickly want to change the text I searched for.
@@ -7992,7 +7993,8 @@ So deletes wont affect this register."
  :leader
  (:prefix-map ("i" . "insert")
    :desc "New Snippet"    "S" #'+snippets/new
-   :desc "Killring"       "y" #'helm-show-kill-ring))
+   :desc "Killring"       "y" #'helm-show-kill-ring
+   :desc "Comment Header" "h" #'my-comment-header|insert))
 #+END_SRC
 
 *** Open
@@ -8044,7 +8046,8 @@ So deletes wont affect this register."
  :leader
  (:prefix-map ("t" . "toggle")
    :desc "Theme Dark/Light" "t" #'my::ui|toggle-theme
-   :desc "Auto Completion" "c" #'+company/toggle-auto-completion))
+   :desc "Auto Completion" "c" #'+company/toggle-auto-completion
+   :desc "Comment Header Fold" "<" #'my-comment-header|fold-all))
 #+END_SRC
 
 *** Window
