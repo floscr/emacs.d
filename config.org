@@ -1219,7 +1219,6 @@ This function will mutate the hashtable M."
   (setq my-comment-header:col-count vimish-fold-header-width))
 #+end_src
 
-
 * Default Configuration
 ** Temp
 
