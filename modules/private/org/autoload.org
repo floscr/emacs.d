@@ -161,7 +161,7 @@ Offer all links for either file or agenda under the current =point=.
 (defun +org|mpv-link-at-point ()
   (interactive)
   (-some->> (+org|offer-links-at-point)
-    (my::shell/mpv-youtube-url)))
+    (my-shell/mpv-youtube-url)))
 #+END_SRC
 
 ** Parse Link

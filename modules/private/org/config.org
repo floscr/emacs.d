@@ -18,9 +18,9 @@
   (setq org-directory "~/Documents/Org")
   (setq org-default-notes-file (+org/expand-org-file-name "Main/inbox.org")))
 
-(setq my::org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
-(setq my::org:reading-list-file (+org/expand-org-file-name "Main/reading-list.org"))
-(setq my::org/bookmarks-file (+org/expand-org-file-name "Bookmarks/bookmarks.org"))
+(setq my-org:shopping-list-file (+org/expand-org-file-name "Main/shoppinglist.org"))
+(setq my-org:reading-list-file (+org/expand-org-file-name "Main/reading-list.org"))
+(setq my-org/bookmarks-file (+org/expand-org-file-name "Bookmarks/bookmarks.org"))
 #+END_SRC
 
 **** Fix date compatibility before 1970
@@ -284,12 +284,12 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                    :keys "b")
                   ("Chrome Window"
                    :keys "c"
-                   :title "%(my::wm/last-browser-url-org-link)")
+                   :title "%(my-wm/last-browser-url-org-link)")
                   ("Reading List"
                    :keys "r"
-                   :title "%(my::wm/last-browser-url-org-link)"
+                   :title "%(my-wm/last-browser-url-org-link)"
                    :headline "Reading List"
-                   :file my::org:reading-list-file)
+                   :file my-org:reading-list-file)
                   ("Elfeed"
                    :keys "e"
                    :children
@@ -297,23 +297,23 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                      :keys "w"
                      :title "%(pop kill-ring)"
                      :headline "Watching List"
-                     :file my::org:reading-list-file)
+                     :file my-org:reading-list-file)
                     ("Read"
                      :keys "r"
                      :title "%(pop kill-ring)"
                      :headline "Reading List"
-                     :file my::org:reading-list-file)))
+                     :file my-org:reading-list-file)))
                   ("Shopping"
                    :keys "s"
                    :headline "Supermarket"
-                   :file my::org:shopping-list-file)
+                   :file my-org:shopping-list-file)
                   ("Recipe"
                    :keys "R"
                    :headline "Recipes"
                    :file ,(f-join org-directory "Main/cooking.org")
-                   :template ("* %(car (my::wm/last-browser-window))"
+                   :template ("* %(car (my-wm/last-browser-window))"
                               ":PROPERTIES:"
-                              ":SOURCE: %(nth 1 (my::wm/last-browser-window))"
+                              ":SOURCE: %(nth 1 (my-wm/last-browser-window))"
                               ":END:"
                               "** Prep"
                               "%?"
@@ -328,30 +328,30 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                      :keys "t")
                     ("Task (Chrome)"
                      :keys "c"
-                     :title "%(my::wm/last-browser-url-org-link-formatted)")
+                     :title "%(my-wm/last-browser-url-org-link-formatted)")
                     ("Job Application (Chrome)"
                      :keys "j"
-                     :title "%(my::wm/last-browser-url-org-link-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
+                     :title "%(my-wm/last-browser-url-org-link-formatted) :META:JOB_APPLICATION:\nSCHEDULED: %(org-insert-time-stamp (current-time))")
                     ("Meeting (Chrome)"
                      :keys "m"
-                     :title "%(my::wm/last-browser-url-org-link-formatted) :MEETING:")
+                     :title "%(my-wm/last-browser-url-org-link-formatted) :MEETING:")
                     ("Review (Chrome)"
                      :keys "r"
-                     :title "%(my::wm/last-browser-url-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
+                     :title "%(my-wm/last-browser-url-org-link-formatted) :REVIEW:\nSCHEDULED: %(org-insert-time-stamp (current-time))")))))
                 ("Org Protocol"
                  :keys "l"
                  :file org-default-notes-file
-                 :template ("* TODO [[%:link][%(car (my::wm/browser-split-url \"%:description\"))]]"
+                 :template ("* TODO [[%:link][%(car (my-wm/browser-split-url \"%:description\"))]]"
                             ":PROPERTIES:"
                             ":CREATED: %U"
                             ":END:"))
                 ("Bookmarks"
                  :keys "p"
-                 :file my::org/bookmarks-file
+                 :file my-org/bookmarks-file
                  :headline "Bookmarks"
-                 :template ("* %(nth 0 (my::wm/last-browser-window))"
+                 :template ("* %(nth 0 (my-wm/last-browser-window))"
                             ":PROPERTIES:"
-                            ":URL: %(nth 1 (my::wm/last-browser-window))"
+                            ":URL: %(nth 1 (my-wm/last-browser-window))"
                             ":CREATED: %U"
                             ":END:"))))))
 
@@ -788,9 +788,9 @@ Set the active state when clocking in.
 #+BEGIN_SRC elisp :tangle no
 (defun +org/org-set-active-state (&optional args args2)
   "Set the active state for the current item."
-  (cond ((my::buffer/line-contains "PROJECT") nil)
-        ((my::buffer/line-contains "\\[.\\]") (org-todo "[!]"))
-        ((not (my::buffer/line-contains (rx (or "ACTIVE" "NEXT" "DONE" "TODO" "WAITING" "SOMEDAY" "CANCELLED" "PROJECT")))) nil)
+  (cond ((my-buffer/line-contains "PROJECT") nil)
+        ((my-buffer/line-contains "\\[.\\]") (org-todo "[!]"))
+        ((not (my-buffer/line-contains (rx (or "ACTIVE" "NEXT" "DONE" "TODO" "WAITING" "SOMEDAY" "CANCELLED" "PROJECT")))) nil)
         (t (org-todo "ACTIVE"))))
 
 (advice-add #'org-clock-in :after #'+org/org-set-active-state)
@@ -966,7 +966,7 @@ When supplied with numerical argument, take the number as the limit."
 *** Bookmarks
 
 #+BEGIN_SRC elisp
-(defun my::org/org-element-link (link)
+(defun my-org/org-element-link (link)
   "Returns a cons pair of an org-element LINK
 (const url title)
 title can be nil."
@@ -976,19 +976,19 @@ title can be nil."
                 (end (org-element-property :contents-end link)))
      (buffer-substring-no-properties begin end))))
 
-(defun my::org/org-tree-first-link (tree)
+(defun my-org/org-tree-first-link (tree)
   "Get the first link instance in a tree."
   (-some->>
       (org-element-map tree 'link #'identity)
       (car)
-      (my::org/org-element-link)))
+      (my-org/org-element-link)))
 
-(defun my::org/heading-with-link (heading)
+(defun my-org/heading-with-link (heading)
   (let ((heading-link? (-some->> (org-ml-get-property :title heading)
                          (org-ml-match '(:first link)))))
     (if heading-link?
-        (my::org/org-element-link (car heading-link?))
-      (cons (car (my::org/org-tree-first-link heading))
+        (my-org/org-element-link (car heading-link?))
+      (cons (car (my-org/org-tree-first-link heading))
             (org-ml-get-property :raw-value heading)))))
 
 (defun +org|refile-to-bookmarks ()
@@ -996,7 +996,7 @@ title can be nil."
   (interactive)
   (require 'org-ml)
   (-let* ((item (org-ml-parse-this-headline))
-          ((url . title) (my::org/heading-with-link item))
+          ((url . title) (my-org/heading-with-link item))
           (new-item
            (--> item
                 (org-ml-set-property :level 2 it)
@@ -1005,7 +1005,7 @@ title can be nil."
                 (org-ml-headline-set-node-property "URL" url it)
                 (org-ml-to-string it))))
     (call-interactively #'org-cut-subtree)
-    (find-file my::org/bookmarks-file)
+    (find-file my-org/bookmarks-file)
     (goto-char (point-max))
     (insert "\n")
     (insert new-item)
@@ -1043,7 +1043,7 @@ Remove the underline from the links.
 (after! org-agenda
   (+org/add-to-agenda-custom-commands
    '("r" "Reading List" alltodo ""
-     ((org-agenda-files (list my::org:reading-list-file))
+     ((org-agenda-files (list my-org:reading-list-file))
       (org-agenda-buffer-name +org-reading-list:agenda-buffer-name)
       (org-agenda-prefix-format "  %?-12t% s")
       (org-agenda-hide-tags-regexp "TEXT\\|VIDEO\\|RESEARCH")
@@ -1168,8 +1168,8 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
      (let ((el (org-ml-parse-this-object)))
        (if (org-ml-is-type 'link el)
            (-let* (((url . title) (->> (org-ml-parse-this-object)
-                                       (my::org/org-element-link)))
-                   (title (or title (my::org|fetch-link-title-command url) (read-string "Title for the backup: "))))
+                                       (my-org/org-element-link)))
+                   (title (or title (my-org|fetch-link-title-command url) (read-string "Title for the backup: "))))
              (cons (cons title url) 'link))
          (cons (cons (+org-backup/headline-url-title) nil) 'headline))))
     (t (cons (cons (+org-backup/headline-url-title) nil) 'headline))))
@@ -1187,7 +1187,7 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
           (url (or inline-url url))
           (dir (+org-backup/create-directory url title)))
     (cl-case type
-      ('link (my::buffer|insert-line-above (template "#+BACKUP: [[<<dir>>]]")))
+      ('link (my-buffer|insert-line-above (template "#+BACKUP: [[<<dir>>]]")))
       (t (org-set-property "BACKUP" (template "[[<<dir>>]]"))))
     (deferred:$
       (+org-backup/wget-link dir url)
@@ -1289,7 +1289,7 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
         (s-prepend ".")
         ((lambda (x) (template "[[<<x>>]]\n")))
         ((lambda (x)
-           (my::buffer/delete-current-line)
+           (my-buffer/delete-current-line)
            (insert x)
            x))))))
 #+END_SRC
@@ -1731,14 +1731,14 @@ So we replace them all with the code block TYPE"
       (while (re-search-forward "#\\+begin_example" nil t nil)
         (let ((beg (match-beginning 1))
               (end (match-end 1)))
-          (my::buffer/delete-current-line)
+          (my-buffer/delete-current-line)
           (save-excursion
             (insert "#+begin_src " lang "\n"))
           (setq start (point))
           (re-search-forward "#\\+end_example")
           (let ((beg (match-beginning 1))
                 (end (match-end 1)))
-            (my::buffer/delete-current-line)
+            (my-buffer/delete-current-line)
             (save-excursion
               (insert "#+end_src\n"))
             (setq stop (point))))
@@ -1774,7 +1774,7 @@ So we replace them all with the code block TYPE"
 (defun +org-web-tools|read-url-from-chrome ()
   "Open the url under the cursor"
   (interactive)
-  (->> (my::wm/last-browser-url)
+  (->> (my-wm/last-browser-url)
        (org-web-tools-read-url-as-org))
   (visual-line-mode)
   (visual-fill-column-mode)
@@ -1868,7 +1868,7 @@ Copied from [[https://github.com/spegoraro/org-alert][spegoraro/org-alert: Syste
 (defun +org|source-properties-key-from-browser ()
   "Add the link from the frontmost chrome tab as a source property."
   (interactive)
-  (org-set-property "SOURCE" (my::wm/last-browser-url-org-link)))
+  (org-set-property "SOURCE" (my-wm/last-browser-url-org-link)))
 #+END_SRC
 
 *** Add created date to new items
@@ -1953,7 +1953,7 @@ E.g.: (Brackets signal the cursor position)
 (defun +org|paste-chrome-link ()
   "Paste the frontmost chrome link."
   (interactive)
-  (insert (my::wm/last-browser-url-org-link)))
+  (insert (my-wm/last-browser-url-org-link)))
 #+END_SRC
 
 *** Paste Markdown as org
@@ -2159,7 +2159,7 @@ Moves a todo item from the agenda to the shopping list as a list item.
   (save-window-excursion
     (save-excursion
       (let ((title (nth 1 (s-match "^.*TODO \\(.*\\)$" (thing-at-point 'line t))))
-            (buffer (find-file my::org:shopping-list-file)))
+            (buffer (find-file my-org:shopping-list-file)))
         (with-current-buffer buffer
           (org-narrow-to-subtree)
           (goto-char (point-max))
@@ -2252,7 +2252,7 @@ Return the path of the file."
   "Attach a file and insert the link."
   (interactive "P")
   (->>
-   (or x (let ((default-directory my::directories:downloads-dir))
+   (or x (let ((default-directory my-directories:downloads-dir))
            (flet ((counsel-find-file-action (identity)))
              (counsel-find-file))))
    (+org/attach-file-and-insert-link)))
@@ -2705,7 +2705,7 @@ Set my preferred clipboard paste method to ~xclip~.
   :desc "Projects"                   "p" #'+org|search-projects
 
   (:prefix-map ("b" . "Bookmarks")
-   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my::org/bookmarks-file))
+   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my-org/bookmarks-file))
    :desc "Search bookmarks"          "s" #'helm-org-pinboard)
 
   (:prefix-map ("r" . "Roam")
@@ -2724,7 +2724,7 @@ Set my preferred clipboard paste method to ~xclip~.
   :desc "Work"                       "w" (cmd! (+org/find-in-files "Work/work.org"))
 
   (:prefix-map ("g" . "Goto")
-   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my::org/bookmarks-file))
+   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my-org/bookmarks-file))
    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
    :desc "Work"                      "w" (cmd! (+org/find-in-files "Work/work.org"))
    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
@@ -2778,13 +2778,13 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Tag heading"               "q"  #'+org|counsel-org-tag
       :desc  "Schedule"                  "s"  #'org-schedule
       :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
-      :desc  "Fetch link title"          "u"  #'my::org|fetch-this-org-link-title
+      :desc  "Fetch link title"          "u"  #'my-org|fetch-this-org-link-title
       :desc  "MPV Link at point"         "v"  #'+org|mpv-link-at-point
 
       (:prefix-map ("y" . "Yank")
-       :desc "Link" "l" #'my::org|copy-entire-link
-       :desc "Url" "u" #'my::org|copy-link-url
-       :desc "Title" "t" #'my::org|copy-link-title)
+       :desc "Link" "l" #'my-org|copy-entire-link
+       :desc "Url" "u" #'my-org|copy-link-url
+       :desc "Title" "t" #'my-org|copy-link-title)
 
       (:prefix-map ("C" . "Cut")
        :desc "Item" "C" 'org-cut-subtree
@@ -2824,7 +2824,7 @@ Set my preferred clipboard paste method to ~xclip~.
       :localleader
       "q" #'+org|counsel-org-tag
       "v" #'+org|mpv-link-at-point
-      "u" #'my::org-agenda|fetch-this-org-link-title
+      "u" #'my-org-agenda|fetch-this-org-link-title
       "." #'counsel-org-agenda-headlines
       "t" nil ; Overwrite doom binding
       (:prefix ("t" . "toggle")

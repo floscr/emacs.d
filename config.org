@@ -20,14 +20,14 @@ It's the only prefix where you can assume that packages/emacs/doom won't overrid
 
 *** Schema
 
-- ~my::namespace~
+- ~my-namespace~
   Its not pretty, but it's the only way to work with emacs-lisps global scope for everything.
-  - ~my::namespace::sub-namespace~
+  - ~my-namespace::sub-namespace~
 - ~my:variable~: Variable
 - ~my/function~: Private function
-  - ~my::namespace/function~: Private function with namespace
+  - ~my-namespace/function~: Private function with namespace
 - ~my|function~: Interactive function
-  - ~my::namespace|function~: Interactive function
+  - ~my-namespace|function~: Interactive function
 - ~my@function~: Macro
 - ~my*hook~: Hook function
 
@@ -176,7 +176,7 @@ modifications."
 *** Check if buffer has line
 
 #+BEGIN_SRC elisp
-(defun my::buffer/contains-line (string)
+(defun my-buffer/contains-line (string)
   (save-excursion
     (save-match-data
       (goto-char (point-min))
@@ -187,7 +187,7 @@ modifications."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::buffer/line-indent ()
+(defun my-buffer/line-indent ()
   "Get the indent of the current line."
   (interactive)
   (or (-some->> (substring-no-properties (thing-at-point 'line))
@@ -201,7 +201,7 @@ modifications."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::buffer/line-contains (regexp)
+(defun my-buffer/line-contains (regexp)
   "Check for REGEXP at current line."
   (save-excursion
     (goto-char (point-at-bol))
@@ -212,7 +212,7 @@ modifications."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::buffer/delete-current-line ()
+(defun my-buffer/delete-current-line ()
   "Delete (not kill) the current line."
   (interactive)
   (save-excursion
@@ -224,14 +224,14 @@ modifications."
 *** Insert above/below current line
 
 #+begin_src elisp
-(defun my::buffer|insert-line-below (&optional str)
+(defun my-buffer|insert-line-below (&optional str)
   "Insert an empty line below the current line."
   (interactive)
   (save-excursion
     (end-of-line)
     (insert "\n" (or str ""))))
 
-(defun my::buffer|insert-line-above (&optional str)
+(defun my-buffer|insert-line-above (&optional str)
   "Insert an empty line above the current line."
   (interactive)
   (save-excursion
@@ -243,7 +243,7 @@ modifications."
 
 #+BEGIN_SRC elisp :tangle no
 ;;;###autoload
-(defun my::buffer/map-lines (fun &optional start end)
+(defun my-buffer/map-lines (fun &optional start end)
   "Map lines in buffer with FUN, fn gets called with the line contents."
   (let ((start (or start (point-min)))
         (end (or end (point-max)))
@@ -263,7 +263,7 @@ modifications."
 *** Jump to source
 
 #+begin_src elisp
-(defun my::buffer|jump-source-dwim (&optional other-window file-name)
+(defun my-buffer|jump-source-dwim (&optional other-window file-name)
   "Jump to the buffer source depending on the mode."
   (interactive)
   (cond
@@ -280,7 +280,7 @@ modifications."
 Prevent ~async-shell-command~ displaying a popup or a buffer.
 
 #+BEGIN_SRC elisp
-(defun my::shell/async-command-no-window (command)
+(defun my-shell/async-command-no-window (command)
   "Execute async command without showing the result buffer."
   (interactive)
   (let ((display-buffer-alist (list (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))))
@@ -290,7 +290,7 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 *** Shell command to list
 
 #+BEGIN_SRC elisp
-(defun my::shell/command-to-list (cmd)
+(defun my-shell/command-to-list (cmd)
   "Split output from shell-command to list"
   (split-string (shell-command-to-string cmd) "\n" t))
 #+END_SRC
@@ -301,7 +301,7 @@ I don't want some processes to exit, when I close emacs.
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::shell/no-exit-command (cmd &optional &rest args)
+(defun my-shell/no-exit-command (cmd &optional &rest args)
   "Launch a shell command, without opening a message buffer.
 The proram persists when emacs is closed."
   (let ((args-str (or (-some->> args
@@ -315,7 +315,7 @@ The proram persists when emacs is closed."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::shell/mpv-youtube-url (url)
+(defun my-shell/mpv-youtube-url (url)
   (-when-let* ((quality-val
                 (-some->> (completing-read
                             "Max height resolution (0 for unlimited): "
@@ -325,14 +325,14 @@ The proram persists when emacs is closed."
                                 (template "--ytdl-format=\"[height<=?<<quality-val>>]\"")
                               "")))
     (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
-    (my::shell/no-exit-command "mpv" quality-arg (s-wrap url "\""))))
+    (my-shell/no-exit-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
 ** Files
 *** Get file timestamp
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::file/timestamp (path)
+(defun my-file/timestamp (path)
   (->> (file-attributes path)
        (nth 5)))
 #+END_SRC
@@ -344,10 +344,10 @@ The proram persists when emacs is closed."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::file/last-modified-file-in-dir (path)
+(defun my-file/last-modified-file-in-dir (path)
   (->> (f-entries path)
-       (-sort (lambda (a b) (not (time-less-p (my::file/timestamp a)
-                                              (my::file/timestamp b)))))
+       (-sort (lambda (a b) (not (time-less-p (my-file/timestamp a)
+                                              (my-file/timestamp b)))))
        (car)))
 #+END_SRC
 
@@ -355,7 +355,7 @@ The proram persists when emacs is closed."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::file|chmod-this-file ()
+(defun my-file|chmod-this-file ()
   "Chmod +x the current file."
   (interactive)
   (shell-command (template "chmod +x \"<<(buffer-file-name)>>\"")))
@@ -363,7 +363,7 @@ The proram persists when emacs is closed."
 *** Dir has hidden entry
 
 #+BEGIN_SRC elisp
-(defun my::file/dir-has-hidden-entries (dir)
+(defun my-file/dir-has-hidden-entries (dir)
   "Check if a DIR has any hidden entries.
 Return the first found file when one is found."
   (--find (s-starts-with-p "." (f-filename it)) (f-entries dir)))
@@ -372,7 +372,7 @@ Return the first found file when one is found."
 *** Find project root
 
 #+BEGIN_SRC elisp
-(defun my::file/project-root (&optional dir)
+(defun my-file/project-root (&optional dir)
   "Find the project root either via projectile (not available in certain buffers like dired)
 or manually traverse upwards until the .git directory is found."
   (let ((default-directory (or dir default-directory)))
@@ -380,14 +380,14 @@ or manually traverse upwards until the .git directory is found."
      projectile-project-root
      (f--traverse-upwards (f-exists? (f-expand ".git" it))))))
 
-(cl-defun my::file/git-root (&optional (skip-worktree? t))
+(cl-defun my-file/git-root (&optional (skip-worktree? t))
   (let ((checker-fn (if skip-worktree? #'f-dir? #'f-exists?)))
     (f--traverse-upwards (funcall checker-fn (f-expand ".git" it)))))
 #+END_SRC
 *** Find node_modules executable
 
 #+begin_src elisp
-(defun my::file/node-modules-executable-find (name)
+(defun my-file/node-modules-executable-find (name)
   "Find an executable bin in the projects node_modules/.bin directory with NAME
 Returns nil when no executable was found."
   (-some->> (projectile-project-root)
@@ -551,17 +551,17 @@ shuffling is done in place."
 ** Tangling
 
 #+begin_src elisp
-(defvar my::config:literate-config-file
+(defvar my-config:literate-config-file
   (concat doom-private-dir "config.org")
   "The file path of your literate config file.")
 
-(defvar my::config:literate-config-file-cache
+(defvar my-config:literate-config-file-cache
   (concat doom-cache-dir "literate-last-compile")
-  "The file path that `my::config:literate-config-file' will be tangled to, then
+  "The file path that `my-config:literate-config-file' will be tangled to, then
 byte-compiled from.")
 
 ;;;###autoload
-(defun my::config/tangle-literate-config (&optional force-p file)
+(defun my-config/tangle-literate-config (&optional force-p file)
   "Tangles the current buffer FILE if it has changed."
   (let* ((default-directory doom-private-dir)
          (src-file (expand-file-name (or file buffer-file-name)))
@@ -578,41 +578,41 @@ byte-compiled from.")
                         src-file dst-file)))))
 
 ;;;###autoload
-(defalias 'my::config/reload-litarate-config-file #'doom/reload)
+(defalias 'my-config/reload-litarate-config-file #'doom/reload)
 
 ;;;###autoload
-(defun my::config/recompile-literate-config-maybe ()
+(defun my-config/recompile-literate-config-maybe ()
   "Recompile config.org if we're editing an org file in our DOOMDIR.
 
 We assume any org file in `doom-private-dir' is connected to your literate
 config, and should trigger a recompile if changed."
   (when (and (eq major-mode 'org-mode)
              (file-in-directory-p buffer-file-name doom-private-dir))
-    (my::config/tangle-literate-config 'force)))
+    (my-config/tangle-literate-config 'force)))
 
 ;; Recompile our literate config if we modify it
 ;;;###autoload
-(after! org (add-hook 'after-save-hook #'my::config/recompile-literate-config-maybe))
+(after! org (add-hook 'after-save-hook #'my-config/recompile-literate-config-maybe))
 
 ;;;###autoload
-(defun my::config|tangle ()
+(defun my-config|tangle ()
   "Tangle the current org buffer."
   (interactive)
-  (my::config/tangle-literate-config t))
+  (my-config/tangle-literate-config t))
 #+end_src
 ** Dates
 
 *** Insert current date
 
 #+begin_src elisp
-(defun my::date|insert-today (&optional arg)
+(defun my-date|insert-today (&optional arg)
   "Insert the current date as YYYY-MM-DD.
 When ARG is passed, query for a custom delimiter."
   (interactive "P")
   (let ((delimiter (if arg
                        (read-string "Date delimiter: " "-")
                      "-")))
-    (my::evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
+    (my-evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
 #+end_src
 * Custom Packages
 ** TODO Jumpy - Custom Bookmarks
@@ -631,7 +631,7 @@ When ARG is passed, query for a custom delimiter."
 
 #+begin_src elisp
 (setq
- my::jumpy:main
+ my-jumpy:main
  '(((file . "~/.config/doom/modules/private/work/config.org")
     (name . "Config: Work")
     (goto . "* Configuration")
@@ -645,7 +645,7 @@ When ARG is passed, query for a custom delimiter."
     (name . "Xmonad"))
    ((file . "~/.config/doom/modules/private/org/config.org")
     (name . "Config: Org"))
-   ((fn . (lambda () (find-file my::jumpy:local-bookmarks-file)))
+   ((fn . (lambda () (find-file my-jumpy:local-bookmarks-file)))
     (name . "Bookmarks: Local"))
    ((file . "~/.config/doom/config.org")
     (name . "Bookmarks: Main")
@@ -682,33 +682,33 @@ When ARG is passed, query for a custom delimiter."
 *** Functions
 
 #+BEGIN_SRC elisp
-(defun my::jumpy|main ()
+(defun my-jumpy|main ()
   (interactive)
-  (my::jumpy|launch (-concat my::jumpy:main (my::jumpy/local-list))))
+  (my-jumpy|launch (-concat my-jumpy:main (my-jumpy/local-list))))
 #+END_SRC
 
 Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file at the project root.
 
 #+BEGIN_SRC elisp
-(defvar my::jumpy:local-bookmarks-file nil)
-(setq my::jumpy:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
+(defvar my-jumpy:local-bookmarks-file nil)
+(setq my-jumpy:local-bookmarks-file (f-join doom-local-dir "bookmarks.json"))
 
-(defun my::jumpy::project/file-path ()
-  (f-join (my::file/git-root) "bookmarks.json"))
+(defun my-jumpy::project/file-path ()
+  (f-join (my-file/git-root) "bookmarks.json"))
 
-(defun my::jumpy/project-bookmarks-file-bookmark ()
+(defun my-jumpy/project-bookmarks-file-bookmark ()
   "Bookmarks entry for the project bookmarks file."
-  `((file . ,(my::jumpy::project/file-path))
+  `((file . ,(my-jumpy::project/file-path))
     (name . "bookmarks")))
 
-(defun my::jumpy/goto-bookmark-dwim (x &optional &key other-window?)
+(defun my-jumpy/goto-bookmark-dwim (x &optional &key other-window?)
   "Jump to a X relative to the project root, go to character POS."
   (require 'link-hint)
   (-when-let* ((find-fn (if other-window? 'find-file-other-window 'find-file))
                (item (car x)))
     (let* ((file (-some->> (alist-get 'file item)
                    (--when (alist-get 'relative item)
-                           (f-join (my::file/project-root) it))))
+                           (f-join (my-file/project-root) it))))
            (buffer-is-open (when file (get-file-buffer file))))
       (when file
         (funcall find-fn file)
@@ -747,13 +747,13 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
       (-some--> (alist-get 'goto-bol item)
         (evil-first-non-blank)))))
 
-(cl-defun my::jumpy/local-list (&optional file my::jumpy:local-bookmarks-file)
+(cl-defun my-jumpy/local-list (&optional file my-jumpy:local-bookmarks-file)
   (-some->> file
     (-id-when #'f-exists?)
     (json-read-file)
     (-map 'identity)))
 
-(cl-defun my::jumpy/local-save (xs &optional (file my::jumpy:local-bookmarks-file))
+(cl-defun my-jumpy/local-save (xs &optional (file my-jumpy:local-bookmarks-file))
   "Save an alist as json to the file"
   (let ((json (with-temp-buffer
                 (insert (json-encode xs))
@@ -761,80 +761,80 @@ Bookmarks for projects with using a [[file:bookmarks.json][bookmarks.json]] file
                 (buffer-substring-no-properties (point-min) (point-max)))))
        (f-write json 'utf-8 file)))
 
-(cl-defun my::jumpy/local-remove (x &optional (file my::jumpy:local-bookmarks-file))
+(cl-defun my-jumpy/local-remove (x &optional (file my-jumpy:local-bookmarks-file))
   (->>
-   (--remove (cl-equalp (car (cdr x)) it) (my::jumpy/local-list))
-   ((lambda (xs) (my::jumpy/local-save xs file)))))
+   (--remove (cl-equalp (car (cdr x)) it) (my-jumpy/local-list))
+   ((lambda (xs) (my-jumpy/local-save xs file)))))
 
-(cl-defun my::jumpy/local-rename (x &optional (file my::jumpy:local-bookmarks-file))
+(cl-defun my-jumpy/local-rename (x &optional (file my-jumpy:local-bookmarks-file))
   (require 'a)
   (-log x)
   (-let ((item (car (cdr x))))
     (-log (a-get (cdr item) :name))
     (->>
-     (my::jumpy/local-list file)
+     (my-jumpy/local-list file)
      (--map-first (cl-equalp item it) (a-update it 'name (lambda (x) (read-string "Rename Bookmark: " x))))
-     ((lambda (xs) (my::jumpy/local-save xs file))))))
+     ((lambda (xs) (my-jumpy/local-save xs file))))))
 
-(cl-defun my::jumpy|local-save (&optional (file my::jumpy:local-bookmarks-file))
+(cl-defun my-jumpy|local-save (&optional (file my-jumpy:local-bookmarks-file))
   (interactive)
   (let ((entry `((file . ,(buffer-file-name))
                  (goto . ,(line-number-at-pos))
                  (relative . t)
                  (name . ,(read-string "Bookmark Name: ")))))
-    (->> (my::jumpy/local-list file)
+    (->> (my-jumpy/local-list file)
       (-append entry)
-      ((lambda (xs) (my::jumpy/local-save xs file))))))
+      ((lambda (xs) (my-jumpy/local-save xs file))))))
 
-(defun my::jumpy/goto-bookmark-dwim-other-window (x)
+(defun my-jumpy/goto-bookmark-dwim-other-window (x)
   "Open bookmark X in other window, used with ivy action 'j'."
-  (my::jumpy/goto-bookmark-dwim (cdr x) :other-window? t))
+  (my-jumpy/goto-bookmark-dwim (cdr x) :other-window? t))
 
-(defun my::jumpy::project|save ()
+(defun my-jumpy::project|save ()
   (interactive)
-  (let ((file (my::jumpy::project/file-path))
+  (let ((file (my-jumpy::project/file-path))
         (entry `((file . ,(buffer-file-name))
                  (goto . ,(line-number-at-pos))
                  (name . ,(read-string "Bookmark Name: ")))))
-    (->> (my::jumpy/local-list file)
+    (->> (my-jumpy/local-list file)
       (-append entry)
-      ((lambda (xs) (my::jumpy/local-save xs file))))))
+      ((lambda (xs) (my-jumpy/local-save xs file))))))
 
-(defun my::jumpy::project|launch ()
+(defun my-jumpy::project|launch ()
   (interactive)
-  (let ((bookmarks (->> (my::jumpy::project/file-path)
-                        (my::jumpy/local-list)
-                        (-append (my::jumpy/project-bookmarks-file-bookmark)))))
-    (my::jumpy|launch bookmarks #'my::jumpy::project|launch)))
+  (let ((bookmarks (->> (my-jumpy::project/file-path)
+                        (my-jumpy/local-list)
+                        (-append (my-jumpy/project-bookmarks-file-bookmark)))))
+    (my-jumpy|launch bookmarks #'my-jumpy::project|launch)))
 
 ;;;###autoload
-(cl-defun my::jumpy|launch (&optional bookmarks-list (caller #'my::jumpy|launch))
+(cl-defun my-jumpy|launch (&optional bookmarks-list (caller #'my-jumpy|launch))
   "Either take alist BOOKMARKS-LIST or look for bookmarks.json in project root.
 If found, show an ivy window with the bookmarks"
   (interactive)
   (-if-let*
       ((bookmarks
         (or bookmarks-list
-            (my::jumpy/local-list)))
+            (my-jumpy/local-list)))
        (bookmarks (--map (list (alist-get 'name it) it) bookmarks)))
       (ivy-read "Bookmark: " bookmarks
-                :action (lambda (x) (my::jumpy/goto-bookmark-dwim (cdr x)))
+                :action (lambda (x) (my-jumpy/goto-bookmark-dwim (cdr x)))
                 :caller caller)
     (user-error "No bookmarks file found.")))
 
 (after! ivy
   (ivy-set-actions
-   'my::jumpy|launch
-   '(("j" my::jumpy/goto-bookmark-dwim-other-window "open in other window")
-     ("k" my::jumpy/local-remove "Remove")
-     ("r" my::jumpy/local-rename "Rename"))))
+   'my-jumpy|launch
+   '(("j" my-jumpy/goto-bookmark-dwim-other-window "open in other window")
+     ("k" my-jumpy/local-remove "Remove")
+     ("r" my-jumpy/local-rename "Rename"))))
 
 (after! ivy
   (ivy-set-actions
-   'my::jumpy::project|launch
-   '(("j" my::jumpy/goto-bookmark-dwim-other-window "open in other window")
-     ("k" (lambda (x) (my::jumpy/local-remove x (my::jumpy::project/file-path))) "Remove")
-     ("r" (lambda (x) (my::jumpy/local-rename x (my::jumpy::project/file-path))) "Rename"))))
+   'my-jumpy::project|launch
+   '(("j" my-jumpy/goto-bookmark-dwim-other-window "open in other window")
+     ("k" (lambda (x) (my-jumpy/local-remove x (my-jumpy::project/file-path))) "Remove")
+     ("r" (lambda (x) (my-jumpy/local-rename x (my-jumpy::project/file-path))) "Rename"))))
 #+END_SRC
 *** Bindings
 
@@ -842,8 +842,8 @@ If found, show an ivy window with the bookmarks"
 (map!
  :leader
  (:prefix-map ("j" . "jumpy")
-  :desc "Project"  "j" #'my::jumpy|main
-  :desc "Project"  "p" #'my::jumpy::project|launch))
+  :desc "Project"  "j" #'my-jumpy|main
+  :desc "Project"  "p" #'my-jumpy::project|launch))
 #+end_src
 
 ** TODO Indirect Indent Mode
@@ -944,7 +944,7 @@ Mostly used to edit the macro registers ~q~.
 ** TODO Scan Management
 
 #+begin_src elisp
-(defun my::scan|dired-file-document ()
+(defun my-scan|dired-file-document ()
   (interactive)
   (let* ((files (->> (dired-get-marked-files)
                      (-sort #'string<)
@@ -964,11 +964,11 @@ Mostly used to edit the macro registers ~q~.
 *** Window Listing
 
 #+BEGIN_SRC elisp
-(defvar my::wm:window-list-re nil "Regex to parse wmctrl list output.
+(defvar my-wm:window-list-re nil "Regex to parse wmctrl list output.
 Example output:
 0x014000fb  0 brave-browser.Brave-browser  thinknixx1 The Borrowed by Chan Ho-Kei :: www.goodreads.com/ - Brave")
 
-(setq my::wm:window-list-re
+(setq my-wm:window-list-re
       (rx (seq
            bol
            ;; window id (0x014000fb)
@@ -984,8 +984,8 @@ Example output:
            ;; Window title
            (submatch (* nonl)) eol)))
 
-(defun my::wm/match-wm-string (x)
-  (-let* ((xs (-drop 1 (s-match my::wm:window-list-re x)))
+(defun my-wm/match-wm-string (x)
+  (-let* ((xs (-drop 1 (s-match my-wm:window-list-re x)))
           (pid (downcase (nth 0 xs)))
           (monitor (nth 1 xs))
           (process (nth 2 xs))
@@ -1000,76 +1000,76 @@ Example output:
      :user user
      :title title)))
 
-(defun my::wm/list-windows ()
+(defun my-wm/list-windows ()
   "List X windows"
   (->> (shell-command-to-string "wmctrl -lx")
        (s-split "\n")
        (-drop-last 1)
-       (-map #'my::wm/match-wm-string)))
+       (-map #'my-wm/match-wm-string)))
 
-(defun my::wm/-process-eq? (id x)
+(defun my-wm/-process-eq? (id x)
   (string= id (plist-get x ':process)))
 
-(defun my::wm/-pid-eq? (id x)
+(defun my-wm/-pid-eq? (id x)
   (string= id (plist-get x ':pid)))
 #+END_SRC
 
 *** Browser Window Listing
 
 #+BEGIN_SRC elisp
-(defvar my::wm:browser-title-delimiter-char " ​::​ "
+(defvar my-wm:browser-title-delimiter-char " ​::​ "
   "The delimiter inserted by the tab title formating extension to seperate the url from the title.
 To make sure it is our own delimiter the characters are prefixed and suffixed with zero-width space characters.")
 
-(setq my::wm:browser-url-suffixes '(" - Chromium"
+(setq my-wm:browser-url-suffixes '(" - Chromium"
                                     " - Brave"))
-(defun my::wm/browser-chop-suffix (url)
-  (s-chop-suffixes my::wm:browser-url-suffixes url))
+(defun my-wm/browser-chop-suffix (url)
+  (s-chop-suffixes my-wm:browser-url-suffixes url))
 
-(defun my::wm/is-browser? (x)
+(defun my-wm/is-browser? (x)
   (and (or
-        (my::wm/-process-eq? "chromium-browser" x)
-        (my::wm/-process-eq? "brave-browser" x))
+        (my-wm/-process-eq? "chromium-browser" x)
+        (my-wm/-process-eq? "brave-browser" x))
        (not (s-starts-with? "DevTools - " (plist-get x ':title)))))
 
-(defun my::wm/list-browser-windows ()
-  (->> (my::wm/list-windows)
-       (-filter #'my::wm/is-browser?)))
+(defun my-wm/list-browser-windows ()
+  (->> (my-wm/list-windows)
+       (-filter #'my-wm/is-browser?)))
 
-(defun my::wm/prev-browser-window ()
+(defun my-wm/prev-browser-window ()
   "Try either current or previous window to get the chrome id
 Everything further down the line would have to be parsed from bspc history,
 and most of the time it's not worth it.
 If the current or previous windows are not chrome, just get the first one from the list."
-  (--> (my::wm/list-browser-windows)
+  (--> (my-wm/list-browser-windows)
        (car it)))
 
-(defun my::wm/browser-split-url (x)
-  (pcase (s-split my::wm:browser-title-delimiter-char x)
-     (`(,title ,url) (list title (my::wm/browser-chop-suffix url)))
+(defun my-wm/browser-split-url (x)
+  (pcase (s-split my-wm:browser-title-delimiter-char x)
+     (`(,title ,url) (list title (my-wm/browser-chop-suffix url)))
      (`(,title) (list title ""))))
 
-(defun my::wm/last-browser-window ()
+(defun my-wm/last-browser-window ()
   (-when-let*
-      ((window (my::wm/prev-browser-window))
+      ((window (my-wm/prev-browser-window))
        ((title url) (-some->> (plist-get window ':title)
-                      my::wm/browser-split-url)))
+                      my-wm/browser-split-url)))
     (list
      title
      (if (s-blank? url) nil url))))
 
-(defun my::wm/last-browser-url ()
-  (-let* (((title url) (my::wm/last-browser-window)))
+(defun my-wm/last-browser-url ()
+  (-let* (((title url) (my-wm/last-browser-window)))
     url))
 
-(defun my::wm/last-browser-url-org-link ()
-  (let ((data (my::wm/last-browser-window)))
+(defun my-wm/last-browser-url-org-link ()
+  (let ((data (my-wm/last-browser-window)))
     (-if-let* (((description link) data))
         (org-make-link-string link description)
       (user-error "Error: Could not get browser url %s" data))))
 
-(defun my::wm/last-browser-url-org-link-formatted ()
-  (-if-let* (((title url) (my::wm/last-browser-window))
+(defun my-wm/last-browser-url-org-link-formatted ()
+  (-if-let* (((title url) (my-wm/last-browser-window))
              (title-formatted
                 (cond
                  ;; Custom Pull request Formatting
@@ -1086,7 +1086,7 @@ If the current or previous windows are not chrome, just get the first one from t
 ** Shopping list management
 
 #+begin_src elisp :tangle no
-(defun my::org-db/get-db ()
+(defun my-org-db/get-db ()
   ""
   (let* (($headlines (->> (org-ml-parse-headlines 'all)))
          (keywords (->> $headlines
@@ -1098,7 +1098,7 @@ If the current or previous windows are not chrome, just get the first one from t
 
 (save-window-excursion
   (with-current-buffer (find-file (+org/expand-org-file-name "Db/Shopping.org"))
-    (-log (my::org-db/get-db))))
+    (-log (my-org-db/get-db))))
 #+end_src
 ** Compile project
 
@@ -1106,10 +1106,10 @@ My custom solution for caching compile commands between sessions.
 I store the cached commands per directory in [[file:~/.emacs.d/.local/project-compile-cache-file.json][this json file]].
 
 #+begin_src elisp
-(defvar my::project-compile:cache-file nil)
-(setq my::project-compile:cache-file (f-join doom-local-dir "project-compile-cache-file.json"))
+(defvar my-project-compile:cache-file nil)
+(setq my-project-compile:cache-file (f-join doom-local-dir "project-compile-cache-file.json"))
 
-(defun my::project-compile/update-ht-vector (k v m)
+(defun my-project-compile/update-ht-vector (k v m)
   "Merge the vector on key K in the hashtable M with V.
 Removes the key before so the new value will be appended.
 This function will mutate the hashtable M."
@@ -1119,36 +1119,36 @@ This function will mutate the hashtable M."
     (ht-set m k (seq-into xs 'vector)))
   m)
 
-(defun my::project-compile/read-cache-file (&optional cache-file)
-  (-some->> (or cache-file my::project-compile:cache-file)
+(defun my-project-compile/read-cache-file (&optional cache-file)
+  (-some->> (or cache-file my-project-compile:cache-file)
     (-id-when #'f-exists?)
     (json-read-file)))
 
-(defun my::project-compile/get-cache-items (key &optional cache-file)
-  (or (-some->> (my::project-compile/read-cache-file (or cache-file my::project-compile:cache-file))
+(defun my-project-compile/get-cache-items (key &optional cache-file)
+  (or (-some->> (my-project-compile/read-cache-file (or cache-file my-project-compile:cache-file))
         (ht-from-alist)
         ((lambda (m) (ht-get m key))))
       []))
 
-(defun my::project-compile/update-cache (cmd dir &optional cache-file)
-  (let ((cache (->> (my::project-compile/read-cache-file)
+(defun my-project-compile/update-cache (cmd dir &optional cache-file)
+  (let ((cache (->> (my-project-compile/read-cache-file)
                     (ht-from-alist)
-                    (my::project-compile/update-ht-vector (intern dir) cmd)
+                    (my-project-compile/update-ht-vector (intern dir) cmd)
                     (json-encode))))
-    (f-write cache 'utf-8 (or cache-file my::project-compile:cache-file))))
+    (f-write cache 'utf-8 (or cache-file my-project-compile:cache-file))))
 
-(defun my::project-compile/compile-cmd (cmd dir &optional cache-file)
+(defun my-project-compile/compile-cmd (cmd dir &optional cache-file)
   (counsel-compile--action cmd)
-  (my::project-compile/update-cache cmd dir cache-file))
+  (my-project-compile/update-cache cmd dir cache-file))
 
-(defun my::project-compile|compile ()
+(defun my-project-compile|compile ()
   (interactive)
-  (let* ((dir (->> (my::file/project-root)
+  (let* ((dir (->> (my-file/project-root)
                    (f-full)))
-         (items (->> (my::project-compile/get-cache-items (intern dir))
+         (items (->> (my-project-compile/get-cache-items (intern dir))
                      (reverse))))
     (ivy-read "Compile: " (seq-into items 'list)
-              :action (lambda (cmd) (my::project-compile/compile-cmd cmd dir)))))
+              :action (lambda (cmd) (my-project-compile/compile-cmd cmd dir)))))
 #+end_src
 ** Comment header
 
@@ -1239,27 +1239,27 @@ Config files that I don't want to share with the world.
 They will be stored in here:
 
 #+BEGIN_SRC elisp
-(defvar my::secrets:config-file nil
+(defvar my-secrets:config-file nil
   "My private config file.")
-(setq my::secrets:config-file "~/.config/secrets.el")
+(setq my-secrets:config-file "~/.config/secrets.el")
 #+END_SRC
 
 And I will load them on system start:
 
 #+BEGIN_SRC elisp
-(defun my::secrets/load-config-file ()
-  (-some->> my::secrets:config-file
+(defun my-secrets/load-config-file ()
+  (-some->> my-secrets:config-file
     (-id-when 'file-exists-p)
     (load-library)))
 
-(my::secrets/load-config-file)
+(my-secrets/load-config-file)
 #+END_SRC
 ** Custom Variables
 *** Directories
 **** Downloads
 
 #+BEGIN_SRC elisp
-(defcustom my::directories:downloads-dir "~/Downloads"
+(defcustom my-directories:downloads-dir "~/Downloads"
   "Downloads Directory"
   :type 'string)
 #+END_SRC
@@ -1267,7 +1267,7 @@ And I will load them on system start:
 **** Repositories
 
 #+BEGIN_SRC elisp
-(defcustom my::directories:repositories-dir "~/Code/Repositories"
+(defcustom my-directories:repositories-dir "~/Code/Repositories"
   "Downloads Directory"
   :type 'string)
 #+END_SRC
@@ -1311,13 +1311,13 @@ Variables that I want to safely set from ~.dir-locals~ files.
 *** Buffer naming :INIT:
 
 #+BEGIN_SRC elisp
-(defun my::*set-uniquify-buffer-name-style ()
+(defun my-*set-uniquify-buffer-name-style ()
   (setq uniquify-buffer-name-style 'post-forward)
   (setq uniquify-separator "/")
   (setq uniquify-after-kill-buffer-p t)
   (setq uniquify-ignore-buffers-re "^\\*"))
 
-(add-hook! 'persp-mode-hook #'my::*set-uniquify-buffer-name-style)
+(add-hook! 'persp-mode-hook #'my-*set-uniquify-buffer-name-style)
 #+END_SRC
 
 *** Load ~.authinfo.gpg~ for authentication :AUTH:
@@ -1467,7 +1467,7 @@ Set it to =32 MiB=.
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::ui|toggle-window-split-direction ()
+(defun my-ui|toggle-window-split-direction ()
   "Toggle current window split between horizontal and vertical."
   (interactive)
   (if (= (count-windows) 2)
@@ -1503,7 +1503,7 @@ Lock a window so the buffer can't be changed or it cant be deleted.
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::ui|toggle-window-dedicated ()
+(defun my-ui|toggle-window-dedicated ()
   "Control whether or not Emacs is allowed to display another
 buffer in current window."
   (interactive)
@@ -1517,7 +1517,7 @@ buffer in current window."
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::ui/adjust-font (size line-space &optional font-family weight)
+(defun my-ui/adjust-font (size line-space &optional font-family weight)
   (let* ((font-family (or font-family)))
     (setq-default line-spacing line-space)
     (setq-default doom-font (font-spec :family font-family :size size :weight weight))
@@ -1527,7 +1527,7 @@ buffer in current window."
     (run-hooks 'after-setting-font-hook)))
 
 ;;;###autoload
-(defun my::ui/get-x-screen ()
+(defun my-ui/get-x-screen ()
   "Get a list of all connected screens."
   (-> "xrandr | grep ' connected ' | cut -d ' ' -f 1"
       (shell-command-to-string)
@@ -1541,69 +1541,69 @@ buffer in current window."
                        (t nil))))))
 
 ;;;###autoload
-(defun my::ui/has-display-connected? (screen)
+(defun my-ui/has-display-connected? (screen)
   "Check if SCREEN is connected."
-  (-contains? (my::ui/get-x-screen) screen))
+  (-contains? (my-ui/get-x-screen) screen))
 
 ;;;###autoload
-(defun my::ui|adjust-ui-to-display ()
+(defun my-ui|adjust-ui-to-display ()
   "Adjust the UI to the current attached display."
   (interactive)
   (cond
    ((string= (system-name) "mbair")
     ;; Not actually a retina display, but this looks best
-    (my::ui/adjust-font 13 5 "Fira Code"))
+    (my-ui/adjust-font 13 5 "Fira Code"))
    ((string= (system-name) "Florians-iMac.local")
-    (my::ui/adjust-font 14 10 "Menlo"))
+    (my-ui/adjust-font 14 10 "Menlo"))
    ((string= (system-name) "thinknix")
-    (if (my::ui/has-display-connected? "DP2")
-        (my::ui/adjust-font 18 7 "Fira Code" 'medium)
-      (my::ui/adjust-font 15 4 "Fira Code" 'medium)))
+    (if (my-ui/has-display-connected? "DP2")
+        (my-ui/adjust-font 18 7 "Fira Code" 'medium)
+      (my-ui/adjust-font 15 4 "Fira Code" 'medium)))
    ((string= (system-name) "thinknixx1")
-    (if (my::ui/has-display-connected? "DP-3")
-        (my::ui/adjust-font 18 7 "Fira Code" 'medium)
-      (my::ui/adjust-font 15 4 "Fira Code" 'medium)))
+    (if (my-ui/has-display-connected? "DP-3")
+        (my-ui/adjust-font 18 7 "Fira Code" 'medium)
+      (my-ui/adjust-font 15 4 "Fira Code" 'medium)))
    ((string= (system-name) "Florians-MacBook-Air.local")
-    (my::ui/adjust-font 14 10 "Menlo"))))
+    (my-ui/adjust-font 14 10 "Menlo"))))
 #+END_SRC
 **** Line spacing hydra :HYDRA:
 
 Change and reset line-spacing for all buffers.
 
 #+BEGIN_SRC elisp
-(defvar my::ui:default-line-spacing line-spacing)
-(defvar my::ui:default-line-spacing-increment-step 1)
-(defvar my::ui:default-big-line-spacing-increment-step 10)
+(defvar my-ui:default-line-spacing line-spacing)
+(defvar my-ui:default-line-spacing-increment-step 1)
+(defvar my-ui:default-big-line-spacing-increment-step 10)
 
-(defun my::ui/set-line-spacing (&optional increment)
+(defun my-ui/set-line-spacing (&optional increment)
   "Set the line spacing
 When no line spacing is given is the default-line-spacing"
-  (setq-default line-spacing (+ (or increment my::ui:default-line-spacing-increment-step) line-spacing)))
+  (setq-default line-spacing (+ (or increment my-ui:default-line-spacing-increment-step) line-spacing)))
 
-(defun my::ui|reset-line-spacing ()
+(defun my-ui|reset-line-spacing ()
   (interactive)
-  (setq-default line-spacing my::ui:default-line-spacing))
+  (setq-default line-spacing my-ui:default-line-spacing))
 
-(defun my::ui|increase-line-spacing ()
+(defun my-ui|increase-line-spacing ()
   (interactive)
-  (my::ui/set-line-spacing))
+  (my-ui/set-line-spacing))
 
-(defun my::ui|decrease-line-spacing ()
+(defun my-ui|decrease-line-spacing ()
   (interactive)
-  (my::ui/set-line-spacing (- my::ui:default-line-spacing-increment-step)))
+  (my-ui/set-line-spacing (- my-ui:default-line-spacing-increment-step)))
 
-(defun my::ui|increase-line-spacing-big ()
+(defun my-ui|increase-line-spacing-big ()
   (interactive)
-  (my::ui/set-line-spacing my::ui:default-big-line-spacing-increment-step))
+  (my-ui/set-line-spacing my-ui:default-big-line-spacing-increment-step))
 
-(defun my::ui|decrease-line-spacing-big ()
+(defun my-ui|decrease-line-spacing-big ()
   (interactive)
-  (my::ui/set-line-spacing (- my::ui:default-big-line-spacing-increment-step)))
+  (my-ui/set-line-spacing (- my-ui:default-big-line-spacing-increment-step)))
 
-(evil-define-key 'normal 'global (kbd "]z") #'my::ui/line-spacing-hydra/body)
+(evil-define-key 'normal 'global (kbd "]z") #'my-ui/line-spacing-hydra/body)
 
 ;;;###autoload (autoload '+common-lisp/macrostep/body "lang/common-lisp/autoload/hydras" nil nil)
-(defhydra my::ui/line-spacing-hydra (:exit nil :hint nil :foreign-keys run :color pink)
+(defhydra my-ui/line-spacing-hydra (:exit nil :hint nil :foreign-keys run :color pink)
   "
 Macro Expansion
 ^^Definitions                           ^^Compiler Notes             ^^Stickers
@@ -1614,11 +1614,11 @@ Macro Expansion
 [_}_] Expand Big
 [_{_] Collapse Big
 "
-  ("r" my::ui|reset-line-spacing)
-  ("]" my::ui|increase-line-spacing)
-  ("[" my::ui|decrease-line-spacing)
-  ("}" my::ui|increase-line-spacing-big)
-  ("{" my::ui|decrease-line-spacing-big)
+  ("r" my-ui|reset-line-spacing)
+  ("]" my-ui|increase-line-spacing)
+  ("[" my-ui|decrease-line-spacing)
+  ("}" my-ui|increase-line-spacing-big)
+  ("{" my-ui|decrease-line-spacing-big)
   ("q" nil "cancel" :color blue))
 #+END_SRC
 
@@ -1628,7 +1628,7 @@ Toggle between a light and a dark theme.
 Bound to ~SPC t t~.
 
 #+BEGIN_SRC elisp
-(defun my::ui|toggle-theme ()
+(defun my-ui|toggle-theme ()
   "Toggle between light and dark themes."
   (interactive)
   (-when-let* ((theme (pcase doom-theme
@@ -1654,7 +1654,7 @@ Bound to ~SPC t t~.
 
 #+BEGIN_SRC elisp
 (add-hook! '(window-setup-hook after-make-frame-functions)
-  (defun my::ui/init-frame-ui (&optional frame)
+  (defun my-ui/init-frame-ui (&optional frame)
     (interactive)
     "Re-enable menu-bar-lines in GUI frames."
     (when-let (frame (or frame (selected-frame)))
@@ -1755,8 +1755,8 @@ This will be disabled in terminal mode.
 
 #+BEGIN_SRC elisp
 (add-hook! '(doom-init-ui-hook after-make-frame-functions)
-  (defun my::ui*after-make-frame (&rest _)
-    (when (display-graphic-p) (my::ui|adjust-ui-to-display))))
+  (defun my-ui*after-make-frame (&rest _)
+    (when (display-graphic-p) (my-ui|adjust-ui-to-display))))
 #+END_SRC
 **** Scrolloff
 
@@ -1807,20 +1807,20 @@ Expand visual region using a hydra.
 Double press ~v~ to enable.
 
 #+BEGIN_SRC elisp
-(defhydra my::text/expand-region-hydra ()
+(defhydra my-text/expand-region-hydra ()
    "region: "
    ("f" er/mark-defun "defun")
    ("v" er/expand-region "expand")
    ("V" er/contract-region "contract"))
 
-(evil-define-key 'visual 'global (kbd "v") #'my::text/expand-region-hydra/body)
+(evil-define-key 'visual 'global (kbd "v") #'my-text/expand-region-hydra/body)
 #+END_SRC
 **** Unfill Paragraph
 
 Fix a paragraph that was formatted to a fill column.
 
 #+BEGIN_SRC elisp
-(defun my::text|unfill-paragraph ()
+(defun my-text|unfill-paragraph ()
   "Fix a paragraph that was formatted to a fill column."
   (interactive)
   (let ((fill-column (point-max)))
@@ -1957,23 +1957,23 @@ This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
 #+BEGIN_SRC elisp
 (defvar counsel-workspace-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-<backspace>") #'my::workspaces|switch-to-delete-space)
+    (define-key map (kbd "C-<backspace>") #'my-workspaces|switch-to-delete-space)
     map))
 
-(defun my::workspaces/switch-to-delete-space (workspace)
+(defun my-workspaces/switch-to-delete-space (workspace)
   (let* ((current-workspace-name (+workspace-current-name))
          (new-workspace-name
             (or (--first (string= current-workspace-name it) (+workspace-list-names)) "main")))
     (+workspace/delete workspace)
     (+workspace-switch new-workspace-name)
-    (my::workspaces/switch-to)))
+    (my-workspaces/switch-to)))
 
-(defun my::workspaces|switch-to-delete-space ()
+(defun my-workspaces|switch-to-delete-space ()
   (interactive)
-  (ivy-set-action #'my::workspaces/switch-to-delete-space)
+  (ivy-set-action #'my-workspaces/switch-to-delete-space)
   (ivy-done))
 
-(defun my::workspaces/switch-to ()
+(defun my-workspaces/switch-to ()
   (interactive)
   (ivy-read "Switch to workspace: "
             (+workspace-list-names)
@@ -1984,7 +1984,7 @@ This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
 ***** Close others
 
 #+BEGIN_SRC elisp
-(defun my::workspaces|close-others ()
+(defun my-workspaces|close-others ()
   "Close all other workspaces."
   (interactive)
   (--> (+workspace-list-names)
@@ -1999,22 +1999,22 @@ But when the CWD has changed in that workspace, you would have to relocate to
 the projects cwd to find a file.
 
 #+BEGIN_SRC elisp
-(defun my::workspaces/workspace-project-root (&optional arg)
+(defun my-workspaces/workspace-project-root (&optional arg)
   "Gets the root dir for the current workspace"
   (--find (s-match (concat (+workspace-current-name) "/$") it) projectile-known-projects))
 
-(defun my::workspaces|find-workspace-project-file ()
+(defun my-workspaces|find-workspace-project-file ()
   "Projectile find file for the project named after the current workspace."
   (interactive)
-  (cl-letf (((symbol-function 'projectile-project-root) #'my::workspaces/workspace-project-root))
+  (cl-letf (((symbol-function 'projectile-project-root) #'my-workspaces/workspace-project-root))
     (projectile-find-file)))
 
-(defun my::workspaces|workspace-project-vc ()
+(defun my-workspaces|workspace-project-vc ()
   "Projectile find file for the project named after the current workspace."
   (interactive)
   (let ((default-directory
-          (or (my::workspaces/workspace-project-root)
-              (my::file/project-root))))
+          (or (my-workspaces/workspace-project-root)
+              (my-file/project-root))))
     (magit-status)))
 #+END_SRC
 
@@ -2031,7 +2031,7 @@ the projects cwd to find a file.
 ***** Cleanup
 
 #+BEGIN_SRC elisp
-(defun my::workspaces/remove-other-buffers (&optional keep-alive?)
+(defun my-workspaces/remove-other-buffers (&optional keep-alive?)
   "Kill or remove all other buffers from current workspace."
   (interactive)
   (--> (+workspace-buffer-list)
@@ -2040,20 +2040,20 @@ the projects cwd to find a file.
            (persp-remove-buffer it)
          (kill-buffer it))))
 
-(defun my::workspaces|hide-other-buffers ()
+(defun my-workspaces|hide-other-buffers ()
   "Hide all inactive buffers from the current workspace."
   (interactive)
-  (my::workspaces/remove-other-buffers t))
+  (my-workspaces/remove-other-buffers t))
 
-(defun my::workspaces|kill-other-buffers ()
+(defun my-workspaces|kill-other-buffers ()
   "Kill all interactive buffers from the current workspace."
   (interactive)
-  (my::workspaces/remove-other-buffers))
+  (my-workspaces/remove-other-buffers))
 
-(defun my::workspaces|hide-non-project-buffers ()
+(defun my-workspaces|hide-non-project-buffers ()
   "Hide all file buffers that don't belong to the project workspace."
   (interactive)
-  (let ((project-path (or (expand-file-name (my::workspaces/workspace-project-root))
+  (let ((project-path (or (expand-file-name (my-workspaces/workspace-project-root))
                           (projectile-project-root))))
     (-some--> (+workspace-buffer-list)
          ;; Dont remove non-remove buffers
@@ -2070,7 +2070,7 @@ I want buffers added whenever I visit a buffer.
 
 #+BEGIN_SRC elisp
 (after! persp-mode
-  (defun my::workspaces*add-special-buffer ()
+  (defun my-workspaces*add-special-buffer ()
     (if-let* ((name (buffer-name))
               (add-buffer? (or
                             ;; Always add files to workspaces
@@ -2079,7 +2079,7 @@ I want buffers added whenever I visit a buffer.
                             (s-matches? "\\*Org Src.*" name))))
       (persp-add-buffer (current-buffer) (get-current-persp))))
 
-  (add-hook 'doom-switch-buffer-hook #'my::workspaces*add-special-buffer))
+  (add-hook 'doom-switch-buffer-hook #'my-workspaces*add-special-buffer))
 #+END_SRC
 ** Evil :EVIL:
 *** Packages
@@ -2161,7 +2161,7 @@ Filters out whitespace from the kill ring
 **** Evil Insert
 
 #+begin_src elisp
-(defun my::evil/insert-dwim (str)
+(defun my-evil/insert-dwim (str)
   "The evil normal cursor does not visually represent the emacs insert cursor.
 So inserting things will be off by one character.
 This function will insert how I would expect to insert depending on the mode.
@@ -2179,7 +2179,7 @@ In insert mode -> at the character"
 **** Evil ex search for string
 
 #+begin_src elisp
-(defun my::evil/ex-search-str (str)
+(defun my-evil/ex-search-str (str)
   "Evil Ex search for STR."
   (setq evil-ex-search-pattern
         (let (evil-ex-search-vim-style-regexp)
@@ -2228,12 +2228,12 @@ Distraction free writing
 ****** Custom Design :FIX:
 
 #+BEGIN_SRC elisp
-(defun my::writeroom/setup ()
+(defun my-writeroom/setup ()
   (if writeroom-mode
-      (my::writeroom/load)
-    (my::writeroom/unload)))
+      (my-writeroom/load)
+    (my-writeroom/unload)))
 
-(defun my::writeroom/load ()
+(defun my-writeroom/load ()
   (setq-local line-spacing 0.4)
   (setq-local +writeroom:faceremaps
               (list
@@ -2247,12 +2247,12 @@ Distraction free writing
                                          (face-attribute 'default :foreground)
                                          0.1))))))
 
-(defun my::writeroom/unload ()
+(defun my-writeroom/unload ()
   (kill-local-variable 'line-spacing)
   (mapc #'face-remap-remove-relative +writeroom:faceremaps)
   (kill-local-variable '+writeroom:faceremaps))
 
-(add-hook! 'writeroom-mode-hook #'my::writeroom/setup)
+(add-hook! 'writeroom-mode-hook #'my-writeroom/setup)
 #+END_SRC
 **** [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]]
 
@@ -2287,7 +2287,7 @@ When narrowing to region or defun, make it in an indirect other window.
 ****** Save parinfer excursion
 
 #+begin_src elisp
-(defmacro my::parinfer/save-excursion (mode &rest body)
+(defmacro my-parinfer/save-excursion (mode &rest body)
   `(let ((prev-mode (symbol-value 'parinfer-rust--mode)))
      (parinfer-rust--switch-mode ,mode)
      ,@body
@@ -2451,7 +2451,7 @@ snippet, or `emmet-expand-yas'/`emmet-expand-line', depending on whether
   (setq-hook! 'stylus-mode-hook emmet-use-sass-syntax t)
   (setq emmet-indent-after-insert nil)
 
-  (defadvice! my::emmet/fix-stylus-colon (&optional arg1)
+  (defadvice! my-emmet/fix-stylus-colon (&optional arg1)
      :after '(emmet-expand-yas emmet-expand-line)
      (when (eq major-mode 'stylus-mode)
        (save-excursion
@@ -2501,7 +2501,7 @@ Pretty print colors string with the color as the background.
 **** [[https://github.com/skeeto/impatient-mode][impatient-mode]] :BROWSER:
 
 A live reload server directly in emacs for quickly editing css.
-Launch using [[*Launch][my::impatient-mode|launch]].
+Launch using [[*Launch][my-impatient-mode|launch]].
 
 ***** Package
 
@@ -2514,7 +2514,7 @@ Launch using [[*Launch][my::impatient-mode|launch]].
 ****** Launch
 
 #+begin_src emacs-lisp
-(defun my::impatient-mode|launch ()
+(defun my-impatient-mode|launch ()
   "Launch server with impatient mode and open the browser."
   (interactive)
   (httpd-start)
@@ -2522,7 +2522,7 @@ Launch using [[*Launch][my::impatient-mode|launch]].
   (let ((file-name (f-filename (+yank/buffer-filename))))
     (browse-url (t! "http://localhost:8080/imp/live/<<file-name>>"))))
 
-(defun my::impatient-mode|stop ()
+(defun my-impatient-mode|stop ()
   "Launch server with impatient mode and open the browser."
   (interactive)
   (httpd-stop)
@@ -2922,15 +2922,15 @@ No namespace here, so it matches the other commmands
 ***** Match const function name
 
 #+BEGIN_SRC elisp
-(defun my::javascript/match-const-function-name (line)
+(defun my-javascript/match-const-function-name (line)
   "Matches a line to the word after the declaration"
   (nth 2 (s-match
           "\\(const\\|let\\|class\\)\s\\(.+?\\)\s"
           line)))
 
-(defun my::javascript/const-function-at-point ()
+(defun my-javascript/const-function-at-point ()
   "Returns the current function name at the current line"
-  (my::javascript/match-const-function-name (thing-at-point 'line t)))
+  (my-javascript/match-const-function-name (thing-at-point 'line t)))
 #+END_SRC
 ***** Setup test files
 
@@ -2938,7 +2938,7 @@ No namespace here, so it matches the other commmands
 
 #+begin_src elisp
 (add-hook! 'js2-mode-hook
-  (defun my::javascript/setup-test-file-vars ()
+  (defun my-javascript/setup-test-file-vars ()
     "Sets up variables for test files (cypress, jest)."
     (when (-some->> (buffer-file-name)
             (string-match "\\.\\(test\\|spec\\|cy\\)\\.js$"))
@@ -2963,11 +2963,11 @@ I don't need them with parinfer and lispyville, they're just distracting.
 ***** Is Last JSON key at point
 
 #+BEGIN_SRC elisp
-(defun my::json/is-last-key? ()
+(defun my-json/is-last-key? ()
   "Is the next line the last json key."
   (save-excursion
     (forward-line)
-    (my::buffer/line-contains "}")))
+    (my-buffer/line-contains "}")))
 #+END_SRC
 
 ***** Insert JSON Key
@@ -2976,9 +2976,9 @@ Insert JSON key in a JSON document
 This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# --][key]]
 
 #+BEGIN_SRC elisp
-(defun my::json/insert-key (&optional above?)
+(defun my-json/insert-key (&optional above?)
   "Adds a new JSON key pair."
-  (let ((last-line? (my::buffer/line-contains ",$")))
+  (let ((last-line? (my-buffer/line-contains ",$")))
     ;; Insert comma
     (if (and (not last-line?) (not above?))
         (replace-regexp "$" "," nil (point-at-bol) (point-at-eol)))
@@ -2987,17 +2987,17 @@ This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# -
         (evil-insert-newline-above)
       (evil-insert-newline-below))
     (indent-according-to-mode)
-    (my::snippets/insert-by-name "key")))
+    (my-snippets/insert-by-name "key")))
 
-(defun my::json|insert-key-above ()
+(defun my-json|insert-key-above ()
   "Function docstring"
   (interactive)
-  (my::json/insert-key t))
+  (my-json/insert-key t))
 
-(defun my::json|insert-key-below ()
+(defun my-json|insert-key-below ()
   "Function docstring"
   (interactive)
-  (my::json/insert-key nil))
+  (my-json/insert-key nil))
 #+END_SRC
 
 ***** Autofix JSON
@@ -3009,7 +3009,7 @@ npm i -g json-fix
 #+END_SRC
 
 #+BEGIN_SRC elisp
-(defun my::json|autofix-buffer ()
+(defun my-json|autofix-buffer ()
   "Autofix json buffer"
   (interactive)
   (let ((b (if mark-active (min (point) (mark)) (point-min)))
@@ -3024,8 +3024,8 @@ npm i -g json-fix
 (map!
  :after json-mode
  :map json-mode-map
- :gni "<C-return>" #'my::json|insert-key-below
- :gni "<C-S-return>" #'my::json|insert-key-above)
+ :gni "<C-return>" #'my-json|insert-key-below
+ :gni "<C-S-return>" #'my-json|insert-key-above)
 #+END_SRC
 ***** Functions
 ***** Export default variable
@@ -3035,7 +3035,7 @@ npm i -g json-fix
   "Exports the current declaration at the end of the file"
   (interactive)
   (save-excursion
-    (let* ((name (my::javascript/const-function-at-point)))
+    (let* ((name (my-javascript/const-function-at-point)))
       (goto-char (point-max))
       (insert "\n")
       (insert (template "export default <<name>>;")))))
@@ -3049,7 +3049,7 @@ Extract the ~const~ under the cursor into a new file.
 (defun js2r-extract-const-to-file ()
   "Extracts function to external file"
   (interactive)
-  (let* ((name (my::javascript/const-function-at-point))
+  (let* ((name (my-javascript/const-function-at-point))
          (path (concat "./" name ".js")))
     (evil-digit-argument-or-evil-beginning-of-line)
     (js2r-kill)
@@ -3585,7 +3585,7 @@ I mainly changed the function marking helper.
 Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 
 #+BEGIN_SRC elisp
-(defun my::nixos/edit-indirect ()
+(defun my-nixos/edit-indirect ()
   "Edit script in an indirect buffer."
   (interactive)
   (and-let* ((beg (save-excursion
@@ -3599,7 +3599,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
                     (point))))
     (+indirect-indent|edit beg end #'sh-mode)))
 
-(map! :map nix-mode-map "C-c '" 'my::nixos/edit-indirect)
+(map! :map nix-mode-map "C-c '" 'my-nixos/edit-indirect)
 
 (set-popup-rule! "^\\*edit-indirect" :ignore t)
 #+END_SRC
@@ -3609,7 +3609,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 ****** Autofix with [[https://hackage.haskell.org/package/brittany][brittany]] :AUTOFIX:
 
 #+begin_src elisp
-(defun my::haskell|autofix ()
+(defun my-haskell|autofix ()
   "Function formats haskell buffer with brittany on save."
   (interactive)
   (when (eq major-mode 'haskell-mode)
@@ -3685,7 +3685,7 @@ pkgs.mkShell {
 #+end_src
 
 #+begin_src elisp
-(defun my::nim|import/add-std-import-statement (import)
+(defun my-nim|import/add-std-import-statement (import)
   "Insert stdlib import below last stdin statement."
   (goto-char (point-max))
   (cond ((search-backward-regexp "^import std/.+$" 0 t)
@@ -3693,7 +3693,7 @@ pkgs.mkShell {
         ((goto-char (point-min)) (evil-insert-newline-above)))
   (insert (t! "import std/<<import>>")))
 
-(defun my::nim|import/add-lib-import-statement (import)
+(defun my-nim|import/add-lib-import-statement (import)
   "Insert package import below all import statements."
   (goto-char (point-max))
   (cond ((search-backward-regexp "^import .+$" 0 t)
@@ -3701,7 +3701,7 @@ pkgs.mkShell {
         ((goto-char (point-min)) (evil-insert-newline-above)))
   (insert (t! "import <<import>>")))
 
-(defun my::nim|import ()
+(defun my-nim|import ()
   "Add import from nims stdlib or your nimble packages."
   (interactive)
   (let* ((nim-src-dir (-some->> (getenv "NIM_UNWRAPPED_DIR")
@@ -3726,8 +3726,8 @@ pkgs.mkShell {
               :action (lambda (import)
                         (save-excursion
                           (pcase import
-                            (`(,x . deps) (my::nim|import/add-lib-import-statement x))
-                            (`(,x . libs) (my::nim|import/add-std-import-statement x))))))))
+                            (`(,x . deps) (my-nim|import/add-lib-import-statement x))
+                            (`(,x . libs) (my-nim|import/add-std-import-statement x))))))))
 #+end_src
 ***** Flycheck for ~v.1.6.0~
 
@@ -4004,7 +4004,7 @@ arguments can be set as a list via ‘nimpretty-args’."
  :map nim-mode-map
  :localleader
  (:prefix-map ("c" . "Create")
-  :desc "Import File" "i" #'my::nim|import))
+  :desc "Import File" "i" #'my-nim|import))
 #+END_SRC
 *** ReasonMl / ReScript :REASON_ML:
 **** Packages
@@ -4116,7 +4116,7 @@ arguments can be set as a list via ‘nimpretty-args’."
 ***** Convert between ReasonML and Ocaml in SRC blocks
 
 #+begin_src elisp
-(defun my::org-babel|org-src-block-refmt-reason-ocaml-toggle ()
+(defun my-org-babel|org-src-block-refmt-reason-ocaml-toggle ()
   "Convert an Org SRC block from ocaml to reason and vice versa."
   (interactive)
   (save-excursion
@@ -4137,7 +4137,7 @@ arguments can be set as a list via ‘nimpretty-args’."
 ***** Rtop
 
 #+begin_src elisp
-(defun my::reason|rtop ()
+(defun my-reason|rtop ()
   "Launch reason version of utop."
   (interactive)
   (cl-letf ((utop-command "rtop -emacs"))
@@ -4180,14 +4180,14 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 ******* Fix ~cider-connect~ checking ~.authinfo.gpp~ -> password
 
 #+begin_src elisp
-(defun my::cider|connect-clj (&optional params)
+(defun my-cider|connect-clj (&optional params)
   "Custom cider connect function that doesn't trigger authinfo.gpg password query."
   (interactive "P")
   (require 'noflet)
   (noflet ((cider--ssh-hosts () nil))
     (cider-connect-clj params)))
 
-(defun my::cider|connect-cljs (&optional params)
+(defun my-cider|connect-cljs (&optional params)
   "custom cider-connect-cljs function that doesn't trigger authinfo.gpg password query."
   (interactive "P")
   (require 'noflet)
@@ -4203,15 +4203,15 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
   (map!
    (:localleader
      (:map (clojure-mode-map clojurescript-mode-map clojurec-mode-map)
-       "c"  #'my::cider|connect-clj
-       "C"  #'my::cider|connect-cljs
+       "c"  #'my-cider|connect-clj
+       "C"  #'my-cider|connect-cljs
        (:prefix ("i" . "inspect")
                 "e" #'cider-enlighten-mode
                 "i" #'cider-inspect
                 "r" #'cider-inspect-last-result))
      (:map (clojurescript-mode-map)
       (:prefix ("i" . "inspect")
-               "i" #'my::cider|inspect-expr)))))
+               "i" #'my-cider|inspect-expr)))))
 #+end_src
 
 ***** [[https://github.com/noctuid/lispyville][lispyville]]
@@ -4259,8 +4259,8 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
         :nm "M-l" #'lispyville-forward-sexp-begin
         :nm "M-H" #'lispyville-beginning-of-defun
         :nm "M-L" #'lispyville-end-of-defun
-        :nm "M-J" #'my::lispyville|drag-2-forward
-        :nm "M-K" #'my::lispyville|drag-2-backward))
+        :nm "M-J" #'my-lispyville|drag-2-forward
+        :nm "M-K" #'my-lispyville|drag-2-backward))
 #+END_SRC
 
 ******* Jumps
@@ -4282,7 +4282,7 @@ Define jump points for lispyville functions
 ******* Drag two items forward/backward
 
 #+begin_src elisp
-(defun my::lispyville|drag-2-backward ()
+(defun my-lispyville|drag-2-backward ()
   "Drags two items backward, useful for maps to drag the key and the value around."
   (interactive)
   (lispyville--drag #'lispy-move-up 2)
@@ -4290,7 +4290,7 @@ Define jump points for lispyville functions
   (lispyville--drag #'lispy-move-up 2)
   (lispyville-backward-sexp))
 
-(defun my::lispyville|drag-2-forward ()
+(defun my-lispyville|drag-2-forward ()
   "Drags two items backward, useful for maps to drag the key and the value around."
   (interactive)
   (lispyville--drag #'lispy-move-down 2)
@@ -4303,7 +4303,7 @@ Define jump points for lispyville functions
 ***** Keywords to map
 
 #+begin_src elisp
-(defun my::clojure|region-keywords-to-map ()
+(defun my-clojure|region-keywords-to-map ()
   "Convert keywords in region to a clojure map."
   (interactive)
   (let* ((beg (region-beginning))
@@ -4320,7 +4320,7 @@ Define jump points for lispyville functions
                       (s-join (if (> (length input) 20) "\n" " "))
                       ((lambda (x) (s-wrap x "{" "}"))))))
     (save-excursion
-      (my::parinfer/save-excursion
+      (my-parinfer/save-excursion
        "paren"
        (progn
          (delete-region beg end)
@@ -4330,7 +4330,7 @@ Define jump points for lispyville functions
 ***** Key formatting sorting
 
 #+begin_src elisp
-(defun my::clojure::format|sort-keys ()
+(defun my-clojure::format|sort-keys ()
   "Convert set of keys to multiline."
   (interactive)
   (-let* (((beg end) (evil-select-inner-object 'lispyville-list nil nil nil))
@@ -4344,7 +4344,7 @@ Define jump points for lispyville functions
       (goto-char beg)
       (insert (concat "[" new-text "]")))))
 
-(defun my::clojure::format|keys-to-multi-line ()
+(defun my-clojure::format|keys-to-multi-line ()
   "Convert set of keys to multiline."
   (interactive)
   (-let* (((beg end) (evil-select-inner-object 'lispyville-list nil nil nil))
@@ -4354,7 +4354,7 @@ Define jump points for lispyville functions
                          (-sort #'string<)
                          (s-join "\n"))))
     (save-excursion
-      (my::parinfer/save-excursion
+      (my-parinfer/save-excursion
        "paren"
        (progn
          (delete-region beg end)
@@ -4365,10 +4365,10 @@ Define jump points for lispyville functions
 ***** Paste in paren mode
 
 #+begin_src elisp
-(defun my::clojure|parinfer-yank ()
+(defun my-clojure|parinfer-yank ()
   "Yank with temporary paren mode enabled."
   (interactive)
-  (my::parinfer/save-excursion "paren"
+  (my-parinfer/save-excursion "paren"
    (call-interactively #'yank)
    (+evil|select-pasted)
    (evil-indent)))
@@ -4376,7 +4376,7 @@ Define jump points for lispyville functions
 ***** Spy
 
 #+begin_src elisp
-(defun my::clojure/spy-buffer-fns ()
+(defun my-clojure/spy-buffer-fns ()
   "Get buffer functions"
   (-map
    (lambda (x) (->> x
@@ -4388,11 +4388,11 @@ Define jump points for lispyville functions
                     (car)))
    (counsel--imenu-candidates)))
 
-(defun my::clojure|spy ()
+(defun my-clojure|spy ()
   "Wrap element with spy function and insert function into file if not already available in namespace."
   (interactive)
   (save-excursion
-    (let* ((fns (my::clojure/fns))
+    (let* ((fns (my-clojure/fns))
            (spy? (-contains? fns "spy")))
      (lispyville-wrap-round t)
      (insert "spy ")
@@ -4405,7 +4405,7 @@ Define jump points for lispyville functions
 ***** Inspect cleaned up expression
 
 #+begin_src elisp
-(defun my::cider|inspect-expr (expr ns)
+(defun my-cider|inspect-expr (expr ns)
   "Evaluate EXPR in NS and inspect its value.
 Interactively, EXPR is read from the minibuffer, and NS the
 current buffer's namespace."
@@ -4494,17 +4494,17 @@ current buffer's namespace."
  :desc "Goto parent function" :n "gh" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "[[" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin))
- :g "s-v" #'my::clojure|parinfer-yank
+ :g "s-v" #'my-clojure|parinfer-yank
  :localleader
  "s" #'clojure-sort-ns
- "l" #'my::pitch|l10n-jump)
+ "l" #'my-pitch|l10n-jump)
 #+END_SRC
 
 ***** Test rotation words
 
 #+begin_src elisp
 (add-hook! 'clojurescript-mode-hook
-  (defun my::clojure/setup-test-file-vars ()
+  (defun my-clojure/setup-test-file-vars ()
     "Sets up variables for test files (cypress, jest)."
     (when (-some->> (buffer-file-name)
             (string-match "\\.*_spec.cljs$"))
@@ -4515,14 +4515,14 @@ current buffer's namespace."
 *** Stylus
 
 #+begin_src elisp
-(defun my::stylus|fmt ()
+(defun my-stylus|fmt ()
   (interactive)
-  (when-let ((bin (my::file/node-modules-executable-find "stylus-supremacy"))
+  (when-let ((bin (my-file/node-modules-executable-find "stylus-supremacy"))
              (default-directory (projectile-project-root)))
     (shell-command (t! "<<bin>> format <<buffer-file-name>> -r -p stylus.json"))))
 
 (set-formatter! 'stylus-supremacy
-  '(("%s" (my::file/node-modules-executable-find "stylus-supremacy"))
+  '(("%s" (my-file/node-modules-executable-find "stylus-supremacy"))
     "format" ("%s" buffer-file-name)
     "-p" ("%s/stylus.json" (projectile-project-root)))
   :modes '(stylus-mode))
@@ -4571,7 +4571,7 @@ Package override that fixes multiple remotes:
 (use-package elescope
   :commands (elescope-checkout)
   :config
-  (setq elescope-root-folder my::directories:repositories-dir)
+  (setq elescope-root-folder my-directories:repositories-dir)
   :init
   (defalias '+git|clone 'elescope-checkout))
 #+END_SRC
@@ -4607,12 +4607,12 @@ Creates a new git workspace from a branch.
 Automatically adds ~.projectfile~ and opens a new doom workspace.
 
 #+BEGIN_SRC elisp
-(defun my::magit|create-worktree-project-from-branch (branch start-point &optional force)
+(defun my-magit|create-worktree-project-from-branch (branch start-point &optional force)
   "Create a new BRANCH and check it out in a new worktree at PATH in a new workspace."
   (interactive
    `(,@(magit-branch-read-args "Create and checkout branch")
      ,current-prefix-arg))
-  (let* ((worktree-path (f-join (my::file/git-root) ".worktrees"))
+  (let* ((worktree-path (f-join (my-file/git-root) ".worktrees"))
          (path (f-join worktree-path branch)))
     (when (not (f-exists-p worktree-path))
       (mkdir worktree-path t))
@@ -4632,7 +4632,7 @@ Automatically adds ~.projectfile~ and opens a new doom workspace.
 
 #+begin_src elisp
 (after! magit
-  (transient-append-suffix 'magit-worktree "b" '("c" "Create branch and worktree" my::magit|create-worktree-project-from-branch)))
+  (transient-append-suffix 'magit-worktree "b" '("c" "Create branch and worktree" my-magit|create-worktree-project-from-branch)))
 #+end_src
 
 **** Revision show original file
@@ -4641,7 +4641,7 @@ Show the original file when visiting a revision buffer.
 E.g.: When showing a diff from a commit, you may want to edit that file.
 
 #+BEGIN_SRC elisp
-(defun my::magit|show-revision-original ()
+(defun my-magit|show-revision-original ()
   "Show the orginal file from a revision buffer
 If possible also go to the pointing line"
   (interactive)
@@ -4660,39 +4660,39 @@ Show a list of the changed files in the current branch.
 For now only works on branches that were directly forked from master.
 
 #+BEGIN_SRC elisp
-(defun my::magit/list-new-files ()
+(defun my-magit/list-new-files ()
   "List of added files in the current branch."
-  (my::shell/command-to-list "git ls-files -om --exclude-standard"))
+  (my-shell/command-to-list "git ls-files -om --exclude-standard"))
 
-(defun my::magit/list-modified-files (&optional branch)
+(defun my-magit/list-modified-files (&optional branch)
   "Get a list of modified files from the BRANCH to head."
-  (my::shell/command-to-list
+  (my-shell/command-to-list
    (t! "git --no-pager diff --no-renames --name-only --no-merges <<(magit-rev-parse \"HEAD\")>> <<branch>>;")))
 
-(defun my::magit/list-branch-changed-files (branch)
+(defun my-magit/list-branch-changed-files (branch)
   "Get a list of new and modified files from BRANCH to head."
-  (->> (my::magit/list-modified-files branch)
-       (-concat (my::magit/list-new-files))
+  (->> (my-magit/list-modified-files branch)
+       (-concat (my-magit/list-new-files))
        (-uniq)
        (-filter
         (lambda (x)
           (let ((default-directory (projectile-project-root)))
             (f-exists? x))))))
 
-(defun my::magit|counsel-changed-files (&optional branch)
+(defun my-magit|counsel-changed-files (&optional branch)
   (interactive)
   (let ((enable-recursive-minibuffers t))
     (ivy-read (template "Changed files for <<(or branch (magit-get-current-branch))>>:")
-              (my::magit/list-branch-changed-files (or "origin/master"))
+              (my-magit/list-branch-changed-files (or "origin/master"))
               :require-match t
               :history 'file-name-history
               :action counsel-projectile-find-file-action
-              :caller 'my::magit|counsel-changed-files)))
+              :caller 'my-magit|counsel-changed-files)))
 #+END_SRC
 **** Undo commit
 
 #+BEGIN_SRC elisp
-(defun my::magit|git-undo ()
+(defun my-magit|git-undo ()
   "Soft reset current git repo to HEAD~1."
   (interactive)
   (magit-reset-soft "HEAD~1"))
@@ -4703,7 +4703,7 @@ For now only works on branches that were directly forked from master.
 For work I need remote branches with a date prefix.
 
 #+BEGIN_SRC elisp
-(defun my::magit|push-dated (&optional branch)
+(defun my-magit|push-dated (&optional branch)
   "Pushes the given the current BRANCH with a dated prefix
 my-branch-name -> 19-01-my-branch-name
 When no BRANCH is given, take the current one."
@@ -4721,7 +4721,7 @@ When I'm on the log view, I want to quickly diff it against the currently checke
 The transient shortcut for this is ~d R~ define [[*Transient][here]].
 
 #+BEGIN_SRC elisp
-(defun my::magit|diff-range-from-current-branch ()
+(defun my-magit|diff-range-from-current-branch ()
   "Ranged diff from the checked out branch to the commit at point."
   (interactive)
   (magit-diff-range (template "<<(magit-commit-at-point)>>..<<(magit-get-current-branch)>>")))
@@ -4730,7 +4730,7 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
 **** Diff range from current pull request
 
 #+BEGIN_SRC elisp
-(defun my::magit|diff-range-from-pullreq ()
+(defun my-magit|diff-range-from-pullreq ()
   "Ranged diff from the pull request under point."
   (interactive)
   (-some->> (forge-current-topic)
@@ -4741,7 +4741,7 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
 **** Review branch
 
 #+BEGIN_SRC elisp
-(defun my::magit|delete-review-branches ()
+(defun my-magit|delete-review-branches ()
   "Delete all review branches that no longer have an upstream."
   (interactive)
   (->> (magit-list-branches)
@@ -4750,7 +4750,7 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
        (--reject (magit-get-upstream-branch it))
        (--each (lambda (x) (magit-branch-delete x t)))))
 
-(defun my::magit|checkout-review-branches (&optional branch start-point)
+(defun my-magit|checkout-review-branches (&optional branch start-point)
   "Create a branch with review prefix for easy cleanup afterwards."
   (interactive)
   (let* ((remotes (magit-list-remote-branch-names))
@@ -4778,12 +4778,12 @@ The transient shortcut for this is ~d R~ define [[*Transient][here]].
 Cleans up all merged and review branches
 
 #+BEGIN_SRC elisp
-(defun my::magit|cleanup-branches (&optional base-branch)
+(defun my-magit|cleanup-branches (&optional base-branch)
   "Remove all merged and review branches."
   (interactive)
-  (my::magit|delete-review-branches)
+  (my-magit|delete-review-branches)
   (let* ((base-branch (or base-branch "master")))
-    (call-interactively #'my::magit|delete-review-branches)
+    (call-interactively #'my-magit|delete-review-branches)
     (deferred:$
       (deferred:process-shell (template "git branch --merged | egrep -v \"(^\\*|<<base-branch>>)\" | xargs git branch -d"))
       (deferred:nextc it
@@ -4793,7 +4793,7 @@ Cleans up all merged and review branches
 **** Branches by user
 
 #+BEGIN_SRC elisp
-(defun my::magit|branches-by-user (&optional ignore-review?)
+(defun my-magit|branches-by-user (&optional ignore-review?)
   "List all branches by user.
 Universal argument to ignore review branches."
   (interactive "P")
@@ -4823,34 +4823,34 @@ Universal argument to ignore review branches."
 Loads commit template from ~./git/TEMPLATE~ if the file exist.
 
 #+BEGIN_SRC elisp
-(defun my::magit::commit-template/find-template-file (branch)
-  (when-let* ((dir (my::magit/find-root-git-dir))
+(defun my-magit::commit-template/find-template-file (branch)
+  (when-let* ((dir (my-magit/find-root-git-dir))
               (entries (f-entries dir (lambda (x) (s-starts-with? "TEMPLATE" (f-base x)))))
               (branch-template (template "TEMPLATE-<<branch>>")))
     (or
      (-find (lambda (x) (string= branch-template (f-base x))) entries)
      (-find (lambda (x) (string= "TEMPLATE" (f-base x))) entries))))
 
-(defun my::magit::commit-template|remove-template-file ()
+(defun my-magit::commit-template|remove-template-file ()
   "Open an existing template file or create a new one."
   (interactive)
-  (-when-let* ((file (my::magit::commit-template/find-template-file (magit-get-current-branch))))
+  (-when-let* ((file (my-magit::commit-template/find-template-file (magit-get-current-branch))))
     (when (save-window-excursion
             (find-file file)
             (y-or-n-p "Delete commit template file?"))
       (f-delete file))))
 
-(defun my::magit::commit-template|edit-template-file ()
+(defun my-magit::commit-template|edit-template-file ()
   "Open an existing template file or create a new one."
   (interactive)
-  (let ((file (or (my::magit::commit-template/find-template-file (magit-get-current-branch))
-                  (f-join (my::magit/find-root-git-dir) "TEMPLATE"))))
+  (let ((file (or (my-magit::commit-template/find-template-file (magit-get-current-branch))
+                  (f-join (my-magit/find-root-git-dir) "TEMPLATE"))))
     (find-file file)))
 
-(defun my::magit::commit-template/insert-template (&rest _)
+(defun my-magit::commit-template/insert-template (&rest _)
   "When a TEMPLATE file in the git directory exists, insert it as a commit template."
   (when (eq (point) (point-at-eol))
-    (-some->> (my::magit::commit-template/find-template-file (magit-get-current-branch))
+    (-some->> (my-magit::commit-template/find-template-file (magit-get-current-branch))
       (f-read)
       (s-trim)
       (s-append " ")
@@ -4861,7 +4861,7 @@ Loads commit template from ~./git/TEMPLATE~ if the file exist.
 And the hook
 
 #+BEGIN_SRC elisp
-(add-hook! 'git-commit-setup-hook :append #'my::magit::commit-template/insert-template)
+(add-hook! 'git-commit-setup-hook :append #'my-magit::commit-template/insert-template)
 #+END_SRC
 
 **** Find root directory
@@ -4870,7 +4870,7 @@ Find the root directory of a ~.git~ repository
 This also works for worktrees that are in a nested directory.
 
 #+BEGIN_SRC elisp
-(defun my::magit/find-root-git-dir ()
+(defun my-magit/find-root-git-dir ()
   "Find the root directory of a repository."
     (-some->> (magit-toplevel)
       (-f-join ".git")
@@ -4897,7 +4897,7 @@ This also works for worktrees that are in a nested directory.
 Try two merge two branches in memory, to determine if there would be merge conflicts.
 
 #+BEGIN_SRC elisp
-(defun my::magit/check-for-merge-conflicts (&optional source-branch target-branch)
+(defun my-magit/check-for-merge-conflicts (&optional source-branch target-branch)
   "Try to merge SOURCE-BRANCH into TARGET-BRANCH, return list of conflicting files when there are any.
 This will try to merge in memory, so no index files will be created.
 SOURCE-BRANCH defaults to the current branch.
@@ -4905,13 +4905,13 @@ TARGET-BRANCH defaults to origin/master."
   (interactive)
   (let* ((source-branch (or source-branch (magit-get-current-branch)))
          (target-branch (or target-branch "origin/master"))
-         (merge-base (my::shell/command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
-    (my::shell/command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
+         (merge-base (my-shell/command-to-list (t! "git merge-base <<target-branch>> <<source-branch>>"))))
+    (my-shell/command-to-list (t! "git merge-tree <<(car merge-base)>> <<target-branch>> <<source-branch>>"))))
 #+END_SRC
 **** Copy over changes from diff
 
 #+BEGIN_SRC elisp
-(defun my::magit|diff-copy-file-changes ()
+(defun my-magit|diff-copy-file-changes ()
   "Copies over contents of diff at point to the curent file system."
   (interactive)
   (save-excursion
@@ -4962,7 +4962,7 @@ _gp_rev       _gu_pper              _g=_: upper/lower       _gr_esolve
      "Save and bury buffer" :color blue)
     ("q" nil "cancel" :color blue))
   (add-hook! 'magit-diff-visit-file-hook
-    (defun my::smerge-mode*init-smerge-mode ()
+    (defun my-smerge-mode*init-smerge-mode ()
       "Reveal the point if in an invisible region."
       (when smerge-mode
         ;; Prevent parinfer triggering on diff files
@@ -4974,7 +4974,7 @@ _gp_rev       _gu_pper              _g=_: upper/lower       _gr_esolve
 **** Merge master
 
 #+begin_src elisp
-(defun my::magit|merge-master ()
+(defun my-magit|merge-master ()
   "Merges origin master to the current branch."
   (interactive)
   (magit-merge-plain "origin/master"))
@@ -5033,7 +5033,7 @@ Use ~z1~ to fold all diffs to their file headers and press's ~{~ or ~}~ to
 Then use ~]~ to navigate the sections
 
 #+BEGIN_SRC elisp
-(defun my::magit/jumpunfold-section (&optional forward)
+(defun my-magit/jumpunfold-section (&optional forward)
   "Fold all section. Go to next section when FORWARD. Show all children"
   (interactive)
   (magit-section-show-level-1-all)
@@ -5042,8 +5042,8 @@ Then use ~]~ to navigate the sections
 
 (map!
  (:map magit-diff-mode-map
-  :nv "}" (cmd! (my::magit/jumpunfold-section 't))
-  :nv "{" (cmd! (my::magit/jumpunfold-section))))
+  :nv "}" (cmd! (my-magit/jumpunfold-section 't))
+  :nv "{" (cmd! (my-magit/jumpunfold-section))))
 #+END_SRC
 
 **** Code Review
@@ -5075,11 +5075,11 @@ Then use ~]~ to navigate the sections
 Disable accidentally quitting magit buffers with ~q~ when the buffer is locked.
 
 #+BEGIN_SRC elisp
-(defun my::magit/disable-locked-quit (orig-fn &rest args)
+(defun my-magit/disable-locked-quit (orig-fn &rest args)
   (unless magit-buffer-locked-p
     (apply orig-fn args)))
 
-(advice-add #'magit-mode-bury-buffer :around #'my::magit/disable-locked-quit)
+(advice-add #'magit-mode-bury-buffer :around #'my-magit/disable-locked-quit)
 #+END_SRC
 
 **** Fix text mode
@@ -5105,19 +5105,19 @@ To append something, just state the flag that you see in the transient popup as 
 #+BEGIN_SRC elisp
 (after! magit
   (transient-append-suffix 'magit-log "-f" '("-0" "No merges" "--no-merges"))
-  (transient-append-suffix 'magit-push "p" '("d" "dated" my::magit|push-dated))
+  (transient-append-suffix 'magit-push "p" '("d" "dated" my-magit|push-dated))
 
-  (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" my::magit|diff-range-from-current-branch))
-  (transient-append-suffix 'magit-diff "d" '("P" "Pullrequest Range" my::magit|diff-range-from-pullreq))
+  (transient-append-suffix 'magit-diff "d" '("R" "Diff range from current branch" my-magit|diff-range-from-current-branch))
+  (transient-append-suffix 'magit-diff "d" '("P" "Pullrequest Range" my-magit|diff-range-from-pullreq))
   (transient-append-suffix 'magit-diff "d" '("f" "File" magit-diff-buffer-file))
 
   (transient-append-suffix 'magit-commit
     "-R" '("-D" "Override the author date" "--date=" transient-read-date))
   (transient-append-suffix 'magit-merge
-    "m" '("M" "Merge master" my::magit|merge-master))
+    "m" '("M" "Merge master" my-magit|merge-master))
 
-  (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" my::magit|checkout-review-branches))
-  (transient-append-suffix 'magit-branch "l" '("U" "My Branches" my::magit|branches-by-user)))
+  (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" my-magit|checkout-review-branches))
+  (transient-append-suffix 'magit-branch "l" '("U" "My Branches" my-magit|branches-by-user)))
 #+END_SRC
 ** Dired :DIRED:ORGANIZATION:
 *** Packages
@@ -5180,10 +5180,10 @@ Trigger with ~g/.~ in ~normal-mode~.
 **** Listing Switches / Sorting
 
 #+BEGIN_SRC elisp
-(defconst my::dired:default-listing-switches
+(defconst my-dired:default-listing-switches
   "-ahl -t --group-directories-first")
 
-(setq dired-listing-switches my::dired:default-listing-switches)
+(setq dired-listing-switches my-dired:default-listing-switches)
 #+END_SRC
 
 **** Omit files types in dired
@@ -5238,7 +5238,7 @@ Trigger with ~g/.~ in ~normal-mode~.
 **** Kill all dired buffers
 
 #+BEGIN_SRC elisp
-(defun my::dired|kill-dired-buffers ()
+(defun my-dired|kill-dired-buffers ()
   "Kills all dired buffers."
   (interactive)
   (mapc (lambda (buffer)
@@ -5250,7 +5250,7 @@ Trigger with ~g/.~ in ~normal-mode~.
 **** Go to mounted drive :COUNSEL:
 
 #+begin_src elisp
-(defun my::dired|find-mounted-drive ()
+(defun my-dired|find-mounted-drive ()
   "Browse mounted disk.
 When the mounted drive has only 1 partition, select this one otherwise show listing of disks."
   (interactive)
@@ -5266,7 +5266,7 @@ When the mounted drive has only 1 partition, select this one otherwise show list
 **** Unparent directory at point
 
 #+BEGIN_SRC elisp
-(defun my::dired|ungroup-directory ()
+(defun my-dired|ungroup-directory ()
   "Move all files and directories to the current directory,
 If everything goes well and the directory is empty, safely delete it.
 It might not work out though, when any of the entries has the same name,
@@ -5274,7 +5274,7 @@ in that case throw a warning."
   (interactive)
   (->> (dired-get-marked-files)
        (-map (lambda (x)
-               (let ((cmd (if (my::file/dir-has-hidden-entries x)
+               (let ((cmd (if (my-file/dir-has-hidden-entries x)
                               "mv -n ./* ./.* ../"
                             "mv -n ./* ../")))
                  (shell-command (t! "cd \"<<x>>\"; <<cmd>>"))
@@ -5359,7 +5359,7 @@ When clicking on the current directory always go one directory upwards."
 :END:
 
 #+BEGIN_SRC elisp
- (defun my::dired|get-marked-file-size ()
+ (defun my-dired|get-marked-file-size ()
    "Get the file size of all marked dired entries."
    (interactive)
    (let ((files (dired-get-marked-files)))
@@ -5378,14 +5378,14 @@ With this function the cursor stays on the current line.
 The dired-line jumps at the end are used to jump the filename again.
 
 #+BEGIN_SRC elisp
-(defun my::dired|toggle-sorting (&optional arg)
+(defun my-dired|toggle-sorting (&optional arg)
   "Change sorting but stay on the same line."
   (interactive "P")
   (let ((pos (point)))
     (cond
      ((eq arg 3)
-      (setq dired-listing-switches (symbol-value 'my::dired:default-listing-switches))
-      (setq dired-actual-switches (symbol-value 'my::dired:default-listing-switches))
+      (setq dired-listing-switches (symbol-value 'my-dired:default-listing-switches))
+      (setq dired-actual-switches (symbol-value 'my-dired:default-listing-switches))
       (dired-sort-set-mode-line)
       (revert-buffer))
      ((eq arg 2)
@@ -5410,10 +5410,10 @@ The dired-line jumps at the end are used to jump the filename again.
 ***** Config
 
 #+begin_src elisp
-(defvar my::dired::open-external:extensions nil
+(defvar my-dired::open-external:extensions nil
   "Which files to open externally by default when pressing enter.")
 
-(setq my::dired::open-external:extensions
+(setq my-dired::open-external:extensions
       '(
         ;; Video
         "mov" "mpv" "mkv" "webm"
@@ -5424,19 +5424,19 @@ The dired-line jumps at the end are used to jump the filename again.
 ***** Function
 
 #+BEGIN_SRC elisp
-(defun my::dired::open-external/mouse-open (event)
+(defun my-dired::open-external/mouse-open (event)
   "Open marked dired file(s) at point with an external application. Open directories normally"
   (interactive "e")
-  (my::dired::open-external/mouse-open event))
+  (my-dired::open-external/mouse-open event))
 
-(defun my::dired::open-external/mouse-open (event &optional find-file-func find-dir-func)
+(defun my-dired::open-external/mouse-open (event &optional find-file-func find-dir-func)
   "In Dired, visit the file or directory name you click on.
 The optional arguments FIND-FILE-FUNC and FIND-DIR-FUNC specify
 functions to visit the file and directory, respectively.  If
 omitted or nil, these arguments default to `find-file' and `dired',
 respectively."
   (interactive "e")
-  (or find-file-func (setq find-file-func 'my::dired::open-external/xdg-open))
+  (or find-file-func (setq find-file-func 'my-dired::open-external/xdg-open))
   (or find-dir-func (setq find-dir-func 'dired))
   (let (window pos file)
     (save-excursion
@@ -5455,13 +5455,13 @@ respectively."
         (select-window window)
         (funcall find-file-func)))))
 
-(defun my::dired::open-external/xdg-open (&optional file)
+(defun my-dired::open-external/xdg-open (&optional file)
   "Open marked dired file(s) at point with an external application."
   (let ((file-list (or file (dired-get-marked-files)))
         (process-connection-type nil))
-    (--map (my::shell/no-exit-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
+    (--map (my-shell/no-exit-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
 
-(defun my::dired::open-external|open-dwim (&optional file)
+(defun my-dired::open-external|open-dwim (&optional file)
   (interactive)
   (let ((file-list (or file (dired-get-marked-files)))
         (process-connection-type nil))
@@ -5469,8 +5469,8 @@ respectively."
                        (message "%s" x)
                        (let* ((path (expand-file-name x))
                               (ext (f-ext path)))
-                         (if (-contains? my::dired::open-external:extensions ext)
-                             (my::shell/no-exit-command "xdg-open" (s-wrap path "\""))
+                         (if (-contains? my-dired::open-external:extensions ext)
+                             (my-shell/no-exit-command "xdg-open" (s-wrap path "\""))
                            (dired-find-file)))))))
 #+END_SRC
 **** Convert Images
@@ -5479,7 +5479,7 @@ respectively."
 :END:
 
 #+BEGIN_SRC elisp
-(defun my::dired|convert-image (&optional arg)
+(defun my-dired|convert-image (&optional arg)
   "Convert image files to other formats."
   (interactive "P")
   (assert (executable-find "convert") nil "Install imagemagick")
@@ -5517,7 +5517,7 @@ respectively."
 **** Shred File
 
 #+begin_src elisp
-(defun my::dired|do-shred ()
+(defun my-dired|do-shred ()
   "Run shred on marked files.
 This will erase them."
   (interactive)
@@ -5532,16 +5532,16 @@ This will erase them."
 (map! :after dired
       :map dired-mode-map
       ;; Mouse controls
-      :ng (kbd "<mouse-2>") 'my::dired::open-external|open-dwim
+      :ng (kbd "<mouse-2>") 'my-dired::open-external|open-dwim
       :ng (kbd "<mouse-8>") 'dired-up-directory
 
 
       :n "q" (cmd! (kill-buffer))
-      :n "Q" #'my::dired|kill-dired-buffers
+      :n "Q" #'my-dired|kill-dired-buffers
 
-      :ng "RET" 'my::dired::open-external|open-dwim
-      :gn "o" 'my::dired|toggle-sorting
-      :n "gg" 'my::dired|goto-top
+      :ng "RET" 'my-dired::open-external|open-dwim
+      :gn "o" 'my-dired|toggle-sorting
+      :n "gg" 'my-dired|goto-top
       :localleader
       (:prefix ("s" . "search")
        "i"  #'dired-goto-subdir))
@@ -5555,7 +5555,7 @@ When I do =gg= in dired, I mostly want to go to the first entry.
 This function first goes to the first entry and then to the top of the buffer.
 
 #+BEGIN_SRC elisp
-(defun my::dired|goto-top ()
+(defun my-dired|goto-top ()
   "Go to first directory, when already there go to first line."
   (interactive)
   (if (<= (line-number-at-pos) 3)
@@ -5569,7 +5569,7 @@ This function first goes to the first entry and then to the top of the buffer.
 Stay in normal mode when switching to wdired
 
 #+BEGIN_SRC elisp
-(defun my::dired|evil-wdired-mode ()
+(defun my-dired|evil-wdired-mode ()
   "Stay in normal mode when switching to wdired."
   (interactive)
   (wdired-change-to-wdired-mode)
@@ -5577,7 +5577,7 @@ Stay in normal mode when switching to wdired
 
 (map! :after dired
       :map dired-mode-map
-      :n "\\" #'my::dired|evil-wdired-mode)
+      :n "\\" #'my-dired|evil-wdired-mode)
 #+END_SRC
 
 **** Use same window for copying/renaming with prefix
@@ -5586,7 +5586,7 @@ I've set ~dired-dwim-target~ to ~t~, so it uses the other window as the target d
 I undo this option with the interactive prefix argument, which can be accessed via ~SPC ucopy R/U~.
 
 #+BEGIN_SRC elisp
-(defun my::dired/dired-target-from-prefix (fn)
+(defun my-dired/dired-target-from-prefix (fn)
   (let ((dired-dwim-target (if (eq (prefix-numeric-value current-prefix-arg) 4) ;; Single C-u
                               nil
                             dired-dwim-target)))
@@ -5594,14 +5594,14 @@ I undo this option with the interactive prefix argument, which can be accessed v
 
 (map! :after dired
       :map dired-mode-map
-      :n "R" (cmd! (my::dired/dired-target-from-prefix #'dired-do-rename))
-      :n "C" (cmd! (my::dired/dired-target-from-prefix #'dired-do-copy)))
+      :n "R" (cmd! (my-dired/dired-target-from-prefix #'dired-do-rename))
+      :n "C" (cmd! (my-dired/dired-target-from-prefix #'dired-do-copy)))
 #+END_SRC
 
 **** Dired Paste DWIM
 
 #+BEGIN_SRC elisp
-(defun my::dired|paste-dwim ()
+(defun my-dired|paste-dwim ()
   "Paste data in the current directory."
   (interactive)
   (let ((file (read-string "Filename: "))
@@ -5616,7 +5616,7 @@ I undo this option with the interactive prefix argument, which can be accessed v
 
 (map! :after dired
       :map dired-mode-map
-      :n "p" 'my::dired|paste-dwim)
+      :n "p" 'my-dired|paste-dwim)
 #+END_SRC
 ** System :SYSTEM:
 *** Packages
@@ -5688,7 +5688,7 @@ Nixos paths can be very long, which is distracting in proced.
 This shortens the nixos paths to ~{nix}~.
 
 #+BEGIN_SRC elisp
-(defun my::proced/remove-nixos-path-name (oldformat &rest xs)
+(defun my-proced/remove-nixos-path-name (oldformat &rest xs)
   (let ((xs (--map (->> it
                         (s-replace-regexp "/nix/store/[^/]+" "{nix}")
                         (s-replace-regexp (concat "^/home/" (user-login-name)) "~")
@@ -5697,7 +5697,7 @@ This shortens the nixos paths to ~{nix}~.
                   xs)))
     (apply oldformat xs)))
 
-(advice-add #'proced-format-args :around #'my::proced/remove-nixos-path-name)
+(advice-add #'proced-format-args :around #'my-proced/remove-nixos-path-name)
 #+END_SRC
 
 ***** Bindings
@@ -5776,7 +5776,7 @@ Major mode for reading EPUBs in Emacs
 ******* Setup function
 
 #+begin_src elisp
-(defun my::nov/setup ()
+(defun my-nov/setup ()
   (setq line-spacing 5)
   (face-remap-add-relative 'variable-pitch :family "Liberation Serif" :height 1.4)
   (setq visual-fill-column-center-text t)
@@ -5794,7 +5794,7 @@ Major mode for reading EPUBs in Emacs
   (setq nov-text-width 75)
   (setq nov-save-place-file (f-join doom-local-dir "nov-places"))
   :config
-  (add-hook 'nov-mode-hook 'my::nov/setup))
+  (add-hook 'nov-mode-hook 'my-nov/setup))
 #+END_SRC
 
 ** Spell Checking
@@ -5844,7 +5844,7 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
   (cond ((and (equal major-mode 'org-mode) (+org/get-global-property "DISABLE_SPELLCHECKER")) nil)
         (t (add-hook! '(evil-insert-state-entry-hook) :local #'+flyspell/load-after-first-insert--activate))))
 
-(defmacro my::spelling@remove-doom-spell-hooks (package mode)
+(defmacro my-spelling@remove-doom-spell-hooks (package mode)
   `(use-package! ,package
      :init
      (remove-hook! '(org-mode-hook
@@ -5857,9 +5857,9 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
                      git-commit-mode-hook)
        ,mode)))
 
-(my::spelling@remove-doom-spell-hooks spell-fu #'spell-fu-mode)
-(my::spelling@remove-doom-spell-hooks flyspell #'flyspell-mode)
-(my::spelling@remove-doom-spell-hooks writegood-mode #'writegood-mode)
+(my-spelling@remove-doom-spell-hooks spell-fu #'spell-fu-mode)
+(my-spelling@remove-doom-spell-hooks flyspell #'flyspell-mode)
+(my-spelling@remove-doom-spell-hooks writegood-mode #'writegood-mode)
 
 (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert)
 #+end_src
@@ -5887,21 +5887,21 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 ****** Search from ~counsel-find-file~
 
 #+begin_src elisp
-(defun my::counsel/search-from-find-file-counsel (x)
+(defun my-counsel/search-from-find-file-counsel (x)
   "Function docstring"
   (let ((default-directory (if (f-dir? x) x (f-dirname x))))
     (+default/search-cwd)))
 
 (after! ivy
- (setq my::counsel::action:search-from-find-file
-  '(("s" my::counsel/search-from-find-file-counsel "Search in directory")))
- (ivy-add-actions 'counsel-find-file my::counsel::action:search-from-find-file))
+ (setq my-counsel::action:search-from-find-file
+  '(("s" my-counsel/search-from-find-file-counsel "Search in directory")))
+ (ivy-add-actions 'counsel-find-file my-counsel::action:search-from-find-file))
 #+end_src
 ***** Functions
 ****** Project File Jump
 
 #+BEGIN_SRC elisp
-(defun my::counsel|project-file-jump (x)
+(defun my-counsel|project-file-jump (x)
   "Jump to file in project"
   (interactive)
   (counsel-file-jump nil (f-join (projectile-project-root) x)))
@@ -5910,7 +5910,7 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 ****** External Drives
 
 #+BEGIN_SRC elisp
-(defun my::counsel|mounted-drives ()
+(defun my-counsel|mounted-drives ()
   "Counsel of mounted drives."
   (interactive)
   (let* ((path (f-join "/run/media/" (user-login-name)))
@@ -5929,7 +5929,7 @@ Original [[file:~/.emacs.d/modules/config/default/autoload/search.el::defun +def
 I've also removed the feature checking, since I ony use ~ivy~.
 
 #+begin_src elisp
-(defun my::ivy|search-project-for-symbol-at-point (symbol dir)
+(defun my-ivy|search-project-for-symbol-at-point (symbol dir)
   "Search current project for symbol at point.
 If prefix ARG is set, prompt for a known project to search from."
   (interactive
@@ -5944,7 +5944,7 @@ If prefix ARG is set, prompt for a known project to search from."
              (doom-project-root default-directory)))))
   (+ivy/project-search nil symbol dir))
 
-(advice-add #'+default/search-project-for-symbol-at-point :override #'my::ivy|search-project-for-symbol-at-point)
+(advice-add #'+default/search-project-for-symbol-at-point :override #'my-ivy|search-project-for-symbol-at-point)
 #+end_src
 
 ****** Occur modify for last search
@@ -5953,14 +5953,14 @@ In the occur buffer I quickly want to change the text I searched for.
 With these functions I can quickly do an ~evil-ex~ replacement or a multicursor edit.
 
 #+begin_src elisp
-(defun my::ivy-occur|evil-ex-last-search ()
+(defun my-ivy-occur|evil-ex-last-search ()
   "Evil Ex search for the occur grepped text."
   (interactive)
   (let ((str (ivy-state-text ivy-occur-last)))
-    (my::evil/ex-search-str str)
+    (my-evil/ex-search-str str)
     (evil-ex "%s//")))
 
-(defun my::ivy-occur|evil-mutliedit-last-search ()
+(defun my-ivy-occur|evil-mutliedit-last-search ()
   "Evil Ex search for the occur grepped text."
   (interactive)
   (require 'evil-multiedit)
@@ -6039,22 +6039,22 @@ Better sorting for company
 ****** Complete line for all project files
 
 #+begin_src elisp
-(cl-defun my::grep/search-in-project (str &optional (dir default-directory))
-  (let ((default-directory (my::file/project-root dir)))
+(cl-defun my-grep/search-in-project (str &optional (dir default-directory))
+  (let ((default-directory (my-file/project-root dir)))
     (->> (shell-command-to-string (s-join " " (list "rg" "--no-filename"
                                                     (concat "\"" (shell-quote-argument str) "\""))))
          (counsel--split-string)
          (-uniq)
          (-map #'s-trim-left))))
 
-(defun my::company/complete-line-project (command &optional arg &rest ignored)
+(defun my-company/complete-line-project (command &optional arg &rest ignored)
   "Complete line in all project files."
   (interactive (list 'interactive))
   (require 'company)
   (pcase command
-    (`interactive (company-begin-backend 'my::company/complete-line-project))
+    (`interactive (company-begin-backend 'my-company/complete-line-project))
     (`prefix      (company-grab-line "^[\t\s]*\\(.+\\)" 1))
-    (`candidates  (my::grep/search-in-project arg))))
+    (`candidates  (my-grep/search-in-project arg))))
 #+end_src
 
 
@@ -6063,31 +6063,31 @@ Better sorting for company
 Complete a whole line with all lines from buffers matching the current major-mode.
 
 #+BEGIN_SRC elisp
-(defun my::company/list-buffers-with-mode (modes)
+(defun my-company/list-buffers-with-mode (modes)
   "Get all buffers that match MODES"
   (--filter
    (with-current-buffer it (-contains? (doom-enlist modes) major-mode))
    (buffer-list)))
 
-(defun my::company/list-buffers-with-major-mode ()
+(defun my-company/list-buffers-with-major-mode ()
   "Get all buffers matching the current major-mode
 Has built in aliases"
   (let ((javascript-modes (list 'rjsx-mode 'js2-mode)))
     (pcase major-mode
       ('rjsx-mode
-       (my::company/list-buffers-with-mode javascript-modes))
+       (my-company/list-buffers-with-mode javascript-modes))
       ('js2-mode
-       (my::company/list-buffers-with-mode javascript-modes))
+       (my-company/list-buffers-with-mode javascript-modes))
       (_
-       (my::company/list-buffers-with-mode major-mode)))))
+       (my-company/list-buffers-with-mode major-mode)))))
 
-(defun my::company/complete-line-all-buffers (command &optional arg &rest ignored)
+(defun my-company/complete-line-all-buffers (command &optional arg &rest ignored)
   "`company-mode' completion backend that completes whole-lines, akin to vim's
 C-x C-l."
   (interactive (list 'interactive))
   (require 'company)
   (pcase command
-    (`interactive (company-begin-backend 'my::company/complete-line-all-buffers))
+    (`interactive (company-begin-backend 'my-company/complete-line-all-buffers))
     (`prefix      (company-grab-line "^[\t\s]*\\(.+\\)" 1))
     (`candidates
      (all-completions
@@ -6102,7 +6102,7 @@ C-x C-l."
                              "^[\t\s]+" ""
                              (buffer-substring-no-properties (point-min) (point-max)))
                             "\\(\r\n\\|[\n\r]\\)" t)) xs)))
-               (my::company/list-buffers-with-major-mode))))))
+               (my-company/list-buffers-with-major-mode))))))
 #+END_SRC
 
 Bindings
@@ -6110,8 +6110,8 @@ Bindings
 #+BEGIN_SRC elisp
 (map!
  (:prefix "C-x"
-   :i "C-p" #'my::company/complete-line-project
-   :i "C-l" #'my::company/complete-line-all-buffers
+   :i "C-p" #'my-company/complete-line-project
+   :i "C-l" #'my-company/complete-line-all-buffers
    :i "C-." #'+company/whole-lines))
 #+END_SRC
 
@@ -6197,7 +6197,7 @@ So I fix the checker manually for each mode after lsp was loaded.
 :END:
 
 #+BEGIN_SRC elisp
-(defun my::snippets/insert-by-name (name)
+(defun my-snippets/insert-by-name (name)
   (require 'noflet)
   (noflet ((dummy-prompt
             (prompt choices &optional display-fn)
@@ -6217,7 +6217,7 @@ So I fix the checker manually for each mode after lsp was loaded.
 Used with [[file:snippets/org-mode/src::`%`$0][src snippet]] to auto fill the language from the previously used src language.
 
 #+BEGIN_SRC elisp
-(defun my::snippets/org-src-lang ()
+(defun my-snippets/org-src-lang ()
   "Try to find the current language of the src/header at point.
 Return nil otherwise."
   (save-excursion
@@ -6240,14 +6240,14 @@ Return nil otherwise."
             (1+ (point)))))
       ("#+header:"
        (search-forward "#+begin_src")
-       (my::snippets/org-src-lang))
+       (my-snippets/org-src-lang))
       (_ nil))))
 
-(defun my::snippets/org-last-src-lang ()
+(defun my-snippets/org-last-src-lang ()
   (save-excursion
     (beginning-of-line)
     (when (search-backward "#+begin_src" nil t)
-      (my::snippets/org-src-lang))))
+      (my-snippets/org-src-lang))))
 #+END_SRC
 *** Config
 
@@ -6271,7 +6271,7 @@ Return nil otherwise."
 
  :localleader
  :desc "Remove line" "d" (cmd! (let ((inhibit-read-only t))
-                                 (my::buffer/delete-current-line))))
+                                 (my-buffer/delete-current-line))))
 #+end_src
 
 ** Web :WEB:
@@ -6289,18 +6289,18 @@ No need, screws with entry buffer position and header display...
 ***** Open elfeed
 
 #+BEGIN_SRC elisp
-(defun my::elfeed|open ()
+(defun my-elfeed|open ()
   (interactive)
   (unless (get-buffer "*elfeed-search*")
     (setq elfeed-search-filter +rss:default-search-filter))
   (elfeed)
-  (my::rss|hydra/body))
+  (my-rss|hydra/body))
 #+END_SRC
 
 ***** Filter by unread
 
 #+BEGIN_SRC elisp
-(defun my::rss/filter-by-unread ()
+(defun my-rss/filter-by-unread ()
   "Show elfeed articles tagged with unread"
   (interactive)
   (elfeed-search-set-filter "@6-months-ago +unread"))
@@ -6313,16 +6313,16 @@ Open the current entry:
 - Or if it's a youtube feed, open with [[*Elfeed MPV][mpv]]
 
 #+BEGIN_SRC elisp
-(defun my::rss|visit-entry-dwim ()
+(defun my-rss|visit-entry-dwim ()
   "Either open the current entry in eww or play it in mpv."
   (interactive)
   (message "")
   (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
-        (patterns my::rss:visit-entry-mpv-pattern))
-    (while (and patterns (not (string-match (car my::rss:visit-entry-mpv-pattern) (elfeed-entry-link entry))))
+        (patterns my-rss:visit-entry-mpv-pattern))
+    (while (and patterns (not (string-match (car my-rss:visit-entry-mpv-pattern) (elfeed-entry-link entry))))
       (setq patterns (cdr patterns)))
     (if patterns
-        (my::rss:play-entry-with-mpv)
+        (my-rss:play-entry-with-mpv)
       (if (eq major-mode 'elfeed-search-mode)
           (elfeed-search-browse-url)
         (elfeed-show-visit)))))
@@ -6331,23 +6331,23 @@ Open the current entry:
 ***** Visit entry with MPV
 
 #+BEGIN_SRC elisp
-(defvar my::rss:visit-entry-mpv-pattern
+(defvar my-rss:visit-entry-mpv-pattern
   '("youtu\\.?be")
   "List of regexp to match against elfeed entry link to know
 whether to use mpv to visit the link.")
 
-(defun my::rss:play-entry-with-mpv ()
+(defun my-rss:play-entry-with-mpv ()
   "Play entry link with mpv."
   (interactive)
   (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
         (url (elfeed-entry-link entry)))
-    (my::shell/mpv-youtube-url url)))
+    (my-shell/mpv-youtube-url url)))
 #+END_SRC
 
 ***** Visit entry with EWW
 
 #+BEGIN_SRC elisp
-(defun my::rss::visit-entry-eww ()
+(defun my-rss::visit-entry-eww ()
   "Open the current entry with eww."
   (interactive)
   (add-hook 'eww-after-render-hook 'eww-readable nil t)
@@ -6360,7 +6360,7 @@ whether to use mpv to visit the link.")
 ***** Pretty elfeed
 
 #+BEGIN_SRC elisp
-(defun my::rss/wrap-entry ()
+(defun my-rss/wrap-entry ()
   "Enhances an elfeed entry's readability by wrapping it to a width of
 `fill-column' and centering it with `visual-fill-column-mode'."
   (let ((inhibit-read-only t)
@@ -6372,7 +6372,7 @@ whether to use mpv to visit the link.")
     (writeroom-mode)
     (set-buffer-modified-p nil)))
 
-(add-hook 'elfeed-show-mode-hook #'my::rss/wrap-entry)
+(add-hook 'elfeed-show-mode-hook #'my-rss/wrap-entry)
 #+END_SRC
 
 ***** INACTIVE Update feeds when saving org-elfeed file :ORG_MODE:
@@ -6383,18 +6383,18 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
 ⚠ Disabled for now as it leaks to other modes
 
 #+BEGIN_SRC elisp :tangle no
-(defun my::rss/update-feeds-on-save ()
+(defun my-rss/update-feeds-on-save ()
   (when (and (eq major-mode 'org-mode)
              (string= buffer-file-name (car rmh-elfeed-org-files))))
   (require 'elfeed)
   (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
 
-(add-hook! 'after-save-hook #'my::rss/update-feeds-on-save)
+(add-hook! 'after-save-hook #'my-rss/update-feeds-on-save)
 #+END_SRC
 ***** Capture entry :ORG_MODE:
 
 #+BEGIN_SRC elisp
-(defun my::rss::capture/stringify-entry (entry)
+(defun my-rss::capture/stringify-entry (entry)
   (let ((title (->> (elfeed-entry-title entry)
                     ;; Remove braces, they're just confusing to org links
                     (s-replace "[" "")
@@ -6410,13 +6410,13 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
                 (s-wrap it ":" ":"))))
     (template "[[<<url>>][<<author>> - <<title>>]] <<(when tags tags)>>")))
 
-(defun my::rss::capture|capture ()
+(defun my-rss::capture|capture ()
   "Capture current entry of elfeed."
   (interactive)
   (let* ((entry (if (eq major-mode 'elfeed-show-mode)
                    elfeed-show-entry
                  (elfeed-search-selected :single)))
-         (org-entry (my::rss::capture/stringify-entry entry)))
+         (org-entry (my-rss::capture/stringify-entry entry)))
        (kill-new org-entry)
        (if (s-contains? org-entry "youtube.com")
            (org-capture nil "ew")
@@ -6426,7 +6426,7 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
 ***** Hydra
 
 #+BEGIN_SRC elisp
-(defun my::rss/toggle-filter (tag)
+(defun my-rss/toggle-filter (tag)
   "Toggle elfeed filter TAG or append to filters if non-existent."
   (->> (or (-when-let* (((_ modi) (s-match (t! "\\_<\\([+-]\\)<<tag>>\\_>") elfeed-search-filter))
                         (new-modi (if (string= modi "+") "-" "+")))
@@ -6436,18 +6436,18 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
                      (elfeed-search-update--force)
                      (-log (t! "Filter changed to: <<it>>"))))))
 
-(defun my::rss|counsel-toggle-filter (&optional arg)
+(defun my-rss|counsel-toggle-filter (&optional arg)
   "Toggles a filter in elfeed."
   (interactive "P")
   (ivy-read (t! "Filter: <<elfeed-search-filter>>") (elfeed-db-get-all-tags)
-            :action #'my::rss/toggle-filter
-            :caller #'my::rss|counsel-toggle-filter))
+            :action #'my-rss/toggle-filter
+            :caller #'my-rss|counsel-toggle-filter))
 
-(defhydra my::rss|hydra ()
+(defhydra my-rss|hydra ()
    "Elfeed"
    ("j" (evil-next-line) "Next item" :column "Navigate")
    ("k" (evil-previous-line) "Previous item")
-   ("t" (my::rss|counsel-toggle-filter) "Tags" :column "Filter")
+   ("t" (my-rss|counsel-toggle-filter) "Tags" :column "Filter")
    ("0" (elfeed-search-set-filter "@2-weeksago +unread") "Unread" :column "Favorites")
    ("f" (elfeed-search-set-filter "@2-weeksago +unread -YOUTUBE -REDDIT") "Feeds")
    ("y" (elfeed-search-set-filter "@2-weeksago +unread +YOUTUBE") "Youtube")
@@ -6456,7 +6456,7 @@ Update function taken from [[file:~/.emacs.d/.local/straight/repos/elfeed-org/el
    ("U" (elfeed-update) "Update" :column "actions")
    ("u" (elfeed-search-untag-all-unread) "Mark as unread")
    ("s" (elfeed-db-save) "Save DB")
-   ("v" (my::rss|visit-entry-dwim) "Visit")
+   ("v" (my-rss|visit-entry-dwim) "Visit")
    ("q" nil "Quit" :color blue))
 #+END_SRC
 **** Config
@@ -6509,12 +6509,12 @@ These don't work if you have a big line-height.
 #+BEGIN_SRC elisp
 (map! :map (elfeed-search-mode-map elfeed-show-mode-map)
       :localleader
-      :desc "Filter Hydra" "f" #'my::rss|hydra/body
-      :desc "Capture"      "c" #'my::rss::capture|capture
-      :desc "Open Eww"     "o" #'my::rss::visit-entry-eww
-      :desc "Visit"        "v" #'my::rss|visit-entry-dwim
+      :desc "Filter Hydra" "f" #'my-rss|hydra/body
+      :desc "Capture"      "c" #'my-rss::capture|capture
+      :desc "Open Eww"     "o" #'my-rss::visit-entry-eww
+      :desc "Visit"        "v" #'my-rss|visit-entry-dwim
       (:prefix-map ("s" . "Search")
-       :desc "Unread" "u" #'my::rss/filter-by-unread))
+       :desc "Unread" "u" #'my-rss/filter-by-unread))
 #+END_SRC
 *** DISABLED IRC :DOOM:
 
@@ -6535,7 +6535,7 @@ These don't work if you have a big line-height.
 ***** Pretty buffer setup
 
 #+begin_src elisp
-(defun my::eww*pretty-buffer-setup ()
+(defun my-eww*pretty-buffer-setup ()
   "Function docstring"
   (setq-local truncate-lines t)
   (setq-local shr-width 120)
@@ -6544,7 +6544,7 @@ These don't work if you have a big line-height.
   (visual-line-mode 1)
   (visual-fill-column-mode 1))
 
-(add-hook! 'eww-mode-hook #'my::eww*pretty-buffer-setup)
+(add-hook! 'eww-mode-hook #'my-eww*pretty-buffer-setup)
 #+end_src
 
 ***** Set the max page width
@@ -6559,7 +6559,7 @@ These don't work if you have a big line-height.
 ***** Personal (Without Work)
 
 #+BEGIN_SRC elisp
-(defun my::calendar::filtered|personal (&rest args)
+(defun my-calendar::filtered|personal (&rest args)
   (interactive)
   (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-WORK-HIDE_CALENDAR")))
       (call-interactively #'=calendar)))
@@ -6568,7 +6568,7 @@ These don't work if you have a big line-height.
 ***** Personal (Just Family)
 
 #+BEGIN_SRC elisp
-(defun my::calendar::filtered|just-family (&rest args)
+(defun my-calendar::filtered|just-family (&rest args)
   (interactive)
   (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+FAMILY|+BIRTHDAY")))
       (call-interactively #'=calendar)))
@@ -6577,7 +6577,7 @@ These don't work if you have a big line-height.
 ***** Personal (Just Birthdays)
 
 #+BEGIN_SRC elisp
-(defun my::calendar::filtered|birthdays (&rest args)
+(defun my-calendar::filtered|birthdays (&rest args)
   (interactive)
   (let ((org-agenda-files `(,(+org/expand-org-file-name "Main/contacts.org")))
         (org-agenda-skip-function '(+org/agenda-skip-without-match "+BIRTHDAY")))
@@ -6587,7 +6587,7 @@ These don't work if you have a big line-height.
 ***** Personal (Without Family)
 
 #+BEGIN_SRC elisp
-(defun my::calendar::filtered|no-family (&rest args)
+(defun my-calendar::filtered|no-family (&rest args)
   (interactive)
   (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "-FAMILY-WORK-HIDE_CALENDAR")))
       (call-interactively #'=calendar)))
@@ -6596,7 +6596,7 @@ These don't work if you have a big line-height.
 ***** Work
 
 #+BEGIN_SRC elisp
-(defun my::calendar::filtered|work (&rest args)
+(defun my-calendar::filtered|work (&rest args)
   (interactive)
   (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+WORK-HIDE_CALENDAR")))
       (call-interactively #'=calendar)))
@@ -6610,10 +6610,10 @@ This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar
 #+begin_src elisp
 (use-package! calfw
   :config
-  (setq my::calendar::holidays:general
+  (setq my-calendar::holidays:general
         '((holiday-fixed 1 1 "New Years")
           (holiday-fixed 5 1 "1st Mai")))
-  (setq my::calendar::holidays:austria
+  (setq my-calendar::holidays:austria
         `((holiday-fixed 1 6 "Heilige drei Könige")
           (holiday-fixed 5 1 "Staatsfeiertag")
           (holiday-fixed 8 15 "Mariä Himmelfahrt")
@@ -6631,8 +6631,8 @@ This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar
           (holiday-easter-etc 50 "Pfingstmontag")
           (holiday-easter-etc 60 "Fronleichnam")))
   (setq calendar-holidays (append
-                           my::calendar::holidays:general
-                           my::calendar::holidays:austria
+                           my-calendar::holidays:general
+                           my-calendar::holidays:austria
                            holiday-solar-holidays)))
 #+end_src
 
@@ -6728,7 +6728,7 @@ error in process filter: End of buffer
 ***** Syntax highlighted cat
 
 #+BEGIN_SRC elisp
-(defun my::eshell/colorized-cat (file)
+(defun my-eshell/colorized-cat (file)
   "Like `cat' but output with Emacs syntax highlighting."
   (with-temp-buffer
     (insert-file-contents file)
@@ -6748,7 +6748,7 @@ error in process filter: End of buffer
 #+BEGIN_SRC elisp
 (setq +eshell-aliases
   '(("q"      "exit")
-    ("cat"    "my::eshell/colorized-cat $1")
+    ("cat"    "my-eshell/colorized-cat $1")
     ("f"      "find-file $1")
     ("bd"     "eshell-up $1")
     ("rg"     "rg --color=always $*")
@@ -6916,14 +6916,14 @@ Export org as github flavored markdown
 ****** Go to source buffer instead of dired
 
 #+begin_src elisp
-(defun my::org-src-mode/goto-source-marker-buffer (&optional other-window file-name)
+(defun my-org-src-mode/goto-source-marker-buffer (&optional other-window file-name)
   "Go to the source file for a org-src-mode buffer instead of dired."
   (interactive)
   (org-goto-marker-or-bmk org-src--beg-marker))
 
 (map!
  :map org-src-mode-map
- :m "-"  #'my::org-src-mode/goto-source-marker-buffer)
+ :m "-"  #'my-org-src-mode/goto-source-marker-buffer)
 #+end_src
 
 *** Functions
@@ -6944,12 +6944,12 @@ Take me to the literate source file when using ~find-function~ etc.
 Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/nim-utils#get_url_title][floscr/nim-utils: A bunch of simple tools to use with my nixos setup written in nim.]]
 
 #+begin_src elisp
-(defun my::org|fetch-link-title-command (url)
+(defun my-org|fetch-link-title-command (url)
   "Fetches the link title with get_url_title (https://github.com/floscr/nim-utils#get_url_title)."
   (->> (shell-command-to-string (t! "get_url_title \"<<url>>\""))
        (s-trim)))
 
-(defun my::org|fetch-this-org-link-title ()
+(defun my-org|fetch-this-org-link-title ()
   "Fetches the title for the plain link under the cursor."
   (interactive)
   (require 'org-ml)
@@ -6957,7 +6957,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
                         (--id-when (and (org-ml-is-type 'link it)
                                         (eq (org-ml-get-property :format it) 'plain)))))
                (url (org-ml-get-property :raw-link el))
-               (title (my::org|fetch-link-title-command url))
+               (title (my-org|fetch-link-title-command url))
                (from (org-element-property :begin el))
                (to (org-element-property :end el)))
     (when (string= title "Could not find title in html")
@@ -6965,7 +6965,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
     (delete-region from to)
     (insert (t! "[[<<url>>][<<title>>]]"))))
 
-(defun my::org-agenda|fetch-this-org-link-title ()
+(defun my-org-agenda|fetch-this-org-link-title ()
   "Fetches the title for the plain link under the cursor."
   (interactive)
   (require 'org-ml)
@@ -6976,7 +6976,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
                              (--find (org-ml-is-type 'link it))
                              (org-ml-get-property :begin))))
       (goto-char link-pos)
-      (my::org|fetch-this-org-link-title)))
+      (my-org|fetch-this-org-link-title)))
   (org-agenda-redo))
 #+end_src
 
@@ -6985,7 +6985,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
 Use the interactive timestamp interface to read an org string
 
 #+begin_src elisp
-(defun my::org/read-timestamp-inactive-str ()
+(defun my-org/read-timestamp-inactive-str ()
   (with-temp-buffer
     (org-time-stamp-inactive)
     (buffer-substring-no-properties (point-min) (point-max))))
@@ -6995,7 +6995,7 @@ Use the interactive timestamp interface to read an org string
 
 #+BEGIN_SRC elisp
 ;;;###autoload
-(defun my::org/match-link (pos)
+(defun my-org/match-link (pos)
   "Return cons of link under point and its position.
 POS to match:
 0: the entire org link,
@@ -7006,38 +7006,38 @@ POS to match:
     (cons str pos)))
 
 ;;;###autoload
-(defun my::org/match-org-link-entire ()
+(defun my-org/match-org-link-entire ()
   "Match the link under the cursor as (str . pos)"
-  (my::org/match-link 0))
+  (my-org/match-link 0))
 
 ;;;###autoload
-(defun my::org/match-org-link-url ()
+(defun my-org/match-org-link-url ()
   "Match the link url under the cursor as (str . pos)"
-  (my::org/match-link 1))
+  (my-org/match-link 1))
 
 ;;;###autoload
-(defun my::org/match-org-link-title ()
+(defun my-org/match-org-link-title ()
   "Match the link title under the cursor as (str . pos)"
-  (my::org/match-link 2))
+  (my-org/match-link 2))
 
-(defun my::org/copy-or-cut-link (match-fn &optional cut?)
+(defun my-org/copy-or-cut-link (match-fn &optional cut?)
   "Copy or cut the current link under the cursor"
   (my/kill-and-message (car (funcall match-fn)))
   (when cut?
-    (-when-let ((link . (beg . end)) (my::org/match-org-link-entire))
+    (-when-let ((link . (beg . end)) (my-org/match-org-link-entire))
       (delete-region beg end))))
 
-(defun my::org|copy-entire-link (&optional cut?)
+(defun my-org|copy-entire-link (&optional cut?)
   (interactive "P")
-  (my::org/copy-or-cut-link #'my::org/match-org-link-entire cut?))
+  (my-org/copy-or-cut-link #'my-org/match-org-link-entire cut?))
 
-(defun my::org|copy-link-url (&optional cut?)
+(defun my-org|copy-link-url (&optional cut?)
   (interactive "P")
-  (my::org/copy-or-cut-link #'my::org/match-org-link-url cut?))
+  (my-org/copy-or-cut-link #'my-org/match-org-link-url cut?))
 
-(defun my::org|copy-link-title (&optional cut?)
+(defun my-org|copy-link-title (&optional cut?)
   (interactive "P")
-  (my::org/copy-or-cut-link #'my::org/match-org-link-title cut?))
+  (my-org/copy-or-cut-link #'my-org/match-org-link-title cut?))
 #+END_SRC
 **** Copy As Markdown
 
@@ -7080,37 +7080,37 @@ POS to match:
 **** Create worktree
 
 #+begin_src elisp
-(defun my::pitch|create-worktree ()
+(defun my-pitch|create-worktree ()
   "Creates a worktree for a branch.
 Applies the custom dev script and copies over node_modules + bundle caches to reduce network/computation activity."
   (interactive)
-  (when-let* ((path (call-interactively #'my::magit|create-worktree-project-from-branch)))
-    ;; (my::pitch|apply-custom-dev-script)
-    (let ((src (my::file/git-root))
-          (dst (my::file/project-root)))
+  (when-let* ((path (call-interactively #'my-magit|create-worktree-project-from-branch)))
+    ;; (my-pitch|apply-custom-dev-script)
+    (let ((src (my-file/git-root))
+          (dst (my-file/project-root)))
       (call-process-shell-command (t! "rsync -ravE <<src>>/node_modules <<dst>>&") nil 0 nil)
       (call-process-shell-command (t! "rsync -ravE <<src>>/desktop-app/node_modules <<dst>>/desktop-app &") nil 0 nil))))
 #+end_src
 
 #+BEGIN_SRC elisp
 (after! magit
-  (transient-append-suffix 'magit-worktree "b" '("p" "Pitch worktree" my::pitch|create-worktree)))
+  (transient-append-suffix 'magit-worktree "b" '("p" "Pitch worktree" my-pitch|create-worktree)))
 #+END_SRC
 
 **** Start terminal
 
 #+begin_src elisp
-(defun my::pitch|start-dev-terminal ()
+(defun my-pitch|start-dev-terminal ()
   (interactive)
-  (let ((default-directory (my::file/project-root)))
-    ;; (my::pitch|apply-custom-dev-script)
+  (let ((default-directory (my-file/project-root)))
+    ;; (my-pitch|apply-custom-dev-script)
     (call-process-shell-command "alacritty -e $SHELL -c './scripts/pit dev --desktop'&" nil 0 nil)))
 #+end_src
 
 **** Convert to uix
 
 #+begin_src elisp
-(defun my::pitch/convert-hiccup-to-uix ()
+(defun my-pitch/convert-hiccup-to-uix ()
   (interactive)
   (save-excursion
     (clojure-convert-collection-to-list)
@@ -7121,7 +7121,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Convert to ~gridSize~
 
 #+begin_src elisp
-(defun my::pitch|insert-grid-size-from-px ()
+(defun my-pitch|insert-grid-size-from-px ()
   "Convert px to gridSize macro and insert result."
   (interactive)
   (let* ((size (read-number "Size: "))
@@ -7135,7 +7135,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Fix Clojure
 
 #+begin_src elisp
-(defun my::pitch|autofix-clojure-buffer ()
+(defun my-pitch|autofix-clojure-buffer ()
   "Autofix the "
   (interactive)
   (let ((buffer (current-buffer)))
@@ -7149,7 +7149,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Debug
 
 #+begin_src elisp
-(defun my::pitch|debug-statement ()
+(defun my-pitch|debug-statement ()
   (interactive)
   (let* ((clojure-symbol (doom-thing-at-point-or-region))
          (placeholder (if clojure-symbol (concat "dd-" (substring-no-properties clojure-symbol)) "dd"))
@@ -7175,7 +7175,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
       (previous-line 1)
       (insert snippet))))
 
-(defun my::pitch|eval-debug-statement ()
+(defun my-pitch|eval-debug-statement ()
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -7187,13 +7187,13 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Custom builder
 
 #+begin_src elisp
-(defun my::pitch|apply-custom-dev-script ()
+(defun my-pitch|apply-custom-dev-script ()
   "Applies custom dev-script and assumes it unchanged in git."
   (interactive)
   (let* ((script-path "desktop-app/scripts/dev-all.py")
          (content (->> (f-expand "~/Code/Work/Pitch/dev-overwrite/dev-all.py")
                        f-read))
-         (dst-path (f-join (my::file/git-root nil) script-path)))
+         (dst-path (f-join (my-file/git-root nil) script-path)))
     (f-write content 'utf-8 dst-path)
     (magit-assume-unchanged script-path)))
 #+end_src
@@ -7201,7 +7201,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Goto l10n
 
 #+begin_src elisp
-(defun my::pitch|l10n-jump (identifier &optional arg)
+(defun my-pitch|l10n-jump (identifier &optional arg)
   (interactive
    (list (doom-thing-at-point-or-region)
          current-prefix-arg))
@@ -7215,7 +7215,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Convert string to l10n
 
 #+begin_src elisp
-(defun my::clojure/string-content-at-point ()
+(defun my-clojure/string-content-at-point ()
   "Returns a list with the string content at point without quotes and the begin and end positions of the string with quotes."
   (if (clojure--in-string-p)
     (save-excursion
@@ -7229,19 +7229,19 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
         (list (buffer-substring-no-properties beg end) (cons (- beg 1) (+ 1 end)))))
     (user-error "Cursor not positioned on a clojure string.")))
 
-(defvar my::pitch:l10n-key nil
+(defvar my-pitch:l10n-key nil
   "A prefix to always use for l10n string conversion in a buffer.")
-(make-local-variable 'my::pitch:l10n-key)
+(make-local-variable 'my-pitch:l10n-key)
 
-(defun my::pitch|set-l10n-key-from-region ()
+(defun my-pitch|set-l10n-key-from-region ()
   "Sets the l10n buffer prefix from the region."
   (interactive)
-  (setq my::pitch:l10n-key (buffer-substring-no-properties (region-beginning) (region-end))))
+  (setq my-pitch:l10n-key (buffer-substring-no-properties (region-beginning) (region-end))))
 
-(defun my::pitch|convert-string-to-l10n ()
+(defun my-pitch|convert-string-to-l10n ()
   "Convert the string under the cursor to l10n"
   (interactive)
-  (-let* (((original-string (original-beg . original-end)) (my::clojure/string-content-at-point))
+  (-let* (((original-string (original-beg . original-end)) (my-clojure/string-content-at-point))
           (clojure-key (concat ":" (s-dashed-words original-string))))
     (delete-region original-beg original-end)
     (insert clojure-key)
@@ -7251,7 +7251,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (-let* (((beg . end) (bounds-of-thing-at-point 'symbol))
             (l10n-key (->> (buffer-substring-no-properties beg end)
                            (s-replace ":" "")
-                           (s-prepend my::pitch:l10n-key)
+                           (s-prepend my-pitch:l10n-key)
                            (read-string "l10n key: "))))
       (delete-region beg end)
       (insert ":" l10n-key)
@@ -7261,7 +7261,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Create pull request
 
 #+begin_src elisp
-(defun my::pitch|ghub-create-pull-request ()
+(defun my-pitch|ghub-create-pull-request ()
   "Function docstring"
   (interactive)
   (shell-command "gh pr create --label \"Team Play / Present\" --web"))
@@ -7270,7 +7270,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Create pull request md
 
 #+begin_src elisp
-(defun my::pitch|create-pull-request-md ()
+(defun my-pitch|create-pull-request-md ()
   "Create a markdown document for the currently open branch."
   (interactive)
   (let* ((branch-name (magit-get-current-branch))
@@ -7286,17 +7286,17 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
          (+file-templates-alist nil))
     (find-file-other-window file)
     (when (eq (buffer-size) 0)
-      ;; (my::snippets/insert-by-name "Pull Request Template")
+      ;; (my-snippets/insert-by-name "Pull Request Template")
       (goto-char (point-min)))))
 #+end_src
 
 **** Format buffer
 
 #+begin_src elisp
-(defun my::pitch|format-buffer ()
+(defun my-pitch|format-buffer ()
   "Formats the current buffer."
   (interactive)
-  (let* ((bin (f-join (my::file/project-root) "./scripts/pit"))
+  (let* ((bin (f-join (my-file/project-root) "./scripts/pit"))
          (cmd (concat bin " fmt2 " (shell-quote-argument buffer-file-name))))
     (shell-command cmd nil nil)
     (revert-buffer)))
@@ -7304,13 +7304,13 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 **** Stylus Variables
 
 #+begin_src elisp
-(defun my::pitch/get-css-variables ()
+(defun my-pitch/get-css-variables ()
   (let* ((path (f-join (projectile-project-root) "desktop-app/src/app/pitch/styles/helpers.styl"))
          (content (f-read path)))
     (->> (s-lines content)
          (--filter (s-starts-with? "$" it)))))
 
-(defun my::pitch/get-css-variables-value (line)
+(defun my-pitch/get-css-variables-value (line)
   (->> line
        (s-split " ")
        (car)))
@@ -7321,38 +7321,38 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 *** Pairing mode
 
 #+begin_src elisp
-(defun my::pitch*activate-lsp-header ()
+(defun my-pitch*activate-lsp-header ()
   (when lsp-mode
     (setq-local lsp-headerline-breadcrumb-segments '(symbols))
     (lsp-headerline-breadcrumb-mode 1)))
 
-(defvar my::pitch:pairing-mode nil)
+(defvar my-pitch:pairing-mode nil)
 
-(defun my::pitch|start-pairing ()
+(defun my-pitch|start-pairing ()
   (interactive)
   (doom-big-font-mode 1)
-  (add-hook! 'window-configuration-change-hook #'my::pitch*activate-lsp-header)
-  (my::pitch*activate-lsp-header)
+  (add-hook! 'window-configuration-change-hook #'my-pitch*activate-lsp-header)
+  (my-pitch*activate-lsp-header)
   (tab-bar-mode 1)
   (lsp-lens-mode -1)
-  (setq my::pitch:pairing-mode t)
+  (setq my-pitch:pairing-mode t)
   (set-face-attribute 'line-number nil :foreground (face-attribute 'line-number-current-line :foreground)))
 
-(defun my::pitch|stop-pairing ()
+(defun my-pitch|stop-pairing ()
   (interactive)
   (doom-big-font-mode 0)
-  (remove-hook! 'window-configuration-change-hook #'my::pitch*activate-lsp-header)
+  (remove-hook! 'window-configuration-change-hook #'my-pitch*activate-lsp-header)
   (lsp-headerline-breadcrumb-mode -1)
   (tab-bar-mode -1)
   (lsp-lens-mode 1)
-  (setq my::pitch:pairing-mode nil)
+  (setq my-pitch:pairing-mode nil)
   (doom/reload-theme))
 
-(defun my::pitch|toggle-pairing ()
+(defun my-pitch|toggle-pairing ()
   (interactive)
-  (if my::pitch:pairing-mode
-      (my::pitch|stop-pairing)
-    (my::pitch|start-pairing)))
+  (if my-pitch:pairing-mode
+      (my-pitch|stop-pairing)
+    (my-pitch|start-pairing)))
 #+end_src
 
 * Bindings
@@ -7376,15 +7376,15 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 Automatically indent and format when opening area betwen to delimiters.
 
 #+begin_src elisp
-(defun my::text/indent-between-pair (&rest _ignored)
+(defun my-text/indent-between-pair (&rest _ignored)
   (newline)
   (indent-according-to-mode)
   (forward-line -1)
   (indent-according-to-mode))
 
-(sp-local-pair 'prog-mode "{" nil :post-handlers '((my::text/indent-between-pair "RET")))
-(sp-local-pair 'prog-mode "[" nil :post-handlers '((my::text/indent-between-pair "RET")))
-(sp-local-pair 'prog-mode "(" nil :post-handlers '((my::text/indent-between-pair "RET")))
+(sp-local-pair 'prog-mode "{" nil :post-handlers '((my-text/indent-between-pair "RET")))
+(sp-local-pair 'prog-mode "[" nil :post-handlers '((my-text/indent-between-pair "RET")))
+(sp-local-pair 'prog-mode "(" nil :post-handlers '((my-text/indent-between-pair "RET")))
 #+end_src
 
 ** Super
@@ -7714,7 +7714,7 @@ so I have to work around it:
 **** Jump source dwim
 
 #+BEGIN_SRC elisp
-(map! :m "-" #'my::buffer|jump-source-dwim)
+(map! :m "-" #'my-buffer|jump-source-dwim)
 #+END_SRC
 
 **** Visual Line Mode Navigation
@@ -7904,7 +7904,7 @@ and then do my function.
   "Move forward one character and then paste."
   (interactive)
   (if (and (evil-normal-state-p)
-           (my::buffer/line-contains "[^\s]"))
+           (my-buffer/line-contains "[^\s]"))
       (progn
         (forward-char 1)
         (when (and insert-char (looking-at insert-char))
@@ -7940,7 +7940,7 @@ So deletes wont affect this register."
 #+BEGIN_SRC elisp
 (map!
  :leader
- "RET"  #'my::jumpy|main
+ "RET"  #'my-jumpy|main
  "'"  #'+popup/toggle
  "au" #'undo-tree-visualize
  "-"  #'quick-calc)
@@ -7962,7 +7962,7 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("c" . "Code")
-  :desc "Compile" "c"   #'my::project-compile|compile
+  :desc "Compile" "c"   #'my-project-compile|compile
   :desc "Rename" "r"   #'lsp-rename
   :desc "Execute code action" "a"   #'lsp-execute-code-action))
 #+end_src
@@ -7975,7 +7975,7 @@ So deletes wont affect this register."
  (:prefix-map ("f" . "file")
   :desc "Open Private Config" "P" (cmd! (find-file (f-join doom-private-dir "config.org")))
   (:prefix-map ("g" . "goto")
-   :desc "Drive"                 "/" #'my::counsel|mounted-drives
+   :desc "Drive"                 "/" #'my-counsel|mounted-drives
    :desc "Desktop"               "D" (cmd! (find-file "~/Desktop"))
    :desc "Config"                "." (cmd! (find-file "~/.config"))
    :desc "Code"                  "c" (cmd! (find-file "~/Code"))
@@ -7989,7 +7989,7 @@ So deletes wont affect this register."
    :desc "Last refiled"          "r" (cmd! (org-refile-goto-last-stored))
    :desc "Tmp"                   "t" (cmd! (find-file "/tmp"))
    :desc "Home"                  "h" (cmd! (find-file "~"))
-   :desc "Run (Mounted Drives)"  "r" #'my::dired|find-mounted-drive)))
+   :desc "Run (Mounted Drives)"  "r" #'my-dired|find-mounted-drive)))
 #+END_SRC
 
 *** Git
@@ -8000,15 +8000,15 @@ So deletes wont affect this register."
  (:prefix-map ("g" . "git")
   :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
   :desc "Blame"                               "B" #'magit-blame
-  :desc "Changed Files"                       "F" #'my::magit|counsel-changed-files
+  :desc "Changed Files"                       "F" #'my-magit|counsel-changed-files
   :desc "New Branch"                          "N" #'magit-branch-spinoff
-  :desc "Show revision original File"         "O" #'my::magit|show-revision-original
-  :desc "Map-editor Changed Files"            "T" (cmd! (my::magit|counsel-changed-files "map-editor"))
+  :desc "Show revision original File"         "O" #'my-magit|show-revision-original
+  :desc "Map-editor Changed Files"            "T" (cmd! (my-magit|counsel-changed-files "map-editor"))
   :desc "Amend Commit"                        "a" #'magit-commit-amend
   :desc "Checkout"                            "b" #'magit-checkout
   :desc "Diff"                                "d" #'magit-diff
   :desc "Push"                                "p" #'magit-push
-  :desc "Undo"                                "u" #'my::magit|git-undo
+  :desc "Undo"                                "u" #'my-magit|git-undo
   :desc "Worktree Popup"                      "w" #'magit-worktree
   :desc "New Org Pr"                          "!" #'+MM|new-pr-from-branch
   (:prefix ("f" . "file")
@@ -8042,7 +8042,7 @@ So deletes wont affect this register."
    :desc "Calc"            :g "c" #'calc
    :desc "Calc"            :g "C" #'=calendar
    :desc "Elfeed"          :g "e" #'+eshell/toggle
-   :desc "Eshell"          :g "E" #'my::elfeed|open
+   :desc "Eshell"          :g "E" #'my-elfeed|open
    :desc "Irc"             :g "i" #'=irc
    :desc "Mail"            :g "m" #'=mu4e
    :desc "Proced"          :g "p" #'proced
@@ -8056,9 +8056,9 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("p" . "project")
-  :desc "Workspace Project Files" "P" #'my::workspaces|find-workspace-project-file
-  :desc "Project VC"              "v" #'my::workspaces|workspace-project-vc
-  :desc "Project Bookmarks"       "RET" #'my::jumpy|launch
+  :desc "Workspace Project Files" "P" #'my-workspaces|find-workspace-project-file
+  :desc "Project VC"              "v" #'my-workspaces|workspace-project-vc
+  :desc "Project Bookmarks"       "RET" #'my-jumpy|launch
   :desc "Recompile"       "C" #'recompile))
 #+END_SRC
 
@@ -8081,7 +8081,7 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("t" . "toggle")
-   :desc "Theme Dark/Light" "t" #'my::ui|toggle-theme
+   :desc "Theme Dark/Light" "t" #'my-ui|toggle-theme
    :desc "Auto Completion" "c" #'+company/toggle-auto-completion
    :desc "Comment Header Fold" "<" #'my-comment-header|fold-all))
 #+END_SRC
@@ -8127,12 +8127,12 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("TAB" . "workspace")
-  :desc "Switch to"     "." #'my::workspaces/switch-to
-  :desc "Close others"  "o" #'my::workspaces|close-others
-  :desc "Create"        "c" #'my::workspaces/new-named
+  :desc "Switch to"     "." #'my-workspaces/switch-to
+  :desc "Close others"  "o" #'my-workspaces|close-others
+  :desc "Create"        "c" #'my-workspaces/new-named
   :desc "Rename"        "," #'+workspace/rename
-  :desc "Project Files" "p" #'my::workspaces|find-workspace-project-file
-  :desc "Project VC"    "v" #'my::workspaces|workspace-project-vc
+  :desc "Project Files" "p" #'my-workspaces|find-workspace-project-file
+  :desc "Project VC"    "v" #'my-workspaces|workspace-project-vc
   :desc "Clone"         "C" (cmd!
                              (+workspace/new (format "Clone: %s" (+workspace-current-name)) t)
                              (message "Cloned current workspace %s" (+workspace-current-name)))
@@ -8233,15 +8233,15 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("0" . "Work")
-  :desc "Open dev terminatl" "0" #'my::pitch|start-dev-terminal
-  :desc "Format buffer"      "f" #'my::pitch|format-buffer))
+  :desc "Open dev terminatl" "0" #'my-pitch|start-dev-terminal
+  :desc "Format buffer"      "f" #'my-pitch|format-buffer))
 #+end_src
 
 ** Local-Leader
 *** Eshell
 
 #+BEGIN_SRC elisp
-(defun my::eshell/init-keymap ()
+(defun my-eshell/init-keymap ()
   "Setup additional custom eshell keybindings to already existing doom bindings. This must be done in a hook because eshell-mode
 redefines its keys every time `eshell-mode' is enabled."
   (map! :map eshell-mode-map
@@ -8250,7 +8250,7 @@ redefines its keys every time `eshell-mode' is enabled."
 
         :localleader "l"  #'eshell/clear))
 
-(add-hook 'eshell-first-time-mode-hook #'my::eshell/init-keymap)
+(add-hook 'eshell-first-time-mode-hook #'my-eshell/init-keymap)
 #+END_SRC
 
 *** Elisp
@@ -8276,8 +8276,8 @@ redefines its keys every time `eshell-mode' is enabled."
 (map! :map clojurescript-mode-map
       :localleader
       (:prefix ("d" . "debug")
-       :desc "Add debug statement" "a" #'my::pitch|debug-statement
-       :desc "Add debug statement" "d" #'my::pitch|eval-debug-statement))
+       :desc "Add debug statement" "a" #'my-pitch|debug-statement
+       :desc "Add debug statement" "d" #'my-pitch|eval-debug-statement))
 #+END_SRC
 
 *** Haskell
@@ -8285,7 +8285,7 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map haskell-mode-map
       :localleader
-      :desc "Stylish" "s" #'my::haskell|autofix)
+      :desc "Stylish" "s" #'my-haskell|autofix)
 #+END_SRC
 
 *** Bash
@@ -8346,8 +8346,8 @@ redefines its keys every time `eshell-mode' is enabled."
 #+BEGIN_SRC elisp
 (map! :map 'wgrep-mode-map
       :localleader
-      :desc "Occur" :gn "o" #'my::ivy-occur|evil-mutliedit-last-search
-      :desc "Occur" :gn "s" #'my::ivy-occur|evil-ex-last-search)
+      :desc "Occur" :gn "o" #'my-ivy-occur|evil-mutliedit-last-search
+      :desc "Occur" :gn "s" #'my-ivy-occur|evil-ex-last-search)
 #+END_SRC
 *** Org Mode
 
@@ -8356,7 +8356,6 @@ redefines its keys every time `eshell-mode' is enabled."
       :localleader
       :desc  "Copy Buffer To Markdown" "Y" #'my-org|copy-buffer-as-markdown)
 #+end_src
-
 
 ** Minibuffer
 *** Copy and Paste from the minibuffer
@@ -8367,13 +8366,13 @@ Since the minibuffer has no evil mode, i've got these bindings to help out:
          This also removes trailing newlines
 
 #+BEGIN_SRC elisp
-(defun my::evil|paste-pruned ()
+(defun my-evil|paste-pruned ()
   "Paste the current clipboard pruned from newlines"
   (interactive)
   (insert (s-trim (shell-command-to-string "pbpaste")))
   (doom/forward-to-last-non-comment-or-eol))
 
-(defun my::minibuffer|copy-line ()
+(defun my-minibuffer|copy-line ()
   "Copies the minibuffer content to the clipboard"
   (interactive)
   (save-excursion
@@ -8382,12 +8381,12 @@ Since the minibuffer has no evil mode, i've got these bindings to help out:
     (doom/backward-to-bol-or-indent)
     (kill-ring-save (mark) (point))))
 
-(defun my::minibuffer/setup-copy-bindings ()
+(defun my-minibuffer/setup-copy-bindings ()
   "Set up keybindings for the minibuffer"
-  (local-set-key (kbd "s-v") 'my::evil|paste-pruned)
-  (local-set-key (kbd "s-c") 'my::minibuffer|copy-line))
+  (local-set-key (kbd "s-v") 'my-evil|paste-pruned)
+  (local-set-key (kbd "s-c") 'my-minibuffer|copy-line))
 
-(add-hook 'minibuffer-setup-hook 'my::minibuffer/setup-copy-bindings)
+(add-hook 'minibuffer-setup-hook 'my-minibuffer/setup-copy-bindings)
 
 ;; (define-key! :keymaps +default-minibuffer-maps
 ;;   "C-w" 'sp-backward-delete-word)

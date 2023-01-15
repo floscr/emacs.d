@@ -223,7 +223,7 @@ Manually add an expense to the Cash Book.
 
 (after! ivy
   (ivy-set-actions
-   'my::magit|counsel-changed-files
+   'my-magit|counsel-changed-files
    '(("/" (lambda (&optional arg)
             (+ivy/search-buffer-list))
       "Grep Forward"))))

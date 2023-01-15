@@ -338,7 +338,7 @@ module.exports = measure;
          (+file-templates-alist nil))
     (find-file-other-window file)
     (when (eq (buffer-size) 0)
-      (my::snippets/insert-by-name "Pull Request Template")
+      (my-snippets/insert-by-name "Pull Request Template")
       (goto-char (point-min)))))
 #+END_SRC
 
@@ -348,7 +348,7 @@ module.exports = measure;
 (defun +MM|npm-start-kits-app (&optional arg)
   (interactive "P")
   (npm-mode)
-  (let* ((dir (or (->> (f-join (my::file/project-root) "src/apps/")
+  (let* ((dir (or (->> (f-join (my-file/project-root) "src/apps/")
                        (-id-when #'f-exists?))
                   (f-expand "~/Code/Meisterlabs/kits-2.0/src/apps/")))
          (root (doom-project-root dir))
@@ -361,7 +361,7 @@ module.exports = measure;
                         (let ((cmd (t! "start <<x>> -- --port 3008"))
                               (default-directory root))
                           (if arg
-                              (my::shell/async-command-no-window (t! "alacritty --hold --working-directory <<root>> -e \"npm run <<cmd>>\""))
+                              (my-shell/async-command-no-window (t! "alacritty --hold --working-directory <<root>> -e \"npm run <<cmd>>\""))
                             (npm-mode-npm-run cmd)))))))
 #+END_SRC
 
@@ -475,7 +475,7 @@ bookmarks are not helpful since they're not relative.
 #+BEGIN_SRC elisp
 (defun +MM|bookmarks ()
   (interactive)
-  (my::jumpy|launch +MM-dynamic-bookmarks))
+  (my-jumpy|launch +MM-dynamic-bookmarks))
 #+END_SRC
 
 *** Build Package
@@ -498,7 +498,7 @@ bookmarks are not helpful since they're not relative.
           (magit-push-current-to-upstream nil)
           ;; The branch alread exists, so we can safely take the branch name
           (magit-get-upstream-branch))
-      (my::magit|push-dated))))
+      (my-magit|push-dated))))
 
 (defun +MM-build/get-build-script-names (dir)
   "Get a list of all build scripts from the package.json file."
@@ -527,7 +527,7 @@ When universal-argument is passed, just commit the bundle"
       (->> (read-string (t! "The current branch '<<vagrant-branch-name>>' is not bundle branch.
 Create a new one: ") "bundle-")
            (magit-branch-spinoff)
-           (my::magit|push-dated))))
+           (my-magit|push-dated))))
 
   (-when-let* ((web-directory (or (projectile-project-root) +MM:mm-web-dir))
                (web-branch-name (magit-get-current-branch))
@@ -553,7 +553,7 @@ Create a new one: ") "bundle-")
 To commit call +MM|kits-package-update."
   (interactive)
   (-when-let* ((json-encoding-pretty-print t)
-               (file (->> (my::magit/list-modified-files "master")
+               (file (->> (my-magit/list-modified-files "master")
                           (--filter (string= (f-filename it) "package.json"))
                           (--map (f-join (doom-project-root) it))
                           (--map (list it (json-read-file it)))
@@ -597,7 +597,7 @@ To commit call +MM|kits-package-update."
 
   ;; Check for merge conflicts
   (call-interactively #'magit-fetch-all)
-  ;; (when (my::magit/check-for-merge-conflicts)
+  ;; (when (my-magit/check-for-merge-conflicts)
   ;;   (user-error "This branch has merge conflicts, resolve them before publishing!"))
 
   (-when-let* ((package-json (or (car (magit-staged-files))
@@ -647,14 +647,14 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
          (path (if same-branch?
                    (-if-let (branch (magit-get-current-branch))
                        (progn (magit-checkout (magit-rev-parse "HEAD"))
-                              (my::magit|create-worktree-project-from-branch branch branch t))
+                              (my-magit|create-worktree-project-from-branch branch branch t))
                      (user-error "Error: No branch checked out!"))
-                   (call-interactively #'my::magit|create-worktree-project-from-branch)))
+                   (call-interactively #'my-magit|create-worktree-project-from-branch)))
          (local-devutil-file (f-join origin-path "src/apps/Main/DevPlugin.local.js"))
          (worktree-devutil-file (f-join path "src/apps/Main/DevPlugin.local.js")))
     (when (file-exists-p local-devutil-file)
       (copy-file local-devutil-file worktree-devutil-file))
-    (my::shell/async-command-no-window (template "rsync -a <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
+    (my-shell/async-command-no-window (template "rsync -a <<(f-join origin-path \"node_modules\")>> <<(f-join path \"node_modules\")>>"))))
 
 (defun +MM|magit-create-worktree ()
   "Create a new branch worktree based on an existing branch."
@@ -1146,7 +1146,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
                      ((-contains? +MM-Rules:fonts prop) prop)
                      ;; String
                      (t (template "'<<prop>>'"))))
-         (has-trailing-semi (my::buffer/line-contains ",$")))
+         (has-trailing-semi (my-buffer/line-contains ",$")))
 
     (if has-trailing-semi
         (while
@@ -1397,7 +1397,7 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         :desc  "Repl"             "R" #'+MM|nodejs-repl
         :desc  "Bookmarks"        "b" #'+MM|bookmarks
         (:prefix ("f" . "file")
-         :desc  "Jump to Entity"               "e"  (cmd! (my::counsel|project-file-jump "src/containers/MapEditor/Entities"))
+         :desc  "Jump to Entity"               "e"  (cmd! (my-counsel|project-file-jump "src/containers/MapEditor/Entities"))
          :desc  "Search Canvas Files"          "f"  #'+MM|canvas-files
          :desc  "Convert into new Redux Style" "X"  #'+MM|turn-style-object-into-function)
         (:prefix ("g" . "Goto")

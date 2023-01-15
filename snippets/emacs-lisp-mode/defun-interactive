@@ -2,7 +2,7 @@
 # name: defun-interactive
 # key: di
 # --
-(defun my::${1:function-name} ()
+(defun my-${1:function-name} ()
     "${3:Function docstring}"
     (interactive)
     ${2:(message)})

@@ -3,4 +3,4 @@
 # uuid:
 # key: fz
 # --
-font-size ${1:$$(my::pitch/get-css-variables-value (yas-choose-value (my::pitch/get-css-variables)))} $0
+font-size ${1:$$(my-pitch/get-css-variables-value (yas-choose-value (my-pitch/get-css-variables)))} $0
