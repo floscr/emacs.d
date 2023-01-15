@@ -6896,6 +6896,18 @@ npm i -g nbb
 #+end_src
 
 
+**** [[https://github.com/larstvei/ox-gfm][ox-gfm]]
+
+Export org as github flavored markdown
+- ~```~ Code blocks with syntax descriptor
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! ox-gfm)
+#+END_SRC
+
+***** Functions
 
 **** org-src-mode
 
@@ -7027,6 +7039,30 @@ POS to match:
   (interactive "P")
   (my::org/copy-or-cut-link #'my::org/match-org-link-title cut?))
 #+END_SRC
+**** Copy As Markdown
+
+#+BEGIN_SRC elisp
+(defun my-org/copy-as-markdown (&optional subtree-p)
+  "Copy the current subtree as markdown to clipboard."
+  (require 'ox-gfm)
+  (let* ((org-export-with-toc nil)
+         (org-export-with-special-strings nil)
+         (org-export-with-smart-quotes nil)
+         (md (org-gfm-export-to-markdown nil subtree-p)))
+    (kill-new md)
+    (message "Copied buffer as markdown to clipboard.")))
+
+(defun my-org|copy-buffer-as-markdown ()
+  "Copy the entire buffer as markdown to clipboard."
+  (interactive)
+  (my-org/copy-as-markdown))
+
+(defun my-org|copy-subtree-as-markdown ()
+  "Copy the subtree as markdown to clipboard."
+  (interactive)
+  (my-org/copy-as-markdown t))
+#+END_SRC
+
 *** Config
 
 **** Org Src Language Aliases
@@ -8313,6 +8349,14 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Occur" :gn "o" #'my::ivy-occur|evil-mutliedit-last-search
       :desc "Occur" :gn "s" #'my::ivy-occur|evil-ex-last-search)
 #+END_SRC
+*** Org Mode
+
+#+begin_src elisp
+(map! :map org-mode-map
+      :localleader
+      :desc  "Copy Buffer To Markdown" "Y" #'my-org|copy-buffer-as-markdown)
+#+end_src
+
 
 ** Minibuffer
 *** Copy and Paste from the minibuffer

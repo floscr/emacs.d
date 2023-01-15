@@ -1940,29 +1940,6 @@ And advice the function to the manual item creation functions:
   (clipboard-kill-ring-save (point-min) (point-max)))
 #+END_SRC
 
-*** Export As Markdown
-
-#+BEGIN_SRC elisp
-(defun +org/copy-as-markdown (&optional subtree-p)
-  "Copy the current subtree as markdown to clipboard."
-  (let* ((org-export-with-toc nil)
-         (org-export-with-special-strings nil)
-         (org-export-with-smart-quotes nil)
-         (md (org-export-as 'md nil subtree-p)))
-    (kill-new md)
-    (message "Copied buffer as markdown to clipboard.")))
-
-(defun +org|copy-buffer-as-markdown ()
-  "Copy the entire buffer as markdown to clipboard."
-  (interactive)
-  (+org/copy-as-markdown))
-
-(defun +org|copy-subtree-as-markdown ()
-  "Copy the subtree as markdown to clipboard."
-  (interactive)
-  (+org/copy-as-markdown t))
-#+END_SRC
-
 *** Paste Chrome Link Fix
 
 Fixes wrong paste behavior where the link would be inserted directly on the character by adding a space
@@ -2803,7 +2780,6 @@ Set my preferred clipboard paste method to ~xclip~.
       :desc  "Tag heading"               "t"  #'+org|counsel-org-tag
       :desc  "Fetch link title"          "u"  #'my::org|fetch-this-org-link-title
       :desc  "MPV Link at point"         "v"  #'+org|mpv-link-at-point
-      :desc  "Copy Buffer To Markdown"   "Y"  #'+org|copy-buffer-as-markdown
 
       (:prefix-map ("y" . "Yank")
        :desc "Link" "l" #'my::org|copy-entire-link
