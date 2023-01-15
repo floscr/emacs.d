@@ -1216,66 +1216,7 @@ This function will mutate the hashtable M."
     (overwrite-mode 1)))
 
 (after! vimish-fold
-  (defvar my-comment-header:col-count vimish-fold-header-width
-    "Of how many cols should the header consist.")
-
-  (defvar my-comment-header:col-char "-"
-    "With which character to fill the comment header.")
-
-  (defvar my-comment-header:mode-comment-start
-    '((clojurescript-mode . ";;")))
-
-  (defun my-comment-header/comment-start ()
-    "Return the `comment-start' either defined by `my-comment-header/comment-start' or by the `major-mode'."
-    (or (alist-get major-mode my-comment-header:mode-comment-start)
-        comment-start))
-
-  (defun my-comment-header/read-string ()
-    "Helper function to read the comment header string."
-    (read-string (format "Comment header (%s): "
-                         (my-comment-header/comment-start))))
-
-  (defun my-comment-header/fill (str)
-    "Fill the string with the comment header character."
-    (let ((n (- my-comment-header:col-count (length str))))
-      (concat str (s-repeat n my-comment-header:col-char))))
-
-  (defun my-comment-header|goto-next-comment-header ()
-    "Jumps to the next comment header."
-    (re-search-forward (concat "^"
-                               (my-comment-header/comment-start)
-                               " .+"
-                               my-comment-header:col-char "+$")
-                       nil t))
-
-  (defun my-comment-header|fold-all ()
-    "Folds everything into comment headers."
-    (interactive)
-    (vimish-fold-delete-all)
-    (save-excursion
-      (goto-char (point-min))
-      (while (my-comment-header|goto-next-comment-header)
-        (let* ((beg (line-beginning-position))
-               (end (or (save-excursion
-                          (when (my-comment-header|goto-next-comment-header)
-                            (progn (previous-line 2)
-                                   (point))))
-                        (point-max))))
-          (progn
-            (vimish-fold beg end)
-            (evil-next-line 1))))))
-
-  (defun my-comment-header|insert (title)
-    "Insert a comment header on the current line."
-    (interactive (list (my-comment-header/read-string)))
-    (let* ((str-beg (concat (my-comment-header/comment-start) " "))
-           (str (->> (concat str-beg title " ")
-                     (my-comment-header/fill))))
-      (insert str)
-      (goto-char (line-beginning-position))
-      (forward-char (length (concat str-beg title)))
-      (evil-insert-state)
-      (overwrite-mode 1))))
+  (setq my-comment-header:col-count vimish-fold-header-width))
 #+end_src
 
 
