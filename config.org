@@ -7337,7 +7337,6 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (set-face-attribute 'lsp-headerline-breadcrumb-symbols-info-face nil :underline 'unspecified)
     (set-face-attribute 'lsp-headerline-breadcrumb-symbols-hint-face nil :underline 'unspecified)
     (set-face-attribute 'lsp-headerline-breadcrumb-deprecated-face nil :underline 'unspecified)
-
     (setq-local lsp-headerline-breadcrumb-segments '(symbols))
     (lsp-headerline-breadcrumb-mode 1)
     (setq lsp-headerline-arrow "→")))
@@ -7351,7 +7350,8 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (my-pitch*activate-lsp-header)
   (lsp-lens-mode -1)
   (setq my-pitch:pairing-mode t)
-  (set-face-attribute 'line-number nil :foreground (face-attribute 'line-number-current-line :foreground)))
+  (set-face-attribute 'line-number nil
+                      :foreground (face-attribute 'font-lock-doc-face :foreground)))
 
 (defun my-pitch|stop-pairing ()
   (interactive)
