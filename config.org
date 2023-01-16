@@ -7323,8 +7323,24 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 #+begin_src elisp
 (defun my-pitch*activate-lsp-header ()
   (when lsp-mode
+    (set-face-attribute 'lsp-headerline-breadcrumb-separator-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-path-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-path-error-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-path-warning-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-path-info-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-path-hint-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-project-prefix-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-unknown-project-prefix-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-symbols-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-symbols-error-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-symbols-warning-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-symbols-info-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-symbols-hint-face nil :underline 'unspecified)
+    (set-face-attribute 'lsp-headerline-breadcrumb-deprecated-face nil :underline 'unspecified)
+
     (setq-local lsp-headerline-breadcrumb-segments '(symbols))
-    (lsp-headerline-breadcrumb-mode 1)))
+    (lsp-headerline-breadcrumb-mode 1)
+    (setq lsp-headerline-arrow "→")))
 
 (defvar my-pitch:pairing-mode nil)
 
