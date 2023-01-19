@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Re-frame event-fx handler
+# key: re
+# expand-env: ((yas-indent-line 'fixed))
+# --
+(reg-event-fx :${1:event-name}
+  (fn [{:keys [db]} ${2:[_ $3]}]
+    {:db db
+     $0}))

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Re-frame reg db
+# key: rdi
+# expand-env: ((yas-indent-line 'fixed))
+# --
+(dispatch [:$0])
