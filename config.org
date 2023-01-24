@@ -129,6 +129,15 @@ Tangles to [[file:autoload.el][autoload.el]]
   `(lambda (&rest _rest)
      (funcall ,fn)))
 #+END_SRC
+*** Comment
+
+Similar to the clojure ~comment~ form
+
+#+begin_src elisp
+(defmacro comment (&rest body)
+  "Comment out one or more s-expressions."
+  nil)
+#+end_src
 
 ** General
 *** Noop
