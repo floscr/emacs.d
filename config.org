@@ -6979,8 +6979,8 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
 #+begin_src elisp
 (defun my-org|fetch-link-title-command (url)
   "Fetches the link title with get_url_title (https://github.com/floscr/nim-utils#get_url_title)."
-  (->> (shell-command-to-string (t! "get_url_title \"<<url>>\""))
-       (s-trim)))
+  (or (my/shell-command-str "get_url_title" url)
+      (user-error "Error: Could not get title for url \"%s\"" url)))
 
 (defun my-org|fetch-this-org-link-title ()
   "Fetches the title for the plain link under the cursor."
