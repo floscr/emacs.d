@@ -6972,7 +6972,7 @@ Take me to the literate source file when using ~find-function~ etc.
     (org-babel-tangle-jump-to-org)))
 #+END_SRC
 
-**** Fetch link title
+**** Get url title
 
 Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/nim-utils#get_url_title][floscr/nim-utils: A bunch of simple tools to use with my nixos setup written in nim.]]
 
