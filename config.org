@@ -328,6 +328,30 @@ The proram persists when emacs is closed."
     (message (template "Opening <<url>> at <<quality-val>> with mpv…"))
     (my-shell/no-exit-command "mpv" quality-arg (s-wrap url "\""))))
 #+END_SRC
+*** Shell Command to String
+
+#+begin_src elisp
+(defun my/shell-command (cmd &rest flags)
+  "Execute a shell command and return a cons of the exit-status and the output.
+Trims the resulting output automatically."
+  (-let (((exit-status . (output))
+          (with-temp-buffer
+            (list (apply #'call-process (-concat (list cmd nil (current-buffer) nil) flags))
+                  (buffer-string)))))
+    (cons exit-status (s-trim output))))
+
+(defun my/shell-command-str (cmd &rest flags)
+  "Return the result to a shell command when its exitcode is not stderr."
+  (-let (((exit-status . output) (apply #'my/shell-command (-concat (list cmd) flags))))
+    (pcase exit-status
+      (0 output))))
+
+(comment
+ (equal (my/shell-command "pwd") '(0 . "/home/floscr/.config/doom"))
+ (equal (my/shell-command-str "get_url_title" "\"http://stat.us/404\"") nil)
+ (equal (my/shell-command-str "get_url_title" "https://orf.at") "news.ORF.at"))
+#+end_src
+
 ** Files
 *** Get file timestamp
 
