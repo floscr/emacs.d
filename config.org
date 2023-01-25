@@ -7378,6 +7378,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 
 (defun my-pitch|start-pairing ()
   (interactive)
+  (shell-command "systemctl --user stop picom.service")
   (doom-big-font-mode 1)
   (add-hook! 'window-configuration-change-hook #'my-pitch*activate-lsp-header)
   (my-pitch*activate-lsp-header)
