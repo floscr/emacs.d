@@ -8320,6 +8320,10 @@ redefines its keys every time `eshell-mode' is enabled."
 *** Clojurescript
 
 #+BEGIN_SRC elisp
+(map! :map (clojurescript-mode-map clojure-mode-map)
+      :desc "Eval" :n "RET" #'cider-eval-last-sexp
+      :desc "Eval" :i "M-RET" #'cider-eval-last-sexp)
+
 (map! :map clojurescript-mode-map
       :localleader
       (:prefix ("d" . "debug")
