@@ -6883,7 +6883,7 @@ npm i -g nbb
            (file (make-temp-file "ob-clojure-bb" nil nil expanded))
            (executable (or (cond
                             (clojurescript? (executable-find "nbb"))
-                            (t "bb"))
+                            (t "bb --prn"))
                            (user-error "Could not find executable for target %s!" target)))
            (command (concat (when stdin (format "echo %s | " (shell-quote-argument stdin)))
                             ;; nbb has different input params...
