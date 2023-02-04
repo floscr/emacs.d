@@ -2568,6 +2568,24 @@ Launch using [[*Launch][my-impatient-mode|launch]].
 (use-package! impatient-mode
   :commands impatient-mode)
 #+END_SRC
+**** [[https://github.com/redguardtoo/diff-lisp][diff-lisp]] :TEXT:
+
+- Select a region and run the command diff-lisp-mark-selected-text-as-a.
+- Select another region and run diff-lisp-diff-a-and-b.
+- The difference of two region is displayed in a buffer.
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! diff-lisp :recipe (:host github :repo "redguardtoo/diff-lisp"))
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! diff-lisp)
+#+END_SRC
+
 
 *** Database :DATABASE:
 **** Packages
