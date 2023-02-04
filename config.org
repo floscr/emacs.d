@@ -2586,7 +2586,6 @@ Launch using [[*Launch][my-impatient-mode|launch]].
 (use-package! diff-lisp)
 #+END_SRC
 
-
 *** Database :DATABASE:
 **** Packages
 ***** TODO [[https://github.com/kiwanami/emacs-edbi][edbi]]
