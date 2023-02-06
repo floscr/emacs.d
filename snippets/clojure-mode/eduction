@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: eduction
+# uuid: eduction
+# key: e
+# --
+(eduction $0)

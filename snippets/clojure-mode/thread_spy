@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Thread Spy
+# key: s
+# --
+`(my-clojure/thread-spy)`
