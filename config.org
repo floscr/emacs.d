@@ -6999,6 +6999,20 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
   (or (my/shell-command-str "get_url_title" url)
       (user-error "Error: Could not get title for url \"%s\"" url)))
 
+(defun my-org|fetch-this-org-link-rss ()
+  "Fetches the title for the plain link under the cursor."
+  (interactive)
+  (require 'org-ml)
+  (-when-let* ((el (->> (org-ml-parse-this-object)
+                        (--id-when (and (org-ml-is-type 'link it)
+                                        (eq (org-ml-get-property :format it) 'plain)))))
+               (url (org-ml-get-property :raw-link el))
+               (rss (my/shell-command-str "get_url_title" "rss" url))
+               (from (org-element-property :begin el))
+               (to (org-element-property :end el)))
+    (delete-region from to)
+    (insert rss)))
+
 (defun my-org|fetch-this-org-link-title ()
   "Fetches the title for the plain link under the cursor."
   (interactive)
@@ -8418,12 +8432,15 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Occur" :gn "o" #'my-ivy-occur|evil-mutliedit-last-search
       :desc "Occur" :gn "s" #'my-ivy-occur|evil-ex-last-search)
 #+END_SRC
+
 *** Org Mode
 
 #+begin_src elisp
 (map! :map org-mode-map
       :localleader
-      :desc  "Copy Buffer To Markdown" "Y" #'my-org|copy-buffer-as-markdown)
+      :desc  "Copy Buffer To Markdown" "Y" #'my-org|copy-buffer-as-markdown
+      :desc "Fetch url title" "u" #'my-org-agenda|fetch-this-org-link-title
+      :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss)
 #+end_src
 
 ** Minibuffer

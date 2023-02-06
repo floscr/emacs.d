@@ -2824,7 +2824,6 @@ Set my preferred clipboard paste method to ~xclip~.
       :localleader
       "q" #'+org|counsel-org-tag
       "v" #'+org|mpv-link-at-point
-      "u" #'my-org-agenda|fetch-this-org-link-title
       "." #'counsel-org-agenda-headlines
       "t" nil ; Overwrite doom binding
       (:prefix ("t" . "toggle")
