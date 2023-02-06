@@ -1252,6 +1252,17 @@ This function will mutate the hashtable M."
 (after! vimish-fold
   (setq my-comment-header:col-count vimish-fold-header-width))
 #+end_src
+** Eval Function and last marker
+
+#+begin_src elisp
+(defun my-eval-function-and-last-marker ()
+  "Mark an expression with 'f' and keep working on a function."
+  (interactive)
+  (cider-eval-defun-at-point)
+  (save-excursion
+    (evil-goto-mark ?f)
+    (cider-eval-last-sexp)))
+#+end_src
 
 * Default Configuration
 ** Temp
@@ -4244,24 +4255,61 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
   (noflet ((cider--ssh-hosts () nil))
     (cider-connect-cljs params)))
 #+end_src
+******* Print comment fix
+
+#+begin_src elisp
+(defun my-cider/eval-jump-opening-brace ()
+  (when (eq (string-to-char "(") ;; Workaround for parinfer inferring ?( as opening brace
+            (char-after))
+    (evil-jump-item)))
+
+(defun my-cider|cider-eval-last-sexp (&optional output-to-current-buffer)
+  (interactive "P")
+  (let ((previous-evil-state evil-state))
+    (save-excursion
+      (my-cider/eval-jump-opening-brace)
+      (when (eq previous-evil-state 'normal)
+        (evil-insert-state)
+        (forward-char 1))
+      (cider-eval-last-sexp output-to-current-buffer)
+      ;; Dont restore state when doing eval when inserting result
+      ;; The `cider-eval-print-handler' function is async,
+      (when (and (not output-to-current-buffer)
+                 (eq previous-evil-state 'normal))
+        (evil-normal-state)))))
+
+(defun my-cider|pprint-eval-last-sexp-to-comment (&optional insert-before)
+  "Pointer position fix for evil normal state."
+  (interactive "P")
+  (my-cider/eval-jump-opening-brace)
+  (when (eq evil-state 'normal)
+    (forward-char 1))
+  (call-interactively #'cider-pprint-eval-last-sexp-to-comment))
+#+end_src
+
 
 ****** Bindings
 
 #+begin_src elisp
 (use-package! clojure-mode
   :config
-  (map!
-   (:localleader
-     (:map (clojure-mode-map clojurescript-mode-map clojurec-mode-map)
-       "c"  #'my-cider|connect-clj
-       "C"  #'my-cider|connect-cljs
-       (:prefix ("i" . "inspect")
-                "e" #'cider-enlighten-mode
-                "i" #'cider-inspect
-                "r" #'cider-inspect-last-result))
-     (:map (clojurescript-mode-map)
-      (:prefix ("i" . "inspect")
-               "i" #'my-cider|inspect-expr)))))
+  (map! :map (clojurescript-mode-map clojure-mode-map)
+        :desc "Eval" :n "RET" #'my-cider|cider-eval-last-sexp
+        :desc "Eval" :n "DEL" #'my-eval-function-and-last-marker)
+
+  (map! (:localleader
+         (:map (clojure-mode-map clojurescript-mode-map clojurec-mode-map)
+              "c"  #'my-cider|connect-clj
+              "C"  #'my-cider|connect-cljs
+              (:prefix ("e" . "eval")
+               :desc "Eval last sexp to comment" "c" #'my-cider|pprint-eval-last-sexp-to-comment)
+              (:prefix ("i" . "inspect")
+                       "e" #'cider-enlighten-mode
+                       "i" #'cider-inspect
+                       "r" #'cider-inspect-last-result))
+         (:map (clojurescript-mode-map)
+              (:prefix ("i" . "inspect")
+                       "i" #'my-cider|inspect-expr)))))
 #+end_src
 
 ***** [[https://github.com/noctuid/lispyville][lispyville]]
@@ -4478,6 +4526,21 @@ current buffer's namespace."
         (zprint-format-buffer)
         (clojurescript-mode)
         (goto-char (point-min))))))
+#+end_src
+***** Thread logging
+
+Inserts ~doto println~ depending on thread first/last.
+Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
+
+#+begin_src elisp
+(defun my-clojure/thread-spy ()
+  (let ((p (point)))
+    (save-excursion
+      (search-backward "->" nil t)
+      (let* ((thread-first? (string= (symbol-at-point) "->")))
+        (if thread-first?
+            "(doto println)"
+          "(#(doto % println))")))))
 #+end_src
 
 **** Config
@@ -8352,10 +8415,6 @@ redefines its keys every time `eshell-mode' is enabled."
 *** Clojurescript
 
 #+BEGIN_SRC elisp
-(map! :map (clojurescript-mode-map clojure-mode-map)
-      :desc "Eval" :n "RET" #'cider-eval-last-sexp
-      :desc "Eval" :i "M-RET" #'cider-eval-last-sexp)
-
 (map! :map clojurescript-mode-map
       :localleader
       (:prefix ("d" . "debug")
