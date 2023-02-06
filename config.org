@@ -7057,7 +7057,7 @@ Take me to the literate source file when using ~find-function~ etc.
 
 **** Get url title
 
-Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/nim-utils#get_url_title][floscr/nim-utils: A bunch of simple tools to use with my nixos setup written in nim.]]
+Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/dotfiles/blob/07156f2d059da2676d13d17d67eb8fed596557db/new/modules/scripts/src/get_url_title.clj][dotfiles/get_url_title.clj at 07156f2d059da2676d13d17d67eb8fed596557db · floscr/dotfiles · GitHub]]
 
 #+begin_src elisp
 (defun my-org|fetch-link-title-command (url)
