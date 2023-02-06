@@ -1978,7 +1978,8 @@ These will be written to ~init.el~ so it overwrites the doom standard values.
     ("^\\*nodejs" :side right :size 0.55 :select t :modeline t :ttl nil :quit nil)
     ("^\\*projectile-files-errors" :ignore t)
     ("^\\*elfeed-entry" :modeline t :ttl nil)
-    ("^\\*Flycheck checker" :size 0.2 :select nil)))
+    ("^\\*Flycheck checker" :size 0.2 :select nil)
+    ("^\\*cider-error" :size 0.2 :select nil :ttl t)))
 #+END_SRC
 *** Themes
 **** Custom doom themes package
@@ -4221,8 +4222,10 @@ arguments can be set as a list via ‘nimpretty-args’."
 (use-package! cider
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil)
+  (setq cider-auto-select-error-buffer nil)
   (setq cider-words-of-inspiration nil))
 #+end_src
+
 ****** Hacks
 ******* Fix cider for 28.1
 
