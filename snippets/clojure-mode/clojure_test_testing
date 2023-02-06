@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: clojure.test testing
+# key: tt
+# --
+(testing "$1" $0)
