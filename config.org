@@ -4399,6 +4399,19 @@ Define jump points for lispyville functions
   (lispyville--drag #'lispy-move-down 2)
   (lispyville-backward-sexp))
 #+end_src
+***** INACTIVE [[https://github.com/ericdallo/jet.el][ericdallo/jet.el: Emacs integration for the jet Clojure tool]]
+
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle no :comments link
+(package! jet :recipe (:host github :repo "ericdallo/jet.el"))
+#+END_SRC
+
+****** Config
+
+#+BEGIN_SRC elisp :tangle no
+(use-package! jet)
+#+END_SRC
 
 **** Functions
 ***** Keywords to map
