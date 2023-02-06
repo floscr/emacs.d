@@ -4309,7 +4309,9 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
               (:prefix ("i" . "inspect")
                        "e" #'cider-enlighten-mode
                        "i" #'cider-inspect
-                       "r" #'cider-inspect-last-result))
+                       "r" #'cider-inspect-last-result)
+              :localleader
+              "x" #'cider-scratch)
          (:map (clojurescript-mode-map)
               (:prefix ("i" . "inspect")
                        "i" #'my-cider|inspect-expr)))))
