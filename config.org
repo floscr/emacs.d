@@ -4227,6 +4227,10 @@ arguments can be set as a list via ‘nimpretty-args’."
                       :underline `(:color ,(face-attribute 'shadow :foreground)
                                    :style wave)))
 
+(defun my-cider/clear-errors (&rest _)
+  (when cider-mode
+    (cider-clear-compilation-highlights t)))
+
 (use-package! cider
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil)
@@ -4235,7 +4239,8 @@ arguments can be set as a list via ‘nimpretty-args’."
   (setq cider-show-error-buffer nil)
   (setq cider-auto-select-error-buffer nil)
   (setq cider-words-of-inspiration nil)
-  (add-hook 'doom-load-theme-hook #'my-cider/init-faces))
+  (add-hook 'doom-load-theme-hook #'my-cider/init-faces)
+  (advice-add 'doom/escape :before #'my-cider/clear-errors))
 #+end_src
 
 ****** Hacks
