@@ -3010,6 +3010,25 @@ No namespace here, so it matches the other commmands
 
 *** Emacs Lisp (Elisp) :ELISP:
 **** Packages
+**** Functions
+
+#+begin_src elisp
+(defun my-elisp|eval-last-sexp (&optional output-to-current-buffer)
+  (interactive "P")
+  (let ((previous-evil-state evil-state))
+    (save-excursion
+      (my-cider/eval-jump-opening-brace)
+      (when (eq previous-evil-state 'normal)
+        (evil-insert-state)
+        (forward-char 1))
+      (eval-last-sexp output-to-current-buffer)
+      ;; Dont restore state when doing eval when inserting result
+      ;; The `cider-eval-print-handler' function is async,
+      (when (and (not output-to-current-buffer)
+                 (eq previous-evil-state 'normal))
+        (evil-normal-state)))))
+#+end_src
+
 **** Config
 
 ***** Remove Rainbow Delimiters
@@ -3019,6 +3038,13 @@ I don't need them with parinfer and lispyville, they're just distracting.
 #+begin_src elisp
 (remove-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 #+end_src
+**** Bindings
+
+#+begin_src elisp
+(map! :map emacs-lisp-mode-map
+      :desc "Eval" :n "RET" #'my-elisp|eval-last-sexp)
+#+end_src
+
 
 *** Json :JSON:
 **** Functions
