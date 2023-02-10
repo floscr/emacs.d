@@ -4219,11 +4219,23 @@ arguments can be set as a list via ‘nimpretty-args’."
 ****** Config
 
 #+begin_src elisp
+(defun my-cider/init-faces ()
+  (set-face-attribute 'cider-error-overlay-face nil
+                      :foreground (face-attribute 'custom-state :foreground)
+                      :background (face-attribute 'custom-state :background))
+  (set-face-attribute 'cider-error-highlight-face nil
+                      :underline `(:color ,(face-attribute 'shadow :foreground)
+                                   :style wave)))
+
 (use-package! cider
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil)
+  ;; Show errors inline
+  (setq cider-use-overlays t)
+  (setq cider-show-error-buffer nil)
   (setq cider-auto-select-error-buffer nil)
-  (setq cider-words-of-inspiration nil))
+  (setq cider-words-of-inspiration nil)
+  (add-hook 'doom-load-theme-hook #'my-cider/init-faces))
 #+end_src
 
 ****** Hacks
