@@ -7257,6 +7257,8 @@ POS to match:
 
 #+begin_src elisp
 (after! org-src
+  (add-to-list 'org-src-lang-modes '("clj" . clojure))
+  (add-to-list 'org-src-lang-modes '("cljs" . clojurescript))
   (add-to-list 'org-src-lang-modes '("tsx" . typescript))
   (add-to-list 'org-src-lang-modes '("ts" . typescript))
   (add-to-list 'org-src-lang-modes '("jsx" . js-jsx)))
