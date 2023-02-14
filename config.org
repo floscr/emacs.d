@@ -7120,7 +7120,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
 #+begin_src elisp
 (defun my-org|fetch-link-title-command (url)
   "Fetches the link title with get_url_title (https://github.com/floscr/nim-utils#get_url_title)."
-  (or (my/shell-command-str "get_url_title" url)
+  (or (my/shell-command-str "get_url_title" url "--org")
       (user-error "Error: Could not get title for url \"%s\"" url)))
 
 (defun my-org|fetch-this-org-link-rss ()
@@ -7151,7 +7151,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
     (when (string= title "Could not find title in html")
       (user-error (t! "Error: Could not fetch title for url <<url>>")))
     (delete-region from to)
-    (insert (t! "[[<<url>>][<<title>>]]"))))
+    (insert title)))
 
 (defun my-org-agenda|fetch-this-org-link-title ()
   "Fetches the title for the plain link under the cursor."
