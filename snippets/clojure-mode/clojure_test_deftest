@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: clojure.test deftest
-# key: td
+# key: dt
 # --
 (deftest ${1:test-name}
   $0)

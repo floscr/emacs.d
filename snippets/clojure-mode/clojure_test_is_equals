@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: clojure.test testing
+# name: clojure.test t=
 # key: t=
 # --
 (is (= $0))
