@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: clojure.data/diff
+# key: diff
+# --
+(cloure.data/diff $0)
