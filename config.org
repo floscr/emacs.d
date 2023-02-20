@@ -1280,8 +1280,8 @@ This function will mutate the hashtable M."
 #+begin_src elisp
 (defhydra my-project-hydra|org-web (:exit t)
   "org-web Hydra"
-  ("tp" (lambda () (interactive)
-          (projectile-run-async-shell-command-in-root "bb org:test")) "Run parser tests"))
+  ("tp" (lambda () (interactive) (projectile-run-async-shell-command-in-root "bb org:test")) "Run parser tests")
+  ("ff" (lambda () (interactive) (find-file (f-join (projectile-project-root) "projects/backend/resources/fixtures.secret.edn"))) "Find secret fixtures file"))
 #+end_src
 
 
