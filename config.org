@@ -1263,6 +1263,27 @@ This function will mutate the hashtable M."
     (evil-goto-mark ?f)
     (cider-eval-last-sexp)))
 #+end_src
+** Project Hydras
+
+#+begin_src elisp
+(defun my-project-hydra|main ()
+  (interactive)
+  (pcase (projectile-project-name)
+    ("org-web" (my-project-hydra|org-web/body))
+    (_ (user-error "No project hydra found."))))
+#+end_src
+
+*** Hydras
+
+**** org-web
+
+#+begin_src elisp
+(defhydra my-project-hydra|org-web (:exit t)
+  "org-web Hydra"
+  ("tp" (lambda () (interactive)
+          (projectile-run-async-shell-command-in-root "bb org:test")) "Run parser tests"))
+#+end_src
+
 
 * Default Configuration
 ** Temp
