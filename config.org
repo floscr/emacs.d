@@ -8169,7 +8169,8 @@ So deletes wont affect this register."
  "RET"  #'my-jumpy|main
  "'"  #'+popup/toggle
  "au" #'undo-tree-visualize
- "-"  #'quick-calc)
+ "-"  #'quick-calc
+ "\\"   #'my-project-hydra|main)
 #+END_SRC
 
 *** Buffer
