@@ -7257,8 +7257,10 @@ POS to match:
   (let* ((org-export-with-toc nil)
          (org-export-with-special-strings nil)
          (org-export-with-smart-quotes nil)
-         (md (org-gfm-export-to-markdown nil subtree-p)))
-    (kill-new md)
+         (md-file (make-temp-file "my-md-export"))
+         (md (org-export-to-file 'gfm md-file nil subtree-p))
+         (content (f-read md-file)))
+    (kill-new content)
     (message "Copied buffer as markdown to clipboard.")))
 
 (defun my-org|copy-buffer-as-markdown ()
