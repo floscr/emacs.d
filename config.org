@@ -1281,7 +1281,13 @@ This function will mutate the hashtable M."
 (defhydra my-project-hydra|org-web (:exit t)
   "org-web Hydra"
   ("tp" (lambda () (interactive) (projectile-run-async-shell-command-in-root "bb org:test")) "Run parser tests")
-  ("ff" (lambda () (interactive) (find-file (f-join (projectile-project-root) "projects/backend/resources/fixtures.secret.edn"))) "Find secret fixtures file"))
+
+  ;; File
+  ("ff" (lambda () (interactive) (find-file (f-join (projectile-project-root) "projects/backend/resources/fixtures.secret.edn"))) "File: Secret Fixtures")
+  ("fr" (lambda () (interactive) (find-file (f-join (projectile-project-root) "projects/backend/src/com/org_web/repl.clj"))) "File: Repl")
+  ("fs" (lambda () (interactive) (find-file (f-join (projectile-project-root) "projects/backend/storage/"))) "File: Storage")
+
+  ("xx" (lambda () (interactive) (f-delete (f-join (projectile-project-root) "projects/backend/storage/xtdb") t)) "File: Storage"))
 #+end_src
 
 
