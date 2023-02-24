@@ -8592,7 +8592,7 @@ redefines its keys every time `eshell-mode' is enabled."
 (map! :map org-mode-map
       :localleader
       :desc  "Copy Buffer To Markdown" "Y" #'my-org|copy-buffer-as-markdown
-      :desc "Fetch url title" "u" #'my-org-agenda|fetch-this-org-link-title
+      :desc "Fetch url title" "u" #'my-org|fetch-this-org-link-title
       :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss)
 #+end_src
 
