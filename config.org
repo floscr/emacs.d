@@ -1756,6 +1756,14 @@ Bound to ~SPC t t~.
 '(bookmark-face :background nil)
 #+END_SRC
 
+****** Cider
+
+Remove border
+
+#+begin_src elisp
+'(cider-result-overlay-face :box nil)
+#+end_src
+
 ****** Dired Output
 
 Remove the rainbow colors from dired.
