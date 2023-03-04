@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Hiccup div
+# key: [d
+# --
+[:div {:class ["flex"]} $0]
