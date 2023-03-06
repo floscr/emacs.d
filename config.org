@@ -2152,11 +2152,9 @@ I want buffers added whenever I visit a buffer.
 (after! persp-mode
   (defun my-workspaces*add-special-buffer ()
     (if-let* ((name (buffer-name))
-              (add-buffer? (or
-                            ;; Always add files to workspaces
-                            (buffer-file-name)
-                            ;; Add src buffer
-                            (s-matches? "\\*Org Src.*" name))))
+              (add-buffer? (or (buffer-file-name)
+                               (s-matches? "\\*Org Src.*" name)
+                               (s-matches? "\\*Code Review" name))))
       (persp-add-buffer (current-buffer) (get-current-persp))))
 
   (add-hook 'doom-switch-buffer-hook #'my-workspaces*add-special-buffer))
