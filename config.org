@@ -1280,6 +1280,7 @@ This function will mutate the hashtable M."
 #+begin_src elisp
 (defhydra my-project-hydra|org-web (:exit t)
   "org-web Hydra"
+  ("r" (lambda () (interactive) (cider-interactive-eval "(biff/fix-print (biff/refresh))")))
   ("tp" (lambda () (interactive) (projectile-run-async-shell-command-in-root "bb org:test")) "Run parser tests")
 
   ;; File
