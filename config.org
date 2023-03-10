@@ -4644,6 +4644,11 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
 
 **** Config
 
+#+begin_src elisp
+(use-package! clojure-mode
+  :config
+  (define-clojure-indent (alet 'defun) (mlet 'defun)))
+#+end_src
 
 #+begin_src elisp
 (use-package! lsp-mode
