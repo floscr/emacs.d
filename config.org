@@ -4633,13 +4633,14 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
 
 #+begin_src elisp
 (defun my-clojure/thread-spy ()
-  (let ((p (point)))
+  (let ((log-fn (if (derived-mode-p 'clojurescript-mode) "js/console.log" "println"))
+        (p (point)))
     (save-excursion
       (search-backward "->" nil t)
       (let* ((thread-first? (string= (symbol-at-point) "->")))
         (if thread-first?
-            "(doto println)"
-          "(#(doto % println))")))))
+            (format "(doto %s)" log-fn)
+          (format "(#(doto %% %s))" log-fn))))))
 #+end_src
 
 **** Config
