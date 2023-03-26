@@ -2023,7 +2023,7 @@ These will be written to ~init.el~ so it overwrites the doom standard values.
 
 ***** Package
 
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link :tangle no
 (package! doom-themes
   :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
   :pin nil)
