@@ -1492,7 +1492,6 @@ which I name after the matching url.
  (clojure +lsp)
  (javascript +lsp)
  (org
-  +roam2
   +dragndrop
   +pretty
   +present)
