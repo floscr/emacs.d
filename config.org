@@ -1198,6 +1198,9 @@ This function will mutate the hashtable M."
   '((clojurescript-mode . ";;")
     (clojure-mode . ";;")))
 
+(put 'my-comment-header:col-count 'safe-local-variable 'integerp)
+(put 'my-comment-header:mode-comment-start 'safe-local-variable t)
+
 (defun my-comment-header/comment-start ()
   "Return the `comment-start' either defined by `my-comment-header/comment-start' or by the `major-mode'."
   (or (alist-get major-mode my-comment-header:mode-comment-start)
