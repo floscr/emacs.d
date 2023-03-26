@@ -4766,16 +4766,6 @@ From ~dd348025233c2302bafc51d8832c5cc691a91b0f~
 ;; (package! code-review :pin "d38fbe59304ed31c759ce733cda16f69a8ef2d8c" :recipe (:files ("graphql" "code-review*.el")))
 #+end_src
 
-**** [[https://github.com/floscr/browse-at-remote][browse-at-remote]] :FORK:
-
-Package override that fixes multiple remotes:
-[[https://github.com/floscr/browse-at-remote/commit/9294ed82398457d2af5fcbf9090132f4693e4068][Add option to define preferred remote [*] · floscr/browse-at-remote@9294ed8]]
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! browse-at-remote :pin "9294ed82398457d2af5fcbf9090132f4693e4068" :recipe (:host github :repo "floscr/browse-at-remote"))
-#+end_src
 **** [[https://github.com/freesteph/elescope][elescope: Search and clone Git repos directly within Emacs.]]
 
 ***** Package
