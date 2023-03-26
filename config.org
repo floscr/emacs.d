@@ -4384,7 +4384,8 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
               "C"  #'my-cider|connect-cljs
               (:prefix ("m" . "modify")
                :desc "Toggle Comment / Ignore" "t" #'clojure-toggle-ignore
-               :desc "Toggle Comment / Ignore" "T" #'clojure-toggle-ignore-surrounding-form)
+               :desc "Toggle Comment / Ignore" "T" #'clojure-toggle-ignore-surrounding-form
+               :desc "Thread first" "f" #'lsp-clojure-thread-first)
               (:prefix ("e" . "eval")
                :desc "Eval last sexp to comment" "c" #'my-cider|pprint-eval-last-sexp-to-comment)
               (:prefix ("i" . "inspect/insert")
