@@ -648,7 +648,7 @@ When ARG is passed, query for a custom delimiter."
                      "-")))
     (my-evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
 #+end_src
-* Custom Packages
+* My Packages
 ** TODO Jumpy - Custom Bookmarks
 
 *** Config
@@ -1184,6 +1184,7 @@ This function will mutate the hashtable M."
     (ivy-read "Compile: " (seq-into items 'list)
               :action (lambda (cmd) (my-project-compile/compile-cmd cmd dir)))))
 #+end_src
+
 ** Comment header
 
 #+begin_src elisp
@@ -1290,7 +1291,6 @@ This function will mutate the hashtable M."
 
   ("xx" (lambda () (interactive) (f-delete (f-join (projectile-project-root) "projects/backend/storage/xtdb") t)) "File: Storage"))
 #+end_src
-
 
 * Default Configuration
 ** Temp
@@ -1806,6 +1806,7 @@ Remove the ugly grey background
 #+BEGIN_SRC elisp
 ))
 #+END_SRC
+
 ***** Hooks
 ****** Diff Highlighting
 
@@ -4817,7 +4818,6 @@ Package override that fixes multiple remotes:
   (setq code-review-auth-login-marker 'forge))
 #+END_SRC
 
-
 *** Functions
 **** Create worktree workspace
 
@@ -5197,7 +5197,6 @@ _gp_rev       _gu_pper              _g=_: upper/lower       _gr_esolve
   (interactive)
   (magit-merge-plain "origin/master"))
 #+end_src
-
 
 *** Config
 
