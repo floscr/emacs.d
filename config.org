@@ -4368,6 +4368,17 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
   (call-interactively #'cider-pprint-eval-last-sexp-to-comment))
 #+end_src
 
+******* Cleanup dead cider buffers
+
+#+begin_src elisp
+(defun my-cider|cleanup-cider-buffers ()
+  (let* ((buffers (->> (buffer-list)
+                       (-filter (lambda (b) (->> (buffer-name b)
+                                                 (substring-no-properties)
+                                                 (s-starts-with? "*cider-repl")))))))
+    (-each buffers #'kill-buffer)))
+#+end_src
+
 
 ****** Bindings
 
