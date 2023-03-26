@@ -7550,6 +7550,17 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 #+end_src
 
 
+**** Paste stylus fixed
+
+#+begin_src elisp
+(defun my-pitch|paste-stylus-fixed ()
+  (interactive)
+  (let* ((k (current-kill 0))
+         (default-directory "/home/floscr/Code/Work/Pitch/css-to-pitch-stylus")
+         (result (shell-command-to-string (concat "nbb ./src/core.cljs " (combine-and-quote-strings (s-split "\n" k))))))
+    (message "%s" (concat "nbb ./src/core.cljs " (combine-and-quote-strings (s-split "\n" k))))
+    (insert result)))
+#+end_src
 
 *** Pairing mode
 
