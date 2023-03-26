@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: re-frame-app-db
+# key: radb
+# --
+re-frame.db/app-db

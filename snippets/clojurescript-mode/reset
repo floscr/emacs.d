@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: reset!
+# key: R
+# --
+(reset! ${1:atom} ${2:value})
