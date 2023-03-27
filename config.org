@@ -6092,7 +6092,7 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 
 #+BEGIN_SRC elisp
 (add-hook! 'emacs-lisp-mode-hook :append
-  (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (setq flycheck-disabled-checkers '(emacs-lisp emacs-lisp-checkdoc)))
 #+END_SRC
 
 ***** Nim
