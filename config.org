@@ -57,7 +57,15 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 
 ** Required Packages
 
-Packages and utilities needed for this config.
+*** Library packages
+
+**** [[https://github.com/neeasade/ct.el#ct-mix-colors-optional-space][neeasade/ct.el: color tools for emacs]]
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! ct)
+#+END_SRC
+
+*** Load Libraries
 
 - [[https://github.com/magnars/dash.el][magnars/dash.el: List Manipulation]]
 - [[https://github.com/magnars/s.el][magnars/s.el: String Manipulation]]
