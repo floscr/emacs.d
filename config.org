@@ -4308,6 +4308,7 @@ arguments can be set as a list via ‘nimpretty-args’."
   (setq cider-repl-pop-to-buffer-on-connect nil)
   ;; Show errors inline
   (setq cider-use-overlays t)
+  (setq cider-use-fringe-indicators nil)
   (setq cider-show-error-buffer nil)
   (setq cider-auto-select-error-buffer nil)
   (setq cider-words-of-inspiration nil)
