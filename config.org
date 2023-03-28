@@ -6460,6 +6460,34 @@ So I fix the checker manually for each mode after lsp was loaded.
 (add-hook 'lsp-mode-hook #'+js/fix-checker)
 #+END_SRC
 ** Snippets :SNIPPETS:
+*** Overrides
+
+Add the snippet key to to the snippet prompt so I know it for next time.
+There is no api for it, so I just override the ~yas--prompt-for-template~ function.
+
+#+begin_src elisp
+(after! yasnippet
+  (defun yas--prompt-for-template (templates &optional prompt)
+    "Interactively choose a template from the list TEMPLATES.
+
+TEMPLATES is a list of `yas--template'.
+
+Optional PROMPT sets the prompt to use."
+    (when templates
+      (setq templates
+            (sort templates #'(lambda (t1 t2)
+                                (< (length (yas--template-name t1))
+                                   (length (yas--template-name t2))))))
+      (cl-some (lambda (fn)
+                 (funcall fn (or prompt "Choose a snippet: ")
+                          templates
+                          (lambda (x) (concat (yas--template-name x) " "
+                                              (let ((key (yas--template-key x)))
+                                                (when (not (string= key (yas--template-name x)))
+                                                  (format "(%s)" (yas--template-key x))))))))
+               yas-prompt-functions))))
+#+end_src
+
 *** Functions
 **** Expand snippet by name
 :PROPERTIES:
