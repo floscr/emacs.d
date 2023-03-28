@@ -1302,6 +1302,34 @@ This function will mutate the hashtable M."
 
   ("xx" (lambda () (interactive) (f-delete (f-join (projectile-project-root) "projects/backend/storage/xtdb") t)) "File: Storage"))
 #+end_src
+** Scratch Popup
+
+#+begin_src elisp
+(defun +my|scratch-popup ()
+  "Open capture, adjust display, disable posframe."
+  (interactive)
+  (let* ((name "emacs-float-scratch")
+         (display ":0")
+         (height (* (/ (display-pixel-height display) 4) 2))
+         (width (* (/ (display-pixel-width display) 4) 2))
+         (frame (make-frame `((name . ,name)
+                              (transient . t)
+                              (height . (text-pixels . ,height))
+                              (width . (text-pixels . ,width))))))
+    (select-frame frame)
+    ;; HACK: workaround for emacs setting the title correctly and xmonad recognizing it as a window rule
+    ;; Generally emacs sets the name way to late for any tiling window manager to recognize it
+    (set-frame-name (concat name "1"))
+    (set-frame-name name)
+    ;; HACK: Emacs sets frame dimensions in number of charters / lines
+    ;; This can be worked around with text-pixels, but that would round the next character cell
+    ;; So we force the window to the dimensions the tiling wm would have given it
+    (set-frame-size (selected-frame) width height t))
+  (doom/switch-to-scratch-buffer t)
+  (org-mode)
+  (evil-insert-state))
+#+end_src
+
 
 * Default Configuration
 ** Temp
