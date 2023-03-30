@@ -1329,6 +1329,7 @@ This function will mutate the hashtable M."
     (set-frame-size (selected-frame) width height t))
   (doom/switch-to-scratch-buffer t)
   (org-mode)
+  (spell-fu-mode)
   (evil-insert-state))
 #+end_src
 
