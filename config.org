@@ -2424,7 +2424,31 @@ When narrowing to region or defun, make it in an indirect other window.
      ,@body
      (parinfer-rust--switch-mode prev-mode)))
 #+end_src
+***** Bindings
 
+****** Paste in paren mode
+
+Better pasting for lisps, automatically indents and fixes parens when pasting.
+
+#+begin_src elisp
+(defun my-parinfer|yank ()
+  "Yank with temporary paren mode enabled."
+  (interactive)
+  (my-parinfer/save-excursion "paren"
+                              (let ((beg (point)))
+                                (->> (current-kill 0)
+                                     (substring-no-properties)
+                                     (s-trim-left)
+                                     (s-trim)
+                                     (insert))
+                                (let ((end (point)))
+                                  (evil-indent beg end)))))
+
+(map!
+ :mode (clojure-script-mode clojure-mode emacs-lisp-mode)
+ :gi
+ "s-v" #'my-parinfer|yank)
+#+end_src
 **** format-all
 
 #+begin_src elisp
@@ -4624,17 +4648,6 @@ Define jump points for lispyville functions
          (insert (concat "[" new-text "]"))
          (indent-region (- 1 beg) (+ 1 end)))))))
 #+end_src
-***** Paste in paren mode
-
-#+begin_src elisp
-(defun my-clojure|parinfer-yank ()
-  "Yank with temporary paren mode enabled."
-  (interactive)
-  (my-parinfer/save-excursion "paren"
-   (call-interactively #'yank)
-   (+evil|select-pasted)
-   (evil-indent)))
-#+end_src
 ***** Spy
 
 #+begin_src elisp
@@ -4777,7 +4790,6 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
  :desc "Goto parent function" :n "gh" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "[[" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin))
- :g "s-v" #'my-clojure|parinfer-yank
  :localleader
  "s" #'clojure-sort-ns
  "l" #'my-pitch|l10n-jump)
