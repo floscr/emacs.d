@@ -2,4 +2,4 @@
 # name: atom
 # key: a
 # --
-(defonce $0 (atom nil))
+(defonce ${1:a} (atom nil))
