@@ -2455,6 +2455,17 @@ Better pasting for lisps, automatically indents and fixes parens when pasting.
 ;; Set formatter to empty list which should be defined per mode
 (setq +format-on-save-enabled-modes '())
 #+end_src
+**** undo-tree
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! undo-tree
+  :config
+  (setq undo-tree-history-directory-alist `(("." . ,(concat doom-cache-dir "undo-tree-hist/"))
+                                            ;; Dont save undo history for org files, they get too big
+                                            ("\\.org\\'" . nil))))
+#+END_SRC
 
 ** UI :UI:
 *** Higlight indent guides
