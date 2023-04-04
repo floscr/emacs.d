@@ -4409,19 +4409,21 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 ******* Fix ~cider-connect~ checking ~.authinfo.gpp~ -> password
 
 #+begin_src elisp
+(defun my-cider/connect (connect-fn &optional params)
+  (require 'noflet)
+  (let* ((buffer (noflet ((cider--ssh-hosts () nil))
+                   (apply connect-fn params))))
+    (persp-add-buffer buffer)))
+
 (defun my-cider|connect-clj (&optional params)
   "Custom cider connect function that doesn't trigger authinfo.gpg password query."
   (interactive "P")
-  (require 'noflet)
-  (noflet ((cider--ssh-hosts () nil))
-    (cider-connect-clj params)))
+  (my-cider/connect #'cider-connect-clj params))
 
 (defun my-cider|connect-cljs (&optional params)
   "custom cider-connect-cljs function that doesn't trigger authinfo.gpg password query."
   (interactive "P")
-  (require 'noflet)
-  (noflet ((cider--ssh-hosts () nil))
-    (cider-connect-cljs params)))
+  (my-cider/connect #'cider-connect-cljs params))
 #+end_src
 ******* Print comment fix
 
