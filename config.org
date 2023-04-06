@@ -1800,6 +1800,12 @@ You can blend faces like this
   (custom-set-faces!
 #+END_SRC
 
+****** General
+
+#+begin_src elisp
+'(whitespace-tab :background nil)
+#+end_src
+
 ****** Bookmarks
 
 #+BEGIN_SRC elisp
