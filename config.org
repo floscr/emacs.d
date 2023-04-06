@@ -7419,64 +7419,44 @@ POS to match:
   (add-to-list 'org-src-lang-modes '("ts" . typescript))
   (add-to-list 'org-src-lang-modes '("jsx" . js-jsx)))
 #+end_src
+
 **** Custom attachments
 
+I truly dislike how ~org-attach~ handles attachments.
+
+The attachments get sorted by an id of the files directory and their headline.
+This is truly against the mantra of raw text files, as you have to move the file if you want to move the link.
+
+This made me loose countless files because I just moved the link text to another headline!
+
+My solution is to have an extra link that resolves to ONE directory with all the files in it.
+I will make sure I don't override any files (easily enough...)
+
 #+begin_src elisp
-(defun my-attach-follow (path)
-  (let ((attach-dir (expand-file-name "/home/floscr/Documents/Org/.attach/clojure-attach")))
+(defvar my-attach:dir "~/Documents/Org/.attach/clojure-attach")
+
+(defun my-attach/follow (path)
+  (let ((attach-dir (expand-file-name my-attach:dir)))
     (find-file (expand-file-name path attach-dir))))
 
-(defun my-attach-complete (&optional _)
-  (let ((attach-dir (expand-file-name  "/home/floscr/Documents/Org/.attach/clojure-attach")))
-    (read-file-name "Attachment: " attach-dir)))
-
-(defun my-attach-display-inline-images (&optional include-linked refresh beg end)
-  (let ((attach-dir (expand-file-name  "/home/floscr/Documents/Org/.attach/clojure-attach")))
-    (prn "foo")
-    (when org-inline-image-overlays
-      (org-remove-inline-images))
-    (when (display-graphic-p)
-      (save-excursion
-        (save-restriction
-          (widen)
-          (setq beg (or beg (point-min)) end (or end (point-max)))
-          (goto-char beg)
-          (let ((re (org-image-file-name-regexp)))
-            (while (re-search-forward re end t)
-              (let ((file (match-string-no-properties 1)))
-                (when (and (not (org-in-src-block-p))
-                           (not (org-in-commented-heading-p))
-                           (or include-linked (not (org-remote-attachment-p file))))
-                  (let ((path (expand-file-name file attach-dir)))
-                    (when (file-exists-p path)
-                      (add-text-properties
-                       (match-beginning 0) (match-end 0)
-                       (list 'display (create-image path)
-                             'rear-nonsticky '(display)))
-                      (when refresh
-                        (overlay-put (make-overlay (match-beginning 0)
-                                                   (match-end 0))
-                                     'display (create-image path))))))))))))))
-
-(defun my-attach-display (path)
-  (let ((attach-dir (expand-file-name "/home/floscr/Documents/Org/.attach/clojure-attach")))
-    (if (and (display-graphic-p)
-             (string-match-p (image-file-name-regexp) path))
-        (let ((file (expand-file-name path attach-dir)))
-          (if (file-exists-p file)
-              (create-image file)
-            (error "Image file not found: %s" file)))
-      (concat "my-attach:" path))))
-
+(defun my-attach/image-data-fun (protocol path _for)
+  (let ((attach-dir (expand-file-name my-attach:dir)))
+    (when (and (display-graphic-p)
+               (string-match-p (image-file-name-regexp) path))
+      (let ((file (expand-file-name path attach-dir)))
+        (when (and (file-exists-p file)
+                   (image-type-from-file-name file))
+          (with-temp-buffer
+            (set-buffer-multibyte nil)
+            (setq buffer-file-coding-system 'binary)
+            (insert-file-contents-literally file)
+            (buffer-substring-no-properties (point-min) (point-max))))))))
 
 (org-link-set-parameters "my-attach"
-                         :follow #'my-attach-follow
-                         :complete #'my-attach-complete
-                         :display #'my-attach-display)
+                         :follow #'my-attach/follow
+                         :display #'org-link
+                         :image-data-fun #'my-attach/image-data-fun)
 #+end_src
-
-#+RESULTS:
-| :follow | my-attach-follow | :complete | my-attach-complete | :activate-func | (lambda (&rest _) (my-attach-display-inline-images t)) | :display | my-attach-display |
 
 ** Hydras
 ** Work
