@@ -7459,9 +7459,9 @@ I will make sure I don't override any files (easily enough...)
 
 (defun my-attach|dwim ()
   (interactive)
-  (-> (shell-command-to-string "org_attach")
-      (s-trim)
-      (insert)))
+  (-some-> (my/shell-command-str "org_attach")
+    (s-trim)
+    (insert)))
 #+end_src
 
 ** Hydras
