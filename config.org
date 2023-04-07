@@ -7456,6 +7456,12 @@ I will make sure I don't override any files (easily enough...)
                          :follow #'my-attach/follow
                          :display #'org-link
                          :image-data-fun #'my-attach/image-data-fun)
+
+(defun my-attach|dwim ()
+  (interactive)
+  (-> (shell-command-to-string "org_attach")
+      (s-trim)
+      (insert)))
 #+end_src
 
 ** Hydras
