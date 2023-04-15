@@ -1265,14 +1265,6 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
         (user-error "No filename under the cursor."))))
 #+END_SRC
 
-*** Meistertask Mode
-
-#+BEGIN_SRC elisp
-(-some->> "~/Code/Meisterlabs/meistertask-mode/meistertask.el"
-  (-id-when 'f-file?)
-  (load-library))
-#+END_SRC
-
 ** Bindings
 
 #+BEGIN_SRC elisp
