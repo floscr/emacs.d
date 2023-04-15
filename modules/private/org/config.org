@@ -1461,7 +1461,7 @@ Known Issues:
 
 **** Minor Mode
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defvar +org-indirect:window-mode-map (make-sparse-keymap))
 
 (define-minor-mode +org-indirect-window-mode
