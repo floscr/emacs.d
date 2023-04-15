@@ -684,7 +684,7 @@ When ARG is passed, query for a custom delimiter."
 #+begin_src elisp
 (defun bbookmarks|execute (&rest args)
   (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
-    (->> (concat "bb ./src/bbookmark.clj"
+    (->> (concat "bb ./src/bbookmarks.clj"
                  (-some->> args (s-join " ") (s-prepend " ")))
          (shell-command-to-string))))
 
