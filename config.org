@@ -659,7 +659,12 @@ When ARG is passed, query for a custom delimiter."
     (my-evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
 #+end_src
 * My Packages
-** Jumpy - Custom Bookmarks
+** BBookmarks
+
+Emacs implmenentation for my bookmarks management written in clojure:
+
+https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c/new/modules/scripts/src/bbookmarks.clj
+
 *** Packages
 **** [[https://github.com/clojure-emacs/parseedn][clojure-emacs/parseedn: EDN parser for Emacs Lisp]]
 
