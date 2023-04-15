@@ -682,13 +682,13 @@ When ARG is passed, query for a custom delimiter."
 *** Functions
 
 #+begin_src elisp
-(defun my-jumpy*|execute (&rest args)
+(defun bbookmarks|execute (&rest args)
   (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
     (->> (concat "bb ./src/bbookmark.clj"
                  (-some->> args (s-join " ") (s-prepend " ")))
          (shell-command-to-string))))
 
-(defun my-jumpy*/goto (x)
+(defun bbookmarks/goto (x)
   (progn
     (goto-char (point-min))
     (cond
@@ -699,23 +699,23 @@ When ARG is passed, query for a custom delimiter."
       (goto-char (line-beginning-position))
       (back-to-indentation)))))
 
-(defun my-jumpy*/org-goto (x)
+(defun bbookmarks/org-goto (x)
   (when (-some-> (org-find-exact-headline-in-buffer m)
           (goto-char))
     (goto-char (line-beginning-position))))
 
-(defun my-jumpy*/execute-command (cmd)
+(defun bbookmarks/execute-command (cmd)
   (pcase cmd
     (`[:open-file ,f] (progn
                         (when (get-file-buffer f) (setq buffer-open? t))
                         (find-file (f-expand f))
                         (+workspaces-add-current-buffer-h)))
 
-    (`[:goto-bol _ :no-relocate] (unless buffer-open? (my-jumpy*/goto m)))
-    (`[:goto-bol ,m] (my-jumpy*/goto m))
+    (`[:goto-bol _ :no-relocate] (unless buffer-open? (bbookmarks/goto m)))
+    (`[:goto-bol ,m] (bbookmarks/goto m))
 
-    (`[:org-goto ,m :no-relocate] (unless buffer-open? (my-jumpy*/org-goto m)))
-    (`[:org-goto ,m] (my-jumpy*/org-goto m))
+    (`[:org-goto ,m :no-relocate] (unless buffer-open? (bbookmarks/org-goto m)))
+    (`[:org-goto ,m] (bbookmarks/org-goto m))
 
     (`[:emacs ,cmd] (pcase cmd
                       (:org-capture-goto-last-stored (org-capture-goto-last-stored))
@@ -723,18 +723,18 @@ When ARG is passed, query for a custom delimiter."
 
     (_ (user-error (format "No implementation for: %s" cmd)))))
 
-(defun my-jumpy*/execute (x)
+(defun bbookmarks/execute (x)
   (require 'parseedn)
   (let ((commands (->> (cdr x) (car) (parseedn-read-str)))
         (buffer-open? nil))
-    (-each commands #'my-jumpy*/execute-command)))
+    (-each commands #'bbookmarks/execute-command)))
 
-(defun my-jumpy*|list ()
+(defun bbookmarks|list ()
   (interactive)
-  (ivy-read "Bbookmarks" (->> (my-jumpy*|execute "list" "--with-action")
+  (ivy-read "Bbookmarks" (->> (bbookmarks|execute "list" "--with-action")
                               ((lambda (x) (split-string x "\n\n")))
                               (--map (split-string it "\n")))
-            :action #'my-jumpy*/execute))
+            :action #'bbookmarks/execute))
 
 ;; (after! ivy
 ;;   (ivy-set-actions
@@ -756,7 +756,7 @@ When ARG is passed, query for a custom delimiter."
 #+begin_src elisp
 (map!
  :leader
- "RET"  #'my-jumpy*|list)
+ "RET"  #'bbookmarks|list)
 
 ;; (map!
 ;;  :leader
@@ -1340,7 +1340,6 @@ which I name after the matching url.
  doom
  modeline
  doom-quit
- hl-todo
  (popup +all +defaults)
  vc-gutter
  vi-tilde-fringe
@@ -7417,7 +7416,11 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 #+begin_src elisp
 (defun my-pitch|debug-statement ()
   (interactive)
-  (let* ((clojure-symbol (doom-thing-at-point-or-region))
+  (let* ((clojure-symbol (pcase (doom-thing-at-point-or-region)
+                           ("" (save-excursion
+                                 (lispyville-backward-sexp-begin 1)
+                                 (doom-thing-at-point-or-region)))
+                           (t (doom-thing-at-point-or-region))))
          (placeholder (if clojure-symbol (concat "dd-" (substring-no-properties clojure-symbol)) "dd"))
          (name (read-string "Debug var name: " placeholder))
          (suffix (-some->> (s-split-up-to "-" name 1)
@@ -7585,14 +7588,15 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 
 **** Paste stylus fixed
 
-#+begin_src elisp
+#+begin_src elisp :tangle no
 (defun my-pitch|paste-stylus-fixed ()
   (interactive)
   (let* ((k (current-kill 0))
-         (default-directory "/home/floscr/Code/Work/Pitch/css-to-pitch-stylus")
-         (result (shell-command-to-string (concat "nbb ./src/core.cljs " (combine-and-quote-strings (s-split "\n" k))))))
-    (message "%s" (concat "nbb ./src/core.cljs " (combine-and-quote-strings (s-split "\n" k))))
+         (default-directory "/home/floscr/Code/Work/Pitch/pitch-app/.worktrees/florian/figma-to-stylus/projects/figma-to-stylus")
+         (result (shell-command-to-string (concat "nbb ./src/figma_to_stylus/core.cljs " (combine-and-quote-strings (s-split "\n" k))))))
     (insert result)))
+
+(combine-and-quote-strings (s-split "\n" (current-kill 0)))
 #+end_src
 
 *** Pairing mode
@@ -7646,6 +7650,26 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
       (my-pitch|stop-pairing)
     (my-pitch|start-pairing)))
 #+end_src
+** AI
+
+**** package
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! chatgpt-shell :recipe (:host github :repo "xenodium/chatgpt-shell"))
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! chatgpt-shell
+  :config
+  (setq chatgpt-shell-openai-key
+      (lambda ()
+        (-> (f-read "/run/agenix/openai")
+            (s-trim)))))
+#+END_SRC
 
 * Bindings
 ** General
@@ -8232,7 +8256,6 @@ So deletes wont affect this register."
 #+BEGIN_SRC elisp
 (map!
  :leader
- "RET"  #'my-jumpy|main
  "'"  #'+popup/toggle
  "au" #'undo-tree-visualize
  "-"  #'quick-calc
