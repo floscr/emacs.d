@@ -716,6 +716,8 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
                         (find-file (f-expand f))
                         (+workspaces-add-current-buffer-h)))
 
+    (`[:goto ,m] (bbookmarks/goto m))
+
     (`[:goto-bol _ :no-relocate] (unless buffer-open? (bbookmarks/goto m)))
     (`[:goto-bol ,m] (bbookmarks/goto m))
 
@@ -734,12 +736,17 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
         (buffer-open? nil))
     (-each commands #'bbookmarks/execute-command)))
 
-(defun bbookmarks|list ()
+(defun bbookmarks|list (&rest args)
   (interactive)
-  (ivy-read "Bbookmarks" (->> (bbookmarks|execute "list" "--with-action")
+  (ivy-read "Bbookmarks" (->> (apply #'bbookmarks|execute (-concat '("list" "--with-action") args))
                               ((lambda (x) (split-string x "\n\n")))
                               (--map (split-string it "\n")))
             :action #'bbookmarks/execute))
+
+(defun bbookmarks|list-project-bookmarks ()
+  (interactive)
+  (bbookmarks|list "--parent" (my-file/git-root)
+                   "--project-root" (my-file/git-root)))
 
 ;; (after! ivy
 ;;   (ivy-set-actions
@@ -763,11 +770,10 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
  :leader
  "RET"  #'bbookmarks|list)
 
-;; (map!
-;;  :leader
-;;  (:prefix-map ("j" . "jumpy")
-;;   :desc "Project"  "j" #'my-jumpy|main
-;;   :desc "Project"  "p" #'my-jumpy::project|launch))
+(map!
+ :leader
+ (:prefix-map ("j" . "jumpy")
+  :desc "Project"  "p" #'bbookmarks|list-projects))
 #+end_src
 
 ** TODO Indirect Indent Mode
