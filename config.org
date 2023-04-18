@@ -748,6 +748,41 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
   (bbookmarks|list "--parent" (my-file/git-root)
                    "--project-root" (my-file/git-root)))
 
+(defvar bbookmarks-save-mode-map (make-sparse-keymap))
+
+(define-minor-mode bbookmarks-save-mode
+  "Editing indented source code without the indent in an indirect buffer."
+  :keymap bbookmarks-save-mode-map)
+
+(defun bbookmarks|save-buffer ()
+  (interactive)
+  (let ((contents (buffer-substring-no-properties (point-min) (point-max))))
+    (bbookmarks|execute "add" (shell-quote-argument contents))))
+
+(map! :map bbookmarks-save-mode-map
+      :gni "C-c C-c" #'bbookmarks|save-buffer
+      :gni "C-c C-k" (cmd! (kill-buffer (current-buffer))))
+
+(add-hook! bbookmarks-save-mode
+  (defun bbookmarks-save-mode/init-hook ()
+    (setq header-line-format
+          "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")))
+
+(defun bbookmarks|save ()
+  (interactive)
+  (let ((file-name (buffer-file-name))
+        (buffer (get-buffer-create "*bbookmark-save*")))
+    (if file-name
+        (with-current-buffer (get-buffer-create "*bbookmark-save*")
+          (insert (format "{:file \"%s\"
+ :name \"\"}" file-name))
+          (pop-to-buffer buffer)
+          (backward-char 2)
+          (clojure-mode)
+          (bbookmarks-save-mode)
+          (evil-insert-state t))
+      (user-error "Buffer has no file name!"))))
+
 ;; (after! ivy
 ;;   (ivy-set-actions
 ;;    'my-jumpy|launch
