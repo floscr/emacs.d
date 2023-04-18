@@ -808,7 +808,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 (map!
  :leader
  (:prefix-map ("j" . "jumpy")
-  :desc "Project"  "p" #'bbookmarks|list-projects))
+  :desc "Project"  "p" #'bbookmarks|list-project-bookmarks))
 #+end_src
 
 ** TODO Indirect Indent Mode
