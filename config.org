@@ -738,9 +738,9 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
 (defun bbookmarks|list (&rest args)
   (interactive)
-  (ivy-read "Bbookmarks" (->> (apply #'bbookmarks|execute (-concat '("list" "--with-action") args))
-                              ((lambda (x) (split-string x "\n\n")))
-                              (--map (split-string it "\n")))
+  (ivy-read "Bbookmarks: " (->> (apply #'bbookmarks|execute (-concat '("list" "--with-action") args))
+                                ((lambda (x) (split-string x "\n\n")))
+                                (--map (split-string it "\n")))
             :action #'bbookmarks/execute))
 
 (defun bbookmarks|list-project-bookmarks ()
