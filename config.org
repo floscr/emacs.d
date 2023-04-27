@@ -8863,6 +8863,15 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss)
 #+end_src
 
+*** Org Mode Agenda
+
+#+begin_src elisp
+(map! :map org-agenda-mode-map
+      :localleader
+      :desc "Fetch url title" "u" #'my-org-agenda|fetch-this-org-link-title)
+#+end_src
+
+
 ** Minibuffer
 *** Copy and Paste from the minibuffer
 
