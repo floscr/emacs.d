@@ -5344,6 +5344,18 @@ _gp_rev       _gu_pper              _g=_: upper/lower       _gr_esolve
 #+end_src
 
 
+**** Delete multiple worktrees
+
+#+begin_src elisp
+(defun my-magit|worktree-delete (worktrees)
+  "Delete one or multiple worktrees."
+  (interactive
+   (list (ivy-read "Delete worktree" (cdr (magit-list-worktrees))
+                   :action (lambda (x)
+                             (magit-worktree-delete (first x)))
+                   :multi-action (lambda (xs)
+                                   (--map (magit-worktree-delete (first it)) xs))))))
+#+end_src
 
 *** Config
 
