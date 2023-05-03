@@ -745,8 +745,8 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
 (defun bbookmarks|list-project-bookmarks ()
   (interactive)
-  (bbookmarks|list "--parent" (my-file/git-root)
-                   "--project-root" (my-file/git-root nil)))
+  (bbookmarks|list "--parent" (s-replace-regexp "/$" "" (my-file/git-root))
+                   "--project-root" (s-replace-regexp "/$" "" (my-file/git-root nil))))
 
 (defvar bbookmarks-save-mode-map (make-sparse-keymap))
 
