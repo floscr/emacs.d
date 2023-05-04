@@ -5792,7 +5792,7 @@ The dired-line jumps at the end are used to jump the filename again.
 (setq my-dired::open-external:extensions
       '(
         ;; Video
-        "mov" "mpv" "mkv" "webm"
+        "mov" "mpv" "mkv" "webm" "avi"
         ;; Audio
         "mp4" "mp3" "ogg"))
 #+end_src
