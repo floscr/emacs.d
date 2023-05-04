@@ -7480,6 +7480,27 @@ POS to match:
   (interactive)
   (my-org/copy-as-markdown t))
 #+END_SRC
+**** Add created date to headings
+
+#+BEGIN_SRC elisp
+(defun my-org|add-created-property ()
+  "Add CREATED property with the current time to the current item."
+  (interactive)
+  (org-set-property +org-created-property (+org/inactive-timestamp)))
+
+(defun my-org/add-created-property-automatically ()
+  "Add CREATED property with the current time to the current item."
+  (interactive)
+  (let ((global-property (+org-get-global-property "ADD_CREATED")))
+    (unless (string= global-property "nil")
+      (when (+org-get-global-property "ADD_CREATED")
+        (org-set-property +org-created-property (+org/inactive-timestamp))))))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(advice-add '+org/insert-item-below :after (my@ignore-args #'my-org/add-created-property-automatically))
+(advice-add '+org/insert-item-above :after (my@ignore-args #'my-org/add-created-property-automatically))
+#+END_SRC
 
 *** Config
 
@@ -8870,9 +8891,11 @@ redefines its keys every time `eshell-mode' is enabled."
 #+begin_src elisp
 (map! :map org-mode-map
       :localleader
-      :desc  "Copy Buffer To Markdown" "Y" #'my-org|copy-buffer-as-markdown
-      :desc "Fetch url title" "u" #'my-org|fetch-this-org-link-title
-      :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss)
+      :desc "Copy Buffer To Markdown"  "Y" #'my-org|copy-buffer-as-markdown
+      :desc "Fetch url title"          "u" #'my-org|fetch-this-org-link-title
+      :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss
+      (:prefix-map ("i" . "Insert")
+       :desc "Created Property"        "c" #'my-org|add-created-property))
 #+end_src
 
 *** Org Mode Agenda
