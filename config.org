@@ -5195,6 +5195,7 @@ _gp_rev       _gu_pper              _g=_: upper/lower       _gr_esolve
         (flycheck-mode -1)
         (unpackaged/smerge-hydra/body)))))
 #+END_SRC
+
 **** Merge master
 
 #+begin_src elisp
@@ -7815,8 +7816,6 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
          (default-directory "/home/floscr/Code/Work/Pitch/pitch-app/.worktrees/florian/figma-to-stylus/projects/figma-to-stylus")
          (result (shell-command-to-string (concat "nbb ./src/figma_to_stylus/core.cljs " (combine-and-quote-strings (s-split "\n" k))))))
     (insert result)))
-
-(combine-and-quote-strings (s-split "\n" (current-kill 0)))
 #+end_src
 
 *** Pairing mode
