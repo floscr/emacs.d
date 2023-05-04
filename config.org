@@ -7503,6 +7503,25 @@ POS to match:
 (advice-add '+org/insert-item-above :after (my@ignore-args #'my-org/add-created-property-automatically))
 #+END_SRC
 
+**** Add id to headings
+
+- When file has global property ~#+ADD_ID: t~
+- Is a file in org-directory
+
+#+BEGIN_SRC elisp
+(defun my-org/add-id-property-automatically ()
+  "Add CREATED property with the current time to the current item."
+  (interactive "P")
+  (when (or (string= (+org-get-global-property "ADD_ID") "t")
+            (f-ancestor-of? org-directory buffer-file-name))
+    (call-interactively #'org-id-get-create)))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(advice-add '+org/insert-item-below :after (my@ignore-args #'my-org/add-id-property-automatically))
+(advice-add '+org/insert-item-above :after (my@ignore-args #'my-org/add-id-property-automatically))
+#+END_SRC
+
 *** Config
 
 **** Org Src Language Aliases
