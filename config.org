@@ -797,21 +797,6 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
           (bbookmarks-save-mode)
           (evil-insert-state t))
       (user-error "Buffer has no file name!"))))
-
-
-;; (after! ivy
-;;   (ivy-set-actions
-;;    'my-jumpy|launch
-;;    '(("j" my-jumpy/goto-bookmark-dwim-other-window "open in other window")
-;;      ("k" my-jumpy/local-remove "Remove")
-;;      ("r" my-jumpy/local-rename "Rename"))))
-
-;; (after! ivy
-;;   (ivy-set-actions
-;;    'my-jumpy::project|launch
-;;    '(("j" my-jumpy/goto-bookmark-dwim-other-window "open in other window")
-;;      ("k" (lambda (x) (my-jumpy/local-remove x (my-jumpy::project/file-path))) "Remove")
-;;      ("r" (lambda (x) (my-jumpy/local-rename x (my-jumpy::project/file-path))) "Rename"))))
 #+end_src
 
 *** Bindings
@@ -7850,7 +7835,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (interactive)
   (let* ((k (current-kill 0))
          (default-directory "/home/floscr/Code/Work/Pitch/pitch-app/.worktrees/florian/figma-to-stylus/projects/figma-to-stylus")
-         (result (shell-command-to-string (concat "nbb ./src/figma_to_stylus/core.cljs " (combine-and-quote-strings (s-split "\n" k))))))
+         (result (shell-command-to-string (concat "./node_modules/.bin/nbb ./src/figma_to_stylus/core.cljs" (combine-and-quote-strings (s-split "\n" k))))))
     (insert result)))
 #+end_src
 
