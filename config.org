@@ -770,7 +770,8 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 (defun bbookmarks|save-buffer ()
   (interactive)
   (let ((contents (buffer-substring-no-properties (point-min) (point-max))))
-    (bbookmarks|execute "add" (shell-quote-argument contents))))
+    (bbookmarks|execute "add" (shell-quote-argument contents))
+    (kill-buffer (current-buffer))))
 
 (map! :map bbookmarks-save-mode-map
       :gni "C-c C-c" #'bbookmarks|save-buffer
