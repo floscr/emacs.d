@@ -732,16 +732,29 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
 (defun bbookmarks/execute (x)
   (require 'parseedn)
-  (let ((commands (->> (cdr x) (car) (parseedn-read-str)))
-        (buffer-open? nil))
+  (-let* (((_ _ commands) x)
+          (commands (parseedn-read-str commands))
+          (buffer-open? nil))
     (-each commands #'bbookmarks/execute-command)))
+
+(defun bbookmarks/remove (x)
+  (require 'parseedn)
+  (-let* (((_ id _) x))
+    (bbookmarks|execute "remove" id)))
 
 (defun bbookmarks|list (&rest args)
   (interactive)
   (ivy-read "Bbookmarks: " (->> (apply #'bbookmarks|execute (-concat '("list" "--with-action") args))
                                 ((lambda (x) (split-string x "\n\n")))
                                 (--map (split-string it "\n")))
-            :action #'bbookmarks/execute))
+            :action '(1
+                      ("RET" bbookmarks/execute "Go to bookmark")
+                      ("r" (lambda (x)
+                             (-let (((_ id _) x))
+                               (bbookmarks|execute "remove" id)
+                               (bbookmarks|list)))
+                       "Do something"))
+            :caller 'bbookmarks|list))
 
 (defun bbookmarks|list-project-bookmarks ()
   (interactive)
