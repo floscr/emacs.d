@@ -684,6 +684,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 ;; Instead I'll keep it in this file which will be trashed on every reboot
 (setq bookmark-file "/tmp/emacs-bookmarks-file")
 #+END_SRC
+
 *** Functions
 
 #+begin_src elisp
@@ -796,6 +797,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
           (bbookmarks-save-mode)
           (evil-insert-state t))
       (user-error "Buffer has no file name!"))))
+
 
 ;; (after! ivy
 ;;   (ivy-set-actions
@@ -7495,6 +7497,7 @@ POS to match:
   (interactive)
   (my-org/copy-as-markdown t))
 #+END_SRC
+
 **** Add created date to headings
 
 #+BEGIN_SRC elisp
