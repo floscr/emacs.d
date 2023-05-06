@@ -659,6 +659,41 @@ When ARG is passed, query for a custom delimiter."
     (my-evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
 #+end_src
 * My Packages
+** Bbuild
+
+#+begin_src elisp
+(defun bbuild|execute (&rest args)
+  (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
+    (->> (concat "bb ./src/bbuild.clj"
+                 (-some->> args (s-join " ") (s-prepend " ")))
+         (shell-command-to-string))))
+
+(defun bbuild|compile (&rest args)
+  (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
+    (->> (concat "bb ./src/bbuild.clj"
+                 (-some->> args (s-join " ") (s-prepend " ")))
+         (compile))))
+
+(defun bbuild|list (&rest args)
+  (interactive)
+  (ivy-read "Bbuild: " (->> (apply #'bbuild|execute (-concat '("list" "--with-action") args))
+                            ((lambda (x) (split-string x "\n\n")))
+                            (--map (split-string it "\n")))
+            :action '(1
+                      ("RET"
+                       (lambda (x)
+                         (-let (((cmd id) x))
+                           (-> (bbuild|compile "execute" cmd)
+                               (s-trim)
+                               (-log))))
+                       "Run")
+                      ("r" (lambda (x)
+                             (-let (((cmd id) x))
+                               (bbuild|execute "remove" id)))
+                       "Remove"))
+            :caller 'bbuild|list))
+#+end_src
+
 ** BBookmarks
 
 Emacs implmenentation for my bookmarks management written in clojure:
