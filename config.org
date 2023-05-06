@@ -662,45 +662,31 @@ When ARG is passed, query for a custom delimiter."
 ** Bbuild
 
 #+begin_src elisp
-(defun bbuild|execute (&rest args)
-  (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
-    (->> (concat "bb ./src/bbuild.clj"
-                 (-some->> args (s-join " ") (s-prepend " ")))
-         (shell-command-to-string))))
-
-(defun bbuild|compile (&rest args)
-  (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
-    (->> (concat "bb ./src/bbuild.clj"
-                 (-some->> args (s-join " ") (s-prepend " ")))
-         (compile))))
+(defun bbuild|execute (fn cmd args)
+  (let* ((default-directory* default-directory)
+         (default-directory "/home/floscr/.config/dotfiles/new/modules/scripts")
+         (cmd (->> (concat "bb ./src/bbuild.clj"
+                           " " cmd " "
+                           (-some->> args (-flatten) (s-join " ") (s-prepend " "))
+                           (format " --dir \"%s\"" default-directory*))
+                   (-log))))
+    (apply fn (list cmd))))
 
 (defun bbuild|list (&rest args)
   (interactive)
-  (ivy-read "Bbuild: " (->> (apply #'bbuild|execute (-concat '("list" "--with-action") args))
-                            ((lambda (x) (split-string x "\n\n")))
-                            (--map (split-string it "\n")))
+  (ivy-read "Bbuild: " (->> (bbuild|execute #'shell-command-to-string "list" args)
+                            ((lambda (x) (split-string x "\n"))))
             :action '(1
                       ("RET"
-                       (lambda (x)
-                         (-let (((cmd id) x))
-                           (-> (bbuild|compile "execute" cmd)
-                               (s-trim)
-                               (-log))))
+                       (lambda (&rest args)
+                         (setq foo args)
+                         (bbuild|execute #'compile "execute" args))
                        "Run")
                       ("r" (lambda (x)
                              (-let (((cmd id) x))
                                (bbuild|execute "remove" id)))
                        "Remove"))
             :caller 'bbuild|list))
-#+end_src
-
-*** Bindings
-
-#+begin_src elisp
-(map!
- :leader
- (:prefix-map ("p" . "Project")
-  :desc "Compile" "c" #'bbuild|list))
 #+end_src
 
 ** BBookmarks
@@ -8659,7 +8645,8 @@ So deletes wont affect this register."
   :desc "Workspace Project Files" "P" #'my-workspaces|find-workspace-project-file
   :desc "Project VC"              "v" #'my-workspaces|workspace-project-vc
   :desc "Project Bookmarks"       "RET" #'my-jumpy|launch
-  :desc "Recompile"       "C" #'recompile))
+  :desc "Compile"                 "c" #'bbuild|list
+  :desc "Recompile"               "C" #'recompile))
 #+END_SRC
 
 *** Search
