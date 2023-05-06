@@ -694,6 +694,15 @@ When ARG is passed, query for a custom delimiter."
             :caller 'bbuild|list))
 #+end_src
 
+*** Bindings
+
+#+begin_src elisp
+(map!
+ :leader
+ (:prefix-map ("p" . "Project")
+  :desc "Compile" "c" #'bbuild|list))
+#+end_src
+
 ** BBookmarks
 
 Emacs implmenentation for my bookmarks management written in clojure:
