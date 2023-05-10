@@ -4691,6 +4691,20 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
             (format "(doto %s)" log-fn)
           (format "(#(doto %% %s))" log-fn))))))
 #+end_src
+***** Update NS
+
+#+begin_src elisp
+(defun my-clojure|update-ns-dwim ()
+  "Updates the ns no-matter where your cursor is, when non is existing insert a new one."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (if (re-search-forward "(ns " nil t)
+        (progn
+          (sp-kill-sexp)
+          (insert (funcall clojure-expected-ns-function)))
+      (clojure-insert-ns-form))))
+#+end_src
 
 **** Config
 
@@ -8864,7 +8878,9 @@ redefines its keys every time `eshell-mode' is enabled."
       :localleader
       (:prefix ("d" . "debug")
        :desc "Add debug statement" "a" #'my-pitch|debug-statement
-       :desc "Add debug statement" "d" #'my-pitch|eval-debug-statement))
+       :desc "Add debug statement" "d" #'my-pitch|eval-debug-statement)
+      (:prefix ("i" . "insert")
+       :desc "Namespace" "n" #'my-clojure|update-ns-dwim))
 #+END_SRC
 
 *** Haskell
