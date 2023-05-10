@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Babashka command defn
+# key: cmd
+# --
+(defn ${1:my}-cmd [{:keys [opts]}]
+  (let [{:keys [${2:opt}]} opts]))
