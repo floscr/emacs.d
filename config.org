@@ -1203,6 +1203,21 @@ This function will mutate the hashtable M."
           (vimish-fold beg end)
           (evil-next-line 1))))))
 
+(defun my-text/line-empty? ()
+  (not (looking-back "^$")))
+
+(defun my-text/ensure-surrounding-newlines ()
+  (save-excursion
+    (beginning-of-line)
+    (previous-line)
+    (when (my-text/line-empty?)
+      (evil-insert-newline-below)))
+  (save-excursion
+    (beginning-of-line)
+    (next-line)
+    (when (my-text/line-empty?)
+      (evil-insert-newline-above))))
+
 (defun my-comment-header|insert (title)
   "Insert a comment header on the current line."
   (interactive (list (my-comment-header/read-string)))
@@ -1212,6 +1227,7 @@ This function will mutate the hashtable M."
     (insert str)
     (goto-char (line-beginning-position))
     (forward-char (length (concat str-beg title)))
+    (my-text/ensure-surrounding-newlines)
     (evil-insert-state)
     (overwrite-mode 1)))
 
