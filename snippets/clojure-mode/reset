@@ -2,4 +2,4 @@
 # name: reset!
 # key: R
 # --
-(reset! ${1:atom} ${2:value})
+(reset! ${1:`(or (my-clojure/get-prev-atom-variable-name) "atom")`} ${2:value})

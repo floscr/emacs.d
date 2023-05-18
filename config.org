@@ -4721,6 +4721,18 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
           (insert (funcall clojure-expected-ns-function)))
       (clojure-insert-ns-form))))
 #+end_src
+***** Get prev atom
+
+Automatically get the previous atom name in the current file as the base
+Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
+
+#+begin_src elisp
+(defun my-clojure/get-prev-atom-variable-name ()
+  (save-excursion
+   (-some-> (when (re-search-backward "(defonce \\(.+?\\) (atom" nil t)
+              (match-string 1))
+     (substring-no-properties))))
+#+end_src
 
 **** Config
 
