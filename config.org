@@ -4739,7 +4739,8 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
 #+begin_src elisp
 (use-package! clojure-mode
   :config
-  (define-clojure-indent (alet 'defun) (mlet 'defun)))
+  (define-clojure-indent (alet 'defun) (mlet 'defun))
+  (define-clojure-indent (describe 1) (it 1)))
 #+end_src
 
 #+begin_src elisp
