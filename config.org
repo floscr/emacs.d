@@ -4337,6 +4337,12 @@ arguments can be set as a list via ‘nimpretty-args’."
 #+end_src
 
 ***** Cider
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! cider :pin "f39e0b52014913f5acc1dc28ad94c68385c0834e")
+#+END_SRC
+
 ****** Config
 
 #+begin_src elisp
