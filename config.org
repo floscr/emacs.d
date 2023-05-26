@@ -679,9 +679,12 @@ When ARG is passed, query for a custom delimiter."
             :action '(1
                       ("RET"
                        (lambda (&rest args)
-                         (setq foo args)
                          (bbuild|execute #'compile "execute" args))
                        "Run")
+                      ("t"
+                       (lambda (&rest args)
+                         (bbuild|execute #'call-process-shell-command "execute" (-snoc args "--term")))
+                       "In Terminal")
                       ("r" (lambda (x)
                              (-let (((cmd id) x))
                                (bbuild|execute "remove" id)))
@@ -4727,6 +4730,7 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
           (insert (funcall clojure-expected-ns-function)))
       (clojure-insert-ns-form))))
 #+end_src
+
 ***** Get prev atom
 
 Automatically get the previous atom name in the current file as the base
@@ -4774,7 +4778,6 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
                     "[/\\\\]src/tailwind\\'"
                     "[/\\\\]test/e2e/screenshots\\'"))))
 #+end_src
-
 
 **** Themes
 
@@ -7909,11 +7912,11 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 
 **** Paste stylus fixed
 
-#+begin_src elisp :tangle no
+#+begin_src elisp
 (defun my-pitch|paste-stylus-fixed ()
   (interactive)
   (let* ((k (current-kill 0))
-         (default-directory "/home/floscr/Code/Work/Pitch/pitch-app/.worktrees/florian/figma-to-stylus/projects/figma-to-stylus")
+         (default-directory "/home/floscr/Code/Work/Pitch/pitch-app/.worktrees/figma-to-stylus/projects/figma-to-stylus")
          (result (shell-command-to-string (concat "./node_modules/.bin/nbb ./src/figma_to_stylus/core.cljs" (combine-and-quote-strings (s-split "\n" k))))))
     (insert result)))
 #+end_src
