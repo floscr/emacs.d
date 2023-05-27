@@ -7234,7 +7234,7 @@ error in process filter: End of buffer
 ***** COMMENT Custom Aliases
 
 #+BEGIN_SRC elisp
-(setq +eshell-aliases
+(setq my-eshell:aliases
   '(("q"      "exit")
     ("cat"    "my-eshell/colorized-cat $1")
     ("f"      "find-file $1")
@@ -7248,6 +7248,10 @@ error in process filter: End of buffer
     ("gc"     "git commit")
     ("grha"   "git reset --hard; git clean -f -d")
     ("clear"  "clear-scrollback")))
+
+(mapcar (lambda (alias)
+          (set-eshell-alias! (car alias) (cadr alias)))
+        my-eshell:aliases)
 #+END_SRC
 
 ** Org Mode
