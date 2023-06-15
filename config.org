@@ -480,6 +480,15 @@ nil -> \"Disabled\""
   (interactive)
   (message (t! "<<(symbol-name x)>>: <<(my/bool-to-enabled-string (symbol-value x))>>")))
 #+END_SRC
+*** Print
+
+#+begin_src elisp
+(defun prn (&rest args)
+  (let* ((str (->> (-map (lambda (_) "%s") args)
+                   (s-join " ")))
+         (msg-args (-concat (list str) args)))
+    (apply #'message msg-args)))
+#+end_src
 
 ** Dash Extensions
 *** -tap
