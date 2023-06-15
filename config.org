@@ -4784,6 +4784,17 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
               (match-string 1))
      (substring-no-properties))))
 #+end_src
+***** Newline :HACK:
+
+#+begin_src elisp
+(defun my-clojure|newline-and-indent ()
+  "Workaround for clojure when inserting a newline after a comment would indent the expression below weirdly."
+  (interactive)
+  (if (clojure--in-comment-p)
+      (progn (newline nil t)
+             (insert ";; "))
+    (newline-and-indent)))
+#+end_src
 
 **** Config
 
@@ -4851,6 +4862,7 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
 
 (map!
  :map (clojure-mode-map clojurescript-mode-map)
+ :desc "Newline" :i "RET" #'my-clojure|newline-and-indent
  :desc "Goto parent function" :n "gh" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "[[" (cmd! (lispyville-backward-function-begin))
  :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin))
