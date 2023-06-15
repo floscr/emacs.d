@@ -585,6 +585,27 @@ shuffling is done in place."
   "Replace the HOME directory in path"
   (s-replace-regexp (t! "^<<(getenv \"HOME\")>>") "~" path))
 #+END_SRC
+*** -mapcar-first
+
+Map over the first item of a list of ~cons~
+
+#+begin_src elisp
+(defun -mapcar-first (func lst)
+  "Apply FUNC to the first item of each cons cell in LST."
+  (mapcar (lambda (item)
+            (if (consp item)
+                (cons (funcall func (car item)) (cdr item))
+              item))
+          lst))
+#+end_src
+
+#+begin_src elisp :tangle no
+(mapcar-first #'1+ '((1 . a) (2 . b) (3 . c))))
+#+end_src
+
+#+RESULTS:
+: ((2 . a) (3 . b) (4 . c))
+
 *** plist
 
 #+begin_src elisp
