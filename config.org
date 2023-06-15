@@ -4901,7 +4901,7 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
     (ivy-read "Select a class selector: "
               items
               :action (-lambda ((_ . l))
-                        (goto-line l)))))
+                        (evil-scroll-line-to-center l)))))
 #+end_src
 
 ** Git / Magit :GIT:MAGIT:
@@ -7952,6 +7952,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (shell-command cmd nil nil)
     (revert-buffer)))
 #+end_src
+
 **** Stylus Variables
 
 #+begin_src elisp
@@ -7966,7 +7967,6 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
        (s-split " ")
        (car)))
 #+end_src
-
 
 **** Paste stylus fixed
 
