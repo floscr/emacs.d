@@ -290,6 +290,18 @@ modifications."
    ((bound-and-true-p org-src-mode) (org-goto-marker-or-bmk org-src--beg-marker))
    (t (dired-jump other-window file-name))))
 #+end_src
+*** Search regexp in buffer
+
+#+begin_src elisp
+(defun my-buffer/search-regexp-in-buffer (regexp)
+  "Searches for REGEXP in the current buffer and returns a list of matches and their line numbers."
+  (save-excursion
+    (let ((matches '()))
+      (goto-char (point-min))
+      (while (re-search-forward regexp nil t)
+        (push (cons (match-string 0) (line-number-at-pos)) matches))
+      (reverse matches))))
+#+end_src
 
 ** Shell Commands & Aliases
 *** Async Command No Window
