@@ -1346,7 +1346,6 @@ This function will mutate the hashtable M."
   (evil-insert-state))
 #+end_src
 
-
 * Default Configuration
 ** Temp
 
@@ -4890,6 +4889,19 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
 (setq-hook! 'stylus-mode-hook +format-with 'stylus-supremacy)
 
 (add-to-list '+format-on-save-enabled-modes 'stylus-mode t)
+#+end_src
+
+**** Counsel stylus
+
+#+begin_src elisp
+(defun my-stylus|imenu-top-level-classes ()
+  "imenu for top-level classes in stylus."
+  (interactive)
+  (let ((items (my-buffer/search-regexp-in-buffer "^\\.[a-zA-Z0-9_-]+")))
+    (ivy-read "Select a class selector: "
+              items
+              :action (-lambda ((_ . l))
+                        (goto-line l)))))
 #+end_src
 
 ** Git / Magit :GIT:MAGIT:
@@ -8753,6 +8765,10 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("s" . "search")
+  :desc "Imenu" "i" (cmd!
+                     (pcase major-mode
+                       ('stylus-mode (call-interactively #'my-stylus|imenu-top-level-classes))
+                       (_ (call-interactively #'counsel-imenu))))
   :desc "Search Marks" "r" #'evil-show-marks
   :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point
   :desc "Occur" "o" #'occur
