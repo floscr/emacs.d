@@ -2255,13 +2255,44 @@ Press =gr= with a following motion character like =w=.
 ***** Config
 
 #+BEGIN_SRC elisp
+(evil-define-operator my-evil-replace-with-register (count beg end type register)
+  "Replacing an existing text with the contents of a register"
+  :move-point nil
+  (interactive "<vc><R><x>")
+  (my-parinfer/save-excursion
+   "paren"
+   (setq count (or count 1))
+   (let ((text (if register
+                   (evil-get-register register)
+                 (current-kill 0))))
+     (goto-char beg)
+     (if (eq type 'block)
+         (evil-apply-on-block
+          (lambda (begcol endcol)
+            (let ((maxcol (evil-column (line-end-position))))
+              (when (< begcol maxcol)
+                (setq endcol (min endcol maxcol))
+                (let ((beg (evil-move-to-column begcol nil t))
+                      (end (evil-move-to-column endcol nil t)))
+                  (delete-region beg end)
+                  (dotimes (_ count)
+                    (insert text))))))
+          beg end t)
+       (delete-region beg end)
+       (dotimes (_ count)
+         (insert text))
+       (when (and evil-replace-with-register-indent (/= (line-number-at-pos beg) (line-number-at-pos)))
+         ;; indent if more then one line was inserted
+         (save-excursion
+           (evil-indent beg (point))))))))
+
 (use-package! evil-replace-with-register
   :config
   (setq evil-replace-with-register-key (kbd "gr"))
   (define-key evil-normal-state-map
-    evil-replace-with-register-key 'evil-replace-with-register)
+    evil-replace-with-register-key 'my-evil-replace-with-register)
   (define-key evil-visual-state-map
-    evil-replace-with-register-key 'evil-replace-with-register))
+    evil-replace-with-register-key 'my-evil-replace-with-register))
 #+END_SRC
 **** [[https://github.com/urbint/evil-text-objects-javascript][evil-text-objects-javascript: Javascript motions]]
 
