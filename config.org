@@ -492,6 +492,15 @@ nil -> \"Disabled\""
 #+end_src
 
 ** Dash Extensions
+*** Fix custom thread indentation
+
+#+begin_src elisp
+(with-eval-after-load 'dash
+  (--each
+   (list '-> '->> '-some-> '-some->> '--each '-each '-map '--map)
+   (function-put it 'lisp-indent-function nil)))
+#+end_src
+
 *** -tap
 
 Run a side effect ~fn~ on the initial input ~x~.
