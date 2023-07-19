@@ -9049,6 +9049,7 @@ redefines its keys every time `eshell-mode' is enabled."
        :desc "Add debug statement" "d" #'my-pitch|eval-debug-statement))
 
 (map! :map (clojure-mode-map clojurescript-mode-map)
+      :localleader
       (:prefix ("i" . "insert")
        :desc "Namespace" "n" #'my-clojure|update-ns-dwim))
 #+END_SRC
