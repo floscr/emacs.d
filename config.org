@@ -1985,6 +1985,21 @@ Fix a paragraph that was formatted to a fill column.
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 #+END_SRC
+** Abbrev spell correction
+
+[[https://www.emacswiki.org/emacs/AbbrevMode][EmacsWiki: Abbrev Mode]]
+[[https://www.masteringemacs.org/article/correcting-typos-misspellings-abbrev][Correcting Typos and Misspellings with Abbrev - Mastering Emacs]]
+
+*** Config
+
+#+begin_src elisp
+(define-abbrev-table 'global-abbrev-table
+  '(("fnuction" "function" nil 1)
+    ("lable" "label" nil 1)))
+
+;; Only enable abbrev in text modes
+(add-hook 'text-mode-hook #'abbrev-mode)
+#+end_src
 
 * Package Configuration
 ** Package Overrides / Disabling / Pinning
