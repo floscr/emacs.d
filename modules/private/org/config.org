@@ -391,6 +391,7 @@ Configured with [[https://github.com/progfolio/doct][doct]].
         (+org/expand-org-file-name
          '("Main/gtd.org"
            "Main/gtd-reoccuring-events.org"
+           "Main/browser-bookmarks.org"
            "Main/inbox.org"
            "Main/mobile-inbox.org"
            "Main/projects.org"
@@ -535,6 +536,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                    (:name "Projects" :tag ("PROJECT") :order 1000)
                                    (:name "Next" :todo ("ACTIVE"))
                                    (:name nil :discard (:scheduled t :deadline t :file-path "gtd-reoccuring-events.org"))
+                                   (:name "Browser Bookmarks" :file-path ".*browser-bookmarks.org" :order 4)
                                    (:name "Mobile Inbox" :file-path ".*mobile-inbox.org$" :order 3)
                                    (:name "Inbox Links" :regexp "TODO \\(\\[\\[\\\|https?:\\)" :order 2)
                                    (:name "Inbox" :file-path ".*inbox.org$" :order 2)
