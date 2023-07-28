@@ -4426,6 +4426,116 @@ arguments can be set as a list via ‘nimpretty-args’."
   (cl-letf ((utop-command "rtop -emacs"))
     (utop)))
 #+end_src
+*** Lisp
+
+**** Sort sexp
+
+#+begin_src elisp
+(defun my-lisp|sort-sexp ()
+  "Sort sexps between point and end of current sexp.
+  With multilines sexp, comments and blank lines are considered part of the following
+  sexp. Comments at the end of a line (after some other content)
+  are considered part of the preceding sexp."
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (up-list)
+      (backward-sexp)
+      (let* ((map? (looking-at "{"))
+             (start (1+ (point)))
+             (end (progn (forward-sexp)
+                         (1- (point))))
+             (multiline? (< (line-number-at-pos start)
+                            (line-number-at-pos end)))
+             ;; Should really check every line, but the only the first with a sexp should be enough
+             (one-sexp-per-line? (save-excursion
+                                   (goto-char start)
+                                   ;; Skip start comment, if any
+                                   (let ((sexp2-end (progn (clojure-forward-logical-sexp 2) (point)))
+                                         (sexp2-start (progn (clojure-forward-logical-sexp -2) (point))))
+                                      (< (line-number-at-pos sexp2-start)
+                                       (line-number-at-pos sexp2-end))))))
+        (narrow-to-region start end)
+        ;; Delete last empty line, if any
+        (save-excursion
+         (beginning-of-line)
+         (when (looking-at "[[:blank:]]*$")
+          (backward-char)
+          (delete-region (point) (point-max))))
+
+        (goto-char start)
+        (sort-subr nil
+               (lambda ()
+                     (if (and multiline? one-sexp-per-line?)
+                      (progn (message "forward line")
+                           (forward-line))
+                      (search-forward-regexp "[^:blank:]" nil :no-error)))
+               ;; Move to end of current top-level thing.
+               (lambda ()
+                     (condition-case nil
+                       (while t (up-list))
+                       (scan-error nil))
+                   ;; We could be inside a symbol instead of a sexp.
+                     (unless (looking-at "\\s-\\|$")
+                      (clojure-forward-logical-sexp))
+                     (when (and multiline? one-sexp-per-line?)
+                     ;; move past comments at the end of the line.
+                      (search-forward-regexp "$")))
+
+                 ;; Start of record
+               (lambda ()
+                     (when multiline?
+                      (skip-chars-forward "\r\n[:blank:]")
+                      (comment-forward)
+                      (skip-chars-forward "[:blank:]\n\r[("))
+                     (condition-case nil
+                       (progn (clojure-forward-logical-sexp)
+                              (forward-sexp -1))
+                       (scan-error nil))
+
+                     nil)
+
+                 ;; End of record
+               (lambda ()
+                     (clojure-forward-logical-sexp (if map? 2 1)))
+
+               (lambda (a b)
+                     (let* ((s1 (buffer-substring (car a) (cdr a)))
+                            (s2 (buffer-substring (car b) (cdr b)))
+
+                            ;; Ignore namespaces for keywords
+                            (s1* (replace-regexp-in-string
+                                  "^::" ""
+                                  (if (string-match "^::.*/\\(.*\\)" s1)
+                                      (match-string 1 s1)
+                                   s1)))
+                            (s2* (replace-regexp-in-string
+                                  "^::" ""
+                                  (if (string-match "^::.*/\\(.*\\)" s2)
+                                      (match-string 1 s2)
+                                   s2))))
+                       (string< s1* s2*))))
+        ;; Delete starting whitespaces
+        (goto-char (point-min))
+        (delete-region (point) (progn (skip-chars-forward "[:blank:]") (point)))
+        ;; Go to the end and insert newline if we end with a comment.
+        (goto-char (point-max))
+        (when (nth 4 (parse-partial-sexp (point-min) (point)))
+         (insert "\n"))
+        ;; Clean superfluous spaces
+        (when (not multiline?)
+         (goto-char (point-min))
+         (while (re-search-forward "\\s-+" nil t)
+          (replace-match " ")))
+        ;; Fill paragraph
+        (when (and (not map?) (not one-sexp-per-line?))
+         (fill-region-as-paragraph start end))))
+    ;; Indent
+    (let ((end (progn (up-list) (point)))
+          (start (progn (progn (clojure-forward-logical-sexp -1)) (point))))
+      (indent-region start end))))
+#+end_src
+
 *** Clojure / Clojurescript
 **** Packages
 ***** clj-kondo
@@ -4924,6 +5034,7 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
  :desc "Goto parent function" :n "]]" (cmd! (lispyville-forward-function-begin))
  :localleader
  "s" #'clojure-sort-ns
+ "S" #'my-lisp|sort-sexp
  "l" #'my-pitch|l10n-jump)
 #+END_SRC
 
@@ -4971,7 +5082,6 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
               :action (-lambda ((_ . l))
                         (evil-scroll-line-to-center l)))))
 #+end_src
-
 ** Git / Magit :GIT:MAGIT:
 *** Packages
 **** magit
