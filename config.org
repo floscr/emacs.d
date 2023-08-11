@@ -1151,6 +1151,7 @@ If the current or previous windows are not chrome, just get the first one from t
   (with-current-buffer (find-file (+org/expand-org-file-name "Db/Shopping.org"))
     (-log (my-org-db/get-db))))
 #+end_src
+
 ** Compile project
 
 My custom solution for caching compile commands between sessions.
