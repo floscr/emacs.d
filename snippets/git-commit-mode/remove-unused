@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Remove unused
+# key: rus
+# --
+Remove unused $0
