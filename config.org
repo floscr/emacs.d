@@ -8158,7 +8158,12 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   "Formats the current buffer."
   (interactive)
   (let* ((bin (f-join (my-file/project-root) "./scripts/pit"))
-         (cmd (concat bin " fmt2 " (shell-quote-argument buffer-file-name))))
+         (cmd (cond
+               ((or (eq major-mode 'clojure-mode)
+                    (eq major-mode 'clojurescript-mode))
+                (concat bin " fmt2 " (shell-quote-argument buffer-file-name)))
+               ((eq major-mode 'rjsx-mode)
+                (concat "prettier -w " (shell-quote-argument buffer-file-name))))))
     (shell-command cmd nil nil)
     (revert-buffer)))
 #+end_src
