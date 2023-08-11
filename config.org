@@ -4617,11 +4617,39 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 #+end_src
 ******* Print comment fix
 
+- Make cider eval work with ~evil-mode~
+- Fix result insertion to insert after the sexp not inside
+- Pprint maps
+
 #+begin_src elisp
 (defun my-cider/eval-jump-opening-brace ()
   (when (eq (string-to-char "(") ;; Workaround for parinfer inferring ?( as opening brace
             (char-after))
     (evil-jump-item)))
+
+(defun my-cider/eval-print-handler (&optional buffer)
+  "Make a handler for evaluating and printing result in BUFFER."
+  ;; NOTE: cider-eval-register behavior is not implemented here for performance reasons.
+  ;; See https://github.com/clojure-emacs/cider/pull/3162
+  (nrepl-make-response-handler (or buffer (current-buffer))
+                               (lambda (buffer value)
+                                 (with-current-buffer buffer
+                                   (forward-char 1)
+                                   (insert
+                                    " "
+                                    (if (derived-mode-p 'cider-clojure-interaction-mode)
+                                        (format "\n%s\n" value)
+                                      value))
+                                   (backward-char 1)
+                                   (ignore-errors
+                                     (when (string= (string (char-after (point))) "}")
+                                       (evil-jump-item)
+                                       (cider-format-edn-last-sexp)))))
+                               (lambda (_buffer out)
+                                 (cider-emit-interactive-eval-output out))
+                               (lambda (_buffer err)
+                                 (cider-emit-interactive-eval-err-output err))
+                               ()))
 
 (defun my-cider|cider-eval-last-sexp (&optional output-to-current-buffer)
   (interactive "P")
@@ -4631,11 +4659,14 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
       (when (eq previous-evil-state 'normal)
         (evil-insert-state)
         (forward-char 1))
-      (cider-eval-last-sexp output-to-current-buffer)
+      (cider-interactive-eval nil
+                              (when output-to-current-buffer (my-cider/eval-print-handler))
+                              (cider-last-sexp 'bounds)
+                              (cider--nrepl-pr-request-map))
+      ;; (cider-eval-last-sexp output-to-current-buffer)
       ;; Dont restore state when doing eval when inserting result
       ;; The `cider-eval-print-handler' function is async,
-      (when (and (not output-to-current-buffer)
-                 (eq previous-evil-state 'normal))
+      (when (eq previous-evil-state 'normal)
         (evil-normal-state)))))
 
 (defun my-cider|pprint-eval-last-sexp-to-comment (&optional insert-before)
