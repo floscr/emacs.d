@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: js-console-log-simple
 # uuid:
-# key: jC
+# key: jj
 # --
-(js/console.log $0)
+(js/console.log "$0")
