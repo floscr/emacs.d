@@ -1269,15 +1269,8 @@ This function will mutate the hashtable M."
   (save-excursion
     (goto-char (point-min))
     (while (my-comment-header|goto-next-comment-header)
-      (let* ((beg (line-beginning-position))
-             (end (or (save-excursion
-                        (when (my-comment-header|goto-next-comment-header)
-                          (progn (previous-line 2)
-                                 (point))))
-                      (point-max))))
-        (progn
-          (vimish-fold beg end)
-          (evil-next-line 1))))))
+      (my-comment-header|toggle-fold)
+      (evil-next-line 1))))
 
 (defun my-text/line-empty? ()
   (not (looking-back "^$")))
