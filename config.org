@@ -1290,6 +1290,8 @@ This function will mutate the hashtable M."
 (defun my-comment-header|insert (title)
   "Insert a comment header on the current line."
   (interactive (list (my-comment-header/read-string)))
+  (when (my-comment/comment-header-line?)
+    (delete-line))
   (let* ((str-beg (concat (my-comment-header/comment-start) " "))
          (str (->> (concat str-beg title " ")
                    (my-comment-header/fill))))
