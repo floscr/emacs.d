@@ -1305,6 +1305,7 @@ This function will mutate the hashtable M."
 (after! vimish-fold
   (setq my-comment-header:col-count vimish-fold-header-width))
 #+end_src
+
 ** Eval Function and last marker
 
 #+begin_src elisp
@@ -1316,6 +1317,7 @@ This function will mutate the hashtable M."
     (evil-goto-mark ?f)
     (cider-eval-last-sexp)))
 #+end_src
+
 ** Project Hydras
 
 #+begin_src elisp
