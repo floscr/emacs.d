@@ -1190,7 +1190,7 @@ This function will mutate the hashtable M."
     (f-write cache 'utf-8 (or cache-file my-project-compile:cache-file))))
 
 (defun my-project-compile/compile-cmd (cmd dir &optional cache-file)
-  (counsel-compile--action cmd)
+  (call-process-shell-command (format "alacritty --hold -e $SHELL -c '%s'&" cmd) nil 0 nil)
   (my-project-compile/update-cache cmd dir cache-file))
 
 (defun my-project-compile|compile ()
