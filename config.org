@@ -4711,10 +4711,20 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 ****** Bindings
 
 #+begin_src elisp
+(defun my-cider|eval-pp (&rest args)
+  (interactive)
+  (let* ((buf (current-buffer)))
+    (evil-append 0)
+    (cider-pprint-eval-last-sexp)
+    (with-current-buffer buf
+      (backward-char 2)
+      (evil-normal-state))))
+
 (use-package! clojure-mode
   :config
   (map! :map (clojurescript-mode-map clojure-mode-map)
         :desc "Eval" :n "RET" #'my-cider|cider-eval-last-sexp
+        :desc "Eval" :n "C-c C-p" #'my-cider|eval-pp
         :desc "Eval" :n "DEL" #'my-eval-function-and-last-marker)
 
   (map! (:localleader
