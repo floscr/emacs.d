@@ -1206,6 +1206,8 @@ This function will mutate the hashtable M."
 ** Comment header
 
 #+begin_src elisp
+; Variables --------------------------------------------------------------------
+
 (defvar my-comment-header:col-count 80
   "Of how many cols should the header consist.")
 
@@ -1218,6 +1220,8 @@ This function will mutate the hashtable M."
 
 (put 'my-comment-header:col-count 'safe-local-variable 'integerp)
 (put 'my-comment-header:mode-comment-start 'safe-local-variable t)
+
+; Helpers ----------------------------------------------------------------------
 
 (defun my-comment-header/comment-start ()
   "Return the `comment-start' either defined by `my-comment-header/comment-start' or by the `major-mode'."
@@ -1251,9 +1255,27 @@ This function will mutate the hashtable M."
     (beginning-of-line)
     (my-comment/match-header (line-end-position))))
 
+(defun my-text/line-empty? ()
+  (not (looking-back "^$")))
+
+(defun my-text/ensure-surrounding-newlines ()
+  (save-excursion
+    (beginning-of-line)
+    (previous-line)
+    (when (my-text/line-empty?)
+      (evil-insert-newline-below)))
+  (save-excursion
+    (beginning-of-line)
+    (next-line)
+    (when (my-text/line-empty?)
+      (evil-insert-newline-above))))
+
+; Main -------------------------------------------------------------------------
+
 (defun my-comment-header|toggle-fold ()
   (interactive)
   (when (my-comment/comment-header-line?)
+    (vimish-fold-delete)
     (let* ((beg (line-beginning-position))
            (end (or (save-excursion
                       (when (my-comment-header|goto-next-comment-header)
@@ -1271,21 +1293,6 @@ This function will mutate the hashtable M."
     (while (my-comment-header|goto-next-comment-header)
       (my-comment-header|toggle-fold)
       (evil-next-line 1))))
-
-(defun my-text/line-empty? ()
-  (not (looking-back "^$")))
-
-(defun my-text/ensure-surrounding-newlines ()
-  (save-excursion
-    (beginning-of-line)
-    (previous-line)
-    (when (my-text/line-empty?)
-      (evil-insert-newline-below)))
-  (save-excursion
-    (beginning-of-line)
-    (next-line)
-    (when (my-text/line-empty?)
-      (evil-insert-newline-above))))
 
 (defun my-comment-header|insert (title)
   "Insert a comment header on the current line."
