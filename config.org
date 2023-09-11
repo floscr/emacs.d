@@ -2279,6 +2279,28 @@ I want buffers added whenever I visit a buffer.
 
   (add-hook 'doom-switch-buffer-hook #'my-workspaces*add-special-buffer))
 #+END_SRC
+*** Lookup
+
+#+begin_src elisp
+(defun my-lookup/prepend-custom-docs-to-lookup (&rest args)
+  (user-error "foo")
+  (apply orig-fun args)
+  args)
+
+(defun my-lsp/describe-thing-at-point ()
+  "Display the type signature and documentation of the thing at point."
+  (interactive)
+  (prn "hello"))
+
+(advice-add 'lsp-describe-thing-at-point :around #'my-lsp/describe-thing-at-point)
+(advice-remove 'lsp-describe-thing-at-point #'my-lsp/describe-thing-at-point)
+
+(comment
+ (advice-remove #'lsp-describe-thing-at-point #'my-lookup/prepend-custom-docs-to-lookup)
+ nil)
+#+end_src
+
+
 ** Evil :EVIL:
 *** Packages
 **** [[https://github.com/tarao/evil-plugins][tarao/evil-plugins]]
