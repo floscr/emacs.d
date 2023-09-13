@@ -8157,7 +8157,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   (interactive
    (list (doom-thing-at-point-or-region)
          current-prefix-arg))
-  (let ((l10n-dir (f-join (projectile-project-root) "l10n/src"))
+  (let ((l10n-dir (f-join (projectile-project-root) "projects/l10n/src"))
         (id (->> identifier
                  substring-no-properties
                  (s-replace-regexp "^:" ""))))
