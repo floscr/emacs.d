@@ -7787,38 +7787,42 @@ Take me to the literate source file when using ~find-function~ etc.
 Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/dotfiles/blob/07156f2d059da2676d13d17d67eb8fed596557db/new/modules/scripts/src/get_url_title.clj][dotfiles/get_url_title.clj at 07156f2d059da2676d13d17d67eb8fed596557db · floscr/dotfiles · GitHub]]
 
 #+begin_src elisp
-(defun my-org|fetch-link-title-command (url)
+(defun my-org/fetch-link-title-command (url)
   "Fetches the link title with get_url_title (https://github.com/floscr/nim-utils#get_url_title)."
   (or (my/shell-command-str "get_url_title" url "--org")
       (user-error "Error: Could not get title for url \"%s\"" url)))
 
+(defun my-org/fetch-link-title (&optional fn)
+  "Fetch the link title under the cursor."
+  (-when-let* ((org-el (my-org/link-at-point)))
+    (-let* ((fn (or fn #'my-org/fetch-link-title-command))
+            ((&plist :el :url) org-el)
+            (title (funcall fn url))
+            (from (org-element-property :begin el))
+            (to (org-element-property :end el)))
+      (when (string= title "Could not find title in html")
+        (user-error (t! "Error: Could not fetch title for url <<url>>")))
+      (list :region (list (org-element-property :begin el)
+                          (org-element-property :end el))
+            :title title))))
+
+(defun my-org/update-link-title (&optional fn)
+  "Replace the org link under the cursor with the link with the fetched title."
+  (-when-let* (((&plist :region :title) (my-org/fetch-link-title fn)))
+    (apply #'delete-region region)
+    (insert title)))
+
 (defun my-org|fetch-this-org-link-rss ()
   "Fetches the title for the plain link under the cursor."
   (interactive)
-  (require 'org-ml)
-  (-when-let* ((el (->> (org-ml-parse-this-object)
-                        (--id-when (org-ml-is-type 'link it))))
-               (url (org-ml-get-property :raw-link el))
-               (rss (my/shell-command-str "get_url_title" "rss" url))
-               (from (org-element-property :begin el))
-               (to (org-element-property :end el)))
-    (delete-region from to)
-    (insert rss)))
+  (let ((fn (lambda (url)
+              (my/shell-command-str "get_url_title" "rss" url))))
+    (my-org/update-link-title fn)))
 
 (defun my-org|fetch-this-org-link-title ()
   "Fetches the title for the plain link under the cursor."
   (interactive)
-  (require 'org-ml)
-  (-when-let* ((el (->> (org-ml-parse-this-object)
-                        (--id-when (org-ml-is-type 'link it))))
-               (url (org-ml-get-property :raw-link el))
-               (title (my-org|fetch-link-title-command url))
-               (from (org-element-property :begin el))
-               (to (org-element-property :end el)))
-    (when (string= title "Could not find title in html")
-      (user-error (t! "Error: Could not fetch title for url <<url>>")))
-    (delete-region from to)
-    (insert title)))
+  (my-org/update-link-title))
 
 (defun my-org-agenda|fetch-this-org-link-title ()
   "Fetches the title for the plain link under the cursor."
