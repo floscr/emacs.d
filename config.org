@@ -7738,6 +7738,38 @@ Export org as github flavored markdown
 #+end_src
 
 *** Functions
+**** Link at point
+
+Use with destructuring like this
+
+#+BEGIN_SRC elisp :tangle no
+(-let (((&plist* title) (my-org/link-at-point)))
+  title)
+#+END_SRC
+
+***** Should match these kind of links
+
+- https://example.com
+- [[https://example.com][With title: example.com]]
+- [[my-attach:963ed071c1ebcdff38d72356899f974b.jpeg]]
+
+***** Source
+
+#+BEGIN_SRC elisp
+(defun my-org/link-at-point ()
+  "Returns a plist '(el url title) with title as nilable.
+When no link is found return nil."
+  (let ((link-info (org-element-context)))
+    (when (eq (org-element-type link-info) 'link)
+      (let* ((type (org-element-property :type link-info))
+             (url (concat type ":" (org-element-property :path link-info)))
+             (title (org-element-property :title link-info)))
+        (when url
+          (list :el link-info
+                :url url
+                :title title))))))
+#+END_SRC
+
 **** Jump to definition for tangled files
 
 Take me to the literate source file when using ~find-function~ etc.
