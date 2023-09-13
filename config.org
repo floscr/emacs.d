@@ -7707,7 +7707,6 @@ npm i -g nbb
 (add-hook 'org-mode-hook (lambda () (require 'ob-clojure)))
 #+end_src
 
-
 **** [[https://github.com/larstvei/ox-gfm][ox-gfm]]
 
 Export org as github flavored markdown
