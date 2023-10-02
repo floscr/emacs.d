@@ -212,7 +212,6 @@ e.g.: Agenda + Splits
       (+org/expand-org-file-name
        '("Main/emacs.org"
          "Main/art.org"
-         "Main/diary"
          "Main/games.org"
          "Main/hardware.org"
          "Main/gtd.org"
