@@ -6237,7 +6237,7 @@ respectively."
 
 (defun my-dired::open-external/xdg-open (&optional file)
   "Open marked dired file(s) at point with an external application."
-  (let ((file-list (or file (dired-get-marked-files)))
+  (let ((file-list (or (list file) (dired-get-marked-files)))
         (process-connection-type nil))
     (--map (my-shell/no-exit-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
 
@@ -7994,8 +7994,11 @@ I will make sure I don't override any files (easily enough...)
 (defvar my-attach:dir "~/Documents/Org/.attach/clojure-attach")
 
 (defun my-attach/follow (path)
-  (let ((attach-dir (expand-file-name my-attach:dir)))
-    (find-file (expand-file-name path attach-dir))))
+  (let* ((attach-dir (expand-file-name my-attach:dir))
+         (path* (expand-file-name path attach-dir)))
+    (if (string-match-p (image-file-name-regexp) path)
+        (find-file path*)
+      (my-dired::open-external/xdg-open path*))))
 
 (defun my-attach/image-data-fun (protocol path _for)
   (let ((attach-dir (expand-file-name my-attach:dir)))
