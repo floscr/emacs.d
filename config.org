@@ -8020,6 +8020,13 @@ I will make sure I don't override any files (easily enough...)
   (-some-> (my/shell-command-str "org_attach" (current-kill 0))
            (s-trim)
            (insert)))
+
+(defun my-attach|last-download ()
+  (interactive)
+  (-some->> (my-file/last-modified-file-in-dir "~/Downloads")
+            (my/shell-command-str "org_attach")
+            (s-trim)
+            (insert)))
 #+end_src
 
 ** Hydras
