@@ -8028,6 +8028,14 @@ I will make sure I don't override any files (easily enough...)
             (s-trim)
             (insert)))
 #+end_src
+**** Use external Image Converter
+
+- To display ~webp~ images
+- [[https://xenodium.com/emacs-viewing-webp-images/][Emacs: viewing webp images]]
+
+#+begin_src elisp
+(setq image-use-external-converter t)
+#+end_src
 
 ** Hydras
 ** Work
