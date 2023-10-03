@@ -750,6 +750,17 @@ Emacs implmenentation for my bookmarks management written in clojure:
 
 https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c/new/modules/scripts/src/bbookmarks.clj
 
+*** Docs
+
+**** Emacs Commands
+
+|------------------------------+----------------------------------------|
+| Command key                  | Description                            |
+|------------------------------+----------------------------------------|
+| ~:org-goto "Heading Regexp"~ | Go to an org heading within the file   |
+| ~:org-narrow-indirect~       | Narrow resulting org buffer indirectly |
+|------------------------------+----------------------------------------|
+
 *** Packages
 **** [[https://github.com/clojure-emacs/parseedn][clojure-emacs/parseedn: EDN parser for Emacs Lisp]]
 
