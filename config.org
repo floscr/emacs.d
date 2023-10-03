@@ -6660,19 +6660,19 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 **** Disabled Checkers
 ***** Elisp
 
+Disable flycheck completely in org-src-mode, the hints are not useful.
+
 Source: https://github.com/adimit/config/blob/74a7fc0acaf82e18d0ca4bd0ca6e539ff93b13bc/emacs/main.org#checkdoc-in-org-src-edit-buffers
 
 #+begin_src elisp
-(defun disable-checkdoc ()
-  (setq-local flycheck-disabled-checkers '(emacs-lisp emacs-lisp-checkdoc)))
-(add-hook 'org-src-mode-hook 'disable-checkdoc)
+(add-hook 'org-src-mode-hook (lambda () (flycheck-mode -1)))
 #+end_src
 
 ***** Nim
 
 #+BEGIN_SRC elisp
 (add-hook! 'nim-mode-hook :append
-  (setq flycheck-disabled-checkers '(nim-nimsuggest))
+  (setq-local flycheck-disabled-checkers '(nim-nimsuggest))
   (flycheck-select-checker 'nim-1-6-0))
 #+END_SRC
 ** Completion :COMPLETION:
