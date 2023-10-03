@@ -7642,7 +7642,7 @@ Known Issues:
 ****** Main
 
 #+BEGIN_SRC elisp
-(cl-defun my-org-indirect|narrow-subtree-indirect (&key visit-fn goto-parent?)
+(cl-defun my-org-indirect|narrow-subtree-indirect (&key visit-fn goto-parent? (popup? t))
   "Narrow to an indirect buffer in a popup."
   (interactive)
   (-let* (((src-buffer heading-text)
@@ -7661,7 +7661,9 @@ Known Issues:
           (existing-buffer (--find (s-starts-with? dst-buffer-name (buffer-name it)) (buffer-list))))
     (cond
      (existing-buffer
-      (pop-to-buffer (buffer-name existing-buffer)))
+      (if popup?
+          (pop-to-buffer (buffer-name existing-buffer))
+        (switch-to-buffer buffer)))
      (t
       ;; Cleanup old indirect buffers
       (kill-matching-buffers "^\\*Org Indirect.*" nil t)
@@ -7669,7 +7671,9 @@ Known Issues:
         (let ((buffer (clone-indirect-buffer dst-buffer-name nil)))
           (with-current-buffer buffer
             (widen)
-            (pop-to-buffer buffer)
+            (if popup?
+                (pop-to-buffer buffer)
+              (switch-to-buffer buffer))
             (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
             (save-excursion
               (when goto-parent?
