@@ -352,8 +352,14 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                             ":PROPERTIES:"
                             ":URL: %(nth 1 (my-wm/last-browser-window))"
                             ":CREATED: %U"
-                            ":END:"))))))
-
+                            ":END:"))
+                ("Slack"
+                 :keys "S"
+                 :file ,(f-join org-directory "Work/slack.org")
+                 :template ("* Hey 👋"
+                            ""
+                            "Today I'm working on:"
+                            "%?"))))))
 #+END_SRC
 *** SRC block snippets
 
