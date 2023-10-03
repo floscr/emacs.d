@@ -4609,7 +4609,7 @@ arguments can be set as a list via ‘nimpretty-args’."
 ****** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! cider :pin "02802a8cd5a6ac0b7c48685d892d49bf7059b966")
+(package! cider :pin "f39e0b52014913f5acc1dc28ad94c68385c0834e")
 #+END_SRC
 
 ****** Config
