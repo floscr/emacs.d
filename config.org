@@ -9546,3 +9546,21 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 
 (advice-add #'flycheck-handle-save :after #'+flycheck/fix-emacs-29-save)
 #+end_src
+* Temp
+
+#+begin_src elisp
+(defun my-dired-unzip-and-convert-cbz-to-pdf ()
+  "Unzip a CBZ file and convert its extracted JPG files to PDF asynchronously."
+  (interactive)
+  (let ((cbz-file (dired-get-filename)))
+    (when (and cbz-file (string-match "\\.cbz$" cbz-file))
+      (setq cbz-dir (file-name-sans-extension cbz-file))
+      (async-shell-command (format "unzip %s -d %s && convert %s/**/*.jpg %s.pdf"
+                                   (shell-quote-argument cbz-file)
+                                   (shell-quote-argument cbz-dir)
+                                   (shell-quote-argument cbz-dir)
+                                   (shell-quote-argument cbz-dir))
+                           (get-buffer-create "*CBZ Unzip and Convert Output*"))
+      (message "CBZ file extraction and conversion initiated.")
+      (notifications-notify :title "CBZ Conversion" :body "Conversion process initiated." :timeout 2000))))
+#+end_src
