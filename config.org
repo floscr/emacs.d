@@ -7612,13 +7612,17 @@ Known Issues:
 (define-minor-mode my-org-indirect-window-mode
   "Open org headlines in an indirect window buffer."
   :keymap my-org-indirect:window-mode-map)
+#+END_SRC
 
+***** Bindings
+
+#+begin_src elisp
 (map! :map my-org-indirect:window-mode-map
       "C-c C-c" #'my-org-indirect|save-and-kill-window
       "C-c C-k" #'kill-buffer-and-window
       :localleader
       :desc "Show original" "+" #'my-org-indirect|show-original)
-#+END_SRC
+#+end_src
 
 ***** Advices
 ****** Close window after refiling
