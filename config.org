@@ -9572,7 +9572,8 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Fetch url title"          "u" #'my-org|fetch-this-org-link-title
       :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss
       (:prefix-map ("i" . "Insert")
-       :desc "Created Property"        "c" #'my-org|add-created-property))
+       :desc "Created Property"        "c" #'my-org|add-created-property
+       :desc "Last download"           "d" #'my-attach|last-download))
 #+end_src
 
 *** Org Mode Agenda
