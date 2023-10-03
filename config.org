@@ -7092,7 +7092,9 @@ Return nil otherwise."
 **** Config
 
 #+BEGIN_SRC elisp
-(use-package! package)
+(use-package! skeletor
+  :config
+  (setq skeletor-project-directory "~/Code/Projects"))
 #+END_SRC
 
 ** Search (Grep) :SEARCH:
