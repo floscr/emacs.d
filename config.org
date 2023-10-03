@@ -792,7 +792,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
 (defun bbookmarks/org-goto (x)
   (when (-some-> (org-find-exact-headline-in-buffer m)
-          (goto-char))
+                 (goto-char))
     (goto-char (line-beginning-position))))
 
 (defun bbookmarks/execute-command (cmd)
