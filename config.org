@@ -7080,6 +7080,21 @@ Return nil otherwise."
   :init
   (require 'doom-snippets nil t))
 #+END_SRC
+** Project Boilerplate
+*** [[https://github.com/chrisbarrett/skeletor.el#specifying-substitutions][skeletor]]
+
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! skeletor)
+#+END_SRC
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! package)
+#+END_SRC
+
 ** Search (Grep) :SEARCH:
 
 *** Bindings
