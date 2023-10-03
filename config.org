@@ -2312,7 +2312,6 @@ I want buffers added whenever I visit a buffer.
  nil)
 #+end_src
 
-
 ** Evil :EVIL:
 *** Packages
 **** [[https://github.com/tarao/evil-plugins][tarao/evil-plugins]]
