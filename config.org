@@ -820,7 +820,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
     (`[:org-goto ,m :no-relocate] (unless buffer-open? (bbookmarks/org-goto m)))
     (`[:org-goto ,m] (bbookmarks/org-goto m))
-    (`[:org-narrow-indirect] (+org-indirect|narrow-subtree-indirect))
+    (`[:org-narrow-indirect] (my-org-indirect|narrow-subtree-indirect))
 
     (`[:emacs ,cmd] (pcase cmd
                       (:org-capture-goto-last-stored (org-capture-goto-last-stored))
@@ -7587,6 +7587,163 @@ error in process filter: End of buffer
 #+END_SRC
 
 ** Org Mode
+*** Custom Packages
+**** Indirect Narrow Buffers
+
+Open org tasks in an indirect popup that can be closed via =C-c C-c=.
+The indirect buffer is narrowed to the current item.
+This makes visiting org tasks much more focused, without having to widen the main buffer every time.
+
+Known Issues:
+- this popup blocks the =org-todo= popup
+- The =C-c C-c= binding overrides the clocking binding
+
+***** Config
+
+#+BEGIN_SRC elisp
+(set-popup-rule! "^\\*Org Indirect" :side 'bottom :size 0.35 :quit t :ttl nil :select t :autosave)
+#+END_SRC
+
+***** Minor Mode
+
+#+BEGIN_SRC elisp
+(defvar my-org-indirect:window-mode-map (make-sparse-keymap))
+
+(define-minor-mode my-org-indirect-window-mode
+  "Open org headlines in an indirect window buffer."
+  :keymap my-org-indirect:window-mode-map)
+
+(map! :map my-org-indirect:window-mode-map
+      "C-c C-c" #'my-org-indirect|save-and-kill-window
+      "C-c C-k" #'kill-buffer-and-window
+      :localleader
+      :desc "Show original" "+" #'my-org-indirect|show-original)
+#+END_SRC
+
+***** Advices
+****** Close window after refiling
+
+#+BEGIN_SRC elisp :tangle no
+(defadvice! +org/org-refile-close-indirect-window (&rest _)
+  "Close indirect buffer windows after refiling them."
+  :after '(org-refile)
+  (when (my-org-indirect-window-mode)
+    (kill-buffer-and-window)))
+#+END_SRC
+
+***** Functions
+****** Main
+
+#+BEGIN_SRC elisp
+(defun my-org-indirect|narrow-subtree-indirect (&optional visit-fn goto-parent?)
+  "Narrow to an indirect buffer in a popup."
+  (interactive)
+  (-let* (((src-buffer heading-text)
+           (save-window-excursion
+             (save-excursion
+               (progn
+                 (when visit-fn (funcall visit-fn))
+                 ;; save-window-excursion cancels org-mode being fully loaded
+                 ;; this leads to the indirect buffer not knowing where the source comes frome
+                 ;; and the org cycle methods not working
+                 (org-mode)
+                 (list
+                  (current-buffer)
+                  (+org/org-heading-text))))))
+          (dst-buffer-name (template "*Org Indirect <<(buffer-name src-buffer)>> <<heading-text>>*"))
+          (existing-buffer (--find (s-starts-with? dst-buffer-name (buffer-name it)) (buffer-list))))
+    (cond
+     (existing-buffer
+      (pop-to-buffer (buffer-name existing-buffer)))
+     (t
+      ;; Cleanup old indirect buffers
+      (kill-matching-buffers "^\\*Org Indirect.*" nil t)
+      (with-current-buffer src-buffer
+        (let ((buffer (clone-indirect-buffer dst-buffer-name nil)))
+          (with-current-buffer buffer
+            (widen)
+            (pop-to-buffer buffer)
+            (setq header-line-format "Edit, then exit with 'C-c C-c', abort with 'C-c C-k'.")
+            (save-excursion
+              (when goto-parent?
+                (+org|org-topmost-todo-element)
+                ;; Show CHILDREN without content
+                (org-global-cycle 4))
+              (org-narrow-to-subtree))
+            ;; When the item has subtrees show only the subtrees
+            (ignore-errors
+              (if (save-excursion (search-forward-regexp "^\\*" nil t))
+                  (org-global-cycle 10)
+                ;; Otherwise show contents but not the drawers
+                (org-cycle 4)))
+            (my-org-indirect-window-mode 1)
+            (rename-buffer (concat
+                            (buffer-name)
+                            (int-to-string (point-min))
+                            (int-to-string (point-max))
+                            "*"))
+            (evil-forward-word-begin 1)
+            buffer)))))))
+#+END_SRC
+
+****** Window Killing
+
+#+BEGIN_SRC elisp
+(defun my-org-indirect|save-and-kill-window ()
+  "Save the buffer and close the indirect buffer and window."
+  (interactive)
+  (save-buffer)
+  (kill-buffer-and-window))
+
+(defun my-org-indirect/kill-buffer-maybe ()
+  "Kill the window/buffer if it's indirect.
+For example when archiving a task, there would be an empty window left over."
+  (when (s-match "^\\*Org Indirect" (buffer-name))
+    (kill-buffer-and-window)))
+#+END_SRC
+
+****** Show original
+
+#+BEGIN_SRC elisp
+(defun my-org-indirect|show-original ()
+  "Show the original buffer of the indirect window."
+  (interactive)
+  (doom/widen-indirectly-narrowed-buffer)
+  (call-interactively #'+popup/raise)
+  (my-org-indirect-window-mode -1)
+  (setq header-line-format nil)
+  (call-interactively #'evil-scroll-line-to-center))
+#+END_SRC
+
+****** Visiting Functions
+
+#+BEGIN_SRC elisp
+(defun my-org-indirect|clock-visit-entry (&optional arg)
+  "Visit currently clocked org entry in a narrowed indirect buffer."
+  (interactive "P")
+  (let ((org-agenda-follow-indirect t))
+    (my-org-indirect|narrow-subtree-indirect #'org-clock-goto (not arg))))
+
+(defun my-org-indirect|agenda-visit-entry (arg)
+  "Visit agenda entry in a narrowed indirect buffer."
+  (interactive "P")
+  (my-org-indirect|narrow-subtree-indirect #'org-agenda-switch-to (not arg)))
+#+END_SRC
+
+****** Inserting New Items
+
+I want to create items directly from the org agenda.
+For this I will visit the current item, move to the header and add a new child at the bottom.
+
+#+BEGIN_SRC elisp
+(defun my-org-indirect|add-entry ()
+  (interactive)
+  (with-current-buffer (my-org-indirect|narrow-subtree-indirect #'org-agenda-switch-to t)
+    (widen)
+    (call-interactively #'+org/insert-item-below)
+    (org-narrow-to-element)))
+#+END_SRC
+
 *** Packages
 **** [[https://github.com/astahlman/ob-async][ob-aysnc]] :DOOM:
 
