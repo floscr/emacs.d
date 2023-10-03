@@ -820,7 +820,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
     (`[:org-goto ,m :no-relocate] (unless buffer-open? (bbookmarks/org-goto m)))
     (`[:org-goto ,m] (bbookmarks/org-goto m))
-    (`[:org-narrow-indirect] (my-org-indirect|narrow-subtree-indirect))
+    (`[:org-narrow-indirect] (my-org-indirect|narrow-subtree-indirect :popup? nil))
 
     (`[:emacs ,cmd] (pcase cmd
                       (:org-capture-goto-last-stored (org-capture-goto-last-stored))
