@@ -8573,6 +8573,15 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
         (-> (f-read "/run/agenix/openai")
             (s-trim)))))
 #+END_SRC
+** Security
+
+*** Fix GPG saving issue in Emacs 29
+
+[[https://www.masteringemacs.org/article/keeping-secrets-in-emacs-gnupg-auth-sources#problems-in-emacs-29.1][Keeping Secrets in Emacs with GnuPG and Auth Sources - Mastering Emacs]]
+
+#+begin_src elisp
+(fset 'epg-wait-for-status 'ignore)
+#+end_src
 
 * Bindings
 ** General
