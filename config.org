@@ -720,7 +720,7 @@ When ARG is passed, query for a custom delimiter."
          (cmd (->> (concat "bb ./src/bbuild.clj"
                            " " cmd " "
                            (-some->> args (-flatten) (s-join " ") (s-prepend " "))
-                           (format " --dir \"%s\"" default-directory*))
+                           (format " --dir \"%s\"" (projectile-project-root default-directory)))
                    (-log))))
     (apply fn (list cmd))))
 
@@ -1202,7 +1202,8 @@ This function will mutate the hashtable M."
     (f-write cache 'utf-8 (or cache-file my-project-compile:cache-file))))
 
 (defun my-project-compile/compile-cmd (cmd dir &optional cache-file)
-  (call-process-shell-command (format "alacritty --hold -e $SHELL -c '%s'&" cmd) nil 0 nil)
+  (let ((default-directory dir))
+    (call-process-shell-command (format "alacritty --hold -e $SHELL -c '%s'&" cmd) nil 0 nil))
   (my-project-compile/update-cache cmd dir cache-file))
 
 (defun my-project-compile|compile ()
@@ -7094,7 +7095,11 @@ Return nil otherwise."
 #+BEGIN_SRC elisp
 (use-package! skeletor
   :config
-  (setq skeletor-project-directory "~/Code/Projects"))
+  (setq skeletor-project-directory "~/Code/Projects")
+  (setq skeletor-user-directory (f-join doom-user-dir "project-templates"))
+  (skeletor-define-template "babashka"
+    :title "Clojure Babashka"
+    :default-license (rx bol "MIT")))
 #+END_SRC
 
 ** Search (Grep) :SEARCH:
