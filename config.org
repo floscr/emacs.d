@@ -5061,6 +5061,34 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
              (insert ";; "))
     (newline-and-indent)))
 #+end_src
+***** Testing shadow-cljs
+
+#+begin_src elisp
+(defun cljs-tests-run-all-tests ()
+  (interactive)
+  (cider-eval-buffer)
+  (cider-interactive-eval
+   (concat "(cljs.test/run-all-tests #\"app.*-test\")"))
+  (let* ((txt nil))
+    (save-window-excursion
+      (let ((buffer (cider-current-repl-buffer)))
+        (with-current-buffer buffer
+          (goto-char (point-max))
+          (let* ((beg (re-search-backward "^Testing app\\." nil t))
+                 (end (re-search-forward "^cljs.user>" nil t)))
+            (setq txt (buffer-substring beg end))))))
+    (with-output-to-temp-buffer "*Extracted Text*"
+      (princ txt))
+    (with-current-buffer "*Extracted Text*"
+      (save-excursion
+        (read-only-mode -1)
+        (let ((beg (re-search-forward "^expected: "))
+              (end (goto-char (point-at-eol))))
+          (cider-format-edn-region beg end)))
+      (clojure-mode)
+      (flycheck-mode -1))))
+#+end_src
+
 
 **** Config
 
@@ -5136,6 +5164,12 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
  "s" #'clojure-sort-ns
  "S" #'my-lisp|sort-sexp
  "l" #'my-pitch|l10n-jump)
+
+(map!
+ :map (clojurescript-mode-map)
+ :localleader
+ (:prefix ("t" . "test")
+          "n" #'cljs-tests-run-all-tests))
 #+END_SRC
 
 ***** Test rotation words
