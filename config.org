@@ -882,7 +882,9 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
 (defun bbookmarks|save ()
   (interactive)
-  (let ((file-name (buffer-file-name))
+  (let ((file-name (cond
+                    ((eq major-mode 'dired-mode) (dired-current-directory))
+                    (t (buffer-file-name))))
         (buffer (get-buffer-create "*bbookmark-save*")))
     (if file-name
         (with-current-buffer (get-buffer-create "*bbookmark-save*")
