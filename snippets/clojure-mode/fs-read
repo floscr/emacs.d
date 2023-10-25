@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: babashka fs read
+# key: fsr
+# --
+(fs/read-all-lines "$0")
