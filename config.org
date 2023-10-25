@@ -5181,7 +5181,7 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
   (defun my-clojure/setup-test-file-vars ()
     "Sets up variables for test files (cypress, jest)."
     (when (-some->> (buffer-file-name)
-            (string-match "\\.*_spec.cljs$"))
+                    (string-match "\\.*_spec.cljs$"))
       ;; Rotate it/it.only
       (add-to-list 'rotate-text-local-symbols '("it" "j/only")))))
 #+end_src
