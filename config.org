@@ -3252,10 +3252,10 @@ No namespace here, so it matches the other commmands
 #+END_SRC
 ***** Setup test files
 
-- add it/it-only text rotate
+****** Rotate test words
 
 #+begin_src elisp
-(add-hook! 'js2-mode-hook
+(add-hook! '(js2-mode-hook rjsx-mode-hook)
   (defun my-javascript/setup-test-file-vars ()
     "Sets up variables for test files (cypress, jest)."
     (when (-some->> (buffer-file-name)
