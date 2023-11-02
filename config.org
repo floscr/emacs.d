@@ -4607,6 +4607,20 @@ arguments can be set as a list via ‘nimpretty-args’."
   :after flycheck)
 #+end_src
 
+***** hiccup-cli
+
+****** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! hiccup-cli)
+#+END_SRC
+
+****** Config
+
+#+BEGIN_SRC elisp :tangle no
+(use-package! hiccup-cli)
+#+END_SRC
+
 ***** Cider
 ****** Package
 
