@@ -5092,9 +5092,9 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
 ***** Testing shadow-cljs
 
 #+begin_src elisp
-(defun cljs-tests-run-all-tests ()
+(defun my-cljs|tests-run-all-tests ()
   (interactive)
-  (cider-eval-buffer)
+  (call-interactively #'cider-eval-buffer)
   (cider-interactive-eval
    (concat "(cljs.test/run-all-tests #\"app.*-test\")"))
   (let* ((txt nil))
