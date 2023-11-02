@@ -4895,10 +4895,11 @@ Define jump points for lispyville functions
 (defun my-lispyville|drag-2-forward ()
   "Drags two items backward, useful for maps to drag the key and the value around."
   (interactive)
-  (lispyville--drag #'lispy-move-down 2)
-  (lispyville-backward-sexp)
-  (lispyville--drag #'lispy-move-down 2)
-  (lispyville-backward-sexp))
+  (my-parinfer/save-excursion
+   (lispyville--drag #'lispy-move-down 2)
+   (lispyville-backward-sexp)
+   (lispyville--drag #'lispy-move-down 2)
+   (lispyville-backward-sexp)))
 #+end_src
 
 ***** INACTIVE [[https://github.com/ericdallo/jet.el][ericdallo/jet.el: Emacs integration for the jet Clojure tool]]
