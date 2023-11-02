@@ -4915,6 +4915,11 @@ Define jump points for lispyville functions
 #+BEGIN_SRC elisp :tangle no
 (use-package! jet)
 #+END_SRC
+***** Disable clj-refactor
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! clj-refactor :disable t)
+#+END_SRC
 
 **** Functions
 ***** Keywords to map
@@ -5115,6 +5120,17 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
           (cider-format-edn-region beg end)))
       (clojure-mode)
       (flycheck-mode -1))))
+#+end_src
+***** Adding test files
+
+#+begin_src elisp
+(defun my-clojurescript|add-test-file ()
+  (interactive)
+  (let* ((test-file (ignore-errors (projectile-find-implementation-or-test (buffer-file-name)))))
+    (if test-file
+        (find-file test-file)
+      (with-current-buffer (find-file (concat (f-no-ext (buffer-file-name)) "_test.cljss"))
+        (insert "foo")))))
 #+end_src
 
 **** Config
