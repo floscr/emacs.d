@@ -4885,6 +4885,7 @@ Define jump points for lispyville functions
 (defun my-lispyville|drag-2-backward ()
   "Drags two items backward, useful for maps to drag the key and the value around."
   (interactive)
+  (evil-first-non-blank)
   (my-parinfer/save-excursion
    (lispyville--drag #'lispy-move-up 2)
    (my-lispyville/forward-let 3)
