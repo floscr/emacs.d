@@ -5117,7 +5117,6 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
       (flycheck-mode -1))))
 #+end_src
 
-
 **** Config
 
 #+begin_src elisp
