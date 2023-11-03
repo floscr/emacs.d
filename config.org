@@ -5132,6 +5132,14 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
       (with-current-buffer (find-file (concat (f-no-ext (buffer-file-name)) "_test.cljss"))
         (insert "foo")))))
 #+end_src
+***** Convert svg to uix
+
+#+begin_src elisp
+(defun my-clojure|svg-from-clipboard-as-uix ()
+  (interactive)
+  (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
+    (insert (shell-command-to-string "bb ./src/convert_html.clj"))))
+#+end_src
 
 **** Config
 
