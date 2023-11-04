@@ -5092,6 +5092,18 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
 ***** Namespace functions
 
 #+begin_src elisp
+(defun my-clojure/current-namespace ()
+  (let ((ns (funcall clojure-expected-ns-function)))
+    (if (string-empty-p ns)
+        (->> (f-filename (buffer-file-name))
+             (f-no-ext)
+             (s-dashed-words))
+      ns)))
+
+(defun my-clojure/target-test-namespace ()
+  (->> (my-clojure/current-namespace)
+       (s-replace-regexp "-test\\|spec$" "")))
+
 (defun my-clojure|update-ns-dwim ()
   "Updates the ns no-matter where your cursor is, when non is existing insert a new one."
   (interactive)
@@ -5100,7 +5112,7 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
     (if (re-search-forward "(ns " nil t)
         (progn
           (sp-kill-sexp)
-          (insert (funcall clojure-expected-ns-function)))
+          (insert (my-clojure/current-namespace)))
       (clojure-insert-ns-form))))
 #+end_src
 
