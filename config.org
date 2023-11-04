@@ -647,6 +647,7 @@ shuffling is done in place."
   "Replace the HOME directory in path"
   (s-replace-regexp (t! "^<<(getenv \"HOME\")>>") "~" path))
 #+END_SRC
+
 *** -mapcar-first
 
 Map over the first item of a list of ~cons~
