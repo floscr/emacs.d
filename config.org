@@ -8254,6 +8254,38 @@ POS to match:
 (advice-add '+org/insert-item-below :after (my@ignore-args #'my-org/add-id-property-automatically))
 (advice-add '+org/insert-item-above :after (my@ignore-args #'my-org/add-id-property-automatically))
 #+END_SRC
+**** Interactively get current org heading level
+
+#+begin_src elisp
+(defun my-org/match-heading (s)
+  (s-match (rx (group (+ "*")) whitespace (+ any)) s))
+
+(defun my-org/heading-level ()
+  (save-excursion
+    (org-up-element)
+    (or (-some-> (substring-no-properties (thing-at-point 'line))
+                 (s-trim)
+                 (my-org/match-heading)
+                 (second)
+                 (length))
+        0)))
+
+(defun my-org/next-heading-level ()
+  (+ (my-org/heading-level) 1))
+
+(defun my-org/next-heading-stars ()
+  (-> (my-org/next-heading-level)
+      (s-repeat "*")))
+#+end_src
+
+***** Test
+
+#+begin_src elisp :tangle no :results none
+(assert (equal (my-org/match-heading "*** foo") '("*** foo" "***")))
+(assert (equal (my-org/heading-level) 5))
+(assert (equal (my-org/next-heading-level) 6))
+(assert (equal (my-org/next-heading-stars) "******"))
+#+end_src
 
 *** Config
 
