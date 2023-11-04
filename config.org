@@ -5056,7 +5056,8 @@ Used in [[file:snippets/clojure-mode/thread_spy::--][thread_spy snippet]]
             (format "(doto %s)" log-fn)
           (format "(#(doto %% %s))" log-fn))))))
 #+end_src
-***** Update NS
+
+***** Namespace functions
 
 #+begin_src elisp
 (defun my-clojure|update-ns-dwim ()
