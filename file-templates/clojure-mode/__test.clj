@@ -1,4 +1,5 @@
 # -*- mode: snippet -*-
+# name: Clojure test template
 # group: file templates
 # key: __t
 # --

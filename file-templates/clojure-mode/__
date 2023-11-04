@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Clojure template
+# group: file templates
+# key: __
+# --
+(ns `(my-clojure/current-namespace)`)
