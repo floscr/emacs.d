@@ -5169,13 +5169,18 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
 ***** Adding test files
 
 #+begin_src elisp
-(defun my-clojurescript|add-test-file ()
+(defun my-clojure|add-test-file ()
   (interactive)
-  (let* ((test-file (ignore-errors (projectile-find-implementation-or-test (buffer-file-name)))))
+  (let* ((clojure? (eq 'clojure major-mode))
+         (test-file (ignore-errors (projectile-find-implementation-or-test (buffer-file-name)))))
     (if test-file
         (find-file test-file)
-      (with-current-buffer (find-file (concat (f-no-ext (buffer-file-name)) "_test.cljss"))
-        (insert "foo")))))
+      (with-current-buffer (find-file (concat (f-no-ext (buffer-file-name)) "_test" (if clojure? ".clj" ".cljs")))
+        (->> (f-read (f-join doom-user-dir "file-templates/clojure-mode/__test.clj"))
+             (s-lines)
+             (--drop-while (s-starts-with? "#" it))
+             (s-join "\n")
+             (yas-expand-snippet))))))
 #+end_src
 ***** Convert svg to uix
 
