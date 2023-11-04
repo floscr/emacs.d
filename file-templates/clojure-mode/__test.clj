@@ -4,7 +4,7 @@
 # --
 (ns `(my-clojure/current-namespace)`
   (:require
-    [clojure.test :refer [deftest is testing]]
+    [`(if (eq 'clojure-mode major-mode) "clojure.test" "cljs.test")` :refer [deftest is testing]]
     [`(my-clojure/target-test-namespace)` :as sut]))
 
 (deftest ${2:sut-test}
