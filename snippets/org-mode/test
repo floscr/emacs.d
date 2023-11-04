@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: Config Package
+# key: t
+# --
+
+`(my-org/next-heading-stars)` Test
+
+#+begin_src elisp :tangle "tests.el" :results none
+(assert (equal $0))
+#+end_src
