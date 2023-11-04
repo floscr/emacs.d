@@ -608,6 +608,37 @@ shuffling is done in place."
   (f-join path x))
 #+END_SRC
 
+*** -f-split-ext
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -f-split-ext (s)
+  (list (f-no-ext s) (f-ext s)))
+#+END_SRC
+
+**** Test
+
+#+begin_src elisp :tangle "tests.el" :results none
+(assert (equal (-f-split-ext "foo_bar.clj") '("foo_bar" "clj")))
+#+end_src
+
+*** -f-map-filename
+
+#+BEGIN_SRC elisp
+;;;###autoload
+(defun -f-map-filename (fn s)
+  (concat (funcall fn (f-no-ext s))
+          (-some->> (f-ext s) (concat "."))))
+
+#+END_SRC
+
+**** Test
+
+#+begin_src elisp :tangle "tests.el" :results none
+(assert (equal (-f-map-filename #'s-dashed-words "foo_bar.clj") "foo-bar.clj"))
+(assert (equal (-f-map-filename #'s-dashed-words "foo_bar") "foo-bar"))
+#+end_src
+
 *** -f-tildify
 
 #+BEGIN_SRC elisp
