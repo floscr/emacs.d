@@ -9180,16 +9180,10 @@ Global ~[~ & ~]~ combinator bindings
 #+begin_src elisp
 (map!
  :map (clojurescript-mode-map clojure-mode-map)
- :n ",r" #'raise-sexp
- :n ",f" #'sp-forward-barf-sexp
- :n ",b" #'sp-backward-barf-sexp
  :n ",d" #'sp-kill-sexp
  :n ",," #'sp-forward-sexp
- :n ",n" #'sp-next-sexp
  :n ",y" #'sp-clone-sexp
- :n ",<" #'transpose-sexps
  :n ",u" #'sp-backward-up-sexp
- :n ",T" #'clojure-thread
  :n ",T" #'clojure-thread)
 #+end_src
 
