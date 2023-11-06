@@ -9180,11 +9180,14 @@ Global ~[~ & ~]~ combinator bindings
 #+begin_src elisp
 (map!
  :map (clojurescript-mode-map clojure-mode-map)
+ :n ",T" #'clojure-thread)
+
+(map!
+ :map (clojurescript-mode-map clojure-mode-map emacs-lisp-mode-map)
  :n ",d" #'sp-kill-sexp
  :n ",," #'sp-forward-sexp
  :n ",y" #'sp-clone-sexp
- :n ",u" #'sp-backward-up-sexp
- :n ",T" #'clojure-thread)
+ :n ",u" #'sp-backward-up-sexp)
 #+end_src
 
 *** Text Objects
