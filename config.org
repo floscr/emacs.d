@@ -5166,22 +5166,6 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
       (clojure-mode)
       (flycheck-mode -1))))
 #+end_src
-***** Adding test files
-
-#+begin_src elisp
-(defun my-clojure|add-test-file ()
-  (interactive)
-  (let* ((clojure? (eq 'clojure major-mode))
-         (test-file (ignore-errors (projectile-find-implementation-or-test (buffer-file-name)))))
-    (if test-file
-        (find-file test-file)
-      (with-current-buffer (find-file (concat (f-no-ext (buffer-file-name)) "_test" (if clojure? ".clj" ".cljs")))
-        (->> (f-read (f-join doom-user-dir "file-templates/clojure-mode/__test.clj"))
-             (s-lines)
-             (--drop-while (s-starts-with? "#" it))
-             (s-join "\n")
-             (yas-expand-snippet))))))
-#+end_src
 ***** Convert svg to uix
 
 #+begin_src elisp
@@ -6637,9 +6621,43 @@ This shortens the nixos paths to ~{nix}~.
 (map! :map process-menu-mode-map
       :n "gr" #'list-processes)
 #+end_src
-** Projectile :PROJECTILE:
-*** Config
-**** Ignored Projects
+** Projects
+*** Functions
+**** Test jumping / creation
+
+#+begin_src elisp
+(defun my-project/create-test-file (file-template buffer-file-name->test-file-name)
+  (let* ((ext (f-ext (buffer-file-name)))
+         (test-file-name (concat (funcall buffer-file-name->test-file-name (f-no-ext (buffer-file-name))) "." ext)))
+    (with-current-buffer (find-file test-file-name)
+      (or (-some->> file-template
+                    (-id-when #'f-exists?)
+                    (f-read)
+                    (s-lines)
+                    (--drop-while (s-starts-with? "#" it))
+                    (s-join "\n")
+                    (yas-expand-snippet)
+                    (evil-insert-state))
+          (message "No default file template found for ")))))
+
+(defun my-project/match-test-i ()
+  (cond
+   ((or (eq major-mode 'clojure-mode) (eq major-mode 'clojurescript-mode))
+    (my-project/create-test-file (f-join doom-user-dir "file-templates/clojure-mode/__test.clj")
+                                 (fn! (concat % "_test"))))
+   (t (my-project/create-test-file nil #'identity))))
+
+(defun my-project|jump-to-or-create-test-file ()
+  (interactive)
+  (condition-case err (projectile-toggle-between-implementation-and-test)
+    (error
+     (message "No test file found. Creating...")
+     (my-project/match-test-file))))
+#+end_src
+
+*** Projectile :PROJECTILE:
+**** Config
+***** Ignored Projects
 
 Dont add packages inside ~~.emacs.d~ to projectile, as I often browse the source for a package,
 but I dont want them added to my ~projectile-known-projects~.
@@ -6652,7 +6670,7 @@ but I dont want them added to my ~projectile-known-projects~.
                                       "~/.emacs.d/.local/straight/repos/")))
 #+END_SRC
 
-**** Scan directory for repositories
+***** Scan directory for repositories
 
 #+BEGIN_SRC elisp
 (use-package! projectile
@@ -9172,8 +9190,8 @@ Global ~[~ & ~]~ combinator bindings
 
 #+BEGIN_SRC elisp
 (map!
- :n "]1" #'projectile-toggle-between-implementation-and-test
- :n "[1" #'projectile-toggle-between-implementation-and-test)
+ :n "]1" #'my-project|jump-to-or-create-test-file
+ :n "[1" #'my-project|jump-to-or-create-test-file)
 #+END_SRC
 *** Comman Bindings
 
