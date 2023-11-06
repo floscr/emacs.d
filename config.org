@@ -9770,6 +9770,7 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss
       (:prefix-map ("i" . "Insert")
        :desc "Created Property"        "c" #'my-org|add-created-property
+       :desc "Attachment"              "a" #'my-attach|dwim
        :desc "Last download"           "d" #'my-attach|last-download))
 #+end_src
 
