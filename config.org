@@ -6640,7 +6640,7 @@ This shortens the nixos paths to ~{nix}~.
                     (evil-insert-state))
           (message "No default file template found for ")))))
 
-(defun my-project/match-test-i ()
+(defun my-project/match-test-file ()
   (cond
    ((or (eq major-mode 'clojure-mode) (eq major-mode 'clojurescript-mode))
     (my-project/create-test-file (f-join doom-user-dir "file-templates/clojure-mode/__test.clj")
