@@ -8891,6 +8891,20 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
   :config
   (setq apheleia-formatters (delq (assoc 'bean-format apheleia-formatters) apheleia-formatters)))
 #+END_SRC
+*** Documents
+
+**** Attach document
+
+#+begin_src elisp
+(defun my-documents|attach ()
+  (interactive)
+  (let ((f (or (-some-> (dired-get-marked-files) first)
+               (buffer-file-name)))
+        (default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
+    (prn (s-join "" (list "bb ./src/bdocs.clj" f)))
+    (shell-command-to-string (s-join " " (list "bb ./src/bdocs.clj" (concat "'" f "'"))))))
+#+end_src
+
 
 * Bindings
 ** General
