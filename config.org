@@ -8532,7 +8532,9 @@ I will make sure I don't override any files (easily enough...)
 
 (defun my-attach|dwim ()
   (interactive)
-  (-some-> (my/shell-command-str "org_attach")
+  (-some-> (my/shell-command-str "org_attach"
+                                 ;; Weird workaround where some paths would time out when using internal clipboard
+                                 (unless (my/clipboard-binary?) (x-get-clipboard)))
            (s-trim)
            (insert)))
 
