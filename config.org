@@ -303,6 +303,19 @@ modifications."
       (reverse matches))))
 #+end_src
 
+** System
+
+*** Check if clipboard is binary
+
+Get clipboard with ~(x-get-clipboard)~
+
+#+BEGIN_SRC elisp
+(defun my/clipboard-binary? ()
+  "Check if the current clipboard content is likely to be binary."
+  (let ((content (x-get-selection 'CLIPBOARD)))
+    (= 1 (string-match-p "[\0-\8\11-\12\14-\31\127-\255]" content))))
+#+END_SRC
+
 ** Shell Commands & Aliases
 *** Async Command No Window
 :PROPERTIES:
