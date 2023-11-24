@@ -2603,6 +2603,7 @@ When narrowing to region or defun, make it in an indirect other window.
      ,@body
      (parinfer-rust--switch-mode prev-mode)))
 #+end_src
+
 ****** Disable parinfer during multi-edit
 
 Parinfer doesn't really work well with multi-cursor-edit, as some braces get auto-cleaned and now the positions are off. So we disable it during a multi edit.
@@ -2628,7 +2629,6 @@ Parinfer doesn't really work well with multi-cursor-edit, as some braces get aut
 (add-hook! 'evil-insert-state-exit-hook #'my-evil/multi-edit-insert-re-enable-parinfer)
 #+end_src
 
-kjk
 ***** Bindings
 
 ****** Paste in paren mode
@@ -6305,6 +6305,14 @@ Trigger with ~g/.~ in ~normal-mode~.
             (kill-buffer buffer)))
         (buffer-list)))
 #+END_SRC
+**** Show photos
+
+#+begin_src elisp
+(defun my-dired|photos-viewer ()
+  (interactive)
+  (my-shell/async-command-no-window  "find . -type f -iregex '.*\.\(jpg\|jpeg\|png\|gif\|JPG\|JPEG\|PNG\|GIF\|orf\|raw\|ORF\|RAW\)' -print0 | xargs -0 geeqie"))
+#+end_src
+
 
 **** Go to mounted drive :COUNSEL:
 
