@@ -2603,6 +2603,32 @@ When narrowing to region or defun, make it in an indirect other window.
      ,@body
      (parinfer-rust--switch-mode prev-mode)))
 #+end_src
+****** Disable parinfer during multi-edit
+
+Parinfer doesn't really work well with multi-cursor-edit, as some braces get auto-cleaned and now the positions are off. So we disable it during a multi edit.
+
+#+begin_src elisp
+(defvar my-evil:multi-edit-prev-parinfer-mode nil
+  "TODO")
+
+(make-variable-buffer-local 'my-evil:multi-edit-prev-parinfer-mode)
+
+(defun my-evil/multi-edit-insert-disable-parinfer ()
+  (when (and parinfer-rust-mode evil-multiedit--pt-beg)
+    (setq-local my-evil:multi-edit-prev-parinfer-mode (symbol-value 'parinfer-rust--mode))
+    (parinfer-rust-mode-disable)))
+
+(defun my-evil/multi-edit-insert-re-enable-parinfer ()
+  (when my-evil:multi-edit-prev-parinfer-mode
+    (parinfer-rust-mode 1)
+    (parinfer-rust--switch-mode my-evil:multi-edit-prev-parinfer-mode))
+  (setq-local my-evil:multi-edit-prev-parinfer-mode nil))
+
+(add-hook! 'evil-insert-state-entry-hook #'my-evil/multi-edit-insert-disable-parinfer)
+(add-hook! 'evil-insert-state-exit-hook #'my-evil/multi-edit-insert-re-enable-parinfer)
+#+end_src
+
+kjk
 ***** Bindings
 
 ****** Paste in paren mode
