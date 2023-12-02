@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: :key value
+# key: :
+# --
+:$1 ${1:key}
