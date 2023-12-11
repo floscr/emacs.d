@@ -8939,6 +8939,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 #+BEGIN_SRC elisp
 (use-package! beancount
   :config
+  (setq beancount-number-alignment-column 80)
   (after! apheleia-core
     (setq apheleia-formatters (delq (assoc 'bean-format apheleia-formatters) apheleia-formatters))))
 #+END_SRC
