@@ -5396,6 +5396,17 @@ From ~dd348025233c2302bafc51d8832c5cc691a91b0f~
   :config
   (setq code-review-auth-login-marker 'forge))
 #+END_SRC
+**** [[https://github.com/rmuslimov/browse-at-remote][browse-at-remote]]
+
+***** Config
+
+#+begin_src elisp
+(use-package browse-at-remote
+  :config
+  (add-to-list
+   'browse-at-remote-remote-type-regexps
+   '(:host "^gitea\\.florianschroedl\\.com$" :type "gitea")))
+#+end_src
 
 *** Functions
 **** Create worktree workspace
