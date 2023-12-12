@@ -7004,6 +7004,34 @@ Exception for org mode when the header property \"DISABLE_SPELLCHECKER\" is set.
 
 (add-hook! '(org-mode-hook markdown-mode-hook) :local #'+flyspell/load-after-first-insert)
 #+end_src
+*** Functions
+
+**** Spell correct first word
+
+#+begin_src elisp
+(defun my-spell-correct|auto-correct (&optional _arg)
+  "A bit better spelling auto correct, show recommendations when universal-argument is supplied.
+Otherwise take the first recommendation and automatically apply it (which is the correct one most of the time)."
+  (interactive "P")
+  (save-excursion
+    (pcase current-prefix-arg
+      (`() (ignore-errors
+             (let ((+spell-correct-interface (cl-function (lambda (&rest xs) (first xs)))))
+               (call-interactively #'+spell/correct))))
+      (`(,_x) (call-interactively #'+spell/correct)))))
+#+end_src
+
+
+*** Bindings
+
+#+begin_src elisp
+(use-package! spell-fu
+  :general ([remap ispell-word] #'my-spell-correct|auto-correct))
+#+end_src
+
+
+*** Bindings
+
 ** Flycheck :LINTING:
 *** Config
 **** Disabled Checkers
