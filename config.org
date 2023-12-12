@@ -5167,6 +5167,7 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
               (match-string 1))
      (substring-no-properties))))
 #+end_src
+
 ***** Newline :HACK:
 
 #+begin_src elisp
@@ -5178,6 +5179,7 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
              (insert ";; "))
     (newline-and-indent)))
 #+end_src
+
 ***** Testing shadow-cljs
 
 #+begin_src elisp
