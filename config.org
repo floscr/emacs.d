@@ -5310,7 +5310,13 @@ I never want to find all the references of defn."
  :localleader
  "s" #'clojure-sort-ns
  "S" #'my-lisp|sort-sexp
- "l" #'my-pitch|l10n-jump)
+ "l" #'my-pitch|l10n-jump
+ (:prefix ("m" . "modify")
+          "f" #'lsp-clojure-thread-first
+          "F" #'lsp-clojure-thread-first-all
+          "l" #'lsp-clojure-thread-last
+          "L" #'lsp-clojure-thread-last-all
+          "u" #'lsp-clojure-unwind-thread))
 
 (map!
  :map (clojurescript-mode-map)
