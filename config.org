@@ -7476,6 +7476,9 @@ Return nil otherwise."
   (setq skeletor-user-directory (f-join doom-user-dir "project-templates"))
   (skeletor-define-template "babashka"
     :title "Clojure Babashka"
+    :default-license (rx bol "MIT"))
+  (skeletor-define-template "nix"
+    :title "Nix"
     :default-license (rx bol "MIT")))
 #+END_SRC
 
