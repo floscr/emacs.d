@@ -869,6 +869,9 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
     (`[:emacs ,cmd] (pcase cmd
                       (:org-capture-goto-last-stored (org-capture-goto-last-stored))
+                      (:list-dir (let ((dir default-directory))
+                                   (kill-current-buffer)
+                                   (counsel-find-file dir)))
                       (_ (user-error (format "No implementation for emacs-command: %s" cmd)))))
 
     (_ (user-error (format "No implementation for: %s" cmd)))))
