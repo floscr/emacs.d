@@ -6839,7 +6839,8 @@ This shortens the nixos paths to ~{nix}~.
                     (evil-insert-state))
           (message "No default file template found for ")))))
 
-(defun my-project/match-test-file ()
+(defun my-project|create-test-file ()
+  (interactive)
   (cond
    ((or (eq major-mode 'clojure-mode) (eq major-mode 'clojurescript-mode))
     (my-project/create-test-file (f-join doom-user-dir "file-templates/clojure-mode/__test.clj")
@@ -6851,7 +6852,7 @@ This shortens the nixos paths to ~{nix}~.
   (condition-case err (projectile-toggle-between-implementation-and-test)
     (error
      (message "No test file found. Creating...")
-     (my-project/match-test-file))))
+     (my-project|create-test-file))))
 #+end_src
 
 *** Projectile :PROJECTILE:
