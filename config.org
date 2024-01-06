@@ -1292,32 +1292,44 @@ This function will mutate the hashtable M."
   (or (alist-get major-mode my-comment-header:mode-comment-start)
       comment-start))
 
-(defun my-comment-header/read-string ()
-  "Helper function to read the comment header string."
-  (read-string (format "Comment header (%s): "
-                       (my-comment-header/comment-start))))
-
-(defun my-comment-header/fill (str)
-  "Fill the string with the comment header character."
-  (let ((n (- my-comment-header:col-count (length str))))
-    (concat str (s-repeat n my-comment-header:col-char))))
-
-(defun my-comment/match-header (&optional bound)
+(defun my-comment/match-header* (&optional bound)
   (re-search-forward (concat "^"
                              (my-comment-header/comment-start)
-                             " .+"
+                             " \\(.+?\\) "
                              my-comment-header:col-char "+$")
                      bound t))
 
-(defun my-comment-header|goto-next-comment-header ()
-  "Jumps to the next comment header."
-  (my-comment/match-header))
+(defun my-comment/match-header-position (&optional bound)
+  (re-search-forward (concat "^"
+                             (my-comment-header/comment-start)
+                             " \\(.+?\\) "
+                             my-comment-header:col-char "+$")
+                     bound t))
+
+(defun my-comment/match-header (&optional bound)
+  (when (my-comment/match-header-position bound)
+    (match-string-no-properties 1)))
 
 (defun my-comment/comment-header-line? ()
   "Is the current line a comment header."
   (save-excursion
     (beginning-of-line)
     (my-comment/match-header (line-end-position))))
+
+(defun my-comment-header/read-string ()
+  "Helper function to read the comment header string."
+  (read-string (format "Comment header (%s): "
+                       (my-comment-header/comment-start))
+               (my-comment/comment-header-line?)))
+
+(defun my-comment-header/fill (str)
+  "Fill the string with the comment header character."
+  (let ((n (- my-comment-header:col-count (length str))))
+    (concat str (s-repeat n my-comment-header:col-char))))
+
+(defun my-comment-header|goto-next-comment-header ()
+  "Jumps to the next comment header."
+  (my-comment/match-header))
 
 (defun my-text/line-empty? ()
   (not (looking-back "^$")))
@@ -1361,11 +1373,12 @@ This function will mutate the hashtable M."
 (defun my-comment-header|insert (title)
   "Insert a comment header on the current line."
   (interactive (list (my-comment-header/read-string)))
-  (when (my-comment/comment-header-line?)
-    (delete-line))
-  (let* ((str-beg (concat (my-comment-header/comment-start) " "))
+  (let* ((existing-header (my-comment/comment-header-line?))
+         (str-beg (concat (my-comment-header/comment-start) " "))
          (str (->> (concat str-beg title " ")
                    (my-comment-header/fill))))
+    (when existing-header
+      (delete-line))
     (insert str)
     (goto-char (line-beginning-position))
     (forward-char (length (concat str-beg title)))
