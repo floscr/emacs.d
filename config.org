@@ -1269,7 +1269,7 @@ This function will mutate the hashtable M."
 ** Comment header
 
 #+begin_src elisp
-; Variables --------------------------------------------------------------------
+;; Variables -------------------------------------------------------------------
 
 (defvar my-comment-header:col-count 80
   "Of how many cols should the header consist.")
@@ -1278,13 +1278,14 @@ This function will mutate the hashtable M."
   "With which character to fill the comment header.")
 
 (defvar my-comment-header:mode-comment-start
-  '((clojurescript-mode . ";;")
+  '((emacs-lisp-mode . ";;")
+    (clojurescript-mode . ";;")
     (clojure-mode . ";;")))
 
 (put 'my-comment-header:col-count 'safe-local-variable 'integerp)
 (put 'my-comment-header:mode-comment-start 'safe-local-variable t)
 
-; Helpers ----------------------------------------------------------------------
+;; Helpers ---------------------------------------------------------------------
 
 (defun my-comment-header/comment-start ()
   "Return the `comment-start' either defined by `my-comment-header/comment-start' or by the `major-mode'."
@@ -1333,7 +1334,7 @@ This function will mutate the hashtable M."
     (when (my-text/line-empty?)
       (evil-insert-newline-above))))
 
-; Main -------------------------------------------------------------------------
+;; Main ------------------------------------------------------------------------
 
 (defun my-comment-header|toggle-fold ()
   (interactive)
