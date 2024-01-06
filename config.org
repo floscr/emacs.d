@@ -1358,8 +1358,12 @@ This function will mutate the hashtable M."
 
 (defun my-comment-header/goto-headers (header)
   "Go to header with the string value of header"
-  (->> (my-comment-header/buffer-headers)
-       (--find (string= (car it) header))))
+  (when (-some->> (my-comment-header/buffer-headers)
+                  (--find (string= (car it) header))
+                  (cdr)
+                  (goto-char))
+    (beginning-of-line)
+    (point)))
 
 ;; Main ------------------------------------------------------------------------
 
