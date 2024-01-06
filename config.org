@@ -1356,6 +1356,11 @@ This function will mutate the hashtable M."
         (ignore-error (forward-char)))
       (reverse items))))
 
+(defun my-comment-header/goto-headers (header)
+  "Go to header with the string value of header"
+  (->> (my-comment-header/buffer-headers)
+       (--find (string= (car it) header))))
+
 ;; Main ------------------------------------------------------------------------
 
 (defun my-comment-header|counsel ()
