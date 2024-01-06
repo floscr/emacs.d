@@ -1362,7 +1362,9 @@ This function will mutate the hashtable M."
   (interactive)
   (ivy-read "Goto section: "
             (my-comment-header/buffer-headers)
-            :action (fn! (goto-char (cdr %)))))
+            :action (fn!
+                     (goto-char (cdr %))
+                     (goto-char (line-beginning-position)))))
 
 (defun my-comment-header|toggle-fold ()
   (interactive)
