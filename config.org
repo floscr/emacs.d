@@ -9793,7 +9793,8 @@ So deletes wont affect this register."
   :desc "Project for symbol" "P" #'+default/search-project-for-symbol-at-point
   :desc "Occur" "o" #'occur
   :desc "Web Lookup" "w" #'+lookup/online
-  :desc "Web Lookup with prompt" "W" #'+lookup/online-select))
+  :desc "Web Lookup with prompt" "W" #'+lookup/online-select
+  :desc "Search comment headers" "h" #'my-comment-header|counsel))
 #+END_SRC
 
 *** Toggle
