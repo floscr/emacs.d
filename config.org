@@ -1354,7 +1354,7 @@ This function will mutate the hashtable M."
       (while-let ((header (my-comment/match-header-position)))
         (add-to-list 'items (cons (match-string-no-properties 1) header))
         (ignore-error (forward-char)))
-      items)))
+      (reverse items))))
 
 ;; Main ------------------------------------------------------------------------
 
