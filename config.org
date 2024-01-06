@@ -1346,7 +1346,23 @@ This function will mutate the hashtable M."
     (when (my-text/line-empty?)
       (evil-insert-newline-above))))
 
+(defun my-comment-header/buffer-headers ()
+  "Get all comment headers in the current buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (let ((items (list)))
+      (while-let ((header (my-comment/match-header-position)))
+        (add-to-list 'items (cons (match-string-no-properties 1) header))
+        (ignore-error (forward-char)))
+      items)))
+
 ;; Main ------------------------------------------------------------------------
+
+(defun my-comment-header|counsel ()
+  (interactive)
+  (ivy-read "Goto section: "
+            (my-comment-header/buffer-headers)
+            :action (fn! (goto-char (cdr %)))))
 
 (defun my-comment-header|toggle-fold ()
   (interactive)
