@@ -9115,6 +9115,12 @@ Automatically indent and format when opening area betwen to delimiters.
 (sp-local-pair 'prog-mode "(" nil :post-handlers '((my-text/indent-between-pair "RET")))
 #+end_src
 
+** Modifier
+
+#+BEGIN_SRC elisp
+(map! :g "M-RET" #'lsp-find-references)
+#+END_SRC
+
 ** Super
 
 #+BEGIN_SRC elisp
