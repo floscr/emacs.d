@@ -3486,6 +3486,7 @@ npm i -g json-fix
  :gni "<C-return>" #'my-json|insert-key-below
  :gni "<C-S-return>" #'my-json|insert-key-above)
 #+END_SRC
+
 ***** Functions
 ***** Export default variable
 
@@ -3902,7 +3903,6 @@ useful for repos that contain multiple packages."
           (f--traverse-upwards (f-exists? (f-expand "package.json" it)))))
     (+default/find-file-under-here)))
 #+END_SRC
-
 
 ***** Find node_modules package
 
