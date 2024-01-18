@@ -10114,7 +10114,6 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Fetch url title" "u" #'my-org-agenda|fetch-this-org-link-title)
 #+end_src
 
-
 ** Minibuffer
 *** Copy and Paste from the minibuffer
 
