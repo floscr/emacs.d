@@ -1290,7 +1290,7 @@ This function will mutate the hashtable M."
 (defun my-comment-header/comment-start ()
   "Return the `comment-start' either defined by `my-comment-header/comment-start' or by the `major-mode'."
   (or (alist-get major-mode my-comment-header:mode-comment-start)
-      comment-start))
+      (-> comment-start (s-trim-right))))
 
 (defun my-comment/match-header* (&optional bound)
   (re-search-forward (concat "^"
