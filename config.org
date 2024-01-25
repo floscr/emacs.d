@@ -9734,6 +9734,7 @@ So deletes wont affect this register."
   :desc "Changed Files"                       "F" #'my-magit|counsel-changed-files
   :desc "New Branch"                          "N" #'magit-branch-spinoff
   :desc "Show revision original File"         "O" #'my-magit|show-revision-original
+  :desc "Stage File"                          "S" #'magit-stage-buffer-file
   :desc "Map-editor Changed Files"            "T" (cmd! (my-magit|counsel-changed-files "map-editor"))
   :desc "Amend Commit"                        "a" #'magit-commit-amend
   :desc "Checkout"                            "b" #'magit-checkout
