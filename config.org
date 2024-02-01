@@ -1667,6 +1667,7 @@ which I name after the matching url.
  pass
  docker
  lsp
+ tree-sitter
 
  :lang
  beancount
