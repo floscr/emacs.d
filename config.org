@@ -5435,6 +5435,51 @@ I never want to find all the references of defn."
 
 (map! :map rust-mode-map "C-c '" 'my-rust/edit-indirect)
 #+end_src
+*** Tree Sitter
+
+**** Functions
+
+***** Node point equality
+
+#+begin_src elisp
+(defun my-treesitter/node-point-eq (a b)
+  (= (ts-node-start-position a)
+     (ts-node-start-position b)))
+#+end_src
+
+***** Go to parent
+
+#+begin_src elisp
+(defun my-treesitter|goto-parent ()
+  "Go to the parent context for the node at point."
+  (interactive)
+  (let* ((node (tree-sitter-node-at-point))
+         (parent-node (tsc-get-parent node)))
+    (if (and (not (= (point-min) (point)))
+             (my-treesitter/node-point-eq node parent-node))
+        (progn
+          (backward-char 1)
+          (my-treesitter/goto-parent))
+      (-> (tsc-node-start-position parent-node)
+          (goto-char)))))
+#+end_src
+
+**** Bindings
+
+#+begin_src elisp
+(defvar my-tree-sitter-mode-map (make-sparse-keymap))
+
+(define-minor-mode my-tree-sitter-mode
+  "A minor mode to enhance tree-sitter with additional keybindings."
+  :lighter " TSEnhanced"
+  :keymap my-tree-sitter-mode-map)
+
+(add-hook 'tree-sitter-mode-hook (fn! (my-tree-sitter-mode 1)))
+
+(map!
+ :map my-tree-sitter-mode-map
+ :desc "Goto parent function" :ng "gh" #'my-treesitter|goto-parent)
+#+end_src
 
 
 ** Git / Magit :GIT:MAGIT:
