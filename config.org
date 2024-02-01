@@ -5415,6 +5415,28 @@ I never want to find all the references of defn."
               :action (-lambda ((_ . l))
                         (evil-scroll-line-to-center l)))))
 #+end_src
+*** Rust
+
+#+begin_src elisp
+(defun my-rust/edit-indirect ()
+  "Edit script in an indirect buffer."
+  (interactive)
+  (and-let* ((beg (save-excursion
+                    (search-backward "r#\"{" nil t)
+                    (search-forward "{" nil t)
+                    (backward-char 1)
+                    (point)))
+             (end (save-excursion
+                    (re-search-forward "}\"#" nil t)
+                    (search-backward "}" nil t)
+                    (forward-char 1)
+                    (point))))
+    (+indirect-indent|edit beg end #'json-mode)))
+
+(map! :map rust-mode-map "C-c '" 'my-rust/edit-indirect)
+#+end_src
+
+
 ** Git / Magit :GIT:MAGIT:
 *** Packages
 **** magit
