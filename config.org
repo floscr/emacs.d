@@ -5462,6 +5462,25 @@ My playground for testing out tree sitter
     (tsc-get-next-sibling-)
     (tsc-node-start-position)
     (goto-char))
+
+
+(defun my-treesitter|raise ()
+  "Go to the parent context for the node at point."
+  (interactive)
+  (let* ((node (tree-sitter-node-at-point))
+         (parent-node (tsc-get-parent node)))
+    (if (and (not (= (point-min) (point)))
+             (my-treesitter/node-point-eq node parent-node))
+        (progn
+          (backward-char 1)
+          (my-treesitter|raise))
+      (let* ((node-str (substring-no-properties))))
+      (-> (tsc-node-start-position parent-node)
+          (goto-char)))))
+
+(-> (tree-sitter-node-at-point)
+    (tsc-node-end-position)
+    (goto-char))
 #+end_src
 
 **** Functions
