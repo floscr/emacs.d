@@ -5437,6 +5437,33 @@ I never want to find all the references of defn."
 #+end_src
 *** Tree Sitter
 
+**** Repl
+
+My playground for testing out tree sitter
+
+#+begin_src elisp :tangle no
+(-> (tree-sitter-node-at-point)
+    (tsc-get-parent)
+    (tsc-node-start-position)
+    (goto-char))
+
+(tsc-node-eq
+ (tree-sitter-node-at-point)
+ (-> (tree-sitter-node-at-point)
+     (tsc-get-parent)))
+
+(cons
+ (tsc-node-start-position (tree-sitter-node-at-point))
+ (-> (tree-sitter-node-at-point)
+     (tsc-get-parent)
+     (tsc-node-start-position)))
+
+(-> (tree-sitter-node-at-point)
+    (tsc-get-next-sibling-)
+    (tsc-node-start-position)
+    (goto-char))
+#+end_src
+
 **** Functions
 
 ***** Node point equality
