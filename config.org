@@ -5463,7 +5463,6 @@ My playground for testing out tree sitter
     (tsc-node-start-position)
     (goto-char))
 
-
 (defun my-treesitter|raise ()
   "Go to the parent context for the node at point."
   (interactive)
