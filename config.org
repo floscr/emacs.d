@@ -9347,6 +9347,7 @@ Automatically indent and format when opening area betwen to delimiters.
 #+BEGIN_SRC elisp
 (map!
  (:map override
+   :g "s-g" (cmd! (gptel-send 1))
    :g "s-n" #'evil-buffer-new
    :g "s-;" #'eval-expression
    :g "s-a" #'mark-whole-buffer
