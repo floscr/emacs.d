@@ -5568,7 +5568,7 @@ machine api.openai.com login apikey password TOKEN
 
 #+BEGIN_SRC elisp
 (use-package! gptel
-  :command gptel
+  :commands gptel
   :config
   (setq gptel-default-mode 'org-mode)
   (setq-default gptel-model "gpt-4")
