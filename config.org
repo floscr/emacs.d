@@ -2240,7 +2240,8 @@ These will be written to ~init.el~ so it overwrites the doom standard values.
     ("^\\*projectile-files-errors" :ignore t)
     ("^\\*elfeed-entry" :modeline t :ttl nil)
     ("^\\*Flycheck checker" :size 0.2 :select nil)
-    ("^\\*cider-error" :size 0.2 :select nil :ttl t)))
+    ("^\\*cider-error" :size 0.2 :select nil :ttl t)
+    ("^\\*ChatGPT" :ttl nil :quit nil)))
 #+END_SRC
 *** Themes
 **** Custom doom themes package
@@ -5524,9 +5525,34 @@ My playground for testing out tree sitter
 
 (map!
  :map my-tree-sitter-mode-map
- :desc "Goto parent function" :ng "gh" #'my-treesitter|goto-parent)
+ :desc "Goto parent function" :n "gh" #'my-treesitter|goto-parent)
+
+#+end_src
+*** Gptel
+
+[[https://github.com/karthink/gptel][karthink/gptel: A simple LLM client for Emacs]]
+
+To set up save your API token inside your [[file:~/.authinfo.gpg][authinfo.gpg]] file like this:
+
+#+begin_src :tangle no
+machine api.openai.com login apikey password TOKEN
 #+end_src
 
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! gptel)
+#+END_SRC
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! gptel
+  :command gptel
+  :config
+  (setq gptel-default-mode 'org-mode)
+  (setq-default gptel-model "gpt-4"))
+#+END_SRC
 
 ** Git / Magit :GIT:MAGIT:
 *** Packages
