@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: anchor_link
+# key: a
+# --
+<a href="$1" rel="noopener">$0</a>
