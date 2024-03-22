@@ -1280,6 +1280,7 @@ This function will mutate the hashtable M."
 (defvar my-comment-header:mode-comment-start
   '((emacs-lisp-mode . ";;")
     (clojurescript-mode . ";;")
+    (clojurec-mode . ";;")
     (clojure-mode . ";;")))
 
 (put 'my-comment-header:col-count 'safe-local-variable 'integerp)
