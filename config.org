@@ -454,6 +454,16 @@ or manually traverse upwards until the .git directory is found."
   (let ((checker-fn (if skip-worktree? #'f-dir? #'f-exists?)))
     (f--traverse-upwards (funcall checker-fn (f-expand ".git" it)))))
 #+END_SRC
+
+*** Find file in project
+
+#+begin_src elisp
+(defun my-file/find-project-file (path)
+  "Find file at relative `path' in the current project."
+  (-> (f-join (my-file/project-root) path)
+      (find-file)))
+#+end_src
+
 *** Find node_modules executable
 
 #+begin_src elisp
@@ -2390,22 +2400,34 @@ I want buffers added whenever I visit a buffer.
 *** Lookup
 
 #+begin_src elisp
-(defun my-lookup/prepend-custom-docs-to-lookup (&rest args)
-  (user-error "foo")
-  (apply orig-fun args)
-  args)
+(defun format-text-in-mode (text mode)
+  "Format the given TEXT using the specified MODE."
+  (with-temp-buffer
+    (insert text)
+    (funcall mode)
+    (indent-region (point-min) (point-max))
+    (buffer-string)))
 
 (defun my-lsp/describe-thing-at-point ()
-  "Display the type signature and documentation of the thing at point."
   (interactive)
-  (prn "hello"))
-
-(advice-add 'lsp-describe-thing-at-point :around #'my-lsp/describe-thing-at-point)
-(advice-remove 'lsp-describe-thing-at-point #'my-lsp/describe-thing-at-point)
-
-(comment
- (advice-remove #'lsp-describe-thing-at-point #'my-lookup/prepend-custom-docs-to-lookup)
- nil)
+  (let* ((schema nil))
+    (save-excursion
+      (when-let* ((foo (ignore-errors
+                         (+lookup/definition 'symbol))))
+        (save-restriction
+          (narrow-to-defun)
+          (when (search-forward   ([req] (interface req nil))
+                                  ":malli/schema"))
+          (sp-kill-sexp nil t)))))
+  (lsp-describe-thing-at-point)
+  (let* ((buffer (get-buffer "*lsp-help*")))
+    (with-current-buffer buffer
+      (save-excursion
+        (goto-char (point-max))
+        (read-only-mode -1)
+        (insert "\nMalli schema:\n")
+        (yank)
+        (setq kill-ring (cdr kill-ring))))))
 #+end_src
 
 ** Evil :EVIL:
