@@ -5327,6 +5327,17 @@ I never want to find all the references of defn."
           (lsp-find-references))
       (call-interactively #'lsp-find-references))))
 #+end_src
+***** Wait for connection
+
+#+begin_src elisp
+(cl-defun my-cider/wait-for-connection (&key (timeout 10) (interval 0.1))
+  "Block until cider is connected in the current buffer"
+  (while (and (> timeout 0)
+              (not (cider-connected-p)))
+    (sleep-for interval)
+    (setq timeout (- timeout interval))))
+#+end_src
+
 
 **** Config
 
