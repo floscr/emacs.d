@@ -2742,6 +2742,18 @@ Better pasting for lisps, automatically indents and fixes parens when pasting.
                                             ;; Dont save undo history for org files, they get too big
                                             ("\\.org\\'" . nil))))
 #+END_SRC
+**** smartparens-mode
+
+***** Functions
+
+****** yank-sexp
+
+#+begin_src elisp
+(defun my-sp/yank-sexp (&optional ARG)
+  "Yank the current sexp without killing it."
+  (interactive)
+  (sp-kill-sexp ARG t))
+#+end_src
 
 ** UI :UI:
 *** Higlight indent guides
@@ -9776,7 +9788,7 @@ Global ~[~ & ~]~ combinator bindings
  :map (clojurescript-mode-map clojure-mode-map emacs-lisp-mode-map)
  :n ",d" #'sp-kill-sexp
  :n ",," #'sp-forward-sexp
- :n ",y" #'sp-clone-sexp
+ :n ",y" #'my-sp/yank-sexp
  :n ",u" #'sp-backward-up-sexp)
 #+end_src
 
