@@ -3455,7 +3455,6 @@ I don't need them with parinfer and lispyville, they're just distracting.
       :desc "Eval" :n "RET" #'my-elisp|eval-last-sexp)
 #+end_src
 
-
 *** Json :JSON:
 **** Functions
 ***** Is Last JSON key at point
