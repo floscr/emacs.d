@@ -1634,9 +1634,6 @@ which I name after the matching url.
  workspaces
  zen
 
- :email
- (mu4e +gmail)
-
  :editor
  (format +onsave)
  (evil +everywhere)
@@ -1685,14 +1682,11 @@ which I name after the matching url.
  lua
  (nix +lsp)
  rust
- (ruby +rails)
  rest
  data
  (haskell +lsp)
  emacs-lisp
  markdown
- ocaml
- nim
  (clojure +lsp)
  (javascript +lsp)
  json
@@ -1705,7 +1699,6 @@ which I name after the matching url.
  (web +css)
 
  :app
- irc
  calendar
  (rss +org)
 
@@ -2846,8 +2839,7 @@ Community collection of snippets for command line tools.
           (powershell-mode . "powershell")
           (python-mode . "python")
           (rust-mode . "rust")
-          (sh-mode . "bash")
-          (nim-mode . "nim"))))
+          (sh-mode . "bash"))))
 #+END_SRC
 **** [[https://github.com/smihica/emmet-mode][emmet-mode]] :CSS:
 
@@ -6798,13 +6790,6 @@ Source: https://github.com/adimit/config/blob/74a7fc0acaf82e18d0ca4bd0ca6e539ff9
 (add-hook 'org-src-mode-hook (lambda () (flycheck-mode -1)))
 #+end_src
 
-***** Nim
-
-#+BEGIN_SRC elisp
-(add-hook! 'nim-mode-hook :append
-  (setq-local flycheck-disabled-checkers '(nim-nimsuggest))
-  (flycheck-select-checker 'nim-1-6-0))
-#+END_SRC
 ** Completion :COMPLETION:
 *** Packages
 **** [[https://github.com/abo-abo/swiper][ivy / counsel]]
