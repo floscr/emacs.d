@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: Clojurescript Template
+# group: file templates
+# key: __
+# --
+(ns `(my-clojure/current-namespace)`
+  (:require
+   [app.utils.css.core :refer-macros [css]]
+   [uix.core :as uix :refer [$ defui]]))
+
+;; Styles ----------------------------------------------------------------------
+
+;; Components ------------------------------------------------------------------
+
+(defui root [{:keys []}]
+  ($ :div "Hello World"))
