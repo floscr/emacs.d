@@ -3011,6 +3011,8 @@ Use with header ~:tangle "edbi-bridge.pl"~
 
 #+BEGIN_SRC perl :tangle no
 #! /usr/bin/env nix-shell
+#+BEGIN_SRC perl :tangle no :comments none
+#!/usr/bin/env nix-shell
 #! nix-shell -i perl -p mysql -p perlPackages.DBDmysql perlPackages.RPCEPCService perlPackages.DBDPg perlPackages.DBI
 
 use strict;
