@@ -3003,12 +3003,6 @@ Emacs database layer interface
 (package! edbi)
 #+END_SRC
 
-****** Config
-
-#+BEGIN_SRC elisp
-(use-package! package)
-#+END_SRC
-
 ****** Bridge
 
 Add nix-shell headers to the bridge
