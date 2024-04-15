@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: core exclude
+# key: ex
+# --
+(:refer-clojure :exclude [$0])
