@@ -8785,7 +8785,6 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (shell-command-to-string (s-join " " (list "bb ./src/bdocs.clj" (concat "'" f "'"))))))
 #+end_src
 
-
 * Bindings
 ** General
 
@@ -9952,6 +9951,7 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 
 (advice-add #'flycheck-handle-save :after #'+flycheck/fix-emacs-29-save)
 #+end_src
+
 * Temp
 
 #+begin_src elisp
