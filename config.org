@@ -3233,6 +3233,29 @@ main;
          "--run"
          (f-join doom-private-dir "edbi-bridge.pl"))))
 #+END_SRC
+**** Config
+
+***** Connections
+
+#+begin_src elisp
+(defvar my-edbi:connections
+  '("dbi:Pg:dbname=penpot;host=localhost"))
+
+(defun my-edbi/extract-db-string (str)
+  (if (string-match "dbname=\\([^;]*\\);" str)
+      (match-string 1 str)))
+
+(comment
+ (my-edbi/extract-db-string (car my-edbi:connections)))
+
+(defun my-edbi|connect ()
+  (interactive)
+  (let* ((db (completing-read "Database: " my-edbi:connections))
+         (conn (edbi:start))
+         (table (my-edbi/extract-db-string db)))
+    (edbi:connect conn (list db table table))
+    (edbi:dbview-open conn)))
+#+end_src
 
 *** Javascript :JAVASCRIPT:
 **** Packages :PACKAGE:
