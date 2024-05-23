@@ -1,0 +1,18 @@
+{:lint-as {strojure.parsesso.parser/for clojure.core/let
+           clojure.test.check.properties/for-all clojure.core/let
+           ;; custom
+           app.utils.css.core/css clojure.core/defn
+           ;; uix
+           uix.core/defui clojure.core/defn
+           uix.core/fn clojure.core/fn
+           ;; Funcool cats
+           cats.core/mlet clojure.core/let
+           cats.core/alet clojure.core/let
+           cats.core/ap-> clojure.core/->
+           cats.core/ap->> clojure.core/->>
+           cats.core/as-ap-> clojure.core/as->
+           cats.core/->= clojure.core/->
+           cats.core/->>= clojure.core/->>
+           cats.core/as->= clojure.core/as->
+           cats.core/for clojure.core/for
+           cats.core/do-let clojure.core/for}}

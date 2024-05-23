@@ -1,0 +1,5 @@
+{:test-src-dirs ["src"]
+ :ns-suffixes [-test]
+ :setup-ns app.jest-setup
+ :port 9003
+ :compiler-options {:closure-defines {}}}

@@ -7226,6 +7226,9 @@ Return nil otherwise."
   (skeletor-define-template "babashka"
     :title "Clojure Babashka"
     :default-license (rx bol "MIT"))
+  (skeletor-define-template "clojurescript"
+    :title "Clojurescript"
+    :default-license (rx bol "MIT"))
   (skeletor-define-template "nix"
     :title "Nix"
     :default-license (rx bol "MIT")))

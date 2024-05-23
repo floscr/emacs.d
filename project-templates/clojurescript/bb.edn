@@ -1,0 +1,14 @@
+{:src ["src"]
+ :tasks
+ {:requires ([clojure.string :as str])
+  dev {:task (shell "yarn shadow-cljs -A:dev watch app")}
+  watch:cljest {:task (shell "clj -X cljest.compilation/watch")}
+  watch:jest {:task (shell "./node_modules/.bin/jest --watch")}
+  release {:task (do
+                   (println "Building frontend release")
+                   (shell "yarn")
+                   (shell "yarn shadow-cljs -A:dev release app")
+                   (let [version {:sha (-> (shell {:out :string} "git rev-parse HEAD")
+                                           :out
+                                           (str/trim))}]
+                     (spit "./public/js/version.edn" (str version))))}}}
