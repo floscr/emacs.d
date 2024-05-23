@@ -7102,6 +7102,14 @@ So I fix the checker manually for each mode after lsp was loaded.
 
 (add-hook 'lsp-mode-hook #'+js/fix-checker)
 #+END_SRC
+**** Remove face-highlight
+
+#+begin_src elisp
+(set-face-foreground 'lsp-face-highlight-textual nil)
+(set-face-background 'lsp-face-highlight-textual nil)
+(set-face-attribute 'lsp-face-highlight-textual nil :weight 'regular)
+#+end_src
+
 ** Snippets :SNIPPETS:
 *** Overrides
 
