@@ -1329,3 +1329,15 @@ When SAME-BRANCH? is t use the current branch instead of creating a new one."
   :init
   (add-to-list 'yas-snippet-dirs (f-expand "~/Code/Meisterlabs/Snippets")))
 #+END_SRC
+** Project Modes
+
+*** Penpot
+
+#+begin_src elisp
+(defun +penpot|apply-dev-files ()
+  "Applies my local modifications in the DEV stash and assumes them as unchanged."
+  (interactive)
+  (magit-git-command "git stash apply stash^{/DEV}")
+  (dolist (file (magit-changed-files "HEAD"))
+    (magit-git-command (format "git update-index --assume-unchanged %s" file))))
+#+end_src
