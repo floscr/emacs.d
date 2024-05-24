@@ -4904,7 +4904,9 @@ I never want to find all the references of defn."
                     "[/\\\\]src/js\\'"
                     "[/\\\\]src/less\\'"
                     "[/\\\\]src/tailwind\\'"
-                    "[/\\\\]test/e2e/screenshots\\'"))))
+                    "[/\\\\]test/e2e/screenshots\\'")))
+  (after! apheleia-core
+    (setq apheleia-formatters (delq (assoc 'cljfmt apheleia-formatters) apheleia-formatters))))
 #+end_src
 
 **** Themes
