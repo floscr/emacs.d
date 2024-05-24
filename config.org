@@ -398,6 +398,18 @@ Trims the resulting output automatically."
 #+end_src
 
 ** Files
+*** Remove trailing slash
+
+#+begin_src elisp
+(defun my-file/remove-trailing-slash (path)
+  "Remove the trailing slash from `path' string."
+  (s-replace-regexp "/$" "" path))
+
+(comment
+ (my-file/remove-trailing-slash "foo/") ;; "foo"
+ nil)
+#+end_src
+
 *** Get file timestamp
 
 #+BEGIN_SRC elisp
@@ -914,8 +926,8 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
 (defun bbookmarks|list-project-bookmarks ()
   (interactive)
-  (bbookmarks|list "--parent" (s-replace-regexp "/$" "" (my-file/git-root))
-                   "--project-root" (s-replace-regexp "/$" "" (my-file/git-root nil))))
+  (bbookmarks|list "--parent" (-> (my-file/git-root) (my-file/remove-trailing-slash))
+                   "--project-root" (-> (my-file/git-root nil) (my-file/remove-trailing-slash))))
 
 (defvar bbookmarks-save-mode-map (make-sparse-keymap))
 
