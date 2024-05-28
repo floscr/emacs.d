@@ -96,6 +96,7 @@
               :outline "revert"
               :cursor "pointer"
               :box-sizing "inherit"}
+
     "input" {:all "unset"
              :box-sizing "inherit"
              :cursor "text"}
