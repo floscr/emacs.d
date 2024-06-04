@@ -17,3 +17,4 @@ packages.el
 init.el
 /project-templates/babashka/flake.lock
 /tests.el
+/config.sh
