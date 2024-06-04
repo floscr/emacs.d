@@ -10057,3 +10057,29 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
       (message "CBZ file extraction and conversion initiated.")
       (notifications-notify :title "CBZ Conversion" :body "Conversion process initiated." :timeout 2000))))
 #+end_src
+
+#+begin_src elisp
+(defun org-web/ensure-css-import ()
+  (save-excursion
+    (when (not (org-web/css-import?))
+      (org-web/insert-css-require))))
+
+(defun org-web|make-class ()
+  (interactive)
+  (when-let ((var-name (symbol-at-point)))
+    (or (my-comment-header/goto-headers "Styles")
+        (progn
+          (goto-char (point-min))
+          (evil-jump-item)
+          (forward-line)
+          (my-comment-header|insert "Styles")))
+    (end-of-line)
+    (forward-line)
+    (when (my-comment-header|goto-next-comment-header)
+      (previous-line))
+    (insert "\n")
+    (insert (t! "(css <<var-name>> [] \n     \"\")\n"))
+    (backward-char 3)
+    (evil-insert-state))
+  (org-web/ensure-css-import))
+#+end_src
