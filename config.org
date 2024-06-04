@@ -8689,7 +8689,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 (defun my-pitch|ghub-create-pull-request ()
   "Function docstring"
   (interactive)
-  (shell-command "gh pr create --label \"Team Birch\" --web"))
+  (shell-command "gh pr create --web"))
 #+end_src
 
 **** Create pull request md
