@@ -516,16 +516,6 @@ nil -> \"Disabled\""
   (interactive)
   (message (t! "<<(symbol-name x)>>: <<(my/bool-to-enabled-string (symbol-value x))>>")))
 #+END_SRC
-*** Print
-
-#+begin_src elisp
-(defun prn (&rest args)
-  (let* ((str (->> (-map (lambda (_) "%s") args)
-                   (s-join " ")))
-         (msg-args (-concat (list str) args)))
-    (apply #'message msg-args)))
-#+end_src
-
 ** Dash Extensions
 *** Fix custom thread indentation
 
@@ -777,6 +767,32 @@ When ARG is passed, query for a custom delimiter."
                      "-")))
     (my-evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
 #+end_src
+** Clojure like
+
+Porting over clojure-like functions as I'm more used to them
+
+*** Print
+
+#+begin_src elisp
+(defun prn (&rest args)
+  (let* ((str (->> (-map (lambda (_) "%s") args)
+                   (s-join " ")))
+         (msg-args (-concat (list str) args)))
+    (apply #'message msg-args)))
+#+end_src
+
+*** Doto
+
+#+begin_src elisp
+(defun doto (x fn)
+  (funcall fn x)
+  x)
+
+(defun doto-last (fn x)
+  (funcall fn x)
+  x)
+#+end_src
+
 * My Packages
 ** Bbuild
 
