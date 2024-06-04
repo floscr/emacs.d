@@ -1414,9 +1414,19 @@ This function will mutate the hashtable M."
                      (goto-char (cdr %))
                      (goto-char (line-beginning-position)))))
 
+(cl-defun my-comment-header/vimish-fold? (&key (pos (point)))
+  "Predicate if a fold exist at `pos'."
+  (->> (overlays-at pos)
+       (some (fn! (->> (vimish-fold--vimish-overlay-p %1)
+                       (some (fn! (equal 'vimish-fold--folded %1))))))))
+
 (defun my-comment-header|toggle-fold ()
   (interactive)
   (when (my-comment/comment-header-line?)
+    (if (my-comment-header/vimish-fold?)
+        (vimish-fold-unfold)
+      (save-excursion
+        (vimish-fold-delete)
         (let* ((beg (line-beginning-position))
                (end (or (save-excursion
                           (forward-line 1)
@@ -1425,6 +1435,11 @@ This function will mutate the hashtable M."
                                    (point))))
                         (point-max))))
           (vimish-fold beg end))))))
+
+(defun my-comment-header|toggle-fold-or-fallback ()
+  (interactive)
+  (or (my-comment-header|toggle-fold)
+      (call-interactively #'+fold/toggle)))
 
 (defun my-comment-header|fold-all ()
   "Folds everything into comment headers."
@@ -9391,6 +9406,14 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
                  (fboundp 'evil-jump-item)
                  #'evil-jump-item))
 #+END_SRC
+*** Folding
+
+#+begin_src elisp
+(define-key! 'global
+  [remap evil-toggle-fold]   #'my-comment-header|toggle-fold-or-fallback)
+#+end_src
+
+
 *** TODO Paste Fix
 
 Evil pastes at the current cursor, which I don't expect it to do.
