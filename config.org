@@ -1417,14 +1417,14 @@ This function will mutate the hashtable M."
 (defun my-comment-header|toggle-fold ()
   (interactive)
   (when (my-comment/comment-header-line?)
-    (vimish-fold-delete)
-    (let* ((beg (line-beginning-position))
-           (end (or (save-excursion
-                      (when (my-comment-header|goto-next-comment-header)
-                        (progn (previous-line 2)
-                               (point))))
-                    (point-max))))
-      (vimish-fold beg end))))
+        (let* ((beg (line-beginning-position))
+               (end (or (save-excursion
+                          (forward-line 1)
+                          (when (my-comment-header|goto-next-comment-header)
+                            (progn (previous-line 2)
+                                   (point))))
+                        (point-max))))
+          (vimish-fold beg end))))))
 
 (defun my-comment-header|fold-all ()
   "Folds everything into comment headers."
