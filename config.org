@@ -5237,6 +5237,28 @@ machine api.openai.com login apikey password TOKEN
    'browse-at-remote-remote-type-regexps
    '(:host "^gitea\\.florianschroedl\\.com$" :type "gitea")))
 #+end_src
+**** [[https://github.com/janusvm/emacs-gitmoji][GitHub - janusvm/emacs-gitmoji: Insert gitmoji in Emacs]]
+
+[[https://gitmoji.dev/][gitmoji | An emoji guide for your commit messages]]
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! gitmoji
+  :recipe (:host github
+           :repo "janusvm/emacs-gitmoji"
+           :files ("*.el" "data")))
+#+END_SRC
+
+***** Bindings
+
+#+begin_src elisp
+(map!
+ :map git-commit-mode-map
+ :leader
+ (:prefix-map ("i" . "insert")
+  :desc "Gitmoji" "g" #'gitmoji-insert-emoji))
+#+end_src
 
 *** Functions
 **** Create worktree workspace
