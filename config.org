@@ -792,6 +792,15 @@ Porting over clojure-like functions as I'm more used to them
   (funcall fn x)
   x)
 #+end_src
+** Emoji
+
+#+begin_src elisp
+(defun my-emoji? (s)
+  (-> (substring s 0 1)
+      (gethash emojify-emojis)))
+
+#+end_src
+
 
 * My Packages
 ** Bbuild
