@@ -5268,6 +5268,16 @@ machine api.openai.com login apikey password TOKEN
            :repo "janusvm/emacs-gitmoji"
            :files ("*.el" "data")))
 #+END_SRC
+***** Config
+
+#+begin_src emacs-lisp
+(use-package gitmoji
+  :config
+  (setq gitmoji-json-file (doom-dir "gitmojis.json")))
+
+(comment
+ (gitmoji-set-emoji-data t))
+#+end_src
 
 ***** Bindings
 
