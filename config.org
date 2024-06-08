@@ -5302,7 +5302,9 @@ machine api.openai.com login apikey password TOKEN
   (interactive)
   (when (my-gitmoji/current-gitmoji)
     (my-gitmoji/remove-gitmoji))
-  (call-interactively #'gitmoji-insert-emoji))
+  (call-interactively #'gitmoji-insert-emoji)
+  (insert " ")
+  (evil-insert-state))
 
 (defun my-gitmoji|reload-json ()
   (interactive)
