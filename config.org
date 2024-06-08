@@ -5264,9 +5264,6 @@ machine api.openai.com login apikey password TOKEN
 (use-package gitmoji
   :config
   (setq gitmoji-json-file (doom-dir "gitmojis.json")))
-
-(comment
- (gitmoji-set-emoji-data t))
 #+end_src
 ***** Functions
 
@@ -5306,6 +5303,10 @@ machine api.openai.com login apikey password TOKEN
   (when (my-gitmoji/current-gitmoji)
     (my-gitmoji/remove-gitmoji))
   (call-interactively #'gitmoji-insert-emoji))
+
+(defun my-gitmoji|reload-json ()
+  (interactive)
+  (gitmoji-set-emoji-data t))
 #+end_src
 
 ***** Bindings
