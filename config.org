@@ -5281,19 +5281,28 @@ machine api.openai.com login apikey password TOKEN
 ***** Functions
 
 #+begin_src elisp
+(defun my-gitmoji/gitmoji? (emoji)
+  (-> (-map (fn! (substring % 0 1)) gitmoji-emojis)
+      (-contains? emoji)))
+
 (defun my-gitmoji/current-gitmoji ()
   "Returns the gitmoji for the current buffer when there is one."
   (ignore-errors
     (let ((char (save-excursion
                   (goto-char (point-min))
                   (evil-find-thing nil 'symbol))))
-      (when (my-emoji? char)
+      (when (my-gitmoji/gitmoji? char)
         char))))
+
+(comment
+ (my-gitmoji/gitmoji? "x")
+ (my-gitmoji/gitmoji? "🧑")
+ nil)
 
 (defun my-gitmoji/prev-commit-gitmoji ()
   (when-let ((emoji (-some-> (magit-rev-format "%B" "HEAD")
                              (substring 0 1))))
-    (when (my-emoji? emoji)
+    (when (my-gitmoji/gitmoji? emoji)
       emoji)))
 
 (defun my-gitmoji/remove-gitmoji ()
