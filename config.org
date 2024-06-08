@@ -1547,6 +1547,25 @@ This function will mutate the hashtable M."
   (spell-fu-mode)
   (evil-insert-state))
 #+end_src
+** Org Web
+
+#+begin_src elisp
+(defun org-web/execute (&rest args)
+  (let ((default-directory "~/Code/Projects/org-web/projects/cli"))
+    (->> (concat "bb ./src/cli/core.clj"
+                 (-some->> args (s-join " ") (s-prepend " ")))
+         (shell-command-to-string))))
+
+(defun org-web/headings (&rest args)
+  (ivy-read "Bbookmarks: " (->> (apply #'org-web/execute (-concat '("headings") args))
+                                (s-split "\n"))))
+
+(comment
+ (org-web/headings "/home/floscr/Documents/Org/Main/programming.org")
+
+ (org-web/headings "/home/floscr/Documents/Org/Main/inbox.org")
+ nil)
+#+end_src
 
 * Default Configuration
 ** Temp
