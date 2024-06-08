@@ -5278,6 +5278,30 @@ machine api.openai.com login apikey password TOKEN
 (comment
  (gitmoji-set-emoji-data t))
 #+end_src
+***** Functions
+
+#+begin_src elisp
+(defun my-gitmoji/current-gitmoji ()
+  "Returns the gitmoji for the current buffer when there is one."
+  (ignore-errors
+    (let ((char (save-excursion
+                  (goto-char (point-min))
+                  (evil-find-thing nil 'symbol))))
+      (when (my-emoji? char)
+        char))))
+
+(defun my-gitmoji/remove-gitmoji ()
+  "Returns the gitmoji for the current buffer when there is one."
+  (save-excursion
+    (goto-char (point-min))
+    (delete-char 1)))
+
+(defun my-gitmoji|insert-gitmoji ()
+  (interactive)
+  (when (my-gitmoji/current-gitmoji)
+    (my-gitmoji/remove-gitmoji))
+  (call-interactively #'gitmoji-insert-emoji))
+#+end_src
 
 ***** Bindings
 
@@ -5286,7 +5310,7 @@ machine api.openai.com login apikey password TOKEN
  :map git-commit-mode-map
  :leader
  (:prefix-map ("i" . "insert")
-  :desc "Gitmoji" "g" #'gitmoji-insert-emoji))
+  :desc "Gitmoji" "g" #'my-gitmoji|insert-gitmoji))
 #+end_src
 
 *** Functions
