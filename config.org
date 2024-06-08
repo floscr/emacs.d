@@ -5290,6 +5290,12 @@ machine api.openai.com login apikey password TOKEN
       (when (my-emoji? char)
         char))))
 
+(defun my-gitmoji/prev-commit-gitmoji ()
+  (when-let ((emoji (-some-> (magit-rev-format "%B" "HEAD")
+                             (substring 0 1))))
+    (when (my-emoji? emoji)
+      emoji)))
+
 (defun my-gitmoji/remove-gitmoji ()
   "Returns the gitmoji for the current buffer when there is one."
   (save-excursion
@@ -5560,12 +5566,6 @@ Loads commit template from ~./git/TEMPLATE~ if the file exist.
                   (f-join (my-magit/find-root-git-dir) "TEMPLATE"))))
     (find-file file)))
 
-(defun my-magit::commit-template/prev-gitmoji ()
-  (when-let ((emoji (-some-> (magit-rev-format "%B" "HEAD")
-                             (substring 0 1))))
-    (when (my-emoji? emoji)
-      emoji)))
-
 (defun my-magit::commit-template/insert-template (&rest _)
   "When a TEMPLATE file in the git directory exists, insert it as a commit template."
   (when (eq (point) (point-at-eol))
@@ -5575,7 +5575,7 @@ Loads commit template from ~./git/TEMPLATE~ if the file exist.
                (s-trim)
                (s-append " ")
                (insert))
-     (when-let ((emoji (my-magit::commit-template/prev-gitmoji)))
+     (when-let ((emoji (my-gitmoji/prev-commit-gitmoji)))
        (insert emoji " "))))
   (evil-insert-state))
 #+END_SRC
