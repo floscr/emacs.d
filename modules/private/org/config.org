@@ -317,6 +317,18 @@ Configured with [[https://github.com/progfolio/doct][doct]].
                               "** Prep"
                               "%?"
                               "** Ingredients"))
+                  ("Org Web:"
+                   :keys "o"
+                   :file ,(f-join org-directory "Main/projects.org")
+                   :function (lambda ()
+                               (with-current-buffer (find-file (f-join org-directory "Main/projects.org"))
+                                 (goto-char (point-min))
+                                 (re-search-forward "26d892fd-2642-40d0-8784-fd3e94a2225b")
+                                 (org-up-heading-safe)))
+                   :template ("* %{todo} %{title}"
+                              ":PROPERTIES:"
+                              ":CREATED: %U"
+                              ":END:"))
                   ("Work:"
                    :keys "w"
                    :file ,(f-join org-directory "Work/work.org")
