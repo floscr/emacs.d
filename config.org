@@ -5561,7 +5561,7 @@ Loads commit template from ~./git/TEMPLATE~ if the file exist.
     (find-file file)))
 
 (defun my-magit::commit-template/prev-gitmoji ()
-  (when-let ((emoji (-some-> (magit-rev-format "%B" "HEAD~1")
+  (when-let ((emoji (-some-> (magit-rev-format "%B" "HEAD")
                              (substring 0 1))))
     (when (my-emoji? emoji)
       emoji)))
