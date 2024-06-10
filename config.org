@@ -4920,6 +4920,23 @@ I never want to find all the references of defn."
     (setq timeout (- timeout interval))))
 #+end_src
 
+***** Require other window
+
+#+begin_src elisp
+(defun my-clojure|require-other-window-ns ()
+  "Add require statement with the ns from the other window."
+  (interactive)
+  (let ((other-window-ns
+         (save-window-excursion
+           (other-window 1)
+           (my-clojure/current-namespace))))
+    (progn
+      (goto-char (point-min))
+      (search-forward "(:require" nil t)
+      (evil-open-below 1)
+      (insert (format "[%s]" other-window-ns))
+      (backward-char 1))))
+#+end_src
 
 **** Config
 
