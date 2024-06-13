@@ -8624,6 +8624,28 @@ I will make sure I don't override any files (easily enough...)
 
 ** Hydras
 ** Work
+*** Hyma
+
+**** Apply DEV env
+
+#+begin_src elisp
+(defun my-hyma|apply-custom-dev-script ()
+  "Applies custom dev-script and assumes it unchanged in git."
+  (interactive)
+  (let ((files '("backend/scripts/start-dev"
+                 "backend/src/app/config.clj"
+                 "docker/devenv/docker-compose.yaml")))
+    (dolist (file files)
+      (magit-no-assume-unchanged file))
+    (-when-let ((rev msg) (->> (my-magit/stash-list)
+                               (-find (fn! (-let (((rev msg) %))
+                                             (string= msg "DEV"))))))
+      (magit-stash-apply rev))
+    (dolist (file files)
+      (magit-assume-unchanged file))))
+#+end_src
+
+
 *** Pitch
 **** Create worktree
 
