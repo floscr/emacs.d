@@ -5339,6 +5339,21 @@ machine api.openai.com login apikey password TOKEN
 #+end_src
 
 *** Functions
+**** Stash list
+
+#+begin_src elisp
+(defun my-magit/stash-list ()
+  (mapcar (lambda (c)
+            (pcase-let ((`(,rev ,msg) (split-string c "\0")))
+              (list rev msg)))
+          (magit-list-stashes "%gd%x00%s")))
+
+(comment
+ (->> (my-magit/stash-list)
+      (-map (fn! (second %))))
+ nil)
+#+end_src
+
 **** Create worktree workspace
 
 Creates a new git workspace from a branch.
