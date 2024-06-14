@@ -484,7 +484,7 @@
             "emoji": "🗑",
             "entity": "&#x1F5D1;",
             "code": ":wastebasket:",
-            "description": "Deprecate code that needs to be cleaned up.",
+            "description": "Deprecate code that needs to be cleaned up. (Trash, Remove, Bin)",
             "name": "wastebasket",
             "semver": "patch"
         },
