@@ -2801,6 +2801,13 @@ Better pasting for lisps, automatically indents and fixes parens when pasting.
   (interactive)
   (sp-kill-sexp ARG t))
 #+end_src
+**** aphelia-mode
+
+#+begin_src elisp
+(use-package apheleia-mode
+  :config
+  (setq apheleia-formatters (delq (assoc 'cljfmt apheleia-formatters) apheleia-formatters)))
+#+end_src
 
 ** UI :UI:
 *** Higlight indent guides
@@ -4970,9 +4977,8 @@ I never want to find all the references of defn."
                     "[/\\\\]src/js\\'"
                     "[/\\\\]src/less\\'"
                     "[/\\\\]src/tailwind\\'"
-                    "[/\\\\]test/e2e/screenshots\\'")))
-  (after! apheleia-core
-    (setq apheleia-formatters (delq (assoc 'cljfmt apheleia-formatters) apheleia-formatters))))
+                    "[/\\\\]test/e2e/screenshots\\'"
+                    "[/\\\\]ssh:\\'"))))
 #+end_src
 
 **** Themes
@@ -5282,6 +5288,7 @@ machine api.openai.com login apikey password TOKEN
   :config
   (setq gitmoji-json-file (doom-dir "gitmojis.json")))
 #+end_src
+
 ***** Functions
 
 #+begin_src elisp
