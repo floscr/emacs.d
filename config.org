@@ -2804,7 +2804,7 @@ Better pasting for lisps, automatically indents and fixes parens when pasting.
 **** aphelia-mode
 
 #+begin_src elisp
-(use-package apheleia-mode
+(use-package apheleia
   :config
   (setq apheleia-formatters (delq (assoc 'cljfmt apheleia-formatters) apheleia-formatters)))
 #+end_src
