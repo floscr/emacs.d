@@ -2803,10 +2803,29 @@ Better pasting for lisps, automatically indents and fixes parens when pasting.
 #+end_src
 **** aphelia-mode
 
+
+***** Functions
+
+****** Remove formatter
+
 #+begin_src elisp
-(use-package apheleia
-  :config
-  (setq apheleia-formatters (delq (assoc 'cljfmt apheleia-formatters) apheleia-formatters)))
+(defun my-formatters/remove-formatter (key)
+  "Remove a formatter set by doom emacs using `set-formatter!'.
+Use this function in a hook like this:
+
+(after! (:and clojure-mode apheleia)
+  (my-formatters/remove-formatter 'cljfmt))"
+  (setq apheleia-formatters (delq (assoc key apheleia-formatters) apheleia-formatters))
+  (setq apheleia-mode-alist (seq-remove (lambda (pair) (eq (cdr pair) key)) apheleia-mode-alist)))
+#+end_src
+
+
+***** Config
+****** Remove cljfmt
+
+#+begin_src elisp
+(after! (:and clojure-mode apheleia)
+  (my-formatters/remove-formatter 'cljfmt))
 #+end_src
 
 ** UI :UI:
