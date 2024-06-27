@@ -792,6 +792,18 @@ Porting over clojure-like functions as I'm more used to them
   (funcall fn x)
   x)
 #+end_src
+*** nil?
+
+#+begin_src elisp
+(defun nil? (x)
+  (null x))
+
+(comment
+ (nil? nil)
+ (nil? t)
+ nil)
+#+end_src
+
 * My Packages
 ** Bbuild
 
