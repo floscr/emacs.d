@@ -2829,6 +2829,13 @@ Use this function in a hook like this:
   (my-formatters/remove-formatter 'cljfmt))"
   (setq apheleia-formatters (delq (assoc key apheleia-formatters) apheleia-formatters))
   (setq apheleia-mode-alist (seq-remove (lambda (pair) (eq (cdr pair) key)) apheleia-mode-alist)))
+
+(comment
+ (progn
+   (set-formatter! 'cljfmt '("cljfmt" "fix" "-") :modes '(clojure-mode clojurec-mode clojurescript-mode))
+   (my-formatters/remove-formatter 'cljfmt)
+   (null (seq-some (lambda (pair) (eq (cdr pair) 'cljfmt)) apheleia-mode-alist)))
+ nil)
 #+end_src
 
 
