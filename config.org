@@ -1489,9 +1489,15 @@ This function will mutate the hashtable M."
   "Mark an expression with 'f' and keep working on a function."
   (interactive)
   (cider-eval-defun-at-point)
-  (save-excursion
-    (evil-goto-mark ?f)
-    (cider-eval-last-sexp)))
+  (catch 'found
+    (save-window-excursion
+      (dolist (w (window-list))
+        (select-window w)
+        (when (member major-mode '(clojure-mode clojurescript-mode clojurec-mode))
+          (save-excursion
+            (when (evil-goto-mark ?f t)
+              (cider-eval-last-sexp)
+              (throw 'found t))))))))
 #+end_src
 
 ** Project Hydras
