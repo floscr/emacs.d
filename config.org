@@ -7333,6 +7333,47 @@ So I fix the checker manually for each mode after lsp was loaded.
 (set-face-background 'lsp-face-highlight-textual nil)
 (set-face-attribute 'lsp-face-highlight-textual nil :weight 'regular)
 #+end_src
+*** Functions
+
+**** Prevent LSP highlighting symbols over multiple lines :HACK:
+
+Sometimes LSP would highlight stuff accross multiple lines,
+which is very distracting as it removes all syntax highlighting.
+
+#+begin_src elisp :tangle no
+(defun lsp--document-highlight-callback (highlights)
+  "Create a callback to process the reply of a
+`textDocument/documentHighlight' message for the buffer BUF.
+A reference is highlighted only if it is visible in a window."
+  (lsp--remove-overlays 'lsp-highlight)
+
+  (let* ((wins-visible-pos (-map (lambda (win)
+                                   (cons (1- (line-number-at-pos (window-start win) t))
+                                         (1+ (line-number-at-pos (window-end win) t))))
+                                 (get-buffer-window-list nil nil 'visible))))
+    (setq lsp--have-document-highlights t)
+    (-map
+     (-lambda ((&DocumentHighlight :range (&Range :start (start &as &Position :line start-line)
+                                                  :end (end &as &Position :line end-line))
+                                   :kind?))
+       (-map
+        (-lambda ((start-window . end-window))
+          ;; Make the overlay only if the reference is visible
+          (let ((start-point (lsp--position-to-point start))
+                (end-point (lsp--position-to-point end)))
+            (when (and (> (1+ start-line) start-window)
+                       (< (1+ end-line) end-window)
+                       ;; Only highlight non-multiline strings
+                       (let ((str (buffer-substring-no-properties start-point end-point)))
+                         (not (s-contains? "\n" str)))
+                       (not (and lsp-symbol-highlighting-skip-current
+                                 (<= start-point (point) end-point))))
+              (-doto (make-overlay start-point end-point)
+                (overlay-put 'face (cdr (assq (or kind? 1) lsp--highlight-kind-face)))
+                (overlay-put 'lsp-highlight t)))))
+        wins-visible-pos))
+     highlights)))
+#+end_src
 
 ** Snippets :SNIPPETS:
 *** Overrides
