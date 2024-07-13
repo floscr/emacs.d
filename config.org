@@ -5258,6 +5258,20 @@ machine api.openai.com login apikey password TOKEN
               res)))
   (setq-default gptel--system-message (alist-get 'default gptel-directives)))
 #+END_SRC
+*** Astro
+
+**** Config
+
+#+BEGIN_SRC elisp :tangle no
+(use-package! astro-mode
+  :hook
+  (astro-mode . lsp))
+
+(set-formatter! 'prettier-astro
+  '("prettier" "--parser=astro"
+    (apheleia-formatters-indent "--use-tabs" "--tab-width" 'astro-ts-mode-indent-offset))
+  :modes '(astro-mode))
+#+END_SRC
 
 ** Git / Magit :GIT:MAGIT:
 *** Packages
@@ -8042,7 +8056,6 @@ error in process filter: End of buffer
   (add-hook! 'eat-mode-hook '+eat-setup)
   (pushnew! evil-emacs-state-modes 'eat-mode))
 #+END_SRC
-
 
 ** Org Mode
 *** Custom Packages
