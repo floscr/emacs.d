@@ -1433,6 +1433,7 @@ This function will mutate the hashtable M."
 
 (defun my-comment-header|toggle-fold ()
   (interactive)
+  (require 'vimish-fold)
   (when (my-comment/comment-header-line?)
     (if (my-comment-header/vimish-fold?)
         (vimish-fold-unfold)
