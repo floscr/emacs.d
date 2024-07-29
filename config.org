@@ -7355,7 +7355,7 @@ So I fix the checker manually for each mode after lsp was loaded.
 Sometimes LSP would highlight stuff accross multiple lines,
 which is very distracting as it removes all syntax highlighting.
 
-#+begin_src elisp :tangle no
+#+begin_src elisp
 (defun lsp--document-highlight-callback (highlights)
   "Create a callback to process the reply of a
 `textDocument/documentHighlight' message for the buffer BUF.
