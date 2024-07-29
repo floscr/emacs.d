@@ -10185,17 +10185,20 @@ Since the minibuffer has no evil mode, i've got these bindings to help out:
     (set-mark-command nil)
     (doom/backward-to-bol-or-indent)
     (kill-ring-save (mark) (point))))
+#+END_SRC
 
-(defun my-minibuffer/setup-copy-bindings ()
+*** Bindings
+
+#+begin_src elisp
+(defun my-minibuffer/setup-bindings ()
   "Set up keybindings for the minibuffer"
   (local-set-key (kbd "s-v") 'my-evil|paste-pruned)
-  (local-set-key (kbd "s-c") 'my-minibuffer|copy-line))
+  (local-set-key (kbd "s-c") 'my-minibuffer|copy-line)
+  (local-set-key (kbd "M-/") 'hippie-expand))
 
-(add-hook 'minibuffer-setup-hook 'my-minibuffer/setup-copy-bindings)
+(add-hook 'minibuffer-setup-hook 'my-minibuffer/setup-bindings)
+#+end_src
 
-;; (define-key! :keymaps +default-minibuffer-maps
-;;   "C-w" 'sp-backward-delete-word)
-#+END_SRC
 
 * Hacks
 ** Override default browser
