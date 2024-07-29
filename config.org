@@ -766,6 +766,12 @@ When ARG is passed, query for a custom delimiter."
                        (read-string "Date delimiter: " "-")
                      "-")))
     (my-evil/insert-dwim (format-time-string (concat "%Y" delimiter "%m" delimiter "%d")))))
+
+(defun my-date|insert-today-mode-specific ()
+  (interactive)
+  (cl-case major-mode
+    ('org-mode (call-interactively #'org-time-stamp-inactive))
+    (t (call-interactively #'my-date|insert-today))))
 #+end_src
 ** Clojure like
 
@@ -9807,9 +9813,10 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("i" . "insert")
-   :desc "New Snippet"    "S" #'+snippets/new
-   :desc "Killring"       "y" #'helm-show-kill-ring
-   :desc "Comment Header" "h" #'my-comment-header|insert))
+  :desc "New Snippet"    "S" #'+snippets/new
+  :desc "Killring"       "y" #'helm-show-kill-ring
+  :desc "Comment Header" "h" #'my-comment-header|insert
+  :desc "Date" "d"           #'my-date|insert-today-mode-specific))
 #+END_SRC
 
 *** Open
