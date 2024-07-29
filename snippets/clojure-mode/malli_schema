@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: malli defn schema
+# key: ds
+# --
+{:malli/schema [:=> [:cat $1] $2]}
