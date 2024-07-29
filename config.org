@@ -9723,14 +9723,15 @@ So deletes wont affect this register."
  "\\"   #'my-project-hydra|main)
 #+END_SRC
 
-*** Buffer
+*** Buffer / Bookmark
 
 #+BEGIN_SRC elisp
 (map!
  :leader
- (:prefix-map ("b" . "buffer")
+ (:prefix-map ("b" . "buffer / bookmark")
   :desc "Rename Buffer"  "r" #'rename-buffer
-  :desc "Rename Buffer"  "+" #'persp-add-buffer))
+  :desc "Rename Buffer"  "+" #'persp-add-buffer
+  :desc "Rename Buffer"  "a" #'bbookmarks|save))
 #+END_SRC
 
 *** Code
