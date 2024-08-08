@@ -5008,8 +5008,8 @@ I never want to find all the references of defn."
       (insert (format "[%s]" other-window-ns))
       (backward-char 1))))
 #+end_src
-***** Find require
 
+***** Find require
 
 #+begin_src elisp
 (defun +clojure/find-require (ns)
