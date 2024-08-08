@@ -4440,7 +4440,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 ****** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! cider :pin "06dc45844ad05fe23fccb7dec1609404e3cda88e")
+(package! cider :pin "810337cee931d9f14aa16550a74516f8337a47f3")
 #+END_SRC
 
 ****** Config
