@@ -2,4 +2,4 @@
 # name: clojure.test testing
 # key: tt
 # --
-(testing "$1" $0)
+(`(+clojure/with-test-require-alias)`testing "$1" $0)

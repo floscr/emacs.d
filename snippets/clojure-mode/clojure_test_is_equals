@@ -2,4 +2,4 @@
 # name: clojure.test t=
 # key: t=
 # --
-(is (= $0))
+(`(+clojure/with-test-require-alias)`is (= $0))

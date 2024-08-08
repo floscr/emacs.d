@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: clojure.test deftest
+# key: tr
+# --
+(`(+clojure/with-test-require-alias)`run-tests)

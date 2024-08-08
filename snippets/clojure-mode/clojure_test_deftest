@@ -2,5 +2,5 @@
 # name: clojure.test deftest
 # key: dt
 # --
-(deftest ${1:test-name}
+(`(+clojure/with-test-require-alias)`deftest ${1:test-name}
   $0)
