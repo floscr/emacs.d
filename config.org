@@ -5022,8 +5022,9 @@ I never want to find all the references of defn."
                       (+clojure/find-require "cljs.test"))))
     (save-excursion
       (goto-char pos)
-      (-> (substring-no-properties (thing-at-point 'line))
-          (s-trim)))))
+      (->> (substring-no-properties (thing-at-point 'line))
+           (s-trim)
+           (s-replace-regexp ")+$" "")))))
 
 (defun +clojure/find-test-require-alias ()
   (require 'parseedn)
@@ -5040,7 +5041,7 @@ I never want to find all the references of defn."
     (concat (symbol-name alias) "/")))
 
 (comment
- (with-current-buffer (find-buffer-visiting "/home/floscr/Code/Work/Hyma/tokens-studio-for-penpot/frontend/test/token_tests/logic/token_actions_test.cljs")
+ (with-current-buffer (find-buffer-visiting "/home/floscr/Code/Work/Hyma/tokens-studio-for-penpot/frontend/test/token_tests/token_test.cljs")
    (+clojure/find-test-require-alias))
 
  (with-current-buffer (find-buffer-visiting "/home/floscr/Code/Work/Hyma/tokens-studio-for-penpot/frontend/test/token_tests/logic/token_actions_test.cljs")
