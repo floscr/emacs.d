@@ -773,6 +773,19 @@ When ARG is passed, query for a custom delimiter."
     ('org-mode (call-interactively #'org-time-stamp-inactive))
     (t (call-interactively #'my-date|insert-today))))
 #+end_src
+** Treepy
+*** treepy-walk-while
+
+#+begin_src elisp
+(defun +treepy/walk-while (loc pred)
+  (require 'treepy)
+  (let ((nloc (treepy-next loc)))
+    (cond
+     ((treepy-end-p nloc) nil)
+     ((funcall pred (treepy-node nloc)) nloc)
+     (t (treepy-walk-while nloc pred)))))
+#+end_src
+
 ** Clojure like
 
 Porting over clojure-like functions as I'm more used to them
@@ -4994,6 +5007,45 @@ I never want to find all the references of defn."
       (evil-open-below 1)
       (insert (format "[%s]" other-window-ns))
       (backward-char 1))))
+#+end_src
+***** Find require
+
+
+#+begin_src elisp
+(defun +clojure/find-require (ns)
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward ns nil t)))
+
+(defun +clojure/find-test-require ()
+  (when-let ((pos (or (+clojure/find-require "clj.test")
+                      (+clojure/find-require "cljs.test"))))
+    (save-excursion
+      (goto-char pos)
+      (-> (substring-no-properties (thing-at-point 'line))
+          (s-trim)))))
+
+(defun +clojure/find-test-require-alias ()
+  (require 'parseedn)
+  (-some-> (+clojure/find-test-require)
+           (parseedn-read-str)
+           (treepy-vector-zip)
+           (treepy-walk-while (fn! (not (eq ':as %))))
+           (treepy-next)
+           (treepy-next)
+           (treepy-node)))
+
+(defun +clojure/with-test-require-alias ()
+  (when-let (alias (+clojure/find-test-require-alias))
+    (concat (symbol-name alias) "/")))
+
+(comment
+ (with-current-buffer (find-buffer-visiting "/home/floscr/Code/Work/Hyma/tokens-studio-for-penpot/frontend/test/token_tests/logic/token_actions_test.cljs")
+   (+clojure/find-test-require-alias))
+
+ (with-current-buffer (find-buffer-visiting "/home/floscr/Code/Work/Hyma/tokens-studio-for-penpot/frontend/test/token_tests/logic/token_actions_test.cljs")
+   (+clojure/with-test-require-alias))
+ nil)
 #+end_src
 
 **** Config
