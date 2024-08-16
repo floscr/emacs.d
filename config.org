@@ -5041,10 +5041,11 @@ I never want to find all the references of defn."
 
 (defun +clojure/find-test-require-alias ()
   (require 'parseedn)
+  (require 'treepy)
   (-some-> (+clojure/find-test-require)
            (parseedn-read-str)
            (treepy-vector-zip)
-           (treepy-walk-while (fn! (not (eq ':as %))))
+           (+treepy/walk-while (fn! (not (eq ':as %))))
            (treepy-next)
            (treepy-next)
            (treepy-node)))
