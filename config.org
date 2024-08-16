@@ -822,6 +822,19 @@ Porting over clojure-like functions as I'm more used to them
  (nil? t)
  nil)
 #+end_src
+** String
+
+*** Dedent
+
+#+begin_src elisp
+(defun my-dedent (s)
+  "Dedent a string be the leading space indent."
+  (let* ((trimmed (string-trim-left s))
+         (trim-count (- (length s) (length trimmed))))
+    (->> (s-lines s)
+         (--map (s-replace-regexp (concat "^" (s-repeat trim-count " ?")) "" it))
+         (s-join "\n"))))
+#+end_src
 
 * My Packages
 ** Bbuild
@@ -2794,15 +2807,15 @@ Better pasting for lisps, automatically indents and fixes parens when pasting.
 (defun my-parinfer|yank ()
   "Yank with temporary paren mode enabled."
   (interactive)
-  (my-parinfer/save-excursion "paren"
-                              (let ((beg (point)))
-                                (->> (current-kill 0)
-                                     (substring-no-properties)
-                                     (s-trim-left)
-                                     (s-trim)
-                                     (insert))
-                                (let ((end (point)))
-                                  (evil-indent beg end)))))
+  (my-parinfer/save-excursion
+   "paren"
+   (let ((beg (point)))
+     (->> (current-kill 0)
+          (substring-no-properties)
+          (my-dedent)
+          (insert))
+     (let ((end (point)))
+       (evil-indent beg end)))))
 
 (map!
  :mode (clojure-script-mode clojure-mode emacs-lisp-mode)
