@@ -2,4 +2,5 @@
 # name: :require
 # key: r
 # --
-(:require [$0])
+(:require
+  [$0])
