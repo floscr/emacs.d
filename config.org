@@ -4749,6 +4749,24 @@ Define jump points for lispyville functions
 (package! clj-refactor :disable t)
 #+END_SRC
 
+**** API
+
+***** Let statements
+
+#+begin_src elisp
+(defun my-clojure/point-at-let-beg? ()
+  (let ((p nil))
+    (save-excursion
+      (lispyville-backward-up-list 2)
+      (setq p (re-search-forward "(?let \\[" (+ (point) 6) t)))
+    p))
+
+(defun my-clojure/inside-let-vector? ()
+  (and (clojure--inside-let-binding-p)
+       (my-clojure/point-at-let-beg?)))
+#+end_src
+
+
 **** Functions
 ***** Keywords to map
 
@@ -5062,6 +5080,15 @@ I never want to find all the references of defn."
    (+clojure/with-test-require-alias))
  nil)
 #+end_src
+***** let statement
+
+#+begin_src elisp
+(defun my-clojure/let-ignore-prefix ()
+  (when (my-clojure/inside-let-vector?)
+    "_ "))
+#+end_src
+
+
 
 **** Config
 
