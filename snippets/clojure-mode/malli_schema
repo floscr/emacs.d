@@ -2,4 +2,4 @@
 # name: malli defn schema
 # key: ds
 # --
-{:malli/schema [:=> [:cat $1] $2]}
+{:malli/schema [:-> $1 $2]}
