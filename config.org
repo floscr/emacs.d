@@ -2397,6 +2397,18 @@ This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
             :action #'+workspace/switch-to))
 #+END_SRC
 
+***** Save workspace buffers
+
+#+begin_src elisp
+(defun my-workspaces|save-buffers ()
+  "Close all other workspaces."
+  (interactive)
+  (when-let ((file-buffers (->> (+workspace-buffer-list)
+                                (-filter #'buffer-file-name))))
+    (-each file-buffers #'basic-save-buffer)))
+#+end_src
+
+
 ***** Close others
 
 #+BEGIN_SRC elisp
@@ -9829,9 +9841,10 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("b" . "buffer / bookmark")
-  :desc "Rename Buffer"  "r" #'rename-buffer
-  :desc "Rename Buffer"  "+" #'persp-add-buffer
-  :desc "Rename Buffer"  "a" #'bbookmarks|save))
+  :desc "Save all buffers" "S" #'evil-write-all
+  :desc "Rename Buffer"    "r" #'rename-buffer
+  :desc "Rename Buffer"    "+" #'persp-add-buffer
+  :desc "Rename Buffer"    "a" #'bbookmarks|save))
 #+END_SRC
 
 *** Code
