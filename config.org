@@ -4486,6 +4486,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 (use-package! cider
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil)
+  (setq cider-reuse-dead-repls t)
   ;; Show errors inline
   (setq cider-use-overlays t)
   (setq cider-use-fringe-indicators nil)
