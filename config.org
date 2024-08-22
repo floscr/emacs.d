@@ -5096,8 +5096,9 @@ I never want to find all the references of defn."
 
 #+begin_src elisp
 (defun my-clojure/let-ignore-prefix ()
-  (when (my-clojure/inside-let-vector?)
-    "_ "))
+  (ignore-errors
+    (when (my-clojure/inside-let-vector?)
+      "_ ")))
 #+end_src
 
 
