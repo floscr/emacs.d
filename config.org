@@ -980,7 +980,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
                              (-let (((_ id _) x))
                                (bbookmarks|execute "remove" id)
                                (bbookmarks|list)))
-                       "Do something"))
+                       "Remove"))
             :caller 'bbookmarks|list))
 
 (defun bbookmarks|list-project-bookmarks ()
