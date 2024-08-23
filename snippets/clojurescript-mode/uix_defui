@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: uix/defui
 # uuid: uix_defui
-# key: $
+# key: x$
 # --
 (defui ${1:fn-name} [${2:{:keys [$3]}}]
   $0)

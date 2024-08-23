@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: component
+# uuid: component (uix, rumext)
+# key: $
+# expand-env: ((yas-indent-line 'fixed))
+# type: command
+# --
+(case (+clojure/find-component-system-require)
+  (':rum (yas-expand-snippet (yas-lookup-snippet "rumext/component")))
+  (t (yas-expand-snippet (yas-lookup-snippet "uix/defui"))))

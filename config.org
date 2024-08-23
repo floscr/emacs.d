@@ -5061,6 +5061,11 @@ I never want to find all the references of defn."
     (goto-char (point-min))
     (re-search-forward ns nil t)))
 
+(defun +clojure/find-component-system-require ()
+  (cond
+   ((+clojure/find-require "rumext.v2") :rum)
+   (t :uix)))
+
 (defun +clojure/find-test-require ()
   (when-let ((pos (or (+clojure/find-require "clj.test")
                       (+clojure/find-require "cljs.test"))))

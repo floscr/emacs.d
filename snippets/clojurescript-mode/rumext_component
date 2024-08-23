@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: rumext/component
+# uuid: rumext_component
+# key: r$
+# --
+(mf/defc ${1:fn-name}
+  [${2:{:keys [$3]}}]
+  $0)
