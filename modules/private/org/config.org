@@ -1929,7 +1929,7 @@ Projectile search is not fast reliable enough."
 (defun +org/counsel-notes-jump:files ()
   "Function docstring"
   (interactive)
-  (--> '("Main" "Work")
+  (--> '("Main" "Work" "Shared")
        (--map (f-join org-directory it) it)
        (-map 'f-files it)
        -flatten
