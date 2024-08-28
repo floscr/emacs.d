@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: use-ref
+# uuid: use-ref
+# key: ur
+# type: command
+# --
+(case (+clojure/find-component-system-require)
+  (':rum (yas-expand-snippet (yas-lookup-snippet "rumext/use-ref")))
+  (t (yas-expand-snippet (yas-lookup-snippet "uix/use-ref"))))

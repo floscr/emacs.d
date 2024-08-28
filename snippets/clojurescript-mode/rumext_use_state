@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: rumext/use-state
+# uuid: rumext_use_state
+# key: rus
+# --
+${1:state} (mf/use-state $0)

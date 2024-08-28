@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: uix/use-ref
 # uuid: uix_use_ref
-# key: ur
+# key: xur
 # --
 ${1:ref} (uix/use-ref)

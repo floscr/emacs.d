@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: rumext/use-ref
+# uuid: rumext_use_ref
+# --
+${1:ref} (mf/use-ref)

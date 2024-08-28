@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: rumext/use-callback
+# uuid: rumext_use_callback
+# --
+${1:cb} (mf/use-callback
+  (mf/deps $2)
+  (fn [$3]
+    ($0)))
