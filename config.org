@@ -10393,7 +10393,6 @@ Since the minibuffer has no evil mode, i've got these bindings to help out:
 (add-hook 'minibuffer-setup-hook 'my-minibuffer/setup-bindings)
 #+end_src
 
-
 * Hacks
 ** Override default browser
 
