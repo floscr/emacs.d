@@ -8852,9 +8852,14 @@ I will make sure I don't override any files (easily enough...)
 
 ** Hydras
 ** Work
-*** Hyma
+*** Hyma / Penpot
+**** Config
 
-**** Apply DEV env
+
+
+**** Functions
+
+***** Apply DEV env
 
 #+begin_src elisp
 (defun my-hyma|apply-custom-dev-script ()
@@ -9240,6 +9245,29 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (prn (s-join "" (list "bb ./src/bdocs.clj" f)))
     (shell-command-to-string (s-join " " (list "bb ./src/bdocs.clj" (concat "'" f "'"))))))
 #+end_src
+* Projects
+
+** Penpot
+
+*** Config
+
+#+begin_src elisp
+(def-project-mode! my-penpot-project-mode
+  :modes '(clojure-mode clojurescript-mode magit-mode)
+  :when (s-ends-with? "Code/Work/Hyma/tokens-studio-for-penpot/" (doom-project-root))
+  :on-enter (progn
+              (setq-local my-comment-header:col-char nil)
+              (setq-local my-comment-header:col-count 0)
+              (let* ((h ";; ===")
+                     (comment-modes (a-assoc my-comment-header:mode-comment-start
+                                             'my-penpot-project-mode h
+                                             'clojurescript-mode h
+                                             'clojurec-mode h
+                                             'clojure-mode h)))
+                (setq-local my-comment-header:mode-comment-start comment-modes))))
+#+end_src
+
+
 
 * Bindings
 ** General
