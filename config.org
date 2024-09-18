@@ -9268,6 +9268,49 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 #+end_src
 
 
+** Org Web
+
+*** Config
+
+#+begin_src elisp
+(def-project-mode! my-org-web-mode
+  :modes '(clojure-mode clojurescript-mode magit-mode)
+  :when (s-starts-with? "/home/floscr/Code/Smorgasbord/items/org-web" (doom-project-root))
+  :on-enter
+  (progn
+    (defvar emmet-clojure-snippets
+      (ht
+       ("db" ":display \"block\"")
+       ("dg" ":display \"grid\"")
+       ("dn" ":display \"none\"")
+
+       ("bg" ":background \"|\"")
+       ("bgc" ":background-color \"|\"")
+
+       ("df" ":display \"flex\"")
+       ("g" ":gap |")
+       ("fdc" ":flex-direction \"column\"")
+       ("jcc" ":justify-content \"center\"")
+       ("aic" ":align-items \"center\"")
+
+       ("posa" ":position \"absolute\"")
+       ("posr" ":position \"relative\"")
+       ("posf" ":position \"fixed\"")
+
+       ("p" ":padding |")
+       ("pt" ":padding-top |")
+       ("pr" ":padding-right |")
+       ("pl" ":padding-left |")
+       ("pb" ":padding-bottom |")
+
+       ("brd" ":border-radius |")
+
+       ("ov" ":overflow \"hidden\"")
+       ("os" ":overflow \"scroll\"")))
+    (setq-local emmet-css-major-modes '(clojurescript-mode))
+    (setq-local emmet-css-snippets emmet-clojure-snippets)
+    (emmet-mode 1)))
+#+end_src
 
 * Bindings
 ** General
