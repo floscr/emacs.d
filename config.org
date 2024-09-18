@@ -1356,13 +1356,17 @@ This function will mutate the hashtable M."
   "Of how many cols should the header consist.")
 
 (defvar my-comment-header:col-char "-"
-  "With which character to fill the comment header.")
+  "(Nillable) With which character to fill the comment header.")
 
 (defvar my-comment-header:mode-comment-start
   '((emacs-lisp-mode . ";;")
     (clojurescript-mode . ";;")
     (clojurec-mode . ";;")
     (clojure-mode . ";;")))
+
+(make-variable-buffer-local 'my-comment-header:col-count)
+(make-variable-buffer-local 'my-comment-header:col-char)
+(make-variable-buffer-local 'my-comment-header:mode-comment-start)
 
 (put 'my-comment-header:col-count 'safe-local-variable 'integerp)
 (put 'my-comment-header:mode-comment-start 'safe-local-variable t)
@@ -1374,19 +1378,15 @@ This function will mutate the hashtable M."
   (or (alist-get major-mode my-comment-header:mode-comment-start)
       (-> comment-start (s-trim-right))))
 
-(defun my-comment/match-header* (&optional bound)
-  (re-search-forward (concat "^"
-                             (my-comment-header/comment-start)
-                             " \\(.+?\\) "
-                             my-comment-header:col-char "+$")
-                     bound t))
+(defun my-comment/header-regexp ()
+  (concat "^"
+          (my-comment-header/comment-start)
+          " \\(.+?\\)"
+          (when my-comment-header:col-char (concat " " my-comment-header:col-char "+"))
+          "$"))
 
 (defun my-comment/match-header-position (&optional bound)
-  (re-search-forward (concat "^"
-                             (my-comment-header/comment-start)
-                             " \\(.+?\\) "
-                             my-comment-header:col-char "+$")
-                     bound t))
+  (re-search-forward (my-comment/header-regexp) bound t))
 
 (defun my-comment/match-header (&optional bound)
   (when (my-comment/match-header-position bound)
@@ -6944,7 +6944,9 @@ This shortens the nixos paths to ~{nix}~.
 (defun my-project|create-test-file ()
   (interactive)
   (cond
-   ((or (eq major-mode 'clojure-mode) (eq major-mode 'clojurescript-mode))
+   ((or (eq major-mode 'clojure-mode)
+        (eq major-mode 'clojurescript-mode)
+        (eq major-mode 'clojurec-mode))
     (my-project/create-test-file (f-join doom-user-dir "file-templates/clojure-mode/__test.clj")
                                  (fn! (concat % "_test"))))
    (t (my-project/create-test-file nil #'identity))))
