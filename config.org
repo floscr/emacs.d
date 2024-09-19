@@ -8808,6 +8808,7 @@ I will make sure I don't override any files (easily enough...)
       (my-attach/resolve-path)))
 
 (defun my-attach|delete-attachment ()
+  "Deletes attachment under cursor and removes the link."
   (interactive)
   (-when-let* (((&plist :url :region) (my-org/link-at-point)))
     (-let (((beg end) region)
