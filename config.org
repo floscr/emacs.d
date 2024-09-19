@@ -5336,7 +5336,6 @@ machine api.openai.com login apikey password TOKEN
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! gptel)
 #+END_SRC
-
 **** Config
 
 #+BEGIN_SRC elisp
@@ -5378,6 +5377,34 @@ machine api.openai.com login apikey password TOKEN
               res)))
   (setq-default gptel--system-message (alist-get 'default gptel-directives)))
 #+END_SRC
+**** Functions
+
+***** New gptel
+
+#+begin_src elisp
+(defvar my-gptel:buffers-list '())
+
+(defun my-gptel/new-buffer-name ()
+  (let ((n (length my-gptel:buffers-list)))
+    (cl-case n
+      (0 "*Gptel*")
+      (t (t! "*Gptel <<n>>*")))))
+
+(defun my-gptel|new ()
+  (interactive)
+  (let ((buffer (-> (my-gptel/new-buffer-name)
+                    (gptel))))
+    (add-to-list 'my-gptel:buffers-list buffer)
+    (switch-to-buffer buffer)
+    (goto-char (point-at-eol))
+    (evil-insert-state t)))
+
+(defun my-gpel|select-last-buffer ()
+  (interactive)
+  (when-let ((b (-last-item my-gptel:buffers-list)))
+    (switch-to-buffer b)))
+#+end_src
+
 *** Astro
 
 **** Config
@@ -9953,7 +9980,11 @@ So deletes wont affect this register."
  (:prefix-map ("c" . "Code")
   :desc "Compile" "c"   #'my-project-compile|compile
   :desc "Rename" "r"   #'lsp-rename
-  :desc "Execute code action" "a"   #'lsp-execute-code-action))
+  :desc "Execute code action" "a"   #'lsp-execute-code-action
+
+  :desc "New AI Chat" "n" #'my-gptel|new
+  :desc "Switch to AI Chat" "s" #'gptel
+  :desc "Switch to last AI Chat" "l" #'my-gpel|select-last-buffer))
 #+end_src
 
 *** File / Goto
