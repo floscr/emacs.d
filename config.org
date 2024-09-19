@@ -8536,11 +8536,14 @@ When no link is found return nil."
     (when (eq (org-element-type link-info) 'link)
       (let* ((type (org-element-property :type link-info))
              (url (concat type ":" (org-element-property :path link-info)))
-             (title (org-element-property :title link-info)))
+             (title (org-element-property :title link-info))
+             (region (list (org-element-property :begin link-info)
+                           (org-element-property :end link-info))))
         (when url
           (list :el link-info
                 :url url
-                :title title))))))
+                :title title
+                :region region))))))
 #+END_SRC
 
 **** Jump to definition for tangled files
@@ -8569,14 +8572,11 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
   "Fetch the link title under the cursor."
   (-when-let* ((org-el (my-org/link-at-point)))
     (-let* ((fn (or fn #'my-org/fetch-link-title-command))
-            ((&plist :el :url) org-el)
-            (title (funcall fn url))
-            (from (org-element-property :begin el))
-            (to (org-element-property :end el)))
+            ((&plist :el :url :region) org-el)
+            (title (funcall fn url)))
       (when (string= title "Could not find title in html")
         (user-error (t! "Error: Could not fetch title for url <<url>>")))
-      (list :region (list (org-element-property :begin el)
-                          (org-element-property :end el))
+      (list :region region
             :title title))))
 
 (defun my-org/update-link-title (&optional fn)
