@@ -9288,7 +9288,7 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
        ("bgc" ":background-color \"|\"")
 
        ("df" ":display \"flex\"")
-       ("g" ":gap |")
+       ("g" ":gap \"|\"")
        ("fdc" ":flex-direction \"column\"")
        ("jcc" ":justify-content \"center\"")
        ("aic" ":align-items \"center\"")
@@ -9296,14 +9296,15 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
        ("posa" ":position \"absolute\"")
        ("posr" ":position \"relative\"")
        ("posf" ":position \"fixed\"")
+       ("i" ":inset 0")
 
-       ("p" ":padding |")
-       ("pt" ":padding-top |")
-       ("pr" ":padding-right |")
-       ("pl" ":padding-left |")
-       ("pb" ":padding-bottom |")
+       ("p" ":padding \"|\"")
+       ("pt" ":padding-top \"|\"")
+       ("pr" ":padding-right \"|\"")
+       ("pl" ":padding-left \"|\"")
+       ("pb" ":padding-bottom \"|\"")
 
-       ("brd" ":border-radius |")
+       ("brd" ":border-radius \"|\"")
 
        ("ov" ":overflow \"hidden\"")
        ("os" ":overflow \"scroll\"")))
