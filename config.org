@@ -8798,9 +8798,14 @@ I will make sure I don't override any files (easily enough...)
 #+begin_src elisp
 (defvar my-attach:dir "~/Documents/Org/.attach/clojure-attach")
 
+(defun my-attach/resolve-path (path)
+  (defun my-attach/follow (path)
+    (let* ((attach-dir (expand-file-name my-attach:dir))
+           (path* (expand-file-name path attach-dir)))
+      (path*))))
+
 (defun my-attach/follow (path)
-  (let* ((attach-dir (expand-file-name my-attach:dir))
-         (path* (expand-file-name path attach-dir)))
+  (let ((path* (my-attach/resolve-path path)))
     (if (or (string-match-p (image-file-name-regexp) path)
             (f-ext-p path "pdf"))
         (find-file path*)
