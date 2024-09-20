@@ -5395,7 +5395,7 @@ machine api.openai.com login apikey password TOKEN
   (let ((buffer (-> (my-gptel/new-buffer-name)
                     (gptel))))
     (add-to-list 'my-gptel:buffers-list buffer)
-    (switch-to-buffer buffer)
+    (pop-to-buffer buffer)
     (goto-char (point-at-eol))
     (evil-insert-state t)))
 
