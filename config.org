@@ -9357,10 +9357,19 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
        ("jcc" ":justify-content \"center\"")
        ("aic" ":align-items \"center\"")
 
+       ("w" ":width \"|\"")
+       ("h" ":height \"|\"")
+       ("as" ":aspect-ratio \"1/1\"")
+
        ("posa" ":position \"absolute\"")
        ("posr" ":position \"relative\"")
        ("posf" ":position \"fixed\"")
+       ("b" ":bottom \"|\"")
+       ("r" ":right \"|\"")
+       ("l" ":left \"|\"")
+       ("t" ":top \"|\"")
        ("i" ":inset 0")
+       ("zi" ":z-index \"|\"")
 
        ("p" ":padding \"|\"")
        ("pt" ":padding-top \"|\"")
