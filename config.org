@@ -9352,6 +9352,8 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
        ("bgc" ":background-color \"|\"")
 
        ("df" ":display \"flex\"")
+       ("fg" ":flex-grow \"|\"")
+       ("fs" ":flex-shrink \"|\"")
        ("g" ":gap \"|\"")
        ("fdc" ":flex-direction \"column\"")
        ("jcc" ":justify-content \"center\"")
