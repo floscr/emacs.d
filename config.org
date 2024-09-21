@@ -9381,10 +9381,61 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
 
        ("ov" ":overflow \"hidden\"")
        ("os" ":overflow \"scroll\"")))
+
     (setq-local emmet-css-major-modes '(clojurescript-mode))
     (setq-local emmet-css-snippets emmet-clojure-snippets)
     (emmet-mode 1)))
 #+end_src
+*** Functions
+
+**** Make css class
+
+#+begin_src elisp
+(defun org-web/css-import? ()
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward "app.utils.css.core :refer-macros" nil t)))
+
+(defun org-web/insert-css-require ()
+  (goto-char (point-min))
+  (re-search-forward "(:require" nil t)
+  (insert "\n" "   [app.utils.css.core :refer-macros [css]"))
+
+(defun org-web/ensure-css-import ()
+  (save-excursion
+    (when (not (org-web/css-import?))
+      (org-web/insert-css-require))))
+
+(defun org-web|make-class ()
+  (interactive)
+  (when-let ((var-name (symbol-at-point)))
+    (or (my-comment-header/goto-headers "Styles")
+        (progn
+          (goto-char (point-min))
+          (evil-jump-item)
+          (forward-line)
+          (my-comment-header|insert "Styles")))
+    (end-of-line)
+    (forward-line)
+    (when (my-comment-header|goto-next-comment-header)
+      (previous-line))
+    (insert "\n")
+    (insert (t! "(css <<var-name>> [] \n  {})\n"))
+    (backward-char 3)
+    (evil-insert-state))
+  (org-web/ensure-css-import))
+#+end_src
+
+
+*** Bindings
+
+#+begin_src elisp
+(map! :map my-org-web-mode-map
+      :localleader
+      (:prefix ("m" . "modify")
+       :desc "Make css class" "c" #'org-web|make-class))
+#+end_src
+
 
 * Bindings
 ** General
