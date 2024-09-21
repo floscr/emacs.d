@@ -6210,6 +6210,27 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
 
 (define-key magit-status-mode-map (kbd "#") #'th/magit-aux-commands)
 #+end_src
+**** Remove logs
+
+#+begin_src elisp
+(defun my-magit|discard-staged-logs ()
+  (interactive)
+  (when-let ((log-lines (save-window-excursion
+                          (with-current-buffer (magit-diff-staged)
+                            (->> (buffer-substring-no-properties (point-min) (point-max))
+                                 (s-lines)
+                                 (--filter (s-contains? "js/console.log" it)))))))
+    (-each log-lines
+           (lambda (_)
+             (with-current-buffer (magit-diff-staged)
+               (evil-normal-state)
+               (magit-refresh)
+               (re-search-forward "js/console.log" nil t)
+               (goto-char (point-at-bol))
+               (evil-visual-line)
+               (magit-discard)
+               (kill-buffer))))))
+#+end_src
 
 *** Config
 
