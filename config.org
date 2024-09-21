@@ -4779,7 +4779,6 @@ Define jump points for lispyville functions
        (my-clojure/point-at-let-beg?)))
 #+end_src
 
-
 **** Functions
 ***** Keywords to map
 
@@ -5106,7 +5105,6 @@ I never want to find all the references of defn."
     (when (my-clojure/inside-let-vector?)
       "_ ")))
 #+end_src
-
 
 
 **** Config
@@ -6213,19 +6211,22 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
 **** Remove logs
 
 #+begin_src elisp
+(defvar my-magit|discard-staged-logs-regexp
+  "println\\|print\\|prn\\|print!\\|js\\/console.log\\|console.log")
+
 (defun my-magit|discard-staged-logs ()
   (interactive)
   (when-let ((log-lines (save-window-excursion
                           (with-current-buffer (magit-diff-staged)
                             (->> (buffer-substring-no-properties (point-min) (point-max))
                                  (s-lines)
-                                 (--filter (s-contains? "js/console.log" it)))))))
+                                 (--filter (s-matches? my-magit|discard-staged-logs-regexp it)))))))
     (-each log-lines
            (lambda (_)
              (with-current-buffer (magit-diff-staged)
                (evil-normal-state)
                (magit-refresh)
-               (re-search-forward "js/console.log" nil t)
+               (re-search-forward my-magit|discard-staged-logs-regexp nil t)
                (goto-char (point-at-bol))
                (evil-visual-line)
                (magit-discard)
@@ -8919,8 +8920,6 @@ I will make sure I don't override any files (easily enough...)
 ** Work
 *** Hyma / Penpot
 **** Config
-
-
 
 **** Functions
 
