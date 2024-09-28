@@ -5420,6 +5420,13 @@ machine api.openai.com login apikey password TOKEN
 
 ** Git / Magit :GIT:MAGIT:
 *** Packages
+**** Magit & Transient
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! magit :pin "0aa26864e3fc4e6949711a4821caf6819e7ab171")
+(package! transient :pin "3430943eaa3222cd2a487d4c102ec51e10e7e3c9")
+#+END_SRC
+
 **** [[https://github.com/freesteph/elescope][elescope: Search and clone Git repos directly within Emacs.]]
 
 ***** Package
