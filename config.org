@@ -2298,6 +2298,11 @@ But this private repository host went down a few times, so I'll stick to github.
 (package! merlin :pin "e4791e22986993c36c3f5c91e8dff93494cc232e")
 (package! merlin-eldoc :disable t)
 #+END_SRC
+*** Squlite3
+
+#+BEGIN_SRC elisp :tangle "packages.el" :comments link
+(package! sqlite3)
+#+end_src
 
 ** Emacs :EMACS:
 *** Libraries
