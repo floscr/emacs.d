@@ -9373,6 +9373,9 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
        ("dg" ":display \"grid\"")
        ("dn" ":display \"none\"")
 
+       ("poi" ":pointer-events \"|\"")
+       ("u" ":user-select \"|\"")
+
        ("bg" ":background \"|\"")
        ("bgc" ":background-color \"|\"")
 
