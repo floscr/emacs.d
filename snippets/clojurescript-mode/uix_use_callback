@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: uix/use-callback
+# uuid: uix_use_callback
+# key: uc
+# --
+(uix/use-callback
+  (fn [] ($0))
+  [$1])
