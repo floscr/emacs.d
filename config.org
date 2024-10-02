@@ -5348,6 +5348,7 @@ machine api.openai.com login apikey password TOKEN
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
 (package! gptel)
 #+END_SRC
+
 **** Config
 
 #+BEGIN_SRC elisp
