@@ -2355,7 +2355,8 @@ These will be written to ~init.el~ so it overwrites the doom standard values.
     ("^\\*elfeed-entry" :modeline t :ttl nil)
     ("^\\*Flycheck checker" :size 0.2 :select nil)
     ("^\\*cider-error" :size 0.2 :select nil :ttl t)
-    ("^\\*ChatGPT" :ttl nil :quit nil)))
+    ("^\\*ChatGPT" :ttl nil :quit nil)
+    ("^\\*Gptel" :ttl nil :quit nil)))
 #+END_SRC
 *** Themes
 **** Custom doom themes package
