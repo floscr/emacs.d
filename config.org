@@ -5111,8 +5111,15 @@ I never want to find all the references of defn."
   (ignore-errors
     (when (my-clojure/inside-let-vector?)
       "_ ")))
-#+end_src
 
+(defun my-clojure/prev-let-statement-line ()
+  (save-excursion
+    (previous-line)
+    (-some->> (thing-at-point 'line t)
+              (s-trim)
+              (s-split " ")
+              (first))))
+#+end_src
 
 **** Config
 
