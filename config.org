@@ -2652,6 +2652,19 @@ Filters out whitespace from the kill ring
   :config (clean-kill-ring-mode 1))
 #+END_SRC
 
+*** Macros
+
+**** Save evil excurision
+
+#+begin_src elisp
+(defmacro save-evil-excursion (&rest body)
+  `(let ((previous-evil-state evil-state))
+     (unwind-protect
+         (progn ,@body)
+       (when (eq previous-evil-state 'normal)
+         (evil-normal-state)))))
+#+end_src
+
 *** Functions
 
 **** Evil Insert
