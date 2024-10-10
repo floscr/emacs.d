@@ -4626,7 +4626,18 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 
 (use-package! clojure-mode
   :config
-  (map! :map (clojurescript-mode-map clojure-mode-map)
+  (map! :map (clojurescript-mode-map clojure-mode-map clojurec-mode-map)
+        :desc "Indent" :n "C-<tab>" (cmd!
+                                     (save-excursion
+                                       (save-evil-excursion
+                                        (beginning-of-line)
+                                        (insert "  "))))
+        :desc "Indent" :n "C-<iso-lefttab>" (cmd!
+                                             (save-excursion
+                                               (save-evil-excursion
+                                                (beginning-of-line)
+                                                (when (looking-at "^  ")
+                                                  (delete-char 2)))))
         :desc "Eval" :n "RET" #'my-cider|cider-eval-last-sexp
         :desc "Eval" :n "C-c C-p" #'my-cider|eval-pp
         :desc "Eval" :n "DEL" #'my-eval-function-and-last-marker)
