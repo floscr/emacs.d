@@ -4657,24 +4657,24 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
 
   (map! (:localleader
          (:map (clojure-mode-map clojurescript-mode-map clojurec-mode-map)
-              "c"  #'my-cider|connect-clj
-              "C"  #'my-cider|connect-cljs
-              (:prefix ("m" . "modify")
-               :desc "Toggle Comment / Ignore" "t" #'clojure-toggle-ignore
-               :desc "Toggle Comment / Ignore" "T" #'clojure-toggle-ignore-surrounding-form
-               :desc "Thread first" "f" #'lsp-clojure-thread-first)
-              (:prefix ("e" . "eval")
-               :desc "Eval last sexp to comment" "c" #'my-cider|pprint-eval-last-sexp-to-comment)
-              (:prefix ("i" . "inspect/insert")
-                       "e" #'cider-enlighten-mode
-                       "i" #'cider-inspect
-                       "n" #'clojure-insert-ns-form
-                       "r" #'cider-inspect-last-result)
-              :localleader
-              "x" #'cider-scratch)
+               "c"  #'my-cider|connect-clj
+               "C"  #'my-cider|connect-cljs
+               (:prefix ("m" . "modify")
+                :desc "Toggle Comment / Ignore" "t" #'clojure-toggle-ignore
+                :desc "Toggle Comment / Ignore" "T" #'clojure-toggle-ignore-surrounding-form
+                :desc "Thread first" "f" #'lsp-clojure-thread-first)
+               (:prefix ("e" . "eval")
+                :desc "Eval last sexp to comment" "c" #'my-cider|pprint-eval-last-sexp-to-comment)
+               (:prefix ("i" . "inspect/insert")
+                        "e" #'cider-enlighten-mode
+                        "i" #'cider-inspect
+                        "n" #'clojure-insert-ns-form
+                        "r" #'cider-inspect-last-result)
+               :localleader
+               "x" #'cider-scratch)
          (:map (clojurescript-mode-map)
-              (:prefix ("i" . "inspect")
-                       "i" #'my-cider|inspect-expr)))))
+               (:prefix ("i" . "inspect")
+                        "i" #'my-cider|inspect-expr)))))
 #+end_src
 
 ***** [[https://github.com/noctuid/lispyville][lispyville]]
