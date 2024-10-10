@@ -5097,7 +5097,8 @@ I never want to find all the references of defn."
 
 (defun +clojure/find-test-require ()
   (when-let ((pos (or (+clojure/find-require "clj.test")
-                      (+clojure/find-require "cljs.test"))))
+                      (+clojure/find-require "cljs.test")
+                      (+clojure/find-require "clojure.test"))))
     (save-excursion
       (goto-char pos)
       (->> (substring-no-properties (thing-at-point 'line))
