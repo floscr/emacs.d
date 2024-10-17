@@ -6258,11 +6258,19 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
 
 (define-key magit-status-mode-map (kbd "#") #'th/magit-aux-commands)
 #+end_src
-**** Remove logs
+
+**** Discard staget logs
 
 #+begin_src elisp
 (defvar my-magit|discard-staged-logs-regexp
-  "println\\|print\\|prn\\|print!\\|js\\/console.log\\|console.log")
+  "^\\+.*\\(println\\|print\\|prn\\|print!\\|js\\/console.log\\|console.log\\)")
+
+(comment
+ (string-match my-magit|discard-staged-logs-regexp "- anything console.log after")
+ (string-match my-magit|discard-staged-logs-regexp "+ anything console.log after")
+ (string-match my-magit|discard-staged-logs-regexp "+ console.log")
+ nil)
+
 
 (defun my-magit|discard-staged-logs ()
   (interactive)
