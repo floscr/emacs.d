@@ -8975,25 +8975,20 @@ I will make sure I don't override any files (easily enough...)
                          :display #'org-link
                          :image-data-fun #'my-attach/image-data-fun)
 
-(let* ((ext (image-type-from-data (x-get-clipboard)))
-       (file-name (cond
-                   (ext (make-temp-file nil nil (symbol-name ext) "")))))
-  file-name)
-
 (defun my-attach|dwim ()
   (interactive)
   (let* ((clipboard (x-get-clipboard))
-         (ext (image-type-from-data clipboard))
+         (ext (image-type-from-data (x-get-clipboard)))
          (file-name (cond
-                     (ext (let ((file (make-temp-file nil nil (concat "." (symbol-name ext)))))
-                            (with-temp-file file
-                              (insert clipboard))
-                            file))
-                     ((my/clipboard-binary?) (make-temp-file nil nil nil clipboard))
+                     (ext (let* ((file-name (make-temp-file nil nil (concat "." (symbol-name ext)))))
+                            (f-write (x-get-clipboard) 'binary file-name)
+                            file-name))
+                     ((my/clipboard-binary?) nil)
                      (t clipboard))))
-    (-some-> (my/shell-command-str "org_attach" file-name "--attach-dir" (f-expand my-attach:dir))
-             (s-trim)
-             (insert))))
+    (when file-name
+      (-some-> (my/shell-command-str "org_attach" file-name "--attach-dir" (f-expand my-attach:dir))
+               (s-trim)
+               (insert)))))
 
 (defun my-attach|last-download ()
   (interactive)
