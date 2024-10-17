@@ -10174,6 +10174,8 @@ So deletes wont affect this register."
 
   :desc "New AI Chat" "n" #'my-gptel|new
   :desc "Switch to AI Chat" "s" #'gptel
+  :desc "Set gpt prompt" "p" #'gptel-system-prompt
+  :desc "Abort current gpt chat" "x" #'gptel-abort
   :desc "Switch to last AI Chat" "l" #'my-gpel|select-last-buffer))
 #+end_src
 
