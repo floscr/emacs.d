@@ -8594,6 +8594,25 @@ npm i -g nbb
 
 (add-hook 'org-mode-hook (lambda () (require 'ob-clojure)))
 #+end_src
+****** Org Babel Snippets
+
+#+begin_src elisp
+(defun my-org-babel/get-body ()
+  "Get the body of an org babel block."
+  (save-excursion
+    (let ((element (org-element-at-point)))
+      (when (eq (org-element-type element) 'src-block)
+        (org-element-property :value element)))))
+
+(defun my-org-babel/expand-in-popup-buffer ()
+  (interactive)
+  (let* ((src-block-body (my-org-babel/get-body))
+         (popup-buffer (generate-new-buffer "*Org Babel Yas*")))
+    (with-current-buffer popup-buffer
+      (text-mode)
+      (yas-expand-snippet src-block-body))
+    (pop-to-buffer popup-buffer)))
+#+end_src
 
 **** [[https://github.com/larstvei/ox-gfm][ox-gfm]]
 
