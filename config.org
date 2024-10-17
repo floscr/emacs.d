@@ -7507,6 +7507,14 @@ Bindings
 #+END_SRC
 
 ** LSP
+*** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! lsp-mode :pin "dd61303b2dc989a58f7dddd4c754f828a3f52107")
+(package! lsp-ui :pin "072bb29152038518c2478813b82c8d04d07df84c")
+(package! lsp-ivy :pin "9ecf4dd9b1207109802bd1882aa621eb1c385106")
+#+END_SRC
+
 *** Config
 **** Guess root
 
