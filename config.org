@@ -9394,6 +9394,26 @@ Applies the custom dev script and copies over node_modules + bundle caches to re
     (prn (s-join "" (list "bb ./src/bdocs.clj" f)))
     (shell-command-to-string (s-join " " (list "bb ./src/bdocs.clj" (concat "'" f "'"))))))
 #+end_src
+** Media
+**** listen.el
+
+Requires emacs 29
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link :tangle no
+(package! listen :recipe (:host github :repo "alphapapa/listen.el"))
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp :tangle no
+(use-package listen
+  :ensure t
+  :defer t
+  :commands (listen))
+#+END_SRC
+
 * Projects
 
 ** Penpot
