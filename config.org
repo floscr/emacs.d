@@ -8977,14 +8977,17 @@ I will make sure I don't override any files (easily enough...)
 
 (defun my-attach|dwim ()
   (interactive)
-  (let* ((clipboard (x-get-clipboard))
-         (ext (image-type-from-data (x-get-clipboard)))
+  (let* ((ext (condition-case nil
+                  (with-timeout (0.2 'aborted)
+                    (image-type-from-data (x-get-clipboard)))
+                (error 'aborted)))
          (file-name (cond
+                     ((eq ext 'aborted) (my-file/last-modified-file-in-dir "~/Media/Screencapture"))
                      (ext (let* ((file-name (make-temp-file nil nil (concat "." (symbol-name ext)))))
                             (f-write (x-get-clipboard) 'binary file-name)
                             file-name))
                      ((my/clipboard-binary?) nil)
-                     (t clipboard))))
+                     (t (x-get-clipboard)))))
     (when file-name
       (-some-> (my/shell-command-str "org_attach" file-name "--attach-dir" (f-expand my-attach:dir))
                (s-trim)
@@ -8997,6 +9000,7 @@ I will make sure I don't override any files (easily enough...)
             (s-trim)
             (insert)))
 #+end_src
+
 **** Use external Image Converter
 
 - To display ~webp~ images
