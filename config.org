@@ -10465,6 +10465,15 @@ So deletes wont affect this register."
   :desc "Open dev terminatl" "0" #'my-pitch|start-dev-terminal
   :desc "Format buffer"      "f" #'my-pitch|format-buffer))
 #+end_src
+*** Narrow
+
+#+begin_src elisp
+(map!
+ :leader
+ :desc "Widen" "=" #'widen
+ :desc "Narow" "+" #'narrow-to-region)
+#+end_src
+
 
 ** Local-Leader
 *** Eshell
