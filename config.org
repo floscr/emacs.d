@@ -5152,6 +5152,7 @@ I never want to find all the references of defn."
 (use-package! clojure-mode
   :config
   (define-clojure-indent (alet 'defun) (mlet 'defun))
+  (define-clojure-indent (css 'defun))
   (define-clojure-indent (describe 1) (it 1) (is 1)))
 #+end_src
 
