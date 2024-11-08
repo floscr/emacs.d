@@ -5537,9 +5537,9 @@ machine api.openai.com login apikey password TOKEN
 ***** Config
 
 #+begin_src emacs-lisp
-(use-package gitmoji
-  :config
-  (setq gitmoji-json-file (doom-dir "gitmojis.json")))
+(use-package gitmoji)
+
+(setq gitmoji-json-file (doom-dir "gitmojis.json"))
 #+end_src
 
 ***** Functions
