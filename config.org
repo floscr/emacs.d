@@ -1800,7 +1800,6 @@ which I name after the matching url.
  emacs-lisp
  markdown
  (clojure +lsp)
- (javascript +lsp)
  json
  (org
   +dragndrop
