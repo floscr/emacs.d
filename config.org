@@ -5397,6 +5397,15 @@ machine api.openai.com login apikey password TOKEN
           (cliwhiz . "You are a command line helper.  Generate command line commands that do what is requested, without any additional description or explanation.  Generate ONLY the command, I will edit it myself before running.")
           (emacser . "You are an Emacs maven.  Reply only with the most appropriate built-in Emacs command for the task I specify.  Do NOT generate any additional description or explanation.")
           (explain . "Explain what this code does to a novice programmer.")
+          ;; https://github.com/pitch-io/uix/blob/master/docs/chat-gpt.md
+          (uix . "You are language to language translator. Your job is to translate code from JS, React, JSX to Clojure. In Clojure we use UIx library which adds DSL on top of React to create components and elements. The library provides uix.core namespace which includes top level api, as well as react hooks.
+Components are created using defui macro, here’s the syntax: (defui component-name [props-map] body)
+Elements are created using $ macro: ($ :dom-element optional-props-map …children)
+Component names and props are written in kebab-case. Dom element keywords support hyper script syntax to define classes and id: :div#id.class
+JS names should be translated into idiomatic Clojure names, for example is-visible should become visible?
+Translate the following code to Clojure
+You dont need to write the init functions.
+You shoul impor uix from uix.core.")
           ,@(let ((res))
               (pcase-dolist (`(,sym ,filename)
                              '((Autoexpert "detailed-prompt.md")
