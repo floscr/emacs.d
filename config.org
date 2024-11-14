@@ -4717,6 +4717,16 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
   (map! :map lispyville-mode-map
         :nm "{" #'evil-backward-paragraph
         :nm "}" #'evil-forward-paragraph
+        :nm "C-<" (cmd!
+                   (save-excursion
+                     (evil-first-non-blank)
+                     (backward-char 1)
+                     (lispyville-< 1)))
+        :nm "C->" (cmd!
+                   (save-excursion
+                     (evil-first-non-blank)
+                     (backward-char 1)
+                     (lispyville-> 1)))
         :nm "M-h" #'lispyville-backward-sexp-begin
         :nm "M-l" #'lispyville-forward-sexp-begin
         :nm "M-H" #'lispyville-beginning-of-defun
