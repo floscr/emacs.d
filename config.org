@@ -9123,16 +9123,22 @@ I will make sure I don't override any files (easily enough...)
                      ((my/clipboard-binary?) nil)
                      (t (x-get-clipboard)))))
     (when file-name
-      (-some-> (my/shell-command-str "org_attach" file-name "--attach-dir" (f-expand my-attach:dir))
-               (s-trim)
-               (insert)))))
+      (save-evil-excursion
+       (when (evil-normal-state-p)
+         (evil-append 0))
+       (-some-> (my/shell-command-str "org_attach" file-name "--attach-dir" (f-expand my-attach:dir))
+                (s-trim)
+                (insert))))))
 
 (defun my-attach|last-download ()
   (interactive)
-  (-some->> (my-file/last-modified-file-in-dir "~/Downloads")
-            (my/shell-command-str "org_attach")
-            (s-trim)
-            (insert)))
+  (save-evil-excursion
+   (when (evil-normal-state-p)
+     (evil-append 0))
+   (-some->> (my-file/last-modified-file-in-dir "~/Downloads")
+             (my/shell-command-str "org_attach")
+             (s-trim)
+             (insert))))
 #+end_src
 
 **** Use external Image Converter
