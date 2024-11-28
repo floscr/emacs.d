@@ -836,7 +836,7 @@ Porting over clojure-like functions as I'm more used to them
          (s-join "\n"))))
 #+end_src
 
-* My Packages
+* My custom Packages
 ** Bbuild
 
 #+begin_src elisp
@@ -1606,6 +1606,181 @@ This function will mutate the hashtable M."
 
  (org-web/headings "/home/floscr/Documents/Org/Main/inbox.org")
  nil)
+#+end_src
+** Gitmoji
+
+Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][emacs-gitmoji]]
+
+*** Emojis
+
+**** Penpot
+
+#+begin_src elisp
+(defvar penpot-gitmoji
+  (ht
+   (":bug:"
+    (ht ('emoji "🐛")
+        ('entity "&#x1f41b;")
+        ('code ":bug")
+        ('description "A commit that fixes a bug.")
+        ('name "bug")
+        ('semver nil)))
+   (":sparkles:"
+    (ht ('emoji "✨")
+        ('entity "&#x2728;")
+        ('code ":sparkles")
+        ('description "A commit that an improvement.")
+        ('name "sparkles")
+        ('semver nil)))
+   (":tada:"
+    (ht ('emoji "🎉")
+        ('entity "&#x1f389;")
+        ('code ":tada")
+        ('description "A commit with new feature.")
+        ('name "tada")
+        ('semver nil)))
+   (":recycle:"
+    (ht ('emoji "♻️")
+        ('entity "&#x2672;")
+        ('code ":recycle")
+        ('description "A commit that introduces a refactor.")
+        ('name "recycle")
+        ('semver nil)))
+   (":lipstick:"
+    (ht ('emoji "💄")
+        ('entity "&#x1f484;")
+        ('code ":lipstick")
+        ('description "A commit with cosmetic changes.")
+        ('name "lipstick")
+        ('semver nil)))
+   (":ambulance:"
+    (ht ('emoji "🚑")
+        ('entity "&#x1f691;")
+        ('code ":ambulance")
+        ('description "A commit that fixes critical bug.")
+        ('name "ambulance")
+        ('semver nil)))
+   (":books:"
+    (ht ('emoji "📚")
+        ('entity "&#x1f4da;")
+        ('code ":books")
+        ('description "A commit that improves or adds documentation.")
+        ('name "books")
+        ('semver nil)))
+   (":construction:"
+    (ht ('emoji "🚧")
+        ('entity "&#x1f6a7;")
+        ('code ":construction")
+        ('description "A WIP commit.")
+        ('name "construction")
+        ('semver nil)))
+   (":boom:"
+    (ht ('emoji "💥")
+        ('entity "&#x1f4a5;")
+        ('code ":boom")
+        ('description "A commit with breaking changes.")
+        ('name "boom")
+        ('semver nil)))
+   (":wrench:"
+    (ht ('emoji "🔧")
+        ('entity "&#x1f527;")
+        ('code ":wrench")
+        ('description "A commit for config updates.")
+        ('name "wrench")
+        ('semver nil)))
+   (":zap:"
+    (ht ('emoji "⚡")
+        ('entity "&#x26a1;")
+        ('code ":zap")
+        ('description "A commit with performance improvements.")
+        ('name "zap")
+        ('semver nil)))
+   (":whale:"
+    (ht ('emoji "🐳")
+        ('entity "&#x1f433;")
+        ('code ":whale")
+        ('description "A commit for docker-related stuff.")
+        ('name "whale")
+        ('semver nil)))
+   (":rewind:"
+    (ht ('emoji "⏪")
+        ('entity "&#x23ea;")
+        ('code ":rewind")
+        ('description "A commit that reverts changes.")
+        ('name "rewind")
+        ('semver nil)))
+   (":paperclip:"
+    (ht ('emoji "📎")
+        ('entity "&#x1f4ce;")
+        ('code ":paperclip")
+        ('description "A commit with other not relevant changes.")
+        ('name "paperclip")
+        ('semver nil)))
+   (":arrow_up:"
+    (ht ('emoji "⬆️")
+        ('entity "&#x2b06;")
+        ('code ":arrow_up")
+        ('description "A commit with dependencies updates.")
+        ('name "arrow_up")
+        ('semver nil)))))
+#+end_src
+
+*** Functions
+
+#+begin_src elisp
+(defun my-gitmoji/gitmoji? (emoji)
+  (-> (-map (fn! (substring % 0 1)) gitmoji-emojis)
+      (-contains? emoji)))
+
+(defun my-gitmoji/current-gitmoji ()
+  "Returns the gitmoji for the current buffer when there is one."
+  (ignore-errors
+    (let ((char (save-excursion
+                  (goto-char (point-min))
+                  (evil-find-thing nil 'symbol))))
+      (when (my-gitmoji/gitmoji? char)
+        char))))
+
+(comment
+ (my-gitmoji/gitmoji? "x")
+ (my-gitmoji/gitmoji? "🧑")
+ nil)
+
+(defun my-gitmoji/prev-commit-gitmoji ()
+  (when-let ((emoji (-some-> (magit-rev-format "%B" "HEAD")
+                             (substring 0 1))))
+    (when (my-gitmoji/gitmoji? emoji)
+      emoji)))
+
+(defun my-gitmoji/remove-gitmoji ()
+  (save-excursion
+    (goto-char (point-min))
+    (delete-char 1)))
+
+(defun my-gitmoji|replace ()
+  (interactive)
+  (let* ((result (completing-read "Insert gitmoji: "
+                                  (ht-map (lambda (_ v)
+                                            (concat (ht-get v 'emoji) " (" (ht-get v 'name) ") " (ht-get v 'description)))
+                                          penpot-gitmoji)))
+         (emoji (s-left 1 result)))
+    (when (my-gitmoji/current-gitmoji)
+      (my-gitmoji/remove-gitmoji))
+    (save-excursion
+      (goto-char (point-min))
+      (insert emoji)
+      (when (not (equal (string (char-after)) " "))
+        (insert " ")))))
+#+end_src
+
+*** Bindings
+
+#+begin_src elisp
+(map!
+ :map git-commit-mode-map
+ :leader
+ (:prefix-map ("i" . "insert")
+  :desc "Gitmoji" "g" #'my-gitmoji|replace))
 #+end_src
 
 * Default Configuration
@@ -5541,82 +5716,6 @@ You shoul impor uix from uix.core.")
    'browse-at-remote-remote-type-regexps
    '(:host "^gitea\\.florianschroedl\\.com$" :type "gitea")))
 #+end_src
-**** [[https://github.com/janusvm/emacs-gitmoji][GitHub - janusvm/emacs-gitmoji: Insert gitmoji in Emacs]]
-
-[[https://gitmoji.dev/][gitmoji | An emoji guide for your commit messages]]
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! gitmoji
-  :recipe (:host github
-           :repo "janusvm/emacs-gitmoji"
-           :files ("*.el" "data")))
-#+END_SRC
-***** Config
-
-#+begin_src emacs-lisp
-(use-package gitmoji)
-
-(setq gitmoji-json-file (doom-dir "gitmojis.json"))
-#+end_src
-
-***** Functions
-
-#+begin_src elisp
-(defun my-gitmoji/gitmoji? (emoji)
-  (-> (-map (fn! (substring % 0 1)) gitmoji-emojis)
-      (-contains? emoji)))
-
-(defun my-gitmoji/current-gitmoji ()
-  "Returns the gitmoji for the current buffer when there is one."
-  (ignore-errors
-    (let ((char (save-excursion
-                  (goto-char (point-min))
-                  (evil-find-thing nil 'symbol))))
-      (when (my-gitmoji/gitmoji? char)
-        char))))
-
-(comment
- (my-gitmoji/gitmoji? "x")
- (my-gitmoji/gitmoji? "🧑")
- nil)
-
-(defun my-gitmoji/prev-commit-gitmoji ()
-  (when-let ((emoji (-some-> (magit-rev-format "%B" "HEAD")
-                             (substring 0 1))))
-    (when (my-gitmoji/gitmoji? emoji)
-      emoji)))
-
-(defun my-gitmoji/remove-gitmoji ()
-  "Returns the gitmoji for the current buffer when there is one."
-  (save-excursion
-    (goto-char (point-min))
-    (delete-char 1)))
-
-(defun my-gitmoji|insert-gitmoji ()
-  (interactive)
-  (when (my-gitmoji/current-gitmoji)
-    (my-gitmoji/remove-gitmoji))
-  (call-interactively #'gitmoji-insert-emoji)
-  (insert " ")
-  (evil-insert-state))
-
-(defun my-gitmoji|reload-json ()
-  (interactive)
-  (gitmoji-set-emoji-data t))
-#+end_src
-
-***** Bindings
-
-#+begin_src elisp
-(map!
- :map git-commit-mode-map
- :leader
- (:prefix-map ("i" . "insert")
-  :desc "Gitmoji" "g" #'my-gitmoji|insert-gitmoji))
-#+end_src
-
 *** Functions
 **** Stash list
 
