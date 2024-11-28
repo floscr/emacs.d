@@ -203,6 +203,16 @@ modifications."
       (search-forward string nil t))))
 #+END_SRC
 
+*** Empty line at point
+
+#+begin_src elisp
+(defun my-buffer/empty-line? ()
+  (-> (thing-at-point 'line)
+      (substring-no-properties)
+      (s-trim)
+      (equal "")))
+#+end_src
+
 *** Get current line indentation
 
 #+BEGIN_SRC elisp
@@ -1728,9 +1738,11 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
 *** Functions
 
 #+begin_src elisp
+(defun my-gitmoji/emojis ()
+  (-map (fn! (ht-get %1 'emoji)) (ht-values penpot-gitmoji)))
+
 (defun my-gitmoji/gitmoji? (emoji)
-  (-> (-map (fn! (substring % 0 1)) gitmoji-emojis)
-      (-contains? emoji)))
+  (-contains? (my-gitmoji/emojis) emoji))
 
 (defun my-gitmoji/current-gitmoji ()
   "Returns the gitmoji for the current buffer when there is one."
@@ -1763,14 +1775,18 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
                                   (ht-map (lambda (_ v)
                                             (concat (ht-get v 'emoji) " (" (ht-get v 'name) ") " (ht-get v 'description)))
                                           penpot-gitmoji)))
-         (emoji (s-left 1 result)))
-    (when (my-gitmoji/current-gitmoji)
-      (my-gitmoji/remove-gitmoji))
-    (save-excursion
-      (goto-char (point-min))
-      (insert emoji)
-      (when (not (equal (string (char-after)) " "))
-        (insert " ")))))
+         (emoji (s-left 1 result))
+         (insert? (my-buffer/empty-line?)))
+     (when (my-gitmoji/current-gitmoji)
+       (my-gitmoji/remove-gitmoji))
+     (save-excursion
+       (goto-char (point-min))
+       (insert emoji)
+       (when (not (equal (string (char-after)) " "))
+         (insert " ")))
+     (when insert?
+       (end-of-line)
+       (evil-insert-state))))
 #+end_src
 
 *** Bindings
