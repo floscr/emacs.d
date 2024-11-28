@@ -5606,6 +5606,9 @@ JS names should be translated into idiomatic Clojure names, for example is-visib
 Translate the following code to Clojure
 You dont need to write the init functions.
 You shoul impor uix from uix.core.")
+          (playwright . "You are an expert level playwright integration test creator.
+Answer quetions about the playwright API in a terse manner.
+Double check if the provided API methods in your response are not halucinated and exist.")
           ,@(let ((res))
               (pcase-dolist (`(,sym ,filename)
                              '((Autoexpert "detailed-prompt.md")
