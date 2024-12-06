@@ -3634,6 +3634,13 @@ main;
 
 *** Javascript :JAVASCRIPT:
 **** Packages :PACKAGE:
+***** RJSX & Typescript
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! rjsx-mode :pin "b697fe4d92cc84fa99a7bcb476f815935ea0d919")
+(package! typescript-mode :pin "dd10f702d4946ddb2e1c2863bf02bf241bce5fc8")
+#+END_SRC
+
 ***** [[https://github.com/aaronjensen/eslintd-fix][eslintd-fix]] :LINTING:AUTOFIX:
 
 A javascript auto-fixer that isn't slow.
