@@ -9200,6 +9200,25 @@ I will make sure I don't override any files (easily enough...)
 #+begin_src elisp
 (setq image-use-external-converter t)
 #+end_src
+**** Meta Ret DWIM
+
+#+begin_src elisp
+(defun my-org|meta-ret-dwim (&optional arg)
+  (interactive "P")
+  (let* ((attach (my-attach/path-at-point)))
+    (cond
+     (attach (my-shell/async-command-no-window (concat "feh " attach)))
+     (t (call-interactively #'org-meta-return arg)))))
+#+end_src
+
+*** Bindings
+
+#+begin_src elisp
+(map!
+ :map org-mode-map
+ :desc "Org Meta Return Dwim" :g "M-RET" #'my-org|meta-ret-dwim)
+#+end_src
+
 
 ** Hydras
 ** Work
