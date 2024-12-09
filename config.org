@@ -9126,6 +9126,11 @@ I will make sure I don't override any files (easily enough...)
   (-> (s-replace-regexp "^my-attach:" "" url)
       (my-attach/resolve-path)))
 
+(defun my-attach/path-at-point ()
+  (-some-> (my-org/link-at-point)
+           (plist-get :url)
+           (my-attach/org-url->path)))
+
 (defun my-attach|delete-attachment ()
   "Deletes attachment under cursor and removes the link."
   (interactive)
