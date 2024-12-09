@@ -319,8 +319,12 @@ modifications."
   (let* ((words (split-string s "[^A-Za-z]+" t))
          (duplicates (seq-filter
                       (lambda (x) (> (seq-count (lambda (y) (string= x y)) words) 1))
-                      (seq-uniq words))))
-    duplicates))
+                      (seq-uniq words)))
+         (sorted-duplicates (sort duplicates
+                                  (lambda (a b)
+                                    (> (seq-count (lambda (x) (string= a x)) words)
+                                       (seq-count (lambda (x) (string= b x)) words))))))
+    sorted-duplicates))
 
 (defun my/find-duplicates-in-region ()
   (unless (region-active-p)
