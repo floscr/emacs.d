@@ -312,6 +312,34 @@ modifications."
         (push (cons (match-string 0) (line-number-at-pos)) matches))
       (reverse matches))))
 #+end_src
+*** Find duplicates
+
+#+begin_src elisp
+(defun my/find-duplicates (s)
+  (let* ((words (split-string s "[^A-Za-z]+" t))
+         (duplicates (seq-filter
+                      (lambda (x) (> (seq-count (lambda (y) (string= x y)) words) 1))
+                      (seq-uniq words))))
+    duplicates))
+
+(defun my/find-duplicates-in-region ()
+  (unless (region-active-p)
+    (user-error "No active region"))
+  (let* ((region-start (region-beginning))
+         (region-end (region-end))
+         (region-text (buffer-substring-no-properties region-start region-end))
+         (duplicates (my/find-duplicates region-text)))
+    duplicates))
+
+(defun my|evil-ex-replace-duplicates-in-region ()
+  (interactive)
+  (let ((duplicates (my/find-duplicates-in-region)))
+    (when-let ((query (cond
+                       ((null duplicates) (prn "No duplicates found"))
+                       ((length= duplicates 1) (car duplicates))
+                       (t (completing-read "Replace: " duplicates)))))
+      (evil-ex (concat "'<,'>s/" query "/")))))
+#+end_src
 
 ** System
 
