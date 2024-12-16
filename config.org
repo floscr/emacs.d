@@ -9088,6 +9088,21 @@ POS to match:
 (assert (equal (my-org/next-heading-level) 6))
 (assert (equal (my-org/next-heading-stars) "******"))
 #+end_src
+**** Find unused attachments
+
+#+begin_src elisp
+(defun my-dired|search-attach-at-point ()
+  (interactive)
+  (+ivy/project-search nil (f-base (dired-file-name-at-point)) (f-expand org-directory)))
+#+end_src
+**** Meta DWIM
+
+#+begin_src elisp
+
+#+end_src
+
+
+
 
 *** Config
 
@@ -9116,6 +9131,15 @@ I will make sure I don't override any files (easily enough...)
 
 #+begin_src elisp
 (defvar my-attach:dir "~/Documents/Org/.attach/clojure-attach")
+
+(comment
+ (let* ((buffer (get-buffer-create "temp"))
+        (_ (-> (my-org/link-at-point)
+               (print buffer)))
+        (str (with-current-buffer buffer
+               (buffer-substring-no-properties (point-min) (point-max)))))
+   (s-match ":path \"\\(.+?\\)\"" str))
+ nil)
 
 (defun my-attach/resolve-path (path)
   (let* ((attach-dir (expand-file-name my-attach:dir))
