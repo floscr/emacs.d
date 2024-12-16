@@ -10989,6 +10989,13 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 
 (advice-add #'flycheck-handle-save :after #'+flycheck/fix-emacs-29-save)
 #+end_src
+** Evil Keys Fix
+
+Fix remapping using hyper
+
+#+begin_src elisp
+(setq x-hyper-keysym 'ctrl)
+#+end_src
 
 * Temp
 
