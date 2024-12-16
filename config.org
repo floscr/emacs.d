@@ -1027,7 +1027,7 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 
 (defun bbookmarks|list-project-bookmarks ()
   (interactive)
-  (bbookmarks|list "--parent" (-> (my-file/git-root) (my-file/remove-trailing-slash))
+  (bbookmarks|list "--parent" (-> (my-file/git-root nil) (my-file/remove-trailing-slash))
                    "--project-root" (-> (my-file/git-root nil) (my-file/remove-trailing-slash))))
 
 (defvar bbookmarks-save-mode-map (make-sparse-keymap))
