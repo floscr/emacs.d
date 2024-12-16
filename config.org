@@ -8706,7 +8706,7 @@ nbb needs to be installed via npm
 npm i -g nbb
 #+end_src
 
-#+begin_src elisp
+#+begin_src elisp :tangle no
 (with-eval-after-load 'ob-clojure
   (defcustom org-babel-clojure-backend nil
     "Backend used to evaluate Clojure code blocks."
