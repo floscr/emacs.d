@@ -6195,7 +6195,9 @@ _gp_rev       _gu_pper              _g=_: upper/lower       _gr_esolve
       "Reveal the point if in an invisible region."
       (when smerge-mode
         ;; Prevent parinfer triggering on diff files
-        (when parinfer-rust-mode (parinfer-rust-mode-disable))
+        (when parinfer-rust-mode
+          (parinfer-rust-mode -1)
+          (parinfer-rust-mode-disable))
         ;; Disable flycheck for diff buffers
         (flycheck-mode -1)
         (unpackaged/smerge-hydra/body)))))
