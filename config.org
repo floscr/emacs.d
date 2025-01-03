@@ -2525,6 +2525,17 @@ But this private repository host went down a few times, so I'll stick to github.
 #+BEGIN_SRC elisp :tangle "packages.el" :comments link
 (package! sqlite3)
 #+end_src
+*** pcre2el
+
+Fix for missing package
+
+#+BEGIN_QUOTE
+s-replace-all: Symbol’s function definition is void: rxt-quote-pcre
+#+END_QUOTE
+
+#+begin_src elisp :tangle "packages.el" :comments link
+(package! pcre2el)
+#+end_src
 
 ** Emacs :EMACS:
 *** Libraries
