@@ -7315,6 +7315,12 @@ but I dont want them added to my ~projectile-known-projects~.
 #+END_SRC
 ** Documents :DOCUMENTS:
 *** Pdf :PDF:
+**** Package
+
+#+begin_src elisp :tangle "packages.el" :comments link
+(package! pdf-tools :built-in 'prefer)
+#+end_src
+
 **** Config
 
 ***** TODO Fix midnight colors for doom-one theme
