@@ -193,6 +193,17 @@ modifications."
     x))
 #+END_SRC
 ** Buffer
+*** Visual region
+
+#+begin_src elisp
+(defun my-buffer/selected-text ()
+  "Get the currently selected text as a string.
+Only takes evil visual selected text."
+  (when (evil-visual-state-p)
+    (buffer-substring-no-properties (region-beginning) (region-end))))
+#+end_src
+
+
 *** Check if buffer has line
 
 #+BEGIN_SRC elisp
@@ -1345,6 +1356,10 @@ I store the cached commands per directory in [[file:~/.emacs.d/.local/project-co
 #+begin_src elisp
 (defvar my-project-compile:cache-file nil)
 (setq my-project-compile:cache-file (f-join doom-local-dir "project-compile-cache-file.json"))
+
+(comment
+ (find-file my-project-compile:cache-file)
+ nil)
 
 (defun my-project-compile/update-ht-vector (k v m)
   "Merge the vector on key K in the hashtable M with V.
@@ -5719,10 +5734,22 @@ Double check if the provided API methods in your response are not halucinated an
 
 (defun my-gptel|new ()
   (interactive)
-  (let ((buffer (-> (my-gptel/new-buffer-name)
+  (let ((selection (my-buffer/selected-text))
+        (source-major-mode (s-chop-suffix "-mode" (symbol-name major-mode)))
+        (buffer (-> (my-gptel/new-buffer-name)
                     (gptel))))
     (add-to-list 'my-gptel:buffers-list buffer)
     (pop-to-buffer buffer)
+    (when selection
+      (save-excursion
+        (with-current-buffer buffer
+          (insert (t! "
+
+,#+BEGIN_SRC <<source-major-mode>>
+<<selection>>
+,#+END_SRC
+
+")))))
     (goto-char (point-at-eol))
     (evil-insert-state t)))
 
@@ -7803,7 +7830,8 @@ So I fix the checker manually for each mode after lsp was loaded.
 #+begin_src elisp
 (set-face-foreground 'lsp-face-highlight-textual nil)
 (set-face-background 'lsp-face-highlight-textual nil)
-(set-face-attribute 'lsp-face-highlight-textual nil :weight 'regular)
+(set-face-attribute 'lsp-face-highlight-textual nil :weight 'medium
+                    :background (face-background 'macrostep-expansion-highlight-face))
 #+end_src
 *** Functions
 
