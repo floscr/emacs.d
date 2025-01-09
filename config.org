@@ -5787,7 +5787,7 @@ Double check if the provided API methods in your response are not halucinated an
 **** Magit & Transient
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! magit :pin "0aa26864e3fc4e6949711a4821caf6819e7ab171")
+(package! magit :pin "7dfebba55bf687a25049882c2316166d968048ea")
 (package! compat :pin "9a234d0")
 (package! transient :pin "3430943eaa3222cd2a487d4c102ec51e10e7e3c9")
 (package! forge :pin "a63685b")
