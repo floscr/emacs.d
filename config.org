@@ -86,6 +86,14 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 (require 'ct)
 #+END_SRC
 
+*** Load custom scripts
+
+#+begin_src elisp
+(-some->> (f-expand "~/.config/dotfiles/new/modules/scripts/src/hyma.el")
+          (-id-when #'f-exists?)
+          (load-file))
+#+end_src
+
 * My Standard Library
 :PROPERTIES:
 :header-args: :tangle "autoload.el" :comments link
@@ -7828,10 +7836,12 @@ So I fix the checker manually for each mode after lsp was loaded.
 **** Remove face-highlight
 
 #+begin_src elisp
-(set-face-foreground 'lsp-face-highlight-textual nil)
-(set-face-background 'lsp-face-highlight-textual nil)
-(set-face-attribute 'lsp-face-highlight-textual nil :weight 'medium
-                    :background (face-background 'macrostep-expansion-highlight-face))
+(add-hook! lsp-mode-hook
+  (defun my-lsp/add-faces-hook ()
+    (set-face-foreground 'lsp-face-highlight-textual nil)
+    (set-face-background 'lsp-face-highlight-textual nil)
+    (set-face-attribute 'lsp-face-highlight-textual nil :weight 'medium
+                        :background (face-background 'macrostep-expansion-highlight-face))))
 #+end_src
 *** Functions
 
