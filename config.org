@@ -10610,6 +10610,77 @@ So deletes wont affect this register."
   :desc "Recompile"               "C" #'recompile))
 #+END_SRC
 
+*** Notes
+
+#+begin_src elisp
+(map!
+ :leader
+ (:prefix-map ("n" . "Notes")
+  :desc "Save All Org Buffers"       "S" #'org-save-all-org-buffers
+  :desc "Save All Org Buffers"       "s" #'+org/rg-notes
+  :desc "Search"                     "f" #'+org|search
+  :desc "Find in notes"              "n" #'+org|search-in-notes
+  :desc "Agenda"                     "a" #'org-agenda
+  :desc "Store Link"                 "y" #'org-store-link
+  :desc "Store Link"                 "j" #'+private-journal|new-entry
+  :desc "Visit Entry"              "SPC" #'my-org-indirect|clock-visit-entry
+  :desc "Docs"                       "d" #'+org|search-programming-docs
+  :desc "Projects"                   "p" #'+org|search-projects
+
+  (:prefix-map ("b" . "Bookmarks")
+   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my-org/bookmarks-file))
+   :desc "Search bookmarks"          "s" #'helm-org-pinboard)
+
+  (:prefix-map ("r" . "Roam")
+   ;; Create journal entry, but dont open roam link popup
+   :desc "Journal: New Entry" "j"     (cmd! (let ((+org-roam-open-buffer-on-find-file nil))
+                                              (call-interactively #'org-journal-new-entry)))
+   :desc "List (Main)" "l" #'org-roam
+   :desc "Insert" "i" (cmd! (+evil-org/normal-mode-paste-fix #'org-roam-insert))
+   :desc "Switch to Buffer" "b" #'org-roam-switch-to-buffer
+   :desc "Find File" "f" #'org-roam-find-file
+   :desc "Show Graph" "g" #'org-roam-show-graph
+   :desc "Capture" "c" #'org-roam-capture)
+
+  ;; special goto locations I often visit
+  :desc "Inbox"                      "i" (cmd! (+org/find-in-files "Main/inbox.org"))
+  :desc "Work"                       "w" (cmd! (+org/find-in-files "Work/work.org"))
+
+  (:prefix-map ("g" . "Goto")
+   :desc "Goto Bookmarks File"       "b" (cmd! (find-file my-org/bookmarks-file))
+   :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
+   :desc "Work"                      "w" (cmd! (+org/find-in-files "Work/work.org"))
+   :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
+   :desc "Projects"                  "p" (cmd! (+org/find-in-files "Main/projects.org"))
+   :desc "Shoppinglist"              "s" (cmd! (+org/find-in-files "Main/shoppinglist.org"))
+   :desc "Capture Last Stored"       "c" #'org-capture-goto-last-stored
+   :desc "Refile Last Stored"        "r" #'org-refile-goto-last-stored)
+
+  (:prefix-map ("c" . "clock")
+   :desc "Timestamp Down"           "-"   #'org-clock-timestamps-down
+   :desc "Timestamp Up"             "="   #'org-clock-timestamps-up
+   :desc "Clock Out"                "C"   #'org-clock-out
+   :desc "Goto Select"              "G"   (cmd! (org-clock-goto 'select))
+   :desc "Clock In"                 "c"   #'org-clock-in
+   :desc "Mark Default Task"        "d"   #'org-clock-mark-default-task
+   :desc "Modify Effort Estimate"   "e"   #'org-clock-modify-effort-estimate
+   :desc "Goto Current"             "g"   #'counsel-org-clock-history
+   :desc "Resolve"                  "r"   #'org-resolve-clocks
+   :desc "Clock In Last"            "l"   #'org-clock-in-last
+   :desc "Clock In Last"            "o"   #'+org|clocked-visit-link
+   :desc "Cancel"                   "x"   #'org-clock-cancel
+   :desc "Visit Entry"              "SPC" #'my-org-indirect|clock-visit-entry
+   :desc "Visit Entry"              "'"   #'my-org-indirect|clock-visit-entry)
+
+  (:prefix-map ("q" . "Query")
+   (:prefix-map ("w" . "Work")
+    :desc "Projects: Work"            "w" #'+org-ql|work-projects
+    :desc "Projects: Work"            "s" #'+org|work-search)
+   :desc "Projects: Personal"        "p" #'+org-ql|projects)))
+
+#+end_src
+
+
 *** Search
 
 #+BEGIN_SRC elisp
@@ -10634,9 +10705,11 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("t" . "toggle")
-   :desc "Theme Dark/Light" "t" #'my-ui|toggle-theme
-   :desc "Auto Completion" "c" #'+company/toggle-auto-completion
-   :desc "Comment Header Fold" "<" #'my-comment-header|fold-all))
+  :desc "Comment Header Fold"        "<" #'my-comment-header|fold-all
+  :desc "Auto Completion"            "c" #'+company/toggle-auto-completion
+  :desc "Theme Dark/Light"           "t" #'my-ui|toggle-theme
+  :desc "Visal Fill Column"          "o" #'+org|toggle-visual-wrap
+  :desc "Visal Fill Column (Center)" "O" (cmd! (+org|toggle-visual-wrap))))
 #+END_SRC
 
 *** Window
