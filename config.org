@@ -10571,6 +10571,15 @@ So deletes wont affect this register."
   :desc "Date" "d"           #'my-date|insert-today-mode-specific))
 #+END_SRC
 
+*** Narrow
+
+#+begin_src elisp
+(map!
+ :leader
+ :desc "Widen" "=" #'widen
+ :desc "Narow" "+" #'narrow-to-region)
+#+end_src
+
 *** Open
 
 #+BEGIN_SRC elisp
@@ -10665,6 +10674,15 @@ So deletes wont affect this register."
   :desc "Toggle Locked"         "."    #'+popup/raise))
 #+END_SRC
 
+*** Work
+
+#+begin_src elisp
+(map!
+ :leader
+ (:prefix-map ("0" . "Work")
+  :desc "Open dev terminatl" "0" #'my-pitch|start-dev-terminal
+  :desc "Format buffer"      "f" #'my-pitch|format-buffer))
+#+end_src
 *** Workspace
 
 #+BEGIN_SRC elisp
@@ -10771,24 +10789,6 @@ So deletes wont affect this register."
   :desc "path"                "y" #'+yank|path
   :desc "relative to project" "r" #'+yank|relative-to-project))
 #+END_SRC
-*** Work
-
-#+begin_src elisp
-(map!
- :leader
- (:prefix-map ("0" . "Work")
-  :desc "Open dev terminatl" "0" #'my-pitch|start-dev-terminal
-  :desc "Format buffer"      "f" #'my-pitch|format-buffer))
-#+end_src
-*** Narrow
-
-#+begin_src elisp
-(map!
- :leader
- :desc "Widen" "=" #'widen
- :desc "Narow" "+" #'narrow-to-region)
-#+end_src
-
 
 ** Local-Leader
 *** Eshell
