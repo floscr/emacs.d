@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: js-console-log
+# key: jc
+# expand-env: ((yas-indent-line 'fixed))
+# type: command
+# --
+(insert "#?(:cljs ")
+(save-excursion (insert ")"))
+(yas-expand-snippet (yas-lookup-snippet "js-console-log" 'clojurescript-mode))
