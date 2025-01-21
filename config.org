@@ -1686,105 +1686,105 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
    (":bug:"
     (ht ('emoji "🐛")
         ('entity "&#x1f41b;")
-        ('code ":bug")
+        ('code ":bug:")
         ('description "A commit that fixes a bug.")
         ('name "bug")
         ('semver nil)))
    (":sparkles:"
     (ht ('emoji "✨")
         ('entity "&#x2728;")
-        ('code ":sparkles")
+        ('code ":sparkles:")
         ('description "A commit that an improvement.")
         ('name "sparkles")
         ('semver nil)))
    (":tada:"
     (ht ('emoji "🎉")
         ('entity "&#x1f389;")
-        ('code ":tada")
+        ('code ":tada:")
         ('description "A commit with new feature.")
         ('name "tada")
         ('semver nil)))
    (":recycle:"
     (ht ('emoji "♻️")
         ('entity "&#x2672;")
-        ('code ":recycle")
+        ('code ":recycle:")
         ('description "A commit that introduces a refactor.")
         ('name "recycle")
         ('semver nil)))
    (":lipstick:"
     (ht ('emoji "💄")
         ('entity "&#x1f484;")
-        ('code ":lipstick")
+        ('code ":lipstick:")
         ('description "A commit with cosmetic changes.")
         ('name "lipstick")
         ('semver nil)))
    (":ambulance:"
     (ht ('emoji "🚑")
         ('entity "&#x1f691;")
-        ('code ":ambulance")
+        ('code ":ambulance:")
         ('description "A commit that fixes critical bug.")
         ('name "ambulance")
         ('semver nil)))
    (":books:"
     (ht ('emoji "📚")
         ('entity "&#x1f4da;")
-        ('code ":books")
+        ('code ":books:")
         ('description "A commit that improves or adds documentation.")
         ('name "books")
         ('semver nil)))
    (":construction:"
     (ht ('emoji "🚧")
         ('entity "&#x1f6a7;")
-        ('code ":construction")
+        ('code ":construction:")
         ('description "A WIP commit.")
         ('name "construction")
         ('semver nil)))
    (":boom:"
     (ht ('emoji "💥")
         ('entity "&#x1f4a5;")
-        ('code ":boom")
+        ('code ":boom:")
         ('description "A commit with breaking changes.")
         ('name "boom")
         ('semver nil)))
    (":wrench:"
     (ht ('emoji "🔧")
         ('entity "&#x1f527;")
-        ('code ":wrench")
+        ('code ":wrench:")
         ('description "A commit for config updates.")
         ('name "wrench")
         ('semver nil)))
    (":zap:"
     (ht ('emoji "⚡")
         ('entity "&#x26a1;")
-        ('code ":zap")
+        ('code ":zap:")
         ('description "A commit with performance improvements.")
         ('name "zap")
         ('semver nil)))
    (":whale:"
     (ht ('emoji "🐳")
         ('entity "&#x1f433;")
-        ('code ":whale")
+        ('code ":whale:")
         ('description "A commit for docker-related stuff.")
         ('name "whale")
         ('semver nil)))
    (":rewind:"
     (ht ('emoji "⏪")
         ('entity "&#x23ea;")
-        ('code ":rewind")
+        ('code ":rewind:")
         ('description "A commit that reverts changes.")
         ('name "rewind")
         ('semver nil)))
    (":paperclip:"
     (ht ('emoji "📎")
         ('entity "&#x1f4ce;")
-        ('code ":paperclip")
+        ('code ":paperclip:")
         ('description "A commit with other not relevant changes.")
         ('name "paperclip")
         ('semver nil)))
    (":arrow_up:"
     (ht ('emoji "⬆️")
         ('entity "&#x2b06;")
-        ('code ":arrow_up")
+        ('code ":arrow_up:")
         ('description "A commit with dependencies updates.")
         ('name "arrow_up")
         ('semver nil)))))
@@ -1796,8 +1796,20 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
 (defun my-gitmoji/emojis ()
   (-map (fn! (ht-get %1 'emoji)) (ht-values penpot-gitmoji)))
 
+(defun my-gitmoji/emoji-codes ()
+  (-map (fn! (ht-get %1 'code)) (ht-values penpot-gitmoji)))
+
 (defun my-gitmoji/gitmoji? (emoji)
   (-contains? (my-gitmoji/emojis) emoji))
+
+(defun my-gitmoji/gitmoji-code? (emoji)
+  (-contains? (my-gitmoji/emoji-codes) emoji))
+
+(defun my-gitmoji/gitmoji-code-at-point ()
+  (save-excursion
+    (goto-char (point-min))
+    (when-let* ((to (re-search-forward "\\(:[^[:space:]]+?:\\)" nil t)))
+      (buffer-substring-no-properties (point-min) to))))
 
 (defun my-gitmoji/current-gitmoji ()
   "Returns the gitmoji for the current buffer when there is one."
@@ -1805,12 +1817,21 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
     (let ((char (save-excursion
                   (goto-char (point-min))
                   (evil-find-thing nil 'symbol))))
-      (when (my-gitmoji/gitmoji? char)
-        char))))
+      (if (my-gitmoji/gitmoji? char)
+          char
+        (let ((code (my-gitmoji/gitmoji-code-at-point)))
+          (when (my-gitmoji/gitmoji-code? ":books:")
+            code))))))
+
+(defun my-gitmoji/emoji->emoji-code (emoji)
+  (-some-> (ht-find (fn! (string= (ht-get %2 'emoji) emoji)) penpot-gitmoji)
+           (-second-item)
+           (ht-get 'code)))
 
 (comment
  (my-gitmoji/gitmoji? "x")
  (my-gitmoji/gitmoji? "🧑")
+ (my-gitmoji/emoji->emoji-code "⚡")
  nil)
 
 (defun my-gitmoji/prev-commit-gitmoji ()
@@ -1819,10 +1840,10 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
     (when (my-gitmoji/gitmoji? emoji)
       emoji)))
 
-(defun my-gitmoji/remove-gitmoji ()
+(defun my-gitmoji/remove-gitmoji (chars)
   (save-excursion
     (goto-char (point-min))
-    (delete-char 1)))
+    (delete-char (length chars))))
 
 (defun my-gitmoji|replace ()
   (interactive)
@@ -1831,17 +1852,19 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
                                             (concat (ht-get v 'emoji) " (" (ht-get v 'name) ") " (ht-get v 'description)))
                                           penpot-gitmoji)))
          (emoji (s-left 1 result))
-         (insert? (my-buffer/empty-line?)))
-     (when (my-gitmoji/current-gitmoji)
-       (my-gitmoji/remove-gitmoji))
-     (save-excursion
-       (goto-char (point-min))
-       (insert emoji)
-       (when (not (equal (string (char-after)) " "))
-         (insert " ")))
-     (when insert?
-       (end-of-line)
-       (evil-insert-state))))
+         (insert? (my-buffer/empty-line?))
+         (current-emoji (my-gitmoji/current-gitmoji))
+         (code? (> (length current-emoji) 1)))
+    (when current-emoji
+      (my-gitmoji/remove-gitmoji current-emoji))
+    (save-excursion
+      (goto-char (point-min))
+      (insert (my-gitmoji/emoji->emoji-code emoji))
+      (when (not (equal (string (char-after)) " "))
+        (insert " ")))
+    (when insert?
+      (end-of-line)
+      (evil-insert-state))))
 #+end_src
 
 *** Bindings
