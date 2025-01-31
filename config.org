@@ -2706,12 +2706,12 @@ This allows quick deletion of workspaces from ivy with ~CTRL + BACKSPACE~.
   (interactive)
   (--> (+workspace-list-names)
        (--reject (string= (+workspace-current-name) it) it)
-       (-each it #'+workspace-delete))) ;
+       (-each it #'+workspace-kill)))
 
 (defun my-workspaces|close-unnamed ()
   (interactive)
   (-> (my-workspaces|list-unnamed)
-      (-each #'+workspace-delete)))
+      (-each #'+workspace-kill)))
 #+END_SRC
 
 ***** Find workspace file
