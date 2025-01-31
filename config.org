@@ -5429,7 +5429,8 @@ I never want to find all the references of defn."
 
 (defun +clojure/with-test-require-alias ()
   (when-let (alias (+clojure/find-test-require-alias))
-    (concat (symbol-name alias) "/")))
+    (when (symbolp alias)
+      (concat (symbol-name alias) "/"))))
 
 (comment
  (with-current-buffer (find-buffer-visiting "/home/floscr/Code/Work/Hyma/tokens-studio-for-penpot/frontend/test/token_tests/token_test.cljs")
