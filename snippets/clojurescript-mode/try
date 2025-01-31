@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: try
+# key: try
+# --
+(try
+  $0
+  (catch js/Error e
+    (js/console.error e)))

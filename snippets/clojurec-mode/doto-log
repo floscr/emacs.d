@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: doto log
+# key: ?
+# --
+((fn [x]
+   #?(:cljs (js/console.log x)
+      :clj (println x))
+   x)))))
