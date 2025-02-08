@@ -1397,7 +1397,6 @@ Returns a cons of the (cons title url) and the matched element type (any of: lin
             "Main/snippets.org"
             "Work/docs.org")
           (+org/expand-org-file-name)
-          (-append (f-entries (f-join org-directory "Docs")))
           (-flatten)
           (-map #'find-file-noselect))))
     (dolist (b buffers)
