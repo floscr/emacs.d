@@ -883,6 +883,13 @@ Porting over clojure-like functions as I'm more used to them
  (nil? t)
  nil)
 #+end_src
+*** str
+
+#+begin_src elisp
+(defun str (&rest args)
+  (mapconcat 'prin1-to-string args ""))
+#+end_src
+
 ** String
 
 *** Dedent
