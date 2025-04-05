@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: try
+# key: t
+# --
+(try
+  $0
+  (catch #?(:clj Exception :cljs :default) e
+    (throw (ex-info "$1" {:ns (:ns state)} e)))))]

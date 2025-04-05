@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: prn
+# key: p
+# --
+(js/console.log "$0")

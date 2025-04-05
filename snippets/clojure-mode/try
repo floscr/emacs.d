@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: try
+# key: t
+# --
+(try
+  $0
+  (catch Exception e
+    (throw (ex-info "$1"))))
