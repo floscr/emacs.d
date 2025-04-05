@@ -7378,12 +7378,12 @@ but I dont want them added to my ~projectile-known-projects~.
 #+BEGIN_SRC elisp
 (use-package! projectile
   :init
-  (setq projectile-project-search-path '("~/Code/Dotfiles"
-                                         "~/Code/Repositories"
+  (setq projectile-project-search-path '("~/Code/Repositories"
                                          "~/Code/Projects"
-                                         "~/Code/Tools"
-                                         "~/Code/Meisterlabs"
-                                         "~/Code/Meisterlabs/mindmeister-web/.worktrees"))
+                                         "~/Code/Smorgasbord/items"
+                                         "~/Code/Work/Hyma/"
+                                         "~/Code/Work/Hyma/penpot/repo"
+                                         "~/Code/Dotfiles"))
   :config
   ;; Auto discover when running switch project for the first time
   (add-transient-hook! 'counsel-projectile-switch-project
