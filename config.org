@@ -2088,7 +2088,6 @@ which I name after the matching url.
  json
  (org
   +dragndrop
-  +pretty
   +present)
  sh
  yaml
