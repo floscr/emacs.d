@@ -5710,7 +5710,7 @@ machine api.openai.com login apikey password TOKEN
 **** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! gptel)
+(package! gptel :pin "975c3e6")
 #+END_SRC
 
 **** Config
@@ -5719,6 +5719,9 @@ machine api.openai.com login apikey password TOKEN
 (use-package! gptel
   :commands gptel
   :config
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key (fn! (auth-source-pick-first-password :host "api.anthropic.com")))
   (setq gptel-default-mode 'org-mode)
   (setq-default gptel-model "gpt-4")
   (setq gptel-directives
