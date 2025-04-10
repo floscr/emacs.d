@@ -7378,6 +7378,7 @@ but I dont want them added to my ~projectile-known-projects~.
 (use-package! projectile
   :init
   (setq projectile-project-search-path '("~/Code/Repositories"
+                                         "~/.config"
                                          "~/Code/Projects"
                                          "~/Code/Smorgasbord/items"
                                          "~/Code/Work/Hyma/"
