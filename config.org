@@ -3218,6 +3218,9 @@ Use this function in a hook like this:
 #+begin_src elisp
 (after! (:and clojure-mode apheleia)
   (my-formatters/remove-formatter 'cljfmt))
+
+(after! (:and beancount-mode apheleia)
+  (my-formatters/remove-formatter 'bean-format))
 #+end_src
 
 ** UI :UI:
