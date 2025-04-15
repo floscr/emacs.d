@@ -7031,7 +7031,7 @@ The dired-line jumps at the end are used to jump the filename again.
         ;; Video
         "mov" "mpv" "mkv" "webm" "avi"
         ;; Audio
-        "mp4" "mp3" "ogg" "wav" "flac"))
+        "mp4" "mp3" "ogg" "wav" "flac" "m4a"))
 #+end_src
 
 ***** Function
