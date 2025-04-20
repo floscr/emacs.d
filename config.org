@@ -1009,10 +1009,15 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 *** Functions
 
 #+begin_src elisp
+(defvar-local bbookmarks:project-local? nil)
+
 (defun bbookmarks|execute (&rest args)
   (let ((default-directory "/home/floscr/.config/dotfiles/new/modules/scripts"))
     (->> (concat "bb ./src/bbookmarks.clj"
-                 (-some->> args (s-join " ") (s-prepend " ")))
+                 (-some->> args
+                           (-filter #'some?)
+                           (s-join " ")
+                           (s-prepend " ")))
          (shell-command-to-string))))
 
 (defun bbookmarks/goto (x)
@@ -1093,10 +1098,15 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
   "Editing indented source code without the indent in an indirect buffer."
   :keymap bbookmarks-save-mode-map)
 
-(defun bbookmarks|save-buffer ()
+(cl-defun bbookmarks|save-buffer (&optional parent)
   (interactive)
-  (let ((contents (buffer-substring-no-properties (point-min) (point-max))))
-    (bbookmarks|execute "add" (shell-quote-argument contents))
+  (let ((parent (or parent (-> (my-file/git-root nil)
+                               (my-file/remove-trailing-slash))))
+        (contents (buffer-substring-no-properties (point-min) (point-max))))
+    (bbookmarks|execute "add"
+                        (shell-quote-argument contents)
+                        (when parent "--parent")
+                        (when parent (shell-quote-argument parent)))
     (kill-buffer (current-buffer))))
 
 (map! :map bbookmarks-save-mode-map
@@ -1124,6 +1134,12 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
           (bbookmarks-save-mode)
           (evil-insert-state t))
       (user-error "Buffer has no file name!"))))
+
+(defun bbookmarks|save-local ()
+  (interactive)
+  (call-interactively #'bbookmarks|save)
+  (with-current-buffer (get-buffer-create "*bbookmark-save*")
+    (setq-local bbookmarks:project-local? t)))
 #+end_src
 
 *** Bindings
