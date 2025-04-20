@@ -898,6 +898,28 @@ Porting over clojure-like functions as I'm more used to them
  (str "foo" 1 "bar" 2 nil 3 :a)
  nil)
 #+end_src
+*** inc
+
+#+begin_src elisp
+(defun inc (n)
+  (+ 1 (or n)))
+
+(comment
+ (inc nil)
+ (inc 0)
+ nil)
+#+end_src
+*** some?
+
+#+begin_src elisp
+(defun some? (x)
+  (not (nil? x)))
+
+(comment
+ (some? 1)
+ (some? nil)
+ nil)
+#+end_src
 
 ** String
 
