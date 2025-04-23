@@ -5885,7 +5885,8 @@ Double check if the provided API methods in your response are not halucinated an
   (setq aider-args '("--model" "sonnet")))
 
 (map! :leader
-      (:prefix ("A" . "Aider")
+      (:prefix ("a" . "Aider")
+       :desc "Add buffer" "a" #'aider-add-current-file
                (:prefix ("p" . "Process")
                 :desc "Run Aider" "a" #'aider-run-aider
                 :desc "Switch to Aider buffer" "z" #'aider-switch-to-buffer
