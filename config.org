@@ -4871,7 +4871,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
   (setq cider-show-error-buffer nil)
   (setq cider-auto-select-error-buffer nil)
   (setq cider-words-of-inspiration nil)
-  (add-hook 'doom-load-theme-hook #'my-cider/init-faces)
+  (comment (add-hook 'doom-load-theme-hook #'my-cider/init-faces))
   (advice-add 'doom/escape :before #'my-cider/clear-errors))
 #+end_src
 
