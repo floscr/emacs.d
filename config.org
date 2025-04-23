@@ -2017,6 +2017,7 @@ Variables that I want to safely set from ~.dir-locals~ files.
 
 #+BEGIN_SRC elisp
 (put '+file-templates-dir 'safe-local-variable #'stringp)
+(put '+file-templates-dir 'safe-local-variable 'apheleia-inhibit)
 #+END_SRC
 
 *** Buffer naming :INIT:
