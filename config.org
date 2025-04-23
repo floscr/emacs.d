@@ -2119,6 +2119,7 @@ which I name after the matching url.
  (nix +lsp)
  rust
  rest
+ (javascript +lsp +tree-sitter)
  data
  (haskell +lsp)
  emacs-lisp
