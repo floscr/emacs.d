@@ -39,6 +39,9 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
   Prefixed with a ~-~
 - [[*Template Literals][Template Literals]]
   ~template~ or ~t~ macros
+** Making LSP work with TS
+
+- Look at the stderr output,
 
 * Setup
 ** Tangle Headers
