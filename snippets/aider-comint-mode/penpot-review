@@ -1,0 +1,50 @@
+# -*- mode: snippet -*-
+# name: penpot-review
+# key: pr
+# --
+PR Review the following diff with these rules:
+
+* Clojurescript files
+
+** Make sure functions in components are wrapped in `(mf/use-fn)` and `(mf/deps)` are added, e.g.:
+
+```cljs
+;; Single line without deps
+(mf/use-fn #(dom/click (mf/ref-val dir-input-ref)))
+
+;; Multi line with deps
+(mf/use-fn
+  (mf/deps a b)
+  (fn [])
+    (+ a b))
+```
+
+** Make sure any new components use the new component structure with * suffix, e.g.:
+
+```cljs
+(mf/defc component-name* [])
+```
+
+And are used like this:
+
+```cljs
+[:> component-name*]
+```
+
+* Stylus files
+
+** Stylus files use the same name as their component, e.g.: sidebar.cljs - sidebar.scss
+** Make sure unused class names are removed
+
+
+* Translations (ending with .po extension)
+
+** Add the translation file location to the translations e.g.:
+
+```
++#: src/app/main/ui/workspace/tokens/sidebar.cljs:413
++msgid "labels.import-directory"
++msgstr "Import directory"
+```
+
+** Translations should not be uppercase - this should be handled by css
