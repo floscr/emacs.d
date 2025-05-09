@@ -6,6 +6,14 @@ PR Review the following diff with these rules:
 
 * Clojurescript files
 
+** Do not use anonymous functions in a component callback
+
+```cljs
+[:> dropdown-menu-item* {:on-click #(modal/show! :tokens/import {})}]
+```
+
+This should be extracted to a `(mf/use-fn)`
+
 ** Make sure functions in components are wrapped in `(mf/use-fn)` and `(mf/deps)` are added, e.g.:
 
 ```cljs
