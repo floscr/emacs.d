@@ -7964,7 +7964,9 @@ Bindings
 **** Show errors with flycheck
 
 #+begin_src elisp
-(setq lsp-diagnostics-provider :flycheck)
+(use-package! lsp-mode
+  :init
+  (setq lsp-diagnostics-provider :flycheck))
 #+end_src
 
 
