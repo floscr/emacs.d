@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: subscribe rx stream
+# key: sx
+# --
+(let [!sx (atom {})]
+  (defn sx
+    ([kw] (get @!sx kw))
+    ([stream kw] (rx/sub! stream (fn [r] (swap! !sx assoc kw r) r)))))

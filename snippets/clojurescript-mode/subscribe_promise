@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: subscribe promise
+# key: sp
+# --
+(let [!s (atom {})]
+  (defn s
+    ([kw] (get @!s kw))
+    ([p kw] (.then p (fn [r] (swap! !s assoc kw r) r)))))
