@@ -1564,7 +1564,7 @@ This is useful for repeating habit tasks, that have a list of todos that need to
 Org babel runs in a ~save-excursion~ function, so any spawned windows have to be manually accessed.
 With the =:keep-windows= property we can disable this functionality.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle no
 (defun transform-tree (tree trafo)
   "Transform TREE by TRAFO."
   (let ((next tree))

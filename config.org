@@ -2038,7 +2038,8 @@ Variables that I want to safely set from ~.dir-locals~ files.
 *** Load ~.authinfo.gpg~ for authentication :AUTH:
 
 #+BEGIN_SRC elisp
-(add-to-list 'auth-sources "~/.config/gnupg/.authinfo.gpg")
+(after! auth-source
+  (pushnew! auth-sources "~/.config/gnupg/.authinfo.gpg"))
 #+END_SRC
 
 *** Disable ~dcl~ mode for password files :AUTH:FIX:
