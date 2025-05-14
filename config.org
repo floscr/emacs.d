@@ -247,6 +247,17 @@ Only takes evil visual selected text."
         (nth 1)
         (length))
       0))
+
+(defun my-buffer|indent-like-previous-line ()
+  "Indent the current line to match the indentation of the previous line."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (delete-horizontal-space)
+    (let ((indent (save-excursion
+                    (forward-line -1)
+                    (my-buffer/line-indent))))
+      (insert (make-string indent ? )))))
 #+END_SRC
 
 *** Check current line for regex
@@ -10120,6 +10131,7 @@ Automatically indent and format when opening area betwen to delimiters.
    :g "s-v" #'yank
    :g "s-x" #'execute-extended-command
    :g "s-y" #'helm-show-kill-ring
+   :g "s-i" #'my-buffer|indent-like-previous-line
 
    ;; Text scale
    :g "s-="   #'doom/increase-font-size
