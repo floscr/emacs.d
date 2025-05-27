@@ -4858,7 +4858,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 ****** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! cider :pin "810337cee931d9f14aa16550a74516f8337a47f3")
+(package! cider :pin "6d2d09318423f373bdbd546e97dc3e32b21c10e4")
 #+END_SRC
 
 ****** Config
@@ -4971,7 +4971,7 @@ condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--conne
       (cider-interactive-eval nil
                               (when output-to-current-buffer (my-cider/eval-print-handler))
                               (cider-last-sexp 'bounds)
-                              (cider--nrepl-pr-request-map))
+                              (cider--nrepl-pr-request-plist))
       ;; (cider-eval-last-sexp output-to-current-buffer)
       ;; Dont restore state when doing eval when inserting result
       ;; The `cider-eval-print-handler' function is async,
