@@ -11404,3 +11404,10 @@ Fix remapping using hyper
     (evil-insert-state))
   (org-web/ensure-css-import))
 #+end_src
+
+** Fix ~pdf-occur-global-minor-mode~ when trying to do ~pdf-tools-install~
+
+#+begin_src elisp
+(use-package pdf-occur
+  :commands (pdf-occur-global-minor-mode))
+#+end_src
