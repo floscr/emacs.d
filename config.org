@@ -10380,6 +10380,13 @@ Matches urls and table cells."
     "ib" #'+evil-org-inner-src-block
     "ab" #'+evil-org-an-src-block))
 #+END_SRC
+**** Remove emacs motion
+
+This one always trips me up and i dont need it
+
+#+begin_src elisp
+(define-key evil-motion-state-map "\\" nil)
+#+end_src
 
 *** Normal Bindings
 **** Window navigation
