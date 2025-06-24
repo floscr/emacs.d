@@ -2,4 +2,4 @@
 # name: Semantic Git: Feat
 # key: f
 # --
-feat($1): $0
+feat: $0

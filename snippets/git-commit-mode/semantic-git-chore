@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: Semantic Git: Feat
-# key: C
+# name: Semantic Git: Chore
+# key: h
 # --
 chore: $0
