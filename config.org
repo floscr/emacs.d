@@ -5896,45 +5896,50 @@ Double check if the provided API methods in your response are not halucinated an
   :config
   (setq aider-args '("--model" "sonnet")))
 
+(defun my-aider|commit ()
+  (interactive)
+  (aider--send-command "/commit")
+  (prn "COMMITED"))
+
 (map! :leader
       (:prefix ("a" . "Aider")
        :desc "Add buffer" "a" #'aider-add-current-file
-               (:prefix ("p" . "Process")
-                :desc "Run Aider" "a" #'aider-run-aider
-                :desc "Switch to Aider buffer" "z" #'aider-switch-to-buffer
-                :desc "Open prompt file" "p" #'aider-open-prompt-file
-                :desc "Reset Aider" "s" #'aider-reset
-                :desc "Change model" "o" #'aider-change-model
-                :desc "Clear Aider buffer" "c" #'aider-clear-buffer
-                :desc "Exit Aider" "x" #'aider-exit)
+       :desc "Add buffer" "RET" #'my-aider|commit
+       :desc "Transient Menu" "t" #'aider-transient-menu
+       (:prefix ("p" . "Process")
+        :desc "Run Aider" "a" #'aider-run-aider
+        :desc "Switch to Aider buffer" "z" #'aider-switch-to-buffer
+        :desc "Open prompt file" "p" #'aider-open-prompt-file
+        :desc "Reset Aider" "s" #'aider-reset
+        :desc "Change model" "o" #'aider-change-model
+        :desc "Clear Aider buffer" "c" #'aider-clear-buffer
+        :desc "Exit Aider" "x" #'aider-exit)
 
-               (:prefix ("f" . "Files")
-                :desc "Add current/marked files" "f" #'aider-add-current-file-or-dired-marked-files
-                :desc "Add files in window" "w" #'aider-add-files-in-current-window
-                :desc "Drop current file" "O" #'aider-drop-current-file
-                :desc "Show last commit" "m" #'aider-magit-show-last-commit-or-log
-                :desc "Undo last change" "u" #'aider-undo-last-change
-                :desc "Pull or review diff" "v" #'aider-pull-or-review-diff-file
-                :desc "Open history" "h" #'aider-open-history)
+       (:prefix ("f" . "Files")
+        :desc "Add current/marked files" "f" #'aider-add-current-file-or-dired-marked-files
+        :desc "Add files in window" "w" #'aider-add-files-in-current-window
+        :desc "Drop current file" "O" #'aider-drop-current-file
+        :desc "Show last commit" "m" #'aider-magit-show-last-commit-or-log
+        :desc "Undo last change" "u" #'aider-undo-last-change
+        :desc "Pull or review diff" "v" #'aider-pull-or-review-diff-file
+        :desc "Open history" "h" #'aider-open-history)
 
-               (:prefix ("c" . "Code")
-                :desc "Refactor function/region" "r" #'aider-function-or-region-refactor
-                :desc "Implement requirement" "i" #'aider-implement-todo
-                :desc "Architect discussion" "t" #'aider-architect-discussion
-                :desc "Write unit test" "U" #'aider-write-unit-test
-                :desc "Refactor code" "R" #'aider-refactor-book-method
-                :desc "Test Driven Development" "T" #'aider-tdd-cycle
-                :desc "Work with Legacy Code" "l" #'aider-legacy-code)
+       (:prefix ("c" . "Code")
+        :desc "Refactor function/region" "r" #'aider-function-or-region-refactor
+        :desc "Implement requirement" "i" #'aider-implement-todo
+        :desc "Architect discussion" "t" #'aider-architect-discussion
+        :desc "Write unit test" "U" #'aider-write-unit-test
+        :desc "Refactor code" "R" #'aider-refactor-book-method
+        :desc "Test Driven Development" "T" #'aider-tdd-cycle
+        :desc "Work with Legacy Code" "l" #'aider-legacy-code)
 
-               (:prefix ("d" . "Discuss")
-                :desc "Ask question" "q" #'aider-ask-question
-                :desc "Go ahead" "y" #'aider-go-ahead
-                :desc "General question" "Q" #'aider-general-question
-                :desc "Code Reading" "d" #'aider-code-read
-                :desc "Debug exception" "e" #'aider-debug-exception
-                :desc "Help" "H" #'aider-help)
-
-               :desc "Transient Menu" "t" #'aider-transient-menu))
+       (:prefix ("d" . "Discuss")
+        :desc "Ask question" "q" #'aider-ask-question
+        :desc "Go ahead" "y" #'aider-go-ahead
+        :desc "General question" "Q" #'aider-general-question
+        :desc "Code Reading" "d" #'aider-code-read
+        :desc "Debug exception" "e" #'aider-debug-exception
+        :desc "Help" "H" #'aider-help)))
 #+END_SRC
 
 ** Git / Magit :GIT:MAGIT:
@@ -10132,6 +10137,7 @@ Automatically indent and format when opening area betwen to delimiters.
    :g "s-x" #'execute-extended-command
    :g "s-y" #'helm-show-kill-ring
    :g "s-i" #'my-buffer|indent-like-previous-line
+   :ng "s-/" (cmd! (aider-run-aider) (evil-insert-state))
 
    ;; Text scale
    :g "s-="   #'doom/increase-font-size
@@ -11215,6 +11221,17 @@ redefines its keys every time `eshell-mode' is enabled."
 (map! :map org-agenda-mode-map
       :localleader
       :desc "Fetch url title" "u" #'my-org-agenda|fetch-this-org-link-title)
+#+end_src
+
+*** Aider
+
+#+begin_src elisp
+(map! :map aider-comint-mode-map
+      :localleader
+      :desc "Fetch url title" "c" #'aider-clear-buffer
+      :desc "Fetch url title" "t" (cmd!
+                                   (aider-clear-buffer)
+                                   (comint-send-input "/test")))
 #+end_src
 
 ** Minibuffer
