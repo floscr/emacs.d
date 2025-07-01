@@ -6730,6 +6730,22 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
    magithub-clone-default-directory magit-clone-default-directory
    git-commit-summary-max-length 120))
 
+(defun my-magit/debug-blame-failure (orig-fun &rest args)
+  "Debug why magit-blame is failing."
+  (let ((debug-on-error t)
+        (result nil))
+    (condition-case err
+        (setq result (apply orig-fun args))
+      (error
+       (message "Magit blame error: %S" err)
+       (with-current-buffer "*Messages*"
+         (let ((inhibit-read-only t))
+           (goto-char (point-max))
+           (insert "\nMagit blame debug backtrace:\n" (with-output-to-string (backtrace)))))))
+    result))
+
+(advice-add 'magit-blame :around #'my-magit/debug-blame-failure)
+
 (after! forge
   :config
   (setq forge-database-file (f-join doom-local-dir "forge-database.sqlite")))
