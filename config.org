@@ -2903,6 +2903,24 @@ I want buffers added whenever I visit a buffer.
         (yank)
         (setq kill-ring (cdr kill-ring))))))
 #+end_src
+*** Lookup file with position
+
+#+begin_src elisp
+(defun +lookup/file-with-position (path)
+  "Invoke `+lookup/file` and if PATH contains line and column (~/file:line:col~), go to that position."
+  (interactive)
+  (let ((match (string-match "\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" path)))
+    (if match
+        (let ((file (match-string 1 path))
+              (line (string-to-number (match-string 2 path)))
+              (col  (string-to-number (match-string 3 path))))
+          (+lookup/file file)
+          (goto-char (point-min))
+          (forward-line (1- line))
+          (forward-char (1- col)))
+      (+lookup/file path))))
+#+end_src
+
 
 ** Evil :EVIL:
 *** Packages
@@ -9960,9 +9978,12 @@ Requires emacs 29
 *** Config
 
 #+begin_src elisp
+(defun my-penpot/penpot-project? ()
+  (s-ends-with? "Code/Work/Hyma/tokens-studio-for-penpot/" (doom-project-root)))
+
 (def-project-mode! my-penpot-project-mode
   :modes '(clojure-mode clojurescript-mode magit-mode)
-  :when (s-ends-with? "Code/Work/Hyma/tokens-studio-for-penpot/" (doom-project-root))
+  :when (my-penpot/penpot-project?)
   :on-enter (progn
               (setq-local my-comment-header:col-char nil)
               (setq-local my-comment-header:col-count 0)
@@ -9973,6 +9994,35 @@ Requires emacs 29
                                              'clojurec-mode h
                                              'clojure-mode h)))
                 (setq-local my-comment-header:mode-comment-start comment-modes))))
+
+(def-project-mode! my-penpot-project-clojurescript-mode
+  :modes '(clojurescript-mode my-penpot-project-mode))
+
+(defun my-penpot|cider-eval-buffer ()
+  "For some reason `cider-eval-buffer' in penpot does not work. So here's a workaround by selecting the whole buffer and eval it."
+  (interactive)
+  (save-evil-excursion
+   (save-excursion
+     (evil-visual-select (point-min) (point-max))
+     (let ((inhibit-message t))
+       (cider-eval-dwim)))))
+
+(defun my-penpot|test-clojurescript-namespace ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-max))
+    (insert "\n(t/run-tests *ns*)\n")
+    (my-penpot|cider-eval-buffer)
+    (evil-undo-pop)
+    (buffer "*cider-repl repo/frontend:localhost:3447(cljs:shadow-select)*")))
+
+(map!
+ :map my-penpot-project-clojurescript-mode-map
+ :localleader
+ (:prefix ("e" . "eval")
+  :desc "buffer" "b" #'my-penpot|cider-eval-buffer)
+ (:prefix ("t" . "test")
+  :desc "namespace" "n" #'my-penpot|test-clojurescript-namespace))
 #+end_src
 
 
