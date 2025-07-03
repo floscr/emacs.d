@@ -3329,25 +3329,6 @@ Use this function in a hook like this:
 
 ** Programming :PROGRAMMING:
 *** General Purpose
-**** INACTIVE [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter]] :EMACS:
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(package! tree-sitter)
-(package! tree-sitter-langs)
-#+end_src
-
-***** Config
-
-#+begin_src emacs-lisp :tangle no
-(use-package! tree-sitter
-  :config
-  (require 'tree-sitter-langs)
-  ;; (global-tree-sitter-mode)
-  ;; (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx))
-  ;; (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-#+end_src
 **** [[https://github.com/chubin/cheat.sh][cheat-sh]] :CLI:
 
 Community collection of snippets for command line tools.
