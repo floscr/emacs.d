@@ -9495,7 +9495,7 @@ I will make sure I don't override any files (easily enough...)
                          :display #'org-link
                          :image-data-fun #'my-attach/image-data-fun)
 
-(defun my-attach|dwim ()
+(cl-defun my-attach|dwim (&optional screenshot?)
   (interactive)
   (let* ((ext (condition-case nil
                   (with-timeout (0.2 'aborted)
@@ -9512,7 +9512,9 @@ I will make sure I don't override any files (easily enough...)
       (save-evil-excursion
        (when (evil-normal-state-p)
          (evil-append 0))
-       (-some-> (my/shell-command-str "org_attach" file-name "--attach-dir" (f-expand my-attach:dir))
+       (-some-> (my/shell-command-str "org_attach" file-name
+                                      "--attach-dir" (f-expand my-attach:dir)
+                                      (when screenshot? "--screenshot"))
                 (s-trim)
                 (insert))))))
 
@@ -11266,6 +11268,7 @@ redefines its keys every time `eshell-mode' is enabled."
       (:prefix-map ("i" . "Insert")
        :desc "Created Property"        "c" #'my-org|add-created-property
        :desc "Attachment"              "a" #'my-attach|dwim
+       :desc "Attachment Screenshot"   "s" (cmd! (my-attach|dwim t))
        :desc "Last download"           "d" #'my-attach|last-download))
 #+end_src
 
