@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: penpot emoji recycle
+# key: rc
+# --
+:recycle: $0

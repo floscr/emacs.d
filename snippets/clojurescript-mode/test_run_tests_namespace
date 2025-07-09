@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: Run tests in namespace
+# --
+(t/run-tests *ns*)

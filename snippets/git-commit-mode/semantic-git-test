@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Semantic Git: Test
+# key: t
+# --
+test: $0

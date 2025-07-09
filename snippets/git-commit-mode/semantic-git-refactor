@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Semantic Git: Refactor
+# key: rf
+# --
+refactor: $0

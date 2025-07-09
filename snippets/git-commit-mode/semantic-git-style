@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Semantic Git: Style
+# key: s
+# --
+style: $0
