@@ -5941,6 +5941,26 @@ Double check if the provided API methods in your response are not halucinated an
         :desc "Debug exception" "e" #'aider-debug-exception
         :desc "Help" "H" #'aider-help)))
 #+END_SRC
+*** Python
+
+**** Disable ~python-mypy~
+
+I'm getting this warning
+
+#+BEGIN_QUOTE
+Suspicious state from syntax checker python-mypy: Flycheck checker python-mypy returned 2, but its output contained no errors: prototype-tokens-interpreter-py is not a valid Python package name
+
+Try installing a more recent version of python-mypy, and please open a bug report if the issue persists in the latest release.  Thanks!
+#+END_QUOTE
+
+So I disable it
+
+#+begin_src elisp
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq flycheck-disabled-checkers '(python-mypy))))
+#+end_src
+
 
 ** Git / Magit :GIT:MAGIT:
 *** Packages
