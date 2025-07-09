@@ -2147,6 +2147,7 @@ which I name after the matching url.
  sh
  yaml
  (web +css)
+ (python +lsp)
 
  :app
  calendar
