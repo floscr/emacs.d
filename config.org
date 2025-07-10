@@ -3191,7 +3191,7 @@ Parinfer doesn't really work well with multi-cursor-edit, as some braces get aut
 (make-variable-buffer-local 'my-evil:multi-edit-prev-parinfer-mode)
 
 (defun my-evil/multi-edit-insert-disable-parinfer ()
-  (when (and parinfer-rust-mode (boundp 'evil-multiedit--pt-beg) evil-multiedit--pt-beg)
+  (when (and (boundp 'parinfer-rust--mode) parinfer-rust-mode (boundp 'evil-multiedit--pt-beg) evil-multiedit--pt-beg)
     (setq-local my-evil:multi-edit-prev-parinfer-mode (symbol-value 'parinfer-rust--mode))
     (parinfer-rust-mode-disable)))
 
