@@ -3296,6 +3296,30 @@ Use this function in a hook like this:
 (after! (:and beancount-mode apheleia)
   (my-formatters/remove-formatter 'bean-format))
 #+end_src
+**** combobulate
+
+***** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! combobulate :recipe (:host github :repo "mickeynp/combobulate"))
+#+END_SRC
+
+***** Config
+
+#+BEGIN_SRC elisp
+(use-package! combobulate
+  :hook (python-mode . combobulate-mode)
+
+  :config
+  (map! :map (python-mode-map)
+        :nm "("     #'combobulate-navigate-up
+        :nm ")"     #'combobulate-navigate-down
+        :nm "M-r"   #'combobulate-splice-up
+        :nm ",d"    #'combobulate-kill-node-dwim
+        :nm "M-S-l" #'combobulate-transpose-sexps
+        :nm "M-l"   #'combobulate-navigate-down
+        :nm "M-h"   #'combobulate-navigate-up))
+#+END_SRC
 
 ** UI :UI:
 *** Higlight indent guides
@@ -10713,7 +10737,6 @@ Extend the default evil ex commands from [[file:~/.emacs.d/modules/editor/evil/+
 (define-key! 'global
   [remap evil-toggle-fold]   #'my-comment-header|toggle-fold-or-fallback)
 #+end_src
-
 
 *** TODO Paste Fix
 
