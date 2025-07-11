@@ -792,7 +792,7 @@ byte-compiled from.")
   (let* ((default-directory doom-private-dir)
          (src-file (expand-file-name (or file buffer-file-name)))
          (buffer (get-buffer-create "*My Output*")))
-    (start-process "org-tangle" buffer "/home/floscr/Code/Smorgasbord/items/org-web/projects/cli/cli.core" "tangle" src-file)))
+    (start-process "org-tangle" buffer "~/Code/Smorgasbord/items/org-web/projects/cli/cli.core" "tangle" src-file)))
 
 ;;;###autoload
 (defalias 'my-config/reload-litarate-config-file #'doom/reload)
