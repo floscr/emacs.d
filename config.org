@@ -3171,10 +3171,12 @@ When narrowing to region or defun, make it in an indirect other window.
 
 #+begin_src elisp
 (defmacro my-parinfer/save-excursion (mode &rest body)
-  `(let ((prev-mode (symbol-value 'parinfer-rust--mode)))
-     (parinfer-rust--switch-mode ,mode)
-     ,@body
-     (parinfer-rust--switch-mode prev-mode)))
+  `(if (fboundp 'parinfer-rust--switch-mode)
+    (let ((prev-mode (symbol-value 'parinfer-rust--mode)))
+      (parinfer-rust--switch-mode ,mode)
+      ,@body
+      (parinfer-rust--switch-mode prev-mode))
+    ,@body))
 #+end_src
 
 ****** Disable parinfer during multi-edit
