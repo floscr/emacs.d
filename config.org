@@ -143,7 +143,7 @@ Tangles to [[file:autoload.el][autoload.el]]
 :SOURCE:   https://emacs.stackexchange.com/a/33063
 :END:
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defmacro my@ignore-args (fn)
   "Return function that ignores its arguments and invokes FN."
@@ -154,7 +154,7 @@ Tangles to [[file:autoload.el][autoload.el]]
 
 Similar to the clojure ~comment~ form
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defmacro comment (&rest body)
   "Comment out one or more s-expressions."
   nil)
@@ -163,14 +163,14 @@ Similar to the clojure ~comment~ form
 ** General
 *** Noop
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my/noop (&optional args) nil)
 #+END_SRC
 
 *** Without undo
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defmacro my/without-undo (&rest forms)
   "Executes FORMS with a temporary buffer-undo-list that is discarded afterwards.
@@ -206,7 +206,7 @@ modifications."
 ** Buffer
 *** Visual region
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-buffer/selected-text ()
   "Get the currently selected text as a string.
 Only takes evil visual selected text."
@@ -217,7 +217,7 @@ Only takes evil visual selected text."
 
 *** Check if buffer has line
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my-buffer/contains-line (string)
   (save-excursion
     (save-match-data
@@ -227,7 +227,7 @@ Only takes evil visual selected text."
 
 *** Empty line at point
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-buffer/empty-line? ()
   (-> (thing-at-point 'line)
       (substring-no-properties)
@@ -237,7 +237,7 @@ Only takes evil visual selected text."
 
 *** Get current line indentation
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-buffer/line-indent ()
   "Get the indent of the current line."
@@ -262,7 +262,7 @@ Only takes evil visual selected text."
 
 *** Check current line for regex
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-buffer/line-contains (regexp)
   "Check for REGEXP at current line."
@@ -273,7 +273,7 @@ Only takes evil visual selected text."
 
 *** Delete current line
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-buffer/delete-current-line ()
   "Delete (not kill) the current line."
@@ -286,7 +286,7 @@ Only takes evil visual selected text."
 
 *** Insert above/below current line
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-buffer|insert-line-below (&optional str)
   "Insert an empty line below the current line."
   (interactive)
@@ -325,7 +325,7 @@ Only takes evil visual selected text."
 #+END_SRC
 *** Jump to source
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-buffer|jump-source-dwim (&optional other-window file-name)
   "Jump to the buffer source depending on the mode."
   (interactive)
@@ -335,7 +335,7 @@ Only takes evil visual selected text."
 #+end_src
 *** Search regexp in buffer
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-buffer/search-regexp-in-buffer (regexp)
   "Searches for REGEXP in the current buffer and returns a list of matches and their line numbers."
   (save-excursion
@@ -347,7 +347,7 @@ Only takes evil visual selected text."
 #+end_src
 *** Find duplicates
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my/find-duplicates (s)
   (let* ((words (split-string s "[^A-Za-z]+" t))
          (duplicates (seq-filter
@@ -384,7 +384,7 @@ Only takes evil visual selected text."
 
 Get clipboard with ~(x-get-clipboard)~
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my/clipboard-binary? ()
   "Check if the current clipboard content is likely to be binary."
   (let ((content (x-get-selection 'CLIPBOARD)))
@@ -399,7 +399,7 @@ Get clipboard with ~(x-get-clipboard)~
 
 Prevent ~async-shell-command~ displaying a popup or a buffer.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my-shell/async-command-no-window (command)
   "Execute async command without showing the result buffer."
   (interactive)
@@ -409,7 +409,7 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 
 *** Shell command to list
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my-shell/command-to-list (cmd)
   "Split output from shell-command to list"
   (split-string (shell-command-to-string cmd) "\n" t))
@@ -419,7 +419,7 @@ Prevent ~async-shell-command~ displaying a popup or a buffer.
 
 I don't want some processes to exit, when I close emacs.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-shell/no-exit-command (cmd &optional &rest args)
   "Launch a shell command, without opening a message buffer.
@@ -433,7 +433,7 @@ The proram persists when emacs is closed."
 
 *** Open youtube link with MPV
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-shell/mpv-youtube-url (url)
   (-when-let* ((quality-val
@@ -449,7 +449,7 @@ The proram persists when emacs is closed."
 #+END_SRC
 *** Shell Command to String
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my/shell-command (cmd &rest flags)
   "Execute a shell command and return a cons of the exit-status and the output.
 Trims the resulting output automatically."
@@ -475,7 +475,7 @@ Trims the resulting output automatically."
 ** Files
 *** Remove trailing slash
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-file/remove-trailing-slash (path)
   "Remove the trailing slash from `path' string."
   (s-replace-regexp "/$" "" path))
@@ -487,7 +487,7 @@ Trims the resulting output automatically."
 
 *** Get file timestamp
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-file/timestamp (path)
   (->> (file-attributes path)
@@ -499,7 +499,7 @@ Trims the resulting output automatically."
 :SOURCE:   https://stackoverflow.com/a/30886283
 :END:
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-file/last-modified-file-in-dir (path)
   (->> (f-entries path)
@@ -510,7 +510,7 @@ Trims the resulting output automatically."
 
 *** Chmod current file
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my-file|chmod-this-file ()
   "Chmod +x the current file."
@@ -519,7 +519,7 @@ Trims the resulting output automatically."
 #+END_SRC
 *** Dir has hidden entry
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my-file/dir-has-hidden-entries (dir)
   "Check if a DIR has any hidden entries.
 Return the first found file when one is found."
@@ -528,7 +528,7 @@ Return the first found file when one is found."
 
 *** Find project root
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my-file/project-root (&optional dir)
   "Find the project root either via projectile (not available in certain buffers like dired)
 or manually traverse upwards until the .git directory is found."
@@ -544,7 +544,7 @@ or manually traverse upwards until the .git directory is found."
 
 *** Find file in project
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-file/find-project-file (path)
   "Find file at relative `path' in the current project."
   (-> (f-join (my-file/project-root) path)
@@ -553,7 +553,7 @@ or manually traverse upwards until the .git directory is found."
 
 *** Find node_modules executable
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-file/node-modules-executable-find (name)
   "Find an executable bin in the projects node_modules/.bin directory with NAME
 Returns nil when no executable was found."
@@ -565,7 +565,7 @@ Returns nil when no executable was found."
 ** Debugging / Logging
 *** Kill and Message
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun my/kill-and-message (x)
   "Executes kill-new but with a message log side effect."
@@ -575,7 +575,7 @@ Returns nil when no executable was found."
 
 *** Convert boolean to enabled/disabled string
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my/bool-to-enabled-string (x)
   "Convert bool X to string for messaging.
 t   -> \"Enabled\")
@@ -585,7 +585,7 @@ nil -> \"Disabled\""
 
 *** Variable t/nil toggle message
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun my/bool-state-message (x)
   "Log message if a bool is enabled or not"
   (interactive)
@@ -594,7 +594,7 @@ nil -> \"Disabled\""
 ** Dash Extensions
 *** Fix custom thread indentation
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (with-eval-after-load 'dash
   (--each
    (list '-> '->> '-some-> '-some->> '--each '-each '-map '--map)
@@ -606,7 +606,7 @@ nil -> \"Disabled\""
 Run a side effect ~fn~ on the initial input ~x~.
 But Return the original input ~x~.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -tap (fn x)
   "Function docstring"
@@ -623,7 +623,7 @@ But Return the original input ~x~.
 
 Log the current input without breaking the pipe.
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -log (x)
   "Function docstring"
@@ -632,7 +632,7 @@ Log the current input without breaking the pipe.
 
 *** -when
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -when (pred fn x)
   "When FN equals t forward X."
@@ -652,7 +652,7 @@ Log the current input without breaking the pipe.
 
 *** -id-when
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -id-when (fn x)
   "When FN equals t forward X."
@@ -668,7 +668,7 @@ Log the current input without breaking the pipe.
 
 *** -append
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -append (elem list)
   "Append ELEM to the end of list.
@@ -682,7 +682,7 @@ This is like -snoc but it takes the ELEM as the first argument for easier compos
 :SOURCE:   [[http://kitchingroup.cheme.cmu.edu/blog/2014/09/06/Randomize-a-list-in-Emacs/][Randomize a list in Emacs]]
 :END:
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 (defun swap-list-items (LIST el1 el2)
   "in LIST swap indices EL1 and EL2 in place"
   (let ((tmp (elt LIST el1)))
@@ -701,7 +701,7 @@ shuffling is done in place."
 
 *** -f-join
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -f-join (x path)
   "Reversed argument order for f-join"
@@ -710,7 +710,7 @@ shuffling is done in place."
 
 *** -f-split-ext
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -f-split-ext (s)
   (list (f-no-ext s) (f-ext s)))
@@ -724,7 +724,7 @@ shuffling is done in place."
 
 *** -f-map-filename
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun -f-map-filename (fn s)
   (concat (funcall fn (f-no-ext s))
@@ -741,7 +741,7 @@ shuffling is done in place."
 
 *** -f-tildify
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defun f-tildify (path)
   "Replace the HOME directory in path"
@@ -752,7 +752,7 @@ shuffling is done in place."
 
 Map over the first item of a list of ~cons~
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun -mapcar-first (func lst)
   "Apply FUNC to the first item of each cons cell in LST."
   (mapcar (lambda (item)
@@ -771,14 +771,14 @@ Map over the first item of a list of ~cons~
 
 *** plist
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun -plist-get (plist prop)
   (plist-get prop plist))
 #+end_src
 
 ** Tangling
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defvar my-config:literate-config-file
   (concat doom-private-dir "config.org")
   "The file path of your literate config file.")
@@ -832,7 +832,7 @@ config, and should trigger a recompile if changed."
 
 *** Insert current date
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-date|insert-today (&optional arg)
   "Insert the current date as YYYY-MM-DD.
 When ARG is passed, query for a custom delimiter."
@@ -851,7 +851,7 @@ When ARG is passed, query for a custom delimiter."
 ** Treepy
 *** treepy-walk-while
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun +treepy/walk-while (loc pred)
   (require 'treepy)
   (let ((nloc (treepy-next loc)))
@@ -867,7 +867,7 @@ Porting over clojure-like functions as I'm more used to them
 
 *** Print
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun prn (&rest args)
   (let* ((str (->> (-map (lambda (_) "%s") args)
                    (s-join " ")))
@@ -877,7 +877,7 @@ Porting over clojure-like functions as I'm more used to them
 
 *** Doto
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun doto (x fn)
   (funcall fn x)
   x)
@@ -888,7 +888,7 @@ Porting over clojure-like functions as I'm more used to them
 #+end_src
 *** nil?
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun nil? (x)
   (null x))
 
@@ -899,7 +899,7 @@ Porting over clojure-like functions as I'm more used to them
 #+end_src
 *** str
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun str (&rest args)
   "Cloure like str function"
   (mapconcat (fn!
@@ -914,7 +914,7 @@ Porting over clojure-like functions as I'm more used to them
 #+end_src
 *** inc
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun inc (n)
   (+ 1 (or n)))
 
@@ -925,7 +925,7 @@ Porting over clojure-like functions as I'm more used to them
 #+end_src
 *** some?
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun some? (x)
   (not (nil? x)))
 
@@ -939,7 +939,7 @@ Porting over clojure-like functions as I'm more used to them
 
 *** Dedent
 
-#+begin_src elisp
+#+begin_src elisp :tangle "autoload.el" :comments link
 (defun my-dedent (s)
   "Dedent a string be the leading space indent."
   (let* ((trimmed (string-trim-left s))
