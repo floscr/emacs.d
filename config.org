@@ -5804,7 +5804,7 @@ machine api.openai.com login apikey password TOKEN
     :stream t
     :key (fn! (auth-source-pick-first-password :host "api.anthropic.com")))
   (setq gptel-default-mode 'org-mode)
-  (setq-default gptel-model "gpt-4")
+  (setq-default gptel-model 'gpt-4)
   (setq gptel-directives
         `((default . "To assist:  Be terse.  Do not offer unprompted advice or clarifications. Speak in specific,
  topic relevant terminology. Do NOT hedge or qualify. Do not waffle. Speak
