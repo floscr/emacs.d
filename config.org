@@ -9445,15 +9445,6 @@ POS to match:
   (interactive)
   (+ivy/project-search nil (f-base (dired-file-name-at-point)) (f-expand org-directory)))
 #+end_src
-**** Meta DWIM
-
-#+begin_src elisp
-
-#+end_src
-
-
-
-
 *** Config
 
 **** Org Src Language Aliases
