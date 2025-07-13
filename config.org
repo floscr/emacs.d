@@ -117,6 +117,9 @@ Tangles to [[file:autoload.el][autoload.el]]
 (template "2 = <<(+ 1 1)>>")
 #+END_SRC
 
+#+RESULTS:
+: 2 = 2
+
 #+BEGIN_SRC elisp :tangle "autoload.el" :comments link
 ;;;###autoload
 (defmacro template (text)
