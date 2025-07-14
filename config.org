@@ -9544,11 +9544,15 @@ I will make sure I don't override any files (easily enough...)
       (save-evil-excursion
        (when (evil-normal-state-p)
          (evil-append 0))
-       (-some-> (my/shell-command-str "org_attach" file-name
-                                      "--attach-dir" (f-expand my-attach:dir)
-                                      (when screenshot? "--screenshot"))
-                (s-trim)
-                (insert))))))
+       (when-let* ((output (-some-> (my/shell-command-str "org_attach" file-name
+                                                          "--attach-dir" (f-expand my-attach:dir)
+                                                          (when screenshot? "--screenshot"))
+                                    (s-trim))))
+         (if screenshot?
+             (-> (s-lines output)
+                 (-last-item)
+                 (insert))
+           (insert output)))))))
 
 (defun my-attach|last-download ()
   (interactive)
