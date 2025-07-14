@@ -8157,6 +8157,21 @@ A reference is highlighted only if it is visible in a window."
 #+end_src
 
 ** Snippets :SNIPPETS:
+*** Config
+
+**** Disable doom snippets / load custom snippets
+
+#+BEGIN_SRC elisp
+(defvar my-yasnippet:snippet-dir (f-join doom-private-dir "snippets"))
+
+(use-package! yasnippet
+  :init
+  (require 'doom-snippets nil t)
+  :config
+  (add-to-list 'yas-snippet-dirs my-yasnippet:snippet-dir)
+  (yas-reload-all))
+#+END_SRC
+
 *** Overrides
 
 Add the snippet key to to the snippet prompt so I know it for next time.
@@ -8243,15 +8258,6 @@ Return nil otherwise."
     (beginning-of-line)
     (when (search-backward "#+begin_src" nil t)
       (my-snippets/org-src-lang))))
-#+END_SRC
-*** Config
-
-**** Disable doom snippets / load custom snippets
-
-#+BEGIN_SRC elisp
-(use-package! yasnippet
-  :init
-  (require 'doom-snippets nil t))
 #+END_SRC
 ** Project Boilerplate
 *** [[https://github.com/chrisbarrett/skeletor.el#specifying-substitutions][skeletor]]
