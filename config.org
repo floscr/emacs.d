@@ -5921,10 +5921,22 @@ Double check if the provided API methods in your response are not halucinated an
   (aider--send-command "/commit")
   (prn "COMMITED"))
 
+(defun my-aider|reset-and-chat ()
+  "Reset Aider, add the current file, and open the Aider buffer for a new chat."
+  (interactive)
+  (aider-reset)
+  (when buffer-file-name
+    (aider-add-current-file))
+  (aider-switch-to-buffer)
+  (goto-char (point-max))
+  (recenter-top-bottom 'bottom)
+  (evil-insert-state))
+
 (map! :leader
       (:prefix ("a" . "Aider")
        :desc "Add buffer" "a" #'aider-add-current-file
        :desc "Add buffer" "RET" #'my-aider|commit
+       :desc "Reset & Chat" "n" #'my-aider|reset-and-chat
        :desc "Transient Menu" "t" #'aider-transient-menu
        (:prefix ("p" . "Process")
         :desc "Run Aider" "a" #'aider-run-aider
