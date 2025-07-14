@@ -5916,6 +5916,12 @@ Double check if the provided API methods in your response are not halucinated an
   :config
   (setq aider-args '("--model" "sonnet")))
 
+(defun my-aider/save-comint-command ()
+  (let* ((pmark (process-mark (get-buffer-process (current-buffer))))
+         (prompt (buffer-substring-no-properties pmark (point-max))))
+    (delete-region pmark (point-max))
+    prompt))
+
 (defun my-aider|commit ()
   (interactive)
   (aider--send-command "/commit")
@@ -5924,13 +5930,18 @@ Double check if the provided API methods in your response are not halucinated an
 (defun my-aider|reset-and-chat ()
   "Reset Aider, add the current file, and open the Aider buffer for a new chat."
   (interactive)
-  (aider-reset)
-  (when buffer-file-name
-    (aider-add-current-file))
-  (aider-switch-to-buffer)
-  (goto-char (point-max))
-  (recenter-top-bottom 'bottom)
-  (evil-insert-state))
+  (let ((buffer buffer-file-name))
+    (if (not (get-buffer (aider-buffer-name)))
+        (progn
+          (aider-run-aider)
+          (aider--send-command (format "/add %s" buffer)))
+      (progn
+        (aider-switch-to-buffer)
+        (let ((prev-prompt (my-aider/save-comint-command)))
+          (aider-reset)
+          (aider--send-command (format "/add %s" buffer))
+          (insert prev-prompt))))
+    (evil-insert-state)))
 
 (map! :leader
       (:prefix ("a" . "Aider")
