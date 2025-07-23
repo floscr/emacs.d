@@ -5929,8 +5929,7 @@ Double check if the provided API methods in your response are not halucinated an
   (aider--send-command "/commit")
   (prn "COMMITED"))
 
-(defun my-aider|reset-and-chat ()
-  "Reset Aider, add the current file, and open the Aider buffer for a new chat."
+(cl-defun my-aider|add-file (&optional run-before)
   (interactive)
   (let ((buffer buffer-file-name))
     (if (not (get-buffer (aider-buffer-name)))
@@ -5940,14 +5939,19 @@ Double check if the provided API methods in your response are not halucinated an
       (progn
         (aider-switch-to-buffer)
         (let ((prev-prompt (my-aider/save-comint-command)))
-          (aider-reset)
+          (when run-before (run-before))
           (aider--send-command (format "/add %s" buffer))
           (insert prev-prompt))))
     (evil-insert-state)))
 
+(defun my-aider|reset-and-chat ()
+  "Reset Aider, add the current file, and open the Aider buffer for a new chat."
+  (interactive)
+  (my-aider|add-file #'aider-reset))
+
 (map! :leader
       (:prefix ("a" . "Aider")
-       :desc "Add buffer" "a" #'aider-add-current-file
+       :desc "Add buffer" "a" #'my-aider|add-file
        :desc "Add buffer" "RET" #'my-aider|commit
        :desc "Reset & Chat" "n" #'my-aider|reset-and-chat
        :desc "Transient Menu" "t" #'aider-transient-menu
