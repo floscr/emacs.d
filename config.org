@@ -74,6 +74,7 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 - [[https://github.com/magnars/s.el][magnars/s.el: String Manipulation]]
 
 #+BEGIN_SRC elisp
+(require 'ht)
 (require 'dash)
 (require 's)
 (require 'f)
@@ -82,6 +83,7 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 #+END_SRC
 
 #+BEGIN_SRC elisp :tangle "autoload.el" :comments link
+(require 'ht)
 (require 'dash)
 (require 's)
 (require 'f)
