@@ -98,6 +98,15 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
           (-id-when #'f-exists?)
           (load-file))
 #+end_src
+*** Testing
+
+#+begin_src elisp :tangle "tests.el"
+;;; -*- lexical-binding: t; -*-
+
+(setq-local lexical-binding t)
+
+(load! "./autoload.el")
+#+end_src
 
 * My Standard Library
 :PROPERTIES:
@@ -721,7 +730,9 @@ shuffling is done in place."
 **** Test
 
 #+begin_src elisp :tangle "tests.el" :results none
-(assert (equal (-f-split-ext "foo_bar.clj") '("foo_bar" "clj")))
+(describe "-f-split-ext"
+    (it "splits extension"
+      (expect (-f-split-ext "foo_bar.clj") :to-equal '("foo_bar" "clj"))))
 #+end_src
 
 *** -f-map-filename
@@ -737,8 +748,10 @@ shuffling is done in place."
 **** Test
 
 #+begin_src elisp :tangle "tests.el" :results none
-(assert (equal (-f-map-filename #'s-dashed-words "foo_bar.clj") "foo-bar.clj"))
-(assert (equal (-f-map-filename #'s-dashed-words "foo_bar") "foo-bar"))
+(describe "-f-map-filename"
+  (it "maps filename"
+    (expect (-f-map-filename #'s-dashed-words "foo_bar.clj") :to-equal "foo-bar.clj")
+    (expect (-f-map-filename #'s-dashed-words "foo_bar") :to-equal "foo-bar")))
 #+end_src
 
 *** -f-tildify
@@ -3992,6 +4005,7 @@ No namespace here, so it matches the other commmands
 (add-hook! '(js2-mode-hook rjsx-mode-hook)
   (defun my-javascript/setup-test-file-vars ()
     "Sets up variables for test files (cypress, jest)."
+    (require 'rotate-text)
     (when (-some->> (buffer-file-name)
             (string-match "\\.\\(test\\|spec\\|cy\\)\\.js$"))
       ;; Rotate it/it.only
@@ -5755,7 +5769,7 @@ My playground for testing out tree sitter
              (my-treesitter/node-point-eq node parent-node))
         (progn
           (backward-char 1)
-          (my-treesitter/goto-parent))
+          (my-treesitter|goto-parent))
       (-> (tsc-node-start-position parent-node)
           (goto-char)))))
 #+end_src
