@@ -103,6 +103,8 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 #+begin_src elisp :tangle "tests.el"
 ;;; -*- lexical-binding: t; -*-
 
+(require 'buttercup)
+
 (setq-local lexical-binding t)
 
 (load! "./autoload.el")
@@ -5953,7 +5955,7 @@ Double check if the provided API methods in your response are not halucinated an
       (progn
         (aider-switch-to-buffer)
         (let ((prev-prompt (my-aider/save-comint-command)))
-          (when run-before (run-before))
+          (when (fboundp        'run-before) (run-before))
           (aider--send-command (format "/add %s" buffer))
           (insert prev-prompt))))
     (evil-insert-state)))
@@ -6023,6 +6025,21 @@ So I disable it
           (lambda ()
             (setq flycheck-disabled-checkers '(python-mypy))))
 #+end_src
+
+
+*** Haxe
+
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! haxe-mode)
+#+END_SRC
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! haxe-mode)
+#+END_SRC
 
 
 ** Git / Magit :GIT:MAGIT:
