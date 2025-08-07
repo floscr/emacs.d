@@ -2467,6 +2467,7 @@ Remove the ugly grey background
 
 #+BEGIN_SRC elisp
 '(org-column :background nil)
+`(org-quote :background ,(face-attribute 'org-block :background))
 #+END_SRC
 
 ****** Function End
