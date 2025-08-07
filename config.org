@@ -6028,7 +6028,7 @@ So I disable it
 
 #+BEGIN_SRC elisp
 (use-package! haxe-mode
-  :hook (haxe-mode . lsp))
+  :mode "\\.hx\\'")
 #+END_SRC
 
 ***** LSP Setup
