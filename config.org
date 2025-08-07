@@ -2719,17 +2719,6 @@ These will be written to ~init.el~ so it overwrites the doom standard values.
     ("^\\*aider" :ttl nil :quit nil)
     ("^\\*Gptel" :ttl nil :quit nil)))
 #+END_SRC
-*** Themes
-**** Custom doom themes package
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link :tangle no
-(package! doom-themes
-  :recipe (:host github :repo "floscr/emacs-doom-themes" :files ("*.el" "themes/*.el"))
-  :pin nil)
-#+END_SRC
-
 *** Workspaces
 **** Functions
 ***** Switch to
