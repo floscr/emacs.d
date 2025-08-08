@@ -5946,7 +5946,7 @@ Double check if the provided API methods in your response are not halucinated an
       (progn
         (aider-switch-to-buffer)
         (let ((prev-prompt (my-aider/save-comint-command)))
-          (when (fboundp        'run-before) (run-before))
+          (when (functionp 'run-before) (run-before))
           (aider--send-command (format "/add %s" buffer))
           (insert prev-prompt))))
     (evil-insert-state)))
