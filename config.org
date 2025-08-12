@@ -2089,6 +2089,7 @@ which I name after the matching url.
  doom
  modeline
  doom-quit
+ hl-todo
  (popup +all +defaults)
  vc-gutter
  vi-tilde-fringe
