@@ -5924,7 +5924,8 @@ Double check if the provided API methods in your response are not halucinated an
 #+BEGIN_SRC elisp
 (use-package aider
   :config
-  (setq aider-args '("--model" "sonnet")))
+  (setq aider-args '("--model" "sonnet"))
+  (setq aider-popular-models '("sonnet" "o4-mini" "deepseek/deepseek-reasoner" "gemini/gemini-1.5-flash-latest")))
 
 (defun my-aider/save-comint-command ()
   (let* ((pmark (process-mark (get-buffer-process (current-buffer))))
