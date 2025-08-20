@@ -6401,19 +6401,61 @@ Find the root directory of a ~.git~ repository
 This also works for worktrees that are in a nested directory.
 
 #+BEGIN_SRC elisp
+(defun my-git/parse-git-module-file (s)
+  (-some->> (s-match "^gitdir: \\(.+\\)$" s)
+            (nth 1)
+            (s-trim)))
+
+(defun my-git/get-parent-path-module-file (s)
+  (-some->> (my-git/parse-git-module-file s)
+            (f-split)
+            (reverse)
+            (-drop-while (fn! (not (string= ".git" %1))))
+            (reverse)
+            (s-join "/")))
+
+(defun my-git/find-git-root-from-module-file (module-file)
+  (let* ((dir (f-parent module-file))
+         (parent-path (-some->> (f-read module-file)
+                                (my-git/get-parent-path-module-file)
+                                (f-join dir))))
+    (cond
+     ((nil? parent-path) (error "Couldn't find git parent from %s" module-file))
+     ((f-file? parent-path) (my-git/read-git-module-file file))
+     ((f-dir? parent-path) parent-path))))
+
 (defun my-magit/find-root-git-dir ()
-  "Find the root directory of a repository."
-    (-some->> (magit-toplevel)
-      (-f-join ".git")
-      (-id-when #'f-exists?)
-      ((lambda (x)
-         (if (f-file? x)
-             (->> (magit-list-worktrees)
-                  (car)
-                  (car)
-                  (-f-join ".git"))
-           x)))))
+  "Find the absolute root .git directory of a repository.
+Skips worktrees and submodules - If not needed just run `magit-toplevel'."
+  (let* ((toplevel (-some-> (magit-toplevel)
+                            (f-join ".git"))))
+    (cond
+     ((nil? toplevel) nil)
+     ((f-dir? toplevel) toplevel)
+     ((f-file? toplevel) (my-git/find-git-root-from-module-file toplevel)))))
+
+(defun my-magit/find-root-dir ()
+  (-some-> (my-magit/find-root-git-dir)
+           (f-parent)))
+(comment
+ (my-magit/find-root-git-dir)
+ (my-magit/find-root-dir)
+ nil)
 #+END_SRC
+
+#+begin_src elisp :tangle "tests.el" :results none
+(setq-local lexical-binding t)
+(describe "my-git/parse-git-module-file"
+  (it "parses git module file content"
+    (expect (my-git/parse-git-module-file "gitdir: ../.git/modules/repo")
+            :to-equal "../.git/modules/repo"))
+  (it "returns nil for non matching strings"
+    (expect (my-git/parse-git-module-file "gitdir: ")
+            :to-equal nil)
+    (expect (my-git/parse-git-module-file "something")
+            :to-equal nil)))
+#+end_src
+
 **** Lock git buffer :ADVICE:
 
 #+BEGIN_SRC elisp
