@@ -4915,25 +4915,10 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
   (setq cider-use-fringe-indicators nil)
   (setq cider-show-error-buffer nil)
   (setq cider-auto-select-error-buffer nil)
-  (setq cider-words-of-inspiration nil)
   (comment (add-hook 'doom-load-theme-hook #'my-cider/init-faces))
   (advice-add 'doom/escape :before #'my-cider/clear-errors))
 #+end_src
 
-****** Hacks
-******* Fix cider for 28.1
-
-[[https://github.com/clojure-emacs/cider/issues/3029][Problem starting cider in clj/cljs `(cl-no-applicable-method map-into ((right-margin 80)) hash-table)` · Issue #3029 · clojure-emacs/cider]]
-
-Fixes cider from breaking with newest emacs, for this isseu
-
-#+BEGIN_QUOTE
-condition-case: Error in a Doom startup hook: nrepl-connected-hook, cider--connected-handler, (cl-no-applicable-method map-into (("nrepl.middleware.print/stream?" "1")) (hash-table :test equal))
-#+END_QUOTE
-
-#+begin_src elisp :tangle "packages.el" :comments link
-(package! map :pin "bb50dba")
-#+end_src
 ****** Functions
 ******* Fix ~cider-connect~ checking ~.authinfo.gpp~ -> password
 
