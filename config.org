@@ -6038,14 +6038,6 @@ So I disable it
 *** Packages
 **** Magit & Transient
 
-#+BEGIN_SRC emacs-lisp :tangle no :comments link
-(package! magit :pin "7dfebba55bf687a25049882c2316166d968048ea")
-(package! compat :pin "9a234d0")
-(package! transient :pin "3430943eaa3222cd2a487d4c102ec51e10e7e3c9")
-(package! forge :pin "a63685b")
-(package! ghub :pin "23d1cd6")
-#+END_SRC
-
 **** [[https://github.com/freesteph/elescope][elescope: Search and clone Git repos directly within Emacs.]]
 
 ***** Package
@@ -10989,12 +10981,14 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("g" . "git")
+  :desc "Commit"                              "c" #'magit-commit
+  :desc "Status"                              "g" #'magit-status
   :desc "Amend Commit (No Message)"           "A" (cmd! (magit-commit-amend "--no-edit"))
   :desc "Blame"                               "B" #'magit-blame
   :desc "Changed Files"                       "F" #'my-magit|counsel-changed-files
   :desc "New Branch"                          "N" #'magit-branch-spinoff
   :desc "Show revision original File"         "O" #'my-magit|show-revision-original
-  :desc "Stage File"                          "S" #'magit-stage-buffer-file
+  :desc "Stage File"                          "S" #'magit-file-stage
   :desc "Map-editor Changed Files"            "T" (cmd! (my-magit|counsel-changed-files "map-editor"))
   :desc "Amend Commit"                        "a" #'magit-commit-amend
   :desc "Checkout"                            "b" #'magit-checkout
