@@ -5422,6 +5422,24 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
           (cider-format-edn-region beg end)))
       (clojure-mode)
       (flycheck-mode -1))))
+
+(defun my-cljs|run-current-test ()
+  "Run the current test function under cursor in CIDER REPL and show output in message buffer."
+  (interactive)
+  (let* ((current-defun (which-function))
+         (namespace (cider-current-ns))
+         (test-command (format "(cljs.test/run-test %s/%s)" namespace current-defun)))
+    (if (and current-defun namespace)
+        (progn
+          (message "Running test: %s/%s" namespace current-defun)
+          (cider-interactive-eval
+           test-command
+           (lambda (result)
+             (let ((output (nrepl-dict-get result "out"))
+                   (value (nrepl-dict-get result "value")))
+               (when output
+                 (message "%s" (string-trim output)))))))
+      (message "Could not determine current test function or namespace"))))
 #+end_src
 ***** Convert svg to uix
 
