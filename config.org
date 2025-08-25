@@ -6869,7 +6869,8 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
    magit-save-repository-buffers 'dontask
    magit-clone-default-directory "~/Code/Repositories/"
    magithub-clone-default-directory magit-clone-default-directory
-   git-commit-summary-max-length 120))
+   git-commit-summary-max-length 120)
+  (setq magit-save-repository-buffers nil))
 
 (defun my-magit/debug-blame-failure (orig-fun &rest args)
   "Debug why magit-blame is failing."
