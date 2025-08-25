@@ -6002,6 +6002,21 @@ Double check if the provided API methods in your response are not halucinated an
         :desc "Debug exception" "e" #'aider-debug-exception
         :desc "Help" "H" #'aider-help)))
 #+END_SRC
+
+*** eca
+
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! eca)
+#+END_SRC
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! eca)
+#+END_SRC
+
 *** Python
 
 **** Disable ~python-mypy~
