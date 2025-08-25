@@ -9793,7 +9793,7 @@ Requires emacs 29
   :on-enter (my-penpo/enter-project))
 #+end_src
 
-*** Config
+*** Config & Functions
 
 #+begin_src elisp
 (defun my-penpot/penpot-project? ()
