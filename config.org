@@ -6017,6 +6017,17 @@ Double check if the provided API methods in your response are not halucinated an
 (use-package! eca)
 #+END_SRC
 
+**** Bindings
+
+#+begin_src elisp
+(map! :leader
+      (:prefix ("e" . "eca")
+       :desc "Eca" "e" #'eca
+       :desc "Add buffer" "a" #'eca-chat-add-file-context
+       :desc "Add region" "r" #'eca-chat-add-context-at-point
+       :desc "Send prompt" "RET" #'eca-chat-send-prompt))
+#+end_src
+
 *** Python
 
 **** Disable ~python-mypy~
