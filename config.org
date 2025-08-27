@@ -9875,6 +9875,11 @@ Requires emacs 29
     (insert "\n\n")
     (evil-insert-state)))
 
+#+end_src
+
+**** Bindings
+
+#+begin_src elisp
 (map!
  :map my-penpot-project-clojurescript-mode-map
  :localleader
