@@ -9785,7 +9785,8 @@ Requires emacs 29
 (defun my-penpo/enter-project ()
   (setq-local cider-connect-default-cljs-params (list :host "localhost" :port 3447 :project-dir my-penpot:dir))
   (setq-local cider-default-cljs-repl 'shadow)
-  (setq-local cider-shadow-default-options ":main"))
+  (setq-local cider-shadow-default-options ":main")
+  (setq-local browse-at-remote-preferred-remote-name "penpot"))
 
 (def-project-mode! my-penpot-mode
   :modes '(clojure-mode clojurescript-mode magit-mode)
