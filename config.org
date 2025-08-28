@@ -1478,7 +1478,7 @@ This function will mutate the hashtable M."
 
 (defun my-project-compile/compile-cmd (cmd dir &optional cache-file)
   (let ((default-directory dir))
-    (call-process-shell-command (format "alacritty --hold -e $SHELL -c '%s'&" cmd) nil 0 nil))
+    (call-process-shell-command (format "alacritty --hold -e $SHELL -i -c '%s'" cmd) nil 0 nil))
   (my-project-compile/update-cache cmd dir cache-file))
 
 (defun my-project-compile|compile ()
