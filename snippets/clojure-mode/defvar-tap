@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: defvar tap
+# key: vv
+# --
+`(when (clojure--inside-let-binding-p) "_ ")`(def ${1:`(completing-read "let: " (clojure--read-let-bindings))`} $1)
