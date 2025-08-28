@@ -5424,14 +5424,13 @@ Used for [[file:snippets/clojure-mode/reset][reset! snippet]]
       (flycheck-mode -1))))
 
 (defun my-cljs|run-current-test ()
-  "Run the current test function under cursor in CIDER REPL and show output in message buffer."
   (interactive)
   (let* ((current-defun (which-function))
          (namespace (cider-current-ns))
          (test-command (format "(cljs.test/run-test %s/%s)" namespace current-defun)))
     (if (and current-defun namespace)
         (progn
-          (message "Running test: %s/%s" namespace current-defun)
+          (message "Running test: %s/%s" namespace current-defun test-command)
           (cider-interactive-eval
            test-command
            (lambda (result)
