@@ -5059,6 +5059,8 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
                         "i" #'cider-inspect
                         "n" #'clojure-insert-ns-form
                         "r" #'cider-inspect-last-result)
+               (:prefix ("r" . "repl")
+                :desc "Pop up REPL" "r" #'+clojure/open-repl)
                :localleader
                "x" #'cider-scratch)
          (:map (clojurescript-mode-map)
