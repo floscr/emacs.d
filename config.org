@@ -4908,6 +4908,10 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 
 (use-package! cider
   :config
+  (set-popup-rules!
+    '(("^\\*cider-error*" :ignore t)
+      ("^\\*cider-repl" :quit nil :ttl nil :side right :select t :size 0.5)
+      ("^\\*cider-repl-history" :vslot 2 :ttl nil)))
   (setq cider-repl-pop-to-buffer-on-connect nil)
   (setq cider-reuse-dead-repls t)
   ;; Show errors inline
