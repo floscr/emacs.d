@@ -6926,6 +6926,21 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
           (progn
             (kill-new org-entry)
             (message "Org entry copied to kill ring")))))))
+
+(cl-defun my-github|make-branch-from-issue (repository &key (max-title-length 50) (prefix "feature"))
+  "Select an issue from REPOSITORY and create a git branch in the
+format PREFIX/NUMBER-TITLE. TITLE will be converted to kebab-case,
+lowercase and limited to MAX-TITLE-LENGTH chars."
+  (interactive "sRepository (owner/repo): ")
+  (let* ((issue-data (my-github/select-issue repository)))
+    (when issue-data
+      (let* ((number (gethash "number" issue-data))
+             (raw-title (gethash "title" issue-data))
+             (kebab-title (replace-regexp-in-string " " "-" raw-title))
+             (lower-title (downcase kebab-title))
+             (short-title (substring lower-title 0 (min max-title-length (length lower-title))))
+             (branch-name (format "%s/%s-%s" prefix number short-title)))
+        (magit-branch-spinoff branch-name)))))
 #+end_src
 
 *** Config
@@ -9942,11 +9957,34 @@ Requires emacs 29
 (defun my-penpot|create-org-issue ()
   (interactive)
   (my-github|create-org-entry "tokens-studio/penpot"))
+
+(defun my-penpot|create-branch-from-issue ()
+  (interactive)
+  (my-github|make-branch-from-issue "tokens-studio/penpot" :max-title-length 128 :prefix "hyma"))
+
+(defun my-penpot|create-pr ()
+  (interactive)
+  (let* ((current-branch (magit-get-current-branch))
+         (base-branch "develop")
+         (owner "penpot")
+         (repo "penpot")
+         (fork-owner "tokens-studio")
+         (pr-url (format "https://github.com/penpot/penpot/compare/%s...%s:%s:%s" base-branch fork-owner repo current-branch)))
+    (if (and owner repo current-branch)
+        (progn
+          (browse-url pr-url)
+          (message "Opened PR creation page for branch: %s" current-branch))
+      (user-error "Could not determine repository info or current branch"))))
 #+end_src
 
 **** Bindings
 
 #+begin_src elisp
+(map! :map my-penpot-mode-map
+      :localleader
+      :desc "Create branch from issue" "b" #'my-penpot|create-branch-from-issue
+      :desc "Create PR" "p" #'my-penpot|create-pr)
+
 (map!
  :map my-penpot-project-clojurescript-mode-map
  :localleader
