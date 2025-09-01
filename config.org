@@ -6721,7 +6721,6 @@ _gp_rev       _gu_pper              _g=_: upper/lower       _gr_esolve
 ;;; git-related.el ends here
 #+end_src
 
-
 **** Delete multiple worktrees
 
 #+begin_src elisp
@@ -6844,7 +6843,7 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
 (define-key magit-status-mode-map (kbd "#") #'th/magit-aux-commands)
 #+end_src
 
-**** Discard staget logs
+**** Discard staged logs
 
 #+begin_src elisp
 (defvar my-magit|discard-staged-logs-regexp
