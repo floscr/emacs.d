@@ -6874,6 +6874,62 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
                (magit-discard)
                (kill-buffer))))))
 #+end_src
+**** Select issues
+
+#+begin_src elisp
+(defun my-github/select-issue (repository)
+  (interactive)
+  (let* (
+         (command (format "gh issue list --repo %s --json number,title,state,author,url,body --limit 50" repository))
+         (issues-json (shell-command-to-string command))
+         (issues (json-parse-string issues-json :array-type 'list))
+         (issue-alist (mapcar (lambda (issue)
+                                (let ((number (gethash "number" issue))
+                                      (title (gethash "title" issue))
+                                      (state (gethash "state" issue))
+                                      (author (gethash "login" (gethash "author" issue))))
+                                  (cons (format "#%d [%s] %s (%s)"
+                                                number state title author)
+                                        issue)))
+                              issues)))
+    (if (null issue-alist)
+        (message "No issues found in %s or gh CLI not available" repository)
+      (let* ((selected (completing-read (format "Select issue from %s: " repository) issue-alist))
+             (issue-data (cdr (assoc selected issue-alist))))
+        issue-data))))
+
+(defun my-github|create-org-entry (repository)
+  "Create an org-mode entry from a selected GitHub issue."
+  (interactive "sRepository (owner/repo): ")
+  (let ((issue-data (my-github/select-issue repository)))
+    (when issue-data
+      (let* ((number (gethash "number" issue-data))
+             (title (gethash "title" issue-data))
+             (url (gethash "url" issue-data))
+             (body (gethash "body" issue-data))
+             (author (gethash "login" (gethash "author" issue-data)))
+             (state (gethash "state" issue-data))
+             (org-entry (format "** TODO Review Issue #%d: %s
+:PROPERTIES:
+:GITHUB_URL: %s
+:AUTHOR: %s
+:STATE: %s
+:END:
+
+,** Description
+%s
+
+,** Notes
+"
+                                number title url author state (or body ""))))
+        ;; Insert the entry at point or copy to kill ring
+        (if (derived-mode-p 'org-mode)
+            (insert org-entry)
+          (progn
+            (kill-new org-entry)
+            (message "Org entry copied to kill ring")))))))
+#+end_src
+
 
 *** Config
 
@@ -9879,6 +9935,16 @@ Requires emacs 29
     (insert "\n\n")
     (evil-insert-state)))
 
+#+end_src
+
+**** Functions
+
+***** Create org issue
+
+#+begin_src elisp
+(defun my-penpot|create-org-issue ()
+  (interactive)
+  (my-github|create-org-entry "tokens-studio/penpot"))
 #+end_src
 
 **** Bindings
