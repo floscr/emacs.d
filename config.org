@@ -6878,9 +6878,7 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
 
 #+begin_src elisp
 (defun my-github/select-issue (repository)
-  (interactive)
-  (let* (
-         (command (format "gh issue list --repo %s --json number,title,state,author,url,body --limit 50" repository))
+  (let* ((command (format "gh issue list --repo %s --json number,title,state,author,url,body --limit 50" repository))
          (issues-json (shell-command-to-string command))
          (issues (json-parse-string issues-json :array-type 'list))
          (issue-alist (mapcar (lambda (issue)
@@ -6929,7 +6927,6 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
             (kill-new org-entry)
             (message "Org entry copied to kill ring")))))))
 #+end_src
-
 
 *** Config
 
