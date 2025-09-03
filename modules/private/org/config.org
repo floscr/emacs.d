@@ -687,7 +687,7 @@ This way I can create super agenda groups for items with ~PROJECT~ heading, that
                                            (:name "Reading List" :tag "TEXT" :order 10))))))
      ((org-agenda-hide-tags-regexp "WORK\\|BACKLOG")
       (org-agenda-tag-filter-preset '("+WORK"))
-      (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org")))))))
+      (org-agenda-files (--map (f-join org-directory it) '("Work/work.org" "Main/inbox.org" "Work/GTD.org")))))))
 #+END_SRC
 
 ****** Meistertask Meistermacs
