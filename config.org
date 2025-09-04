@@ -948,6 +948,50 @@ Porting over clojure-like functions as I'm more used to them
 
 ** String
 
+*** Trim characters
+
+#+begin_src elisp
+(defun my-string/trim-left (s &optional chars)
+  "Remove CHARS from the beginning of STRING.
+CHARS defaults to whitespace and dashes."
+  (let ((chars (or chars "-\\s-")))
+    (s-replace-regexp (format "^[%s]+" chars) "" s)))
+
+(defun my-string/trim-right (s &optional chars)
+  "Remove CHARS from the end of STRING.
+CHARS defaults to whitespace and dashes."
+  (let ((chars (or chars "-\\s-")))
+    (s-replace-regexp (format "[%s]+$" chars) "" s)))
+
+(defun my-string/trim (s &optional chars)
+  "Remove CHARS from both ends of STRING.
+CHARS defaults to whitespace and dashes."
+  (-> s
+      (my-string/trim-left chars)
+      (my-string/trim-right chars)))
+#+end_src
+
+#+begin_src elisp :tangle "tests.el" :results none
+(describe "my-string/trim-left"
+  (it "removes specified characters from the left"
+    (expect (my-string/trim-left "--hello--" "-") :to-equal "hello--")
+    (expect (my-string/trim-left "   hello   ") :to-equal "hello   ")
+    (expect (my-string/trim-left "---   hello---" "-") :to-equal "   hello---")))
+
+(describe "my-string/trim-right"
+  (it "removes specified characters from the right"
+    (expect (my-string/trim-right "--hello--" "-") :to-equal "--hello")
+    (expect (my-string/trim-right "   hello   ") :to-equal "   hello")
+    (expect (my-string/trim-right "---   hello---" "-") :to-equal "---   hello")))
+
+(describe "my-string/trim"
+  (it "removes specified characters from both ends"
+    (expect (my-string/trim "--hello--" "-") :to-equal "hello")
+    (expect (my-string/trim "  -hello-  ") :to-equal "hello")
+    (expect (my-string/trim "___test___" "_") :to-equal "test")
+    (expect (my-string/trim "  whitespace  ") :to-equal "whitespace")))
+#+end_src
+
 *** Dedent
 
 #+begin_src elisp :tangle "autoload.el" :comments link
