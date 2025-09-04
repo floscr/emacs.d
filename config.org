@@ -7002,20 +7002,49 @@ Source: [[https://tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][
             (kill-new org-entry)
             (message "Org entry copied to kill ring")))))))
 
-(cl-defun my-github|make-branch-from-issue (repository &key (max-title-length 50) (prefix "feature"))
+(defun my-github/format-branch-title (s &optional max-title-length)
+  (->> s
+       ;; Remove invalid git branch characters
+       (s-replace-regexp "[^a-zA-Z0-9 _-]" "")
+       ;; Convert spaces and underscores to dashes
+       (s-replace-regexp "[ _]+" "-")
+       (s-downcase)
+       (my-string/trim "-")
+       (s-left (or max-title-length my:infinity))
+       (s-replace-regexp "--+" "-")
+       ;; Edge-case
+       (my-string/trim "-")))
+
+(cl-defun my-github/format-branch-name (issue-data &optional prefix max-title-length)
+  "Format issue data into a valid git branch name.
+ISSUE-DATA should be a hash table containing 'number' and 'title'.
+PREFIX defaults to 'feature', MAX-TITLE-LENGTH defaults to 50."
+  (let* ((prefix (or prefix "feature"))
+         (max-title-length (or max-title-length 50))
+         (number (gethash "number" issue-data))
+         (branch-title (my-github/format-branch-title (gethash "title" issue-data))))
+    (format "%s/%s-%s" prefix number branch-title)))
+
+(cl-defun my-github|make-branch-from-issue (repository &key
+                                                       (max-title-length 50)
+                                                       (prefix "feature"))
   "Select an issue from REPOSITORY and create a git branch in the
-format PREFIX/NUMBER-TITLE. TITLE will be converted to kebab-case,
-lowercase and limited to MAX-TITLE-LENGTH chars."
+format PREFIX/NUMBER-TITLE. TITLE will be sanitized for git branch names,
+converted to kebab-case, lowercase and limited to MAX-TITLE-LENGTH chars."
   (interactive "sRepository (owner/repo): ")
   (let* ((issue-data (my-github/select-issue repository)))
     (when issue-data
-      (let* ((number (gethash "number" issue-data))
-             (raw-title (gethash "title" issue-data))
-             (kebab-title (replace-regexp-in-string " " "-" raw-title))
-             (lower-title (downcase kebab-title))
-             (short-title (substring lower-title 0 (min max-title-length (length lower-title))))
-             (branch-name (format "%s/%s-%s" prefix number short-title)))
+      (let ((branch-name (my-github/format-branch-name issue-data prefix max-title-length)))
         (magit-branch-spinoff branch-name)))))
+
+(comment
+ ;; Select issue
+ (setq --issue-data (my-github/select-issue "tokens-studio/penpot"))
+ (my-github/format-branch-name --issue-data)
+
+ ;; Testing
+ (my-github/format-branch-title "Bug: [DESIGN TOKENS] Font weight tokens fail when entering arithmetic operations")
+ nil)
 #+end_src
 
 *** Config
