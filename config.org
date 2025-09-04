@@ -6066,6 +6066,33 @@ Double check if the provided API methods in your response are not halucinated an
 (use-package! eca)
 #+END_SRC
 
+**** Functions
+
+***** Accept
+
+#+begin_src elisp
+(defun my-eca|chat-accept-button ()
+  "Find and press the 'accept' button in the current ECA buffer."
+  (interactive)
+  (eca-chat--with-current-buffer (eca-chat--get-buffer (eca-session))
+    (save-excursion
+      (goto-char (point-min))
+      (let ((accept-button-found nil))
+        (while (and (not accept-button-found)
+                    (not (eobp)))
+          (let ((symbol (thing-at-point 'symbol)))
+            (when (and symbol
+                       (string-match-p "accept" (downcase symbol))
+                       (get-text-property 0 'eca-button-on-action symbol))
+              (setq accept-button-found t)
+              (funcall (get-text-property 0 'eca-button-on-action symbol))))
+          (unless accept-button-found
+            (forward-char 1)))
+        (unless accept-button-found
+          (message "No accept button found in buffer"))))))
+#+end_src
+
+
 **** Bindings
 
 #+begin_src elisp
@@ -6075,6 +6102,10 @@ Double check if the provided API methods in your response are not halucinated an
        :desc "Add buffer" "a" #'eca-chat-add-file-context
        :desc "Add region" "r" #'eca-chat-add-context-at-point
        :desc "Send prompt" "RET" #'eca-chat-send-prompt))
+
+(map!
+ :map eca-chat-mode-map
+ :desc "Auto Accept" :g "M-RET" #'my-eca|chat-accept-button)
 #+end_src
 
 *** Python
