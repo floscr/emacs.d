@@ -176,6 +176,8 @@ Similar to the clojure ~comment~ form
 ** General
 *** Infinity
 
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Float-Basics.html][Float Basics (GNU Emacs Lisp Reference Manual)]]
+
 #+begin_src elisp
 (setq my:infinity 1.0e+INF)
 #+end_src
