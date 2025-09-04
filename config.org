@@ -957,19 +957,13 @@ Porting over clojure-like functions as I'm more used to them
 *** Trim characters
 
 #+begin_src elisp
-(defun my-string/trim-left (s &optional chars)
-  "Remove CHARS from the beginning of STRING.
-CHARS defaults to whitespace and dashes."
-  (let ((chars (or chars "-\\s-")))
-    (s-replace-regexp (format "^[%s]+" chars) "" s)))
+(defun my-string/trim-left (chars s)
+  (s-replace-regexp (format "^[%s]+" chars) "" s))
 
-(defun my-string/trim-right (s &optional chars)
-  "Remove CHARS from the end of STRING.
-CHARS defaults to whitespace and dashes."
-  (let ((chars (or chars "-\\s-")))
-    (s-replace-regexp (format "[%s]+$" chars) "" s)))
+(defun my-string/trim-right (chars s)
+  (s-replace-regexp (format "[%s]+$" chars) "" s))
 
-(defun my-string/trim (s &optional chars)
+(defun my-string/trim (chars s)
   "Remove CHARS from both ends of STRING.
 CHARS defaults to whitespace and dashes."
   (-> s
