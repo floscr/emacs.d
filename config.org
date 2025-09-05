@@ -6059,7 +6059,7 @@ Double check if the provided API methods in your response are not halucinated an
 **** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! eca :pin "c0a144c0c8c4019ccb30c750930d2d359513d4df")
+(package! eca :pin "986b068bdde2ff332025013f700901ae4cc42c5d")
 #+END_SRC
 
 **** Config
@@ -6075,7 +6075,7 @@ Double check if the provided API methods in your response are not halucinated an
 #+begin_src elisp
 (defun my-eca|chat-accept-or-run-button ()
   (interactive)
-  (with-current-buffer (eca-chat--get-buffer)
+  (eca-chat--with-current-buffer (eca-chat--get-buffer (eca-session))
     (save-excursion
       (goto-char (point-min))
       (let ((button-found nil))
@@ -6100,7 +6100,7 @@ Double check if the provided API methods in your response are not halucinated an
 (defun my-eca|chat-press-bottom-expand-button ()
   "Find and press the bottom-most expand button in the current ECA buffer."
   (interactive)
-  (with-current-buffer (eca-chat--get-buffer)
+  (eca-chat--with-current-buffer (eca-chat--get-buffer (eca-session))
     (save-excursion
       (let ((bottom-expandable-ov nil)
             (bottom-position 0))
