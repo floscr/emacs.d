@@ -6127,15 +6127,16 @@ Double check if the provided API methods in your response are not halucinated an
 (map! :leader
       (:prefix ("e" . "eca")
        :desc "Eca" "e" #'eca
+       :desc "Eca" "m" #'eca-mcp-details
+       :desc "Eca" "x" #'eca-stop
        :desc "Add buffer" "a" #'eca-chat-add-file-context
        :desc "Add region" "r" #'eca-chat-add-context-at-point
        :desc "Send prompt" "RET" #'eca-chat-send-prompt))
 
 (map!
  :map eca-chat-mode-map
- :desc "Toggle Open" :i "<backspace>" #'eca-chat--key-pressed-backspace
- :desc "Toggle Open" :g "M-o" #'my-eca|chat-press-bottom-expand-button
- :desc "Auto Accept" :g "M-RET" #'my-eca|chat-accept-or-run-button)
+ :desc "Toggle Open" :gni "M-o" #'my-eca|chat-press-bottom-expand-button
+ :desc "Auto Accept" :gni "M-RET" #'my-eca|chat-accept-or-run-button)
 #+end_src
 
 *** Python
