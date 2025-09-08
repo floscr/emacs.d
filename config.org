@@ -6131,6 +6131,9 @@ Double check if the provided API methods in your response are not halucinated an
 **** Bindings
 
 #+begin_src elisp
+(map!
+ :g "M-=" #'eca-chat-toggle-window)
+
 (map! :leader
       (:prefix ("e" . "eca")
        :desc "Eca" "e" #'eca
