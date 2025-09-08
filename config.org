@@ -968,9 +968,9 @@ Porting over clojure-like functions as I'm more used to them
 (defun my-string/trim (chars s)
   "Remove CHARS from both ends of STRING.
 CHARS defaults to whitespace and dashes."
-  (-> s
-      (my-string/trim-left chars)
-      (my-string/trim-right chars)))
+  (->> s
+       (my-string/trim-left chars)
+       (my-string/trim-right chars)))
 #+end_src
 
 #+begin_src elisp :tangle "tests.el" :results none
