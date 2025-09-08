@@ -6118,6 +6118,9 @@ Double check if the provided API methods in your response are not halucinated an
               (eca-chat--expandable-content-toggle id)
               (message "Pressed bottom expand button (ID: %s)" id))
           (message "No expandable content found in buffer"))))))
+
+(defun my-eca/select-model (model)
+  (setf (eca--session-chat-selected-model (eca-session)) model))
 #+end_src
 
 
@@ -6127,11 +6130,19 @@ Double check if the provided API methods in your response are not halucinated an
 (map! :leader
       (:prefix ("e" . "eca")
        :desc "Eca" "e" #'eca
-       :desc "Eca" "m" #'eca-mcp-details
-       :desc "Eca" "x" #'eca-stop
+
        :desc "Add buffer" "a" #'eca-chat-add-file-context
        :desc "Add region" "r" #'eca-chat-add-context-at-point
-       :desc "Send prompt" "RET" #'eca-chat-send-prompt))
+
+       :desc "MCP Details" "'" #'eca-mcp-details
+
+       :desc "Copilot / Gemini Pro" "1" (cmd! (my-eca/select-model "github-copilot/gemini-2.5-pro"))
+       :desc "Copilot / Claude Sonnet" "2" (cmd! (my-eca/select-model "github-copilot/claude-sonnet-4"))
+       :desc "Select Model" "m" #'eca-chat-select-model
+
+       :desc "Send prompt" "RET" #'eca-chat-send-prompt
+
+       :desc "Eca" "x" #'eca-stop))
 
 (map!
  :map eca-chat-mode-map
