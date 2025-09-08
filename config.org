@@ -6121,6 +6121,10 @@ Double check if the provided API methods in your response are not halucinated an
 
 (defun my-eca/select-model (model)
   (setf (eca--session-chat-selected-model (eca-session)) model))
+
+(defun my-eca|stop-prompt ()
+  (interactive)
+  (eca-chat--stop-prompt (eca-session)))
 #+end_src
 
 
@@ -6142,7 +6146,8 @@ Double check if the provided API methods in your response are not halucinated an
 
        :desc "Send prompt" "RET" #'eca-chat-send-prompt
 
-       :desc "Eca" "x" #'eca-stop))
+       :desc "Eca" "x" #'my-eca|stop-prompt
+       :desc "Eca" "q" #'eca-stop))
 
 (map!
  :map eca-chat-mode-map
