@@ -10012,6 +10012,21 @@ Requires emacs 29
 
 * Projects
 
+** Token Interpreter
+
+*** Project Mode
+
+#+begin_src elisp
+(defvar my-tokenscript-dir "/home/floscr/Code/Work/Hyma/tokenscript-interpreter")
+
+(defun my-tokenscript/enter-project ()
+  (apheleia-mode -1))
+
+(def-project-mode! my-tokenscript-mode
+  :when (s-starts-with? my-tokenscript-dir (doom-project-root))
+  :on-enter (my-tokenscript/enter-project)
+  :on-load (my-tokenscript/load))
+#+end_src
 ** Penpot
 
 *** Project Mode
