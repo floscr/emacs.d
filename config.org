@@ -10027,7 +10027,7 @@ Requires emacs 29
   (apheleia-mode -1)
   (when (eq major-mode #'typescript-mode)
     (setq lsp-diagnostics-provider :flycheck)
-    (add-hook 'before-save-hook #'my-tokenscript/format-on-save nil :local)))
+    (add-hook 'after-save-hook #'my-tokenscript/format-on-save nil :local)))
 
 (def-project-mode! my-tokenscript-mode
   :when (s-starts-with? my-tokenscript-dir (doom-project-root))
