@@ -10013,25 +10013,9 @@ Requires emacs 29
 * Projects
 
 ** Token Interpreter
-*** Project Mode
 
 #+begin_src elisp
-(defvar my-tokenscript-dir "/home/floscr/Code/Work/Hyma/tokenscript-interpreter")
-
-(defun my-tokenscript/format-on-save ()
-  (let ((default-directory (doom-project-root)))
-    (call-process "steam-run" nil nil nil "bunx" "@biomejs/biome" "format" "--write" (buffer-file-name))
-    (revert-buffer :ignore-auto :noconfirm)))
-
-(defun my-tokenscript/on-enter ()
-  (apheleia-mode -1)
-  (when (eq major-mode #'typescript-mode)
-    (setq lsp-diagnostics-provider :flycheck)
-    (add-hook 'after-save-hook #'my-tokenscript/format-on-save nil :local)))
-
-(def-project-mode! my-tokenscript-mode
-  :when (s-starts-with? my-tokenscript-dir (doom-project-root))
-  :on-enter (my-tokenscript/on-enter))
+(load! "./src/project-modes/token-interpreter.el")
 #+end_src
 
 ** Penpot
