@@ -7,23 +7,29 @@
     (revert-buffer :ignore-auto :noconfirm)))
 
 (defun my-tokenscript/start-nbb-repl ()
-  "Start a fresh nbb nREPL server for the tokenscript project. Kills any previous server first and clears the process buffer."
   (interactive)
   (let* ((default-directory (doom-project-root))
          (buffer-name "*nbb-nrepl-server*")
          (process-name "nbb-nrepl-server"))
     (when (get-process process-name)
       (ignore-errors (kill-process process-name)))
-    ;; Erase the buffer so we get clean output for the new server
     (when (get-buffer buffer-name)
       (with-current-buffer buffer-name
         (erase-buffer)))
-    (start-process process-name buffer-name
-                   "bun" "run"
-                   "--bun" "nbb" "nrepl-server"
-                   "--port" (number-to-string my-tokenscript-nrepl-port))
-    (message "Started nbb nREPL server on port %d" my-tokenscript-nrepl-port)
-    ;; Wait a moment for the server to start, then connect
+    (let ((proc (start-process process-name buffer-name
+                               "bun" "run"
+                               "--bun" "nbb" "nrepl-server"
+                               "--port" (number-to-string my-tokenscript-nrepl-port))))
+      (set-process-filter
+       proc
+       (lambda (process output)
+         (with-current-buffer (process-buffer process)
+           ;; Insert output, then color region
+           (let ((inhibit-read-only t))
+             (goto-char (point-max))
+             (insert output)
+             (ansi-color-apply-on-region (point-min) (point-max))))))
+      (message "Started nbb nREPL server on port %d" my-tokenscript-nrepl-port))
     (run-with-timer 0.5 nil #'cider-connect-cljs)))
 
 (defun my-tokenscript|start-repl ()
