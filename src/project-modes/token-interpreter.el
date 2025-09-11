@@ -1,7 +1,8 @@
 (defvar my-tokenscript-dir "/home/floscr/Code/Work/Hyma/tokenscript-interpreter")
 (defvar my-tokenscript-nrepl-port 38573)
 
-(defun my-tokenscript/format-on-save ()
+(defun my-tokenscript|format-js ()
+  (interactive)
   (let ((default-directory (doom-project-root)))
     (call-process "steam-run" nil nil nil "bunx" "@biomejs/biome" "format" "--write" (buffer-file-name))
     (revert-buffer :ignore-auto :noconfirm)))
@@ -46,7 +47,7 @@
   (apheleia-mode -1)
   (when (eq major-mode #'typescript-mode)
     (setq lsp-diagnostics-provider :flycheck)
-    (comment (add-hook 'after-save-hook #'my-tokenscript/format-on-save nil :local)))
+    (comment (add-hook 'after-save-hook #'my-tokenscript|format-js nil :local)))
   (setq-local cider-connect-default-cljs-params
               (list :host "localhost"
                     :port my-tokenscript-nrepl-port
@@ -56,3 +57,8 @@
 (def-project-mode! my-tokenscript-mode
   :when (s-starts-with? my-tokenscript-dir (doom-project-root))
   :on-enter (my-tokenscript/on-enter))
+
+(map!
+ :map my-tokenscript-mode-map
+ :localleader
+ :desc "Format" "f" #'my-tokenscript|format-js)
