@@ -12,7 +12,11 @@
          (buffer-name "*nbb-nrepl-server*")
          (process-name "nbb-nrepl-server"))
     (when (get-process process-name)
-      (ignore-errors (kill-process process-name)))
+      (ignore-errors
+        (delete-process process-name)
+        ;; Wait for process to actually exit
+        (while (eq (process-status process-name) 'run)
+          (accept-process-output nil 0.01))))
     (when (get-buffer buffer-name)
       (with-current-buffer buffer-name
         (erase-buffer)))
