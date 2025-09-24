@@ -582,6 +582,15 @@ Returns nil when no executable was found."
     (-f-join (f-join "node_modules/.bin" name))
     (-id-when #'f-exists?)))
 #+end_src
+*** Get last screenshot
+
+#+begin_src elisp
+(defun my/newest-screenshot ()
+  (->> (f-files "~/Media/Screencapture")
+       (-sort (fn! (f-newer? %1 %2)))
+       (car)))
+#+end_src
+
 
 ** Debugging / Logging
 *** Kill and Message
@@ -6125,6 +6134,20 @@ Double check if the provided API methods in your response are not halucinated an
 (defun my-eca|stop-prompt ()
   (interactive)
   (eca-chat--stop-prompt (eca-session)))
+
+(defun my-eca/add-context (path)
+  "Adds file to context from outside the repository."
+  (let* ((parent (f-join (my-magit/find-root-dir) ".context" "images"))
+         (dst (f-join parent (f-filename path))))
+    (f-mkdir-full-path parent)
+    (f-copy path dst)
+    (eca-chat--with-current-buffer (eca-chat--get-buffer (eca-session))
+      (eca-chat--add-context (list :type "file" :path dst)))))
+
+(defun my-eca|add-newest-screenshot-to-context ()
+  (interactive)
+  (-> (my/newest-screenshot)
+      (my-eca/add-context)))
 #+end_src
 
 
@@ -6140,11 +6163,13 @@ Double check if the provided API methods in your response are not halucinated an
 
        :desc "Add buffer" "a" #'eca-chat-add-file-context
        :desc "Add region" "r" #'eca-chat-add-context-at-point
+       :desc "Add region" "s" #'my-eca|add-newest-screenshot-to-context
 
        :desc "MCP Details" "'" #'eca-mcp-details
 
        :desc "Copilot / Gemini Pro" "1" (cmd! (my-eca/select-model "github-copilot/gemini-2.5-pro"))
        :desc "Copilot / Claude Sonnet" "2" (cmd! (my-eca/select-model "github-copilot/claude-sonnet-4"))
+       :desc "Copilot / Claude Sonnet" "3" (cmd! (my-eca/select-model "github-copilot/gpt-4.1"))
 
        :desc "Select Model" "m" #'eca-chat-select-model
 
