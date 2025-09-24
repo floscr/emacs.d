@@ -6474,28 +6474,34 @@ Cleans up all merged and review branches
 
 #+BEGIN_SRC elisp
 (defun my-magit|branches-by-user (&optional ignore-review?)
-  "List all branches by user.
-Universal argument to ignore review branches."
+  "List all branches by user. With universal argument, ignore review branches.
+Use Ivy multi-action (M-o, then d) to multi-delete."
   (interactive "P")
-  (let ((branches
-         (->>
-          (concat "git for-each-ref"
-                  " --sort=-committerdate"
-                  " --format='%(committerdate) %(authorname) %(refname)'"
-                  " --sort=-committerdate"
-                  ;; refs/remotes/origin/ for remote branches
-                  " refs/heads"
-                  " | grep -e 'Florian Schroedl'")
-          (shell-command-to-string)
-          (s-split "\n")
-          (-butlast)
-          (-map (lambda (x) (->> (s-match ".*Florian Schroedl refs\\/heads\\/\\(.*\\)" x)
-                                 (-last-item))))
-          ((lambda (xs)
-             (if ignore-review?
-                 (--reject (s-starts-with? "REVIEW" it) xs)
-               xs))))))
-    (ivy-read "Checkout: " branches :action #'magit-checkout)))
+  (let* ((user "Florian Schroedl")
+         (branches
+          (->>
+           (concat "git for-each-ref"
+                   " --sort=-committerdate"
+                   " --format='%(committerdate) %(authorname) %(refname)'"
+                   " refs/heads"
+                   " | grep -e '" user "'")
+           (shell-command-to-string)
+           (s-split "\n")
+           (-filter #'s-present?)
+           (-map (lambda (x)
+                   (->> (s-match (concat ".*" user " refs\\/heads\\/\\(.*\\)") x)
+                        (-last-item))))
+           ((lambda (xs)
+              (if ignore-review?
+                  (--reject (s-starts-with? "REVIEW" it) xs)
+                xs))))))
+    (ivy-read "Branches: " branches
+              :action
+              '(1
+                ("RET" magit-checkout "Checkout")
+                ("d" (lambda (x)
+                       (magit-branch-delete (list x) t))
+                 "Delete")))))
 #+END_SRC
 
 **** Commit Template
@@ -7096,6 +7102,14 @@ converted to kebab-case, lowercase and limited to MAX-TITLE-LENGTH chars."
  ;; Testing
  (my-github/format-branch-title "Bug: [DESIGN TOKENS] Font weight tokens fail when entering arithmetic operations")
  nil)
+#+end_src
+**** Prune local branches
+
+#+begin_src elisp
+(defun my-git|prune-merged-branches ()
+  (interactive)
+  (-> (magit-list-unmerged-branches)
+      (-each #'magit-branch-delete))
 #+end_src
 
 *** Config
