@@ -6167,6 +6167,7 @@ Double check if the provided API methods in your response are not halucinated an
 
        :desc "MCP Details" "'" #'eca-mcp-details
 
+       :desc "Sonnet" "0" (cmd! (my-eca/select-model "anthropic/claude-sonnet-4-20250514"))
        :desc "Copilot / Gemini Pro" "1" (cmd! (my-eca/select-model "github-copilot/gemini-2.5-pro"))
        :desc "Copilot / Claude Sonnet" "2" (cmd! (my-eca/select-model "github-copilot/claude-sonnet-4"))
        :desc "Copilot / Claude Sonnet" "3" (cmd! (my-eca/select-model "github-copilot/gpt-4.1"))
@@ -6176,7 +6177,8 @@ Double check if the provided API methods in your response are not halucinated an
        :desc "Send prompt" "RET" #'eca-chat-send-prompt
 
        :desc "Eca" "x" #'my-eca|stop-prompt
-       :desc "Eca" "q" #'eca-stop))
+       :desc "Eca" "q" #'eca-stop
+       :desc "Eca" "R" #'eca-restart))
 
 (map!
  :map eca-chat-mode-map
