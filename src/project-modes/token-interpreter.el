@@ -57,7 +57,7 @@
 (defun my-tokenscript|quick-fix ()
   "Switch to github-copilot/gpt-4.1 model, insert fix message and run it."
   (interactive)
-  (let ((message "run `bb fix` and fix all errors"))
+  (let ((message "run `bb fix:all` and fix all errors"))
     (my-eca/select-model "github-copilot/gpt-4.1")
     (eca-chat-send-prompt message)))
 
