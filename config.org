@@ -1515,13 +1515,13 @@ This function will mutate the hashtable M."
 
 (defun my-project-compile/read-cache-file (&optional cache-file)
   (-some->> (or cache-file my-project-compile:cache-file)
-    (-id-when #'f-exists?)
-    (json-read-file)))
+            (-id-when #'f-exists?)
+            (json-read-file)))
 
 (defun my-project-compile/get-cache-items (key &optional cache-file)
   (or (-some->> (my-project-compile/read-cache-file (or cache-file my-project-compile:cache-file))
-        (ht-from-alist)
-        ((lambda (m) (ht-get m key))))
+                (ht-from-alist)
+                ((lambda (m) (ht-get m key))))
       []))
 
 (defun my-project-compile/update-cache (cmd dir &optional cache-file)
@@ -1536,6 +1536,13 @@ This function will mutate the hashtable M."
     (call-process-shell-command (format "alacritty --hold -e $SHELL -i -c '%s'" cmd) nil 0 nil))
   (my-project-compile/update-cache cmd dir cache-file))
 
+(defun my-project-compile/native-compile-cmd (cmd dir &optional cache-file)
+  "Use Emacs' compile command to run CMD in DIR and update cache."
+  (prn "Compiling command" cmd)
+  (let ((default-directory dir))
+    (compile cmd))
+  (my-project-compile/update-cache cmd dir cache-file))
+
 (defun my-project-compile|compile ()
   (interactive)
   (let* ((dir (->> (my-file/project-root)
@@ -1543,7 +1550,16 @@ This function will mutate the hashtable M."
          (items (->> (my-project-compile/get-cache-items (intern dir))
                      (reverse))))
     (ivy-read "Compile: " (seq-into items 'list)
-              :action (lambda (cmd) (my-project-compile/compile-cmd cmd dir)))))
+              :action
+              (fn! (my-project-compile/compile-cmd %1 dir))
+              :keymap
+              (let ((keymap (make-sparse-keymap)))
+                (set-keymap-parent keymap ivy-minibuffer-map)
+                (bind-keys :map keymap
+                           ("M-RET" . (lambda ()
+                                        (interactive)
+                                        (ivy-exit-with-action (fn! (my-project-compile/native-compile-cmd %1 dir))))))
+                keymap))))
 #+end_src
 
 ** Comment header
