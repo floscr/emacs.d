@@ -6109,7 +6109,7 @@ Double check if the provided API methods in your response are not halucinated an
 **** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! eca :pin "986b068bdde2ff332025013f700901ae4cc42c5d")
+(package! eca :pin "796a59345c11cdf429b743f0bf2cabc5014a51d0")
 #+END_SRC
 
 **** Config
