@@ -1970,8 +1970,8 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
       (if (my-gitmoji/gitmoji? char)
           char
         (let ((code (my-gitmoji/gitmoji-code-at-point)))
-          (when (my-gitmoji/gitmoji-code? ":books:")
-            code))))))
+          (when (my-gitmoji/gitmoji-code? code)
+            code)))))
 
 (defun my-gitmoji/emoji->emoji-code (emoji)
   (-some-> (ht-find (fn! (string= (ht-get %2 'emoji) emoji)) penpot-gitmoji)
@@ -2001,7 +2001,8 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
                                   (ht-map (lambda (_ v)
                                             (concat (ht-get v 'emoji) " (" (ht-get v 'name) ") " (ht-get v 'description)))
                                           penpot-gitmoji)))
-         (emoji (s-left 1 result))
+         (emoji (-> (s-split " " result)
+                    (-first-item)))
          (insert? (my-buffer/empty-line?))
          (current-emoji (my-gitmoji/current-gitmoji))
          (code? (> (length current-emoji) 1)))
