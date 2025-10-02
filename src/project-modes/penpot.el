@@ -3,13 +3,17 @@
 (defvar my-penpot:dir "/home/floscr/Code/Work/Hyma/penpot/repo")
 
 (defun my-penpot/enter-project ()
+  (setq-local browse-at-remote-preferred-remote-name "penpot")
+
   (setq-local cider-connect-default-cljs-params (list :host "localhost" :port 3447 :project-dir my-penpot:dir))
   (setq-local cider-default-cljs-repl 'shadow)
   (setq-local cider-shadow-default-options ":main")
-  (setq-local browse-at-remote-preferred-remote-name "penpot"))
+
+  (when (eq major-mode 'rjsx-mode)
+    (apheleia-mode -1)))
 
 (def-project-mode! my-penpot-mode
-  :modes '(clojure-mode clojurescript-mode magit-mode)
+  :modes '(clojure-mode clojurescript-mode magit-mode rjsx-mode)
   :when (s-starts-with? my-penpot:dir (doom-project-root))
   :on-enter (my-penpot/enter-project))
 (defun my-penpot/penpot-project? ()
