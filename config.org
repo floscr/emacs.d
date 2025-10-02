@@ -7177,7 +7177,19 @@ converted to kebab-case, lowercase and limited to MAX-TITLE-LENGTH chars."
 (defun my-git|prune-merged-branches ()
   (interactive)
   (-> (magit-list-unmerged-branches)
-      (-each #'magit-branch-delete))
+      (-each #'magit-branch-delete)))
+#+end_src
+**** Visit blame
+
+#+begin_src elisp
+(defun my-magit|blame-visit-commit ()
+  "Visit the commit at point in magit-blame."
+  (interactive)
+  (let* ((chunk (magit-current-blame-chunk))
+         (commit (and chunk (oref chunk orig-rev))))
+    (if commit
+        (magit-show-commit commit)
+      (user-error "No commit at point"))))
 #+end_src
 
 *** Config
@@ -7312,6 +7324,15 @@ For now only the toggle functionality is needed.
 (map! :map +magit-evil-edit-mode-map
       :n [tab] #'magit-section-toggle)
 #+END_SRC
+**** Blame Mode
+
+#+begin_src elisp
+(map!
+ :after magit-blame
+ :map magit-blame-read-only-mode-map
+ :n "RET" #'my-magit|blame-visit-commit)
+#+end_src
+
 
 *** Transient Bindings :TRANSIENT:
 
