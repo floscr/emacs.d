@@ -2,7 +2,7 @@
 # name: rumext/use-callback
 # uuid: rumext_use_callback
 # --
-${1:cb} (mf/use-callback
+${1:cb} (mf/use-fn
   (mf/deps $2)
   (fn [$3]
     ($0)))
