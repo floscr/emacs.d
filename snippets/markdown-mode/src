@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: code block
+# uuid: src
+# key: <
+# --
+\`\`\`${1:`(my-snippets/markdown-last-src-lang)`}
+`%`$0
+\`\`\`

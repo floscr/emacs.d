@@ -8720,6 +8720,13 @@ Return nil otherwise."
     (beginning-of-line)
     (when (search-backward "#+begin_src" nil t)
       (my-snippets/org-src-lang))))
+
+(defun my-snippets/markdown-last-src-lang ()
+  "Find the language used in the last Markdown code block above point."
+  (save-excursion
+    (beginning-of-line)
+    (when (search-backward-regexp "^```\\([a-zA-Z0-9_-]+\\)" nil t)
+      (match-string 1))))
 #+END_SRC
 ** Project Boilerplate
 *** [[https://github.com/chrisbarrett/skeletor.el#specifying-substitutions][skeletor]]
