@@ -6110,7 +6110,7 @@ Double check if the provided API methods in your response are not halucinated an
 **** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! eca :pin "796a59345c11cdf429b743f0bf2cabc5014a51d0")
+(package! eca :pin "06c85d9b56876b2264e830ba1739c68065ec476b")
 #+END_SRC
 
 **** Config
@@ -6126,7 +6126,7 @@ Double check if the provided API methods in your response are not halucinated an
 #+begin_src elisp
 (defun my-eca|chat-accept-or-run-button ()
   (interactive)
-  (eca-chat--with-current-buffer (eca-chat--get-buffer (eca-session))
+  (eca-chat--with-current-buffer (eca-chat--get-last-buffer (eca-session))
     (save-excursion
       (goto-char (point-min))
       (let ((button-found nil))
@@ -6151,7 +6151,7 @@ Double check if the provided API methods in your response are not halucinated an
 (defun my-eca|chat-press-bottom-expand-button ()
   "Find and press the bottom-most expand button in the current ECA buffer."
   (interactive)
-  (eca-chat--with-current-buffer (eca-chat--get-buffer (eca-session))
+  (eca-chat--with-current-buffer (eca-chat--get-last-buffer (eca-session))
     (save-excursion
       (let ((bottom-expandable-ov nil)
             (bottom-position 0))
@@ -6183,7 +6183,7 @@ Double check if the provided API methods in your response are not halucinated an
          (dst (f-join parent (f-filename path))))
     (f-mkdir-full-path parent)
     (f-copy path dst)
-    (eca-chat--with-current-buffer (eca-chat--get-buffer (eca-session))
+    (eca-chat--with-current-buffer (eca-chat--get-last-buffer (eca-session))
       (eca-chat--add-context (list :type "file" :path dst)))))
 
 (defun my-eca|add-newest-screenshot-to-context ()
@@ -6202,6 +6202,7 @@ Double check if the provided API methods in your response are not halucinated an
 (map! :leader
       (:prefix ("e" . "eca")
        :desc "Eca" "e" #'eca
+       :desc "Eca (New Window)" "n" #'eca-chat-new
 
        :desc "Add buffer" "a" #'eca-chat-add-file-context
        :desc "Add region" "r" #'eca-chat-add-context-at-point
