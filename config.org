@@ -1971,7 +1971,7 @@ Self-written simpler alternative to [[https://github.com/janusvm/emacs-gitmoji][
           char
         (let ((code (my-gitmoji/gitmoji-code-at-point)))
           (when (my-gitmoji/gitmoji-code? code)
-            code)))))
+            code))))))
 
 (defun my-gitmoji/emoji->emoji-code (emoji)
   (-some-> (ht-find (fn! (string= (ht-get %2 'emoji) emoji)) penpot-gitmoji)
