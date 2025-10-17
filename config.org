@@ -4184,20 +4184,24 @@ This functions is dependant on the yasnippet: [[file:snippets/json-mode/key::# -
 
 ***** Autofix JSON
 
-Uses [[https://www.npmjs.com/package/json-fix][json-fix]] to autofix JSON files.
-
-#+BEGIN_SRC bash :tangle no
-npm i -g json-fix
-#+END_SRC
+Uses [[https://github.com/josdejong/jsonrepair/tags][jsonrepair]] to fix json files
 
 #+BEGIN_SRC elisp
 (defun my-json|autofix-buffer ()
-  "Autofix json buffer"
+  "Autofix json buffer using jsonrepair. Revert if repair fails."
   (interactive)
-  (let ((b (if mark-active (min (point) (mark)) (point-min)))
-        (e (if mark-active (max (point) (mark)) (point-max))))
-    (shell-command-on-region b e
-     (template "json-fix --no-sort --spaces <<tab-width>>") (current-buffer) t)))
+  (let* ((p (point))
+         (b (if mark-active (min (point) (mark)) (point-min)))
+         (e (if mark-active (max (point) (mark)) (point-max)))
+         (original (buffer-substring-no-properties b e)))
+    (shell-command-on-region b e "jsonrepair" (current-buffer) t)
+    (let ((repaired (buffer-substring-no-properties (point-min) (point-max))))
+      (when (string-match-p "^Error: " repaired)
+        (progn
+          (delete-region (point-min) (point-max))
+          (insert original)
+          (message "jsonrepair: repair failed, buffer unchanged.")))
+      (goto-char p))))
 #+END_SRC
 
 **** Bindings
@@ -4207,7 +4211,9 @@ npm i -g json-fix
  :after json-mode
  :map json-mode-map
  :gni "<C-return>" #'my-json|insert-key-below
- :gni "<C-S-return>" #'my-json|insert-key-above)
+ :gni "<C-S-return>" #'my-json|insert-key-above
+ :localleader
+ :desc "Fix" "f" #'my-json|autofix-buffer)
 #+END_SRC
 
 ***** Functions
