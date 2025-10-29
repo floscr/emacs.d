@@ -11238,6 +11238,14 @@ So deletes wont affect this register."
      ((lambda (x) (+yank/execute-action x insert))))
    (user-error "Error: Not a file bufer!")))
 
+(defun +yank|project-root (&optional insert)
+  "Yank the buffer files path."
+  (interactive "P")
+  (or
+   (-some->> (my-file/project-root)
+     ((lambda (x) (+yank/execute-action x insert))))
+   (user-error "Error: Not a file bufer!")))
+
 (defun +yank|relative-to-project (&optional insert)
   "Yank the buffer path relative to the projectile-project-root."
   (interactive "P")
@@ -11260,7 +11268,8 @@ So deletes wont affect this register."
   :desc "directory"           "d" #'+yank|directory
   :desc "path"                "p" #'+yank|path
   :desc "path"                "y" #'+yank|path
-  :desc "relative to project" "r" #'+yank|relative-to-project))
+  :desc "relative to project" "r" #'+yank|relative-to-project
+  :desc "root"                "m" #'+yank|project-root))
 #+END_SRC
 
 ** Local-Leader
