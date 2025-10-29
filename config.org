@@ -6129,7 +6129,7 @@ Double check if the provided API methods in your response are not halucinated an
 **** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! eca :pin "06c85d9b56876b2264e830ba1739c68065ec476b")
+(package! eca :pin "8cbf851a732f1a6fb42f5191eca416f7fd764c46")
 #+END_SRC
 
 **** Config
@@ -6143,30 +6143,6 @@ Double check if the provided API methods in your response are not halucinated an
 ***** Accept
 
 #+begin_src elisp
-(defun my-eca|chat-accept-or-run-button ()
-  (interactive)
-  (eca-chat--with-current-buffer (eca-chat--get-last-buffer (eca-session))
-    (save-excursion
-      (goto-char (point-min))
-      (let ((button-found nil))
-        (while (and (not button-found)
-                    (not (eobp)))
-          (let ((symbol (thing-at-point 'symbol)))
-            (when (and symbol
-                       (or (string-match-p "accept" (downcase symbol))
-                           (string-match-p "run" (downcase symbol))))
-              ;; Check for either property type
-              (let ((action-fn (or (get-text-property 0 'eca-button-on-action symbol)
-                                   (get-text-property 0 'eca-chat-on-action symbol))))
-                (when action-fn
-                  (setq button-found t)
-                  (funcall action-fn)
-                  (message "Pressed %s button" symbol)))))
-          (unless button-found
-            (forward-char 1)))
-        (unless button-found
-          (message "No accept or run button found in buffer"))))))
-
 (defun my-eca|chat-press-bottom-expand-button ()
   "Find and press the bottom-most expand button in the current ECA buffer."
   (interactive)
@@ -6223,9 +6199,10 @@ Double check if the provided API methods in your response are not halucinated an
        :desc "Eca" "e" #'eca
        :desc "Eca (New Window)" "n" #'eca-chat-new
 
-       :desc "Add buffer" "a" #'eca-chat-add-file-context
-       :desc "Add region" "r" #'eca-chat-add-context-at-point
+       :desc "Add buffer" "a" (cmd! (save-window-excursion (call-interactively #'eca-chat-add-filepath-to-user-prompt)))
        :desc "Add region" "s" #'my-eca|add-newest-screenshot-to-context
+
+       :desc "Chat buffer select" "S" #'eca-chat-select
 
        :desc "MCP Details" "'" #'eca-mcp-details
 
@@ -6245,7 +6222,8 @@ Double check if the provided API methods in your response are not halucinated an
 (map!
  :map eca-chat-mode-map
  :desc "Toggle Open" :gni "M-o" #'my-eca|chat-press-bottom-expand-button
- :desc "Auto Accept" :gni "M-RET" #'my-eca|chat-accept-or-run-button)
+ :desc "Auto Accept" :gni "M-RET" #'eca-chat-tool-call-accept-all
+ :desc "Auto Accept" :gni "M-S-RET" #'eca-chat-tool-call-accept-all-and-remember)
 #+end_src
 
 *** Python
