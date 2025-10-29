@@ -10258,7 +10258,16 @@ Requires emacs 29
 *** Disable emacs-state-toggle
 
 #+BEGIN_SRC elisp
-(map! :nm "C-z" nil)
+(map! :g "C-z" nil)
+
+(dolist (map-symbol '(evil-emacs-state-map evil-insert-state-map code-review-mode-map magit-mode-map))
+  (when (boundp map-symbol)
+    (define-key (symbol-value map-symbol) (kbd "C-z") nil)))
+
+(after! code-review
+  (evil-define-key 'normal code-review-mode-map (kbd "C-z") nil))
+(after! magit
+  (evil-define-key 'normal magit-mode-map (kbd "C-z") nil))
 #+END_SRC
 
 *** Auto indent bracket openings
