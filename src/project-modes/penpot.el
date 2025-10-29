@@ -5,6 +5,7 @@
 (defun my-penpot/enter-project ()
   (setq-local browse-at-remote-preferred-remote-name "penpot")
 
+  (setq-local cider-connect-default-params (list :host "localhost" :port 6064 :project-dir my-penpot:dir))
   (setq-local cider-connect-default-cljs-params (list :host "localhost" :port 3447 :project-dir my-penpot:dir))
   (setq-local cider-default-cljs-repl 'shadow)
   (setq-local cider-shadow-default-options ":main")
