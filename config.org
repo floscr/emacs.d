@@ -4140,6 +4140,12 @@ I don't need them with parinfer and lispyville, they're just distracting.
 #+begin_src elisp
 (remove-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 #+end_src
+***** Disable flycheck
+
+#+begin_src elisp
+(add-hook 'emacs-lisp-mode-hook (lambda () (flycheck-mode -1)))
+#+end_src
+
 **** Bindings
 
 #+begin_src elisp
