@@ -10694,7 +10694,7 @@ Global ~[~ & ~]~ combinator bindings
  :n "]1" #'my-project|jump-to-or-create-test-file
  :n "[1" #'my-project|jump-to-or-create-test-file)
 #+END_SRC
-*** Comman Bindings
+*** Common Bindings
 
 #+begin_src elisp
 (map!
