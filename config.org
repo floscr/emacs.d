@@ -11561,6 +11561,18 @@ Fix remapping using hyper
 * Temp
 
 #+begin_src elisp
+(defun +normalize-window-for-splitting ()
+  "Remove window restrictions to allow splitting."
+  (interactive)
+  (set-window-parameter nil 'window-side nil)
+  (set-window-parameter nil 'window-slot nil)
+  (set-window-parameter nil 'split-window nil)
+  (set-window-parameter nil 'popup nil)
+  (message "Window normalized"))
+#+end_src
+
+
+#+begin_src elisp
 (defun my-dired-unzip-and-convert-cbz-to-pdf ()
   "Unzip a CBZ file and convert its extracted JPG files to PDF asynchronously."
   (interactive)
