@@ -10887,8 +10887,8 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("c" . "Code")
-  :desc "Compile" "c"   #'my-project-compile|compile
   :desc "Rename" "r"   #'lsp-rename
+  :desc "Execute Project Command" "c" #'my-cli|project-commands
   :desc "Execute code action" "a"   #'lsp-execute-code-action
 
   :desc "New AI Chat" "n" #'my-gptel|new
@@ -11002,7 +11002,7 @@ So deletes wont affect this register."
 (map!
  :leader
  (:prefix-map ("p" . "project")
-  :desc "Workspace Project Files" "P" #'my-workspaces|find-workspace-project-file
+  :desc "Workspace Project Files" "p" #'my-cli|list-projects
   :desc "Project VC"              "v" #'my-workspaces|workspace-project-vc
   :desc "Project Bookmarks"       "RET" #'my-jumpy|launch
   :desc "Compile"                 "c" #'bbuild|list
