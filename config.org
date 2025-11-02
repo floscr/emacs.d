@@ -10915,6 +10915,7 @@ So deletes wont affect this register."
  (:prefix-map ("p" . "project")
   :desc "Workspace Project Files" "p" #'my-cli|list-projects
   :desc "Project VC"              "v" #'my-workspaces|workspace-project-vc
+  :desc "Invalidate project cache"     "i" #'projectile-invalidate-cache
   :desc "Project Bookmarks"       "RET" #'my-jumpy|launch
   :desc "Compile"                 "c" #'bbuild|list
   :desc "Recompile"               "C" #'recompile))
