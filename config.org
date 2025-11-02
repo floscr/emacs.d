@@ -6110,7 +6110,7 @@ Double check if the provided API methods in your response are not halucinated an
        :desc "Eca" "e" #'eca
        :desc "Eca (New Window)" "n" #'eca-chat-new
 
-       :desc "Add buffer" "a" (cmd! (save-window-excursion (call-interactively #'eca-chat-add-filepath-to-user-prompt)))
+       :desc "Add buffer" "a" (cmd! (save-window-excursion (call-interactively #'eca-chat-add-context-to-user-prompt)))
        :desc "Add region" "s" #'my-eca|add-newest-screenshot-to-context
 
        :desc "Chat buffer select" "S" #'eca-chat-select
