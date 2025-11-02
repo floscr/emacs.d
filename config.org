@@ -6035,101 +6035,12 @@ Double check if the provided API methods in your response are not halucinated an
     (apheleia-formatters-indent "--use-tabs" "--tab-width" 'astro-ts-mode-indent-offset))
   :modes '(astro-mode))
 #+END_SRC
-*** Aider
-
-**** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! aider :recipe (:host github :repo "tninja/aider.el" ))
-#+END_SRC
-
-**** Config
-
-#+BEGIN_SRC elisp
-(use-package aider
-  :config
-  (setq aider-args '("--model" "sonnet"))
-  (setq aider-popular-models '("sonnet" "o4-mini" "deepseek/deepseek-reasoner" "gemini/gemini-1.5-flash-latest")))
-
-(defun my-aider/save-comint-command ()
-  (let* ((pmark (process-mark (get-buffer-process (current-buffer))))
-         (prompt (buffer-substring-no-properties pmark (point-max))))
-    (delete-region pmark (point-max))
-    prompt))
-
-(defun my-aider|commit ()
-  (interactive)
-  (aider--send-command "/commit")
-  (prn "COMMITED"))
-
-(cl-defun my-aider|add-file (&optional run-before)
-  (interactive)
-  (let ((buffer buffer-file-name))
-    (if (not (get-buffer (aider-buffer-name)))
-        (progn
-          (aider-run-aider)
-          (aider--send-command (format "/add %s" buffer)))
-      (progn
-        (aider-switch-to-buffer)
-        (let ((prev-prompt (my-aider/save-comint-command)))
-          (when (functionp 'run-before) (run-before))
-          (aider--send-command (format "/add %s" buffer))
-          (insert prev-prompt))))
-    (evil-insert-state)))
-
-(defun my-aider|reset-and-chat ()
-  "Reset Aider, add the current file, and open the Aider buffer for a new chat."
-  (interactive)
-  (my-aider|add-file #'aider-reset))
-
-(map! :leader
-      (:prefix ("a" . "Aider")
-       :desc "Add buffer" "a" #'my-aider|add-file
-       :desc "Add buffer" "RET" #'my-aider|commit
-       :desc "Reset & Chat" "n" #'my-aider|reset-and-chat
-       :desc "Transient Menu" "t" #'aider-transient-menu
-       (:prefix ("p" . "Process")
-        :desc "Run Aider" "a" #'aider-run-aider
-        :desc "Switch to Aider buffer" "z" #'aider-switch-to-buffer
-        :desc "Open prompt file" "p" #'aider-open-prompt-file
-        :desc "Reset Aider" "s" #'aider-reset
-        :desc "Change model" "o" #'aider-change-model
-        :desc "Clear Aider buffer" "c" #'aider-clear-buffer
-        :desc "Exit Aider" "x" #'aider-exit)
-
-       (:prefix ("f" . "Files")
-        :desc "Add current/marked files" "f" #'aider-add-current-file-or-dired-marked-files
-        :desc "Add files in window" "w" #'aider-add-files-in-current-window
-        :desc "Drop current file" "O" #'aider-drop-current-file
-        :desc "Show last commit" "m" #'aider-magit-show-last-commit-or-log
-        :desc "Undo last change" "u" #'aider-undo-last-change
-        :desc "Pull or review diff" "v" #'aider-pull-or-review-diff-file
-        :desc "Open history" "h" #'aider-open-history)
-
-       (:prefix ("c" . "Code")
-        :desc "Refactor function/region" "r" #'aider-function-or-region-refactor
-        :desc "Implement requirement" "i" #'aider-implement-todo
-        :desc "Architect discussion" "t" #'aider-architect-discussion
-        :desc "Write unit test" "U" #'aider-write-unit-test
-        :desc "Refactor code" "R" #'aider-refactor-book-method
-        :desc "Test Driven Development" "T" #'aider-tdd-cycle
-        :desc "Work with Legacy Code" "l" #'aider-legacy-code)
-
-       (:prefix ("d" . "Discuss")
-        :desc "Ask question" "q" #'aider-ask-question
-        :desc "Go ahead" "y" #'aider-go-ahead
-        :desc "General question" "Q" #'aider-general-question
-        :desc "Code Reading" "d" #'aider-code-read
-        :desc "Debug exception" "e" #'aider-debug-exception
-        :desc "Help" "H" #'aider-help)))
-#+END_SRC
-
 *** eca
 
 **** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! eca :pin "8cbf851a732f1a6fb42f5191eca416f7fd764c46")
+(package! eca :pin "61829060a4c619cf430400808e4c8cb987d7f5f5")
 #+END_SRC
 
 **** Config
