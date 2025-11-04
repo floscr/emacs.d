@@ -8484,6 +8484,20 @@ So I fix the checker manually for each mode after lsp was loaded.
     (set-face-attribute 'lsp-face-highlight-textual nil :weight 'medium
                         :background (face-background 'macrostep-expansion-highlight-face))))
 #+end_src
+**** Disable refactor.move
+
+As an auto action its highly distracting and I never use it.
+https://github.com/emacs-lsp/lsp-mode/issues/4221#issuecomment-1873115218
+
+#+begin_src elisp
+(advice-add 'lsp--select-action :filter-args
+            (defun get-rid-of/refactor.move (actions_args)
+              (list
+               (seq-remove (lambda (action)
+                             (string= "refactor.move" (plist-get action :kind)))
+                           (seq-first actions_args)))))
+#+end_src
+
 *** Functions
 
 **** Prevent LSP highlighting symbols over multiple lines :HACK:
