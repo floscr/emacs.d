@@ -10497,7 +10497,8 @@ so I have to work around it:
  :en "C-h"   #'evil-window-left
  :en "C-j"   #'evil-window-down
  :en "C-k"   #'evil-window-up
- :en "C-l"   #'evil-window-right)
+ :en "C-l"   #'evil-window-right
+ :en "C-w C-o" #'my-window|delete-other-windows)
 
 (map!
  :map (image-mode-map
@@ -11053,7 +11054,7 @@ So deletes wont affect this register."
 
   :desc  "Undo"                 "u"    #'winner-undo
   :desc  "Redo"                 "r"    #'winner-redo
-  :desc  "Enlargen"             "o"    #'doom/window-enlargen
+  :desc  "Enlargen"             "o"    #'my-window|enlargen
 
   :desc  "Toggle Split"         "T"    #'+window|toggle-split-direction
 
@@ -11504,6 +11505,18 @@ Fix remapping using hyper
   (set-window-parameter nil 'split-window nil)
   (set-window-parameter nil 'popup nil)
   (message "Window normalized"))
+
+(defun my-window|enlargen ()
+  "Normalize window parameters before enlarging."
+  (interactive)
+  (+normalize-window-for-splitting)
+  (doom/window-enlargen))
+
+(defun my-window|delete-other-windows ()
+  "Normalize window parameters before deleting other windows."
+  (interactive)
+  (+normalize-window-for-splitting)
+  (delete-other-windows))
 #+end_src
 
 
