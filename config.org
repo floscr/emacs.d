@@ -7172,12 +7172,38 @@ Use ~z1~ to fold all diffs to their file headers and press's ~{~ or ~}~ to
 Then use ~]~ to navigate the sections
 
 #+BEGIN_SRC elisp
+(defvar my-magit/jumpunfold-last-bookmark nil
+  "String holding the last file path bookmarked by `my-magit/jumpunfold-section'.")
+
+(defun my-magit/jumpunfold--remember-bookmark ()
+  "Remember the current magit diff location so it can be revisited later."
+  (when (derived-mode-p 'magit-diff-mode)
+    (let ((file (magit-file-at-point)))
+      (when file
+        (setq my-magit/jumpunfold-last-bookmark file)))))
+
+(defun my-magit|jumpunfold-revisit-last-bookmark ()
+  "Jump back to the most recent magit diff bookmark recorded by `my-magit/jumpunfold-section'."
+  (interactive)
+  (unless my-magit/jumpunfold-last-bookmark
+    (user-error "No magit diff bookmark recorded"))
+  (let ((file my-magit/jumpunfold-last-bookmark))
+    (magit-section-show-level-1-all)
+    ;; Search from bottom up to find diff section (not file listing at top)
+    (goto-char (point-max))
+    (if (search-backward file nil t)
+        (progn
+          (call-interactively #'magit-section-show-children)
+          (message "Revisited magit diff bookmark for %s" file))
+      (user-error "Could not find diff for %s in current magit buffer" file))))
+
 (defun my-magit/jumpunfold-section (&optional forward)
   "Fold all section. Go to next section when FORWARD. Show all children"
   (interactive)
   (magit-section-show-level-1-all)
   (call-interactively (if forward #'magit-section-forward-sibling #'magit-section-backward-sibling))
-  (call-interactively #'magit-section-show-children))
+  (call-interactively #'magit-section-show-children)
+  (my-magit/jumpunfold--remember-bookmark))
 
 (map!
  (:map magit-diff-mode-map
