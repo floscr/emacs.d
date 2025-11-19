@@ -10080,12 +10080,6 @@ Requires emacs 29
 
 * Projects
 
-** Token Interpreter
-
-#+begin_src elisp
-(load! "./src/project-modes/token-interpreter.el")
-#+end_src
-
 ** Penpot
 
 #+begin_src elisp
