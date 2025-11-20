@@ -7167,7 +7167,7 @@ The mode doesn't really bring big advantages so I remove the hook.
 #+end_src
 
 *** Bindings
-**** Diff Navigation
+**** Diff Fold Navigation / Revisiting diffs
 
 My workflow for navigating diffs
 Use ~z1~ to fold all diffs to their file headers and press's ~{~ or ~}~ to
