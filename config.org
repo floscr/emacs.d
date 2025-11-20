@@ -9771,17 +9771,22 @@ POS to match:
 **** Copy As Markdown
 
 #+BEGIN_SRC elisp
-(defun my-org/copy-as-markdown (&optional subtree-p)
-  "Copy the current subtree as markdown to clipboard."
+(defun my-org/copy-as-markdown (&optional subtree-p beg end)
+  "Copy the current subtree as markdown to clipboard.
+When BEG and END are non-nil, only export the narrowed region."
   (require 'ox-gfm)
   (let* ((org-export-with-toc nil)
          (org-export-with-special-strings nil)
          (org-export-with-smart-quotes nil)
-         (md-file (make-temp-file "my-md-export"))
-         (md (org-export-to-file 'gfm md-file nil subtree-p))
-         (content (f-read md-file)))
-    (kill-new content)
-    (message "Copied buffer as markdown to clipboard.")))
+         (org-export-with-broken-links 'mark)
+         (md-file (make-temp-file "my-md-export")))
+    (save-restriction
+      (when (and beg end)
+        (narrow-to-region beg end))
+      (org-export-to-file 'gfm md-file nil subtree-p))
+    (let ((content (f-read md-file)))
+      (kill-new content)
+      (message "Copied markdown to clipboard."))))
 
 (defun my-org|copy-buffer-as-markdown ()
   "Copy the entire buffer as markdown to clipboard."
@@ -9792,6 +9797,13 @@ POS to match:
   "Copy the subtree as markdown to clipboard."
   (interactive)
   (my-org/copy-as-markdown t))
+
+(defun my-org|copy-region-as-markdown (beg end)
+  "Copy the active region as markdown to clipboard."
+  (interactive "r")
+  (unless (use-region-p)
+    (user-error "No active region"))
+  (my-org/copy-as-markdown nil beg end))
 #+END_SRC
 
 **** Add created date to headings
@@ -11351,6 +11363,7 @@ redefines its keys every time `eshell-mode' is enabled."
 (map! :map org-mode-map
       :localleader
       :desc "Copy Buffer To Markdown"  "Y" #'my-org|copy-buffer-as-markdown
+      :desc "Copy Region To Markdown"  "y" #'my-org|copy-region-as-markdown
       :desc "Fetch url title"          "u" #'my-org|fetch-this-org-link-title
       :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss
       (:prefix-map ("i" . "Insert")
