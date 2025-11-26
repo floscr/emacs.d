@@ -6053,6 +6053,43 @@ Double check if the provided API methods in your response are not halucinated an
 
 **** Functions
 
+***** Async start commands
+
+#+begin_src elisp
+(defmacro my-eca/with-eca (&rest body)
+  "Execute BODY with ECA session ready.
+If a session exists, execute BODY immediately.
+If no session exists, start ECA and execute BODY after initialization."
+  `(if (eca-session)
+       (progn ,@body)
+     ;; Session doesn't exist - start it and wait for initialization
+     (let ((setup-fn (lambda ()
+                       ,@body
+                       ;; Remove hook after running once
+                       (remove-hook 'eca-after-initialize-hook setup-fn))))
+       (add-hook 'eca-after-initialize-hook setup-fn)
+       (eca))))
+
+(defmacro my-eca/with-eca-chat (&rest body)
+  "Execute BODY with ECA chat buffer ready and current.
+If a session exists, create a new chat.
+If no session exists, start ECA and execute BODY after initialization.
+BODY is executed within the chat buffer context."
+  `(if (eca-session)
+       (progn
+         (eca-chat-new)
+         (eca-chat--with-current-buffer (eca-chat--get-last-buffer (eca-session))
+           ,@body))
+     ;; Session doesn't exist - start it and wait for initialization
+     (let ((setup-fn (lambda ()
+                       (eca-chat--with-current-buffer (eca-chat--get-last-buffer (eca-session))
+                         (progn ,@body))
+                       ;; Remove hook after running once
+                       (remove-hook 'eca-after-initialize-hook setup-fn))))
+       (add-hook 'eca-after-initialize-hook setup-fn)
+       (eca))))
+#+end_src
+
 ***** Accept
 
 #+begin_src elisp
