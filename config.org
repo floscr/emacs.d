@@ -6049,7 +6049,17 @@ Double check if the provided API methods in your response are not halucinated an
 
 #+BEGIN_SRC elisp
 (use-package! eca)
+
 #+END_SRC
+
+***** Disable markdown pretty mode
+
+#+begin_src elisp
+(add-hook 'eca-chat-mode-hook
+          (lambda ()
+            (setq-local markdown-hide-markup nil)
+            (remove-from-invisibility-spec 'markdown-markup)))
+#+end_src
 
 **** Functions
 
