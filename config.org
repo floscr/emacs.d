@@ -7462,6 +7462,28 @@ Trigger with ~g/.~ in ~normal-mode~.
 (after! async
   (dired-async-mode 1))
 #+END_SRC
+**** Disable Enter on header line
+
+Prevent any action when pressing Enter on the first line (directory header) on whitespace.
+
+#+BEGIN_SRC elisp
+(after! dired
+  (defun my-dired/first-line-whitespace-p ()
+    "Check if cursor is on first line and on whitespace."
+    (let ((char-under-cursor (char-after (point))))
+      (and (= (line-number-at-pos) 1)
+           (or (null char-under-cursor)
+               (memq char-under-cursor '(32 9 10)))))) ; space, tab, newline
+
+  (defun my-dired/find-file-dwim ()
+    "Open file in dired, but do nothing on first line whitespace."
+    (interactive)
+    (unless (my-dired/first-line-whitespace-p)
+      (dired-find-file)))
+
+  (map! :map dired-mode-map
+        :n "RET" #'my-dired/find-file-dwim))
+#+END_SRC
 *** Functions
 **** Kill all dired buffers
 
@@ -7547,10 +7569,11 @@ When clicking on the current directory always go one directory upwards."
   (interactive (list last-nonmenu-event))
   (run-hooks 'mouse-leave-buffer-hook)
   (with-current-buffer (window-buffer (posn-window (event-start event)))
-    (let ((path  (get-text-property (posn-point (event-start event)) 'breadcrumb)))
-      (if (f-equal? dired-directory path)
-          (dired-up-directory)
-        (dired path)))))
+    (unless (my-dired/first-line-whitespace-p)
+      (let ((path  (get-text-property (posn-point (event-start event)) 'breadcrumb)))
+        (if (f-equal? dired-directory path)
+            (dired-up-directory)
+          (dired path))))))
 
 (defun dired-propertize-directory-heading ()
   (interactive)
