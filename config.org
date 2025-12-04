@@ -7347,6 +7347,21 @@ To append something, just state the flag that you see in the transient popup as 
   (transient-append-suffix 'magit-branch "l" '("R" "Create review branch" my-magit|checkout-review-branches))
   (transient-append-suffix 'magit-branch "l" '("U" "My Branches" my-magit|branches-by-user)))
 #+END_SRC
+
+**** Merge conflict discard terminology
+
+#+begin_src elisp
+(defun my-magit/checkout-read-stage-clear-terminology (file)
+  "Read stage with clearer terminology for rebase."
+  (magit-read-char-case (format "For %s checkout: " file) t
+    (?u "[u]pstream (keep their changes)"   "--ours")
+    (?m "[m]ine (keep my changes)" "--theirs")
+    (?c (if magit-verbose-messages "restore [c]onflict" "[c]onflict")
+        "--merge")))
+
+(advice-add 'magit-checkout-read-stage :override #'my-magit/checkout-read-stage-clear-terminology)
+#+end_src
+
 ** Dired :DIRED:ORGANIZATION:
 *** Packages
 **** [[https://github.com/Fuco1/dired-hacks#dired-filter][dired-hacks - dired-filter]]
