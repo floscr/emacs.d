@@ -11014,7 +11014,7 @@ So deletes wont affect this register."
    :desc "Goto Bookmarks File"       "b" (cmd! (find-file my-org/bookmarks-file))
    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
    :desc "Work"                      "w" (cmd! (+org/find-in-files "Work/work.org"))
-   :desc "Work"                      "g" (cmd! (+org/find-in-files "Work/GTD.org"))
+   :desc "Work"                      "g" (cmd! (+org/find-in-files "Work/work.org"))
    :desc "Inbox"                     "i" (cmd! (+org/find-in-files "Main/inbox.org"))
    :desc "Projects"                  "p" (cmd! (+org/find-in-files "Main/projects.org"))
    :desc "Shoppinglist"              "s" (cmd! (+org/find-in-files "Main/shoppinglist.org"))
