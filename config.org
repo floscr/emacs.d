@@ -54,9 +54,22 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 ;; -*- no-byte-compile: t; -*-
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle "init.el" :comments no
-;; -*- no-byte-compile: t; -*-
+
+*** Fix transient version
+
+Force update transient to latest version to fix void-function transient--set-layout error.
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+;; Force update transient to fix void-function transient--set-layout
+(package! transient :pin nil)
 #+END_SRC
+
+#+begin_src emacs-lisp
+(let ((lfile (concat doom-local-dir "straight/repos/transient/lisp/transient.el")))
+  (if (file-exists-p lfile)
+      (load lfile)))
+#+end_src
+
 
 ** Required Packages
 
