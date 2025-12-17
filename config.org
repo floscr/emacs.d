@@ -2707,19 +2707,6 @@ Packages that I haven't yet moved to their structure.
 (package! flycheck-posframe :pin "6eea204138721f511051af5138326fecaad237b7")
 #+END_SRC
 
-*** Calfw
-Continuous events are broken in the current calfw source,
-also it seems it isn't maintained anymore.
-[[https://github.com/floscr/emacs-calfw/commit/3d17649c545423d919fd3bb9de2efe6dfff210fe][This Commit]] fixes the behavior.
-
-#+BEGIN_SRC elisp :tangle "packages.el" :comments link
-(package! calfw :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-org :recipe (:host github :repo "floscr/emacs-calfw") :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-ical :pin "e3d04c253230ed0692f161f527d4e42686060f62")
-(package! calfw-cal :disable t)
-(package! org-gcal :disable t)
-#+END_SRC
-
 *** json-proces-client
 
 This package is originally hosted on https://gitea.petton.fr/nico/json-process-client.git/
@@ -3394,30 +3381,6 @@ Use this function in a hook like this:
 (after! (:and beancount-mode apheleia)
   (my-formatters/remove-formatter 'bean-format))
 #+end_src
-**** combobulate
-
-***** Package
-
-#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! combobulate :recipe (:host github :repo "mickeynp/combobulate"))
-#+END_SRC
-
-***** Config
-
-#+BEGIN_SRC elisp
-(use-package! combobulate
-  :hook (python-mode . combobulate-mode)
-
-  :config
-  (map! :map (python-mode-map)
-        :nm "("     #'combobulate-navigate-up
-        :nm ")"     #'combobulate-navigate-down
-        :nm "M-r"   #'combobulate-splice-up
-        :nm ",d"    #'combobulate-kill-node-dwim
-        :nm "M-S-l" #'combobulate-transpose-sexps
-        :nm "M-l"   #'combobulate-navigate-down
-        :nm "M-h"   #'combobulate-navigate-up))
-#+END_SRC
 
 ** UI :UI:
 *** Higlight indent guides
@@ -7169,7 +7132,6 @@ converted to kebab-case, lowercase and limited to MAX-TITLE-LENGTH chars."
         (magit-show-commit commit)
       (user-error "No commit at point"))))
 #+end_src
-
 *** Config
 
 #+BEGIN_SRC elisp
@@ -8488,9 +8450,10 @@ Bindings
 *** Package
 
 #+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
-(package! lsp-mode :pin "dd61303b2dc989a58f7dddd4c754f828a3f52107")
-(package! lsp-ui :pin "072bb29152038518c2478813b82c8d04d07df84c")
-(package! lsp-ivy :pin "9ecf4dd9b1207109802bd1882aa621eb1c385106")
+;; Unpinned to fix dash.el compatibility
+(package! lsp-mode)
+(package! lsp-ui)
+(package! lsp-ivy)
 #+END_SRC
 
 **** lsp-booster
@@ -8537,6 +8500,36 @@ Bindings
 #+end_src
 
 *** Config
+**** he
+#+begin_src elisp
+(after! lsp-mode
+  (setq lsp-volar-take-over-mode nil)
+  (setq lsp-volar-hybrid-mode t))
+#+end_src
+
+#+begin_src elisp :tangle no
+(with-eval-after-load 'lsp-mode
+  ;; For TypeScript files, ONLY allow ts-ls
+  (defun my/setup-typescript-lsp ()
+    (setq-local lsp-enabled-clients '(ts-ls))
+    (setq-local lsp-disabled-clients '(vue-semantic-server volar)))
+  
+  (add-hook 'typescript-mode-hook #'my/setup-typescript-lsp)
+  (add-hook 'typescript-ts-mode-hook #'my/setup-typescript-lsp)
+  
+  ;; For Vue files, ONLY allow vue-semantic-server
+  (defun my/setup-vue-lsp ()
+    (setq-local lsp-enabled-clients '(vue-semantic-server))
+    (setq-local lsp-disabled-clients '(ts-ls)))
+  
+  (add-hook 'vue-mode-hook #'my/setup-vue-lsp)
+  
+  ;; Language ID mappings
+  (add-to-list 'lsp-language-id-configuration '(vue-mode . "vue"))
+  (add-to-list 'lsp-language-id-configuration '(typescript-mode . "typescript"))
+  (add-to-list 'lsp-language-id-configuration '(typescript-ts-mode . "typescript")))
+#+end_src
+
 **** Show errors with flycheck
 
 #+begin_src elisp
@@ -8637,6 +8630,7 @@ https://github.com/emacs-lsp/lsp-mode/issues/4221#issuecomment-1873115218
 Sometimes LSP would highlight stuff accross multiple lines,
 which is very distracting as it removes all syntax highlighting.
 
+
 #+begin_src elisp
 (defun lsp--document-highlight-callback (highlights)
   "Create a callback to process the reply of a
@@ -8651,8 +8645,8 @@ A reference is highlighted only if it is visible in a window."
     (setq lsp--have-document-highlights t)
     (-map
      (-lambda ((&DocumentHighlight :range (&Range :start (start &as &Position :line start-line)
-                                                  :end (end &as &Position :line end-line))
-                                   :kind?))
+                                                   :end (end &as &Position :line end-line))
+                                   :kind? kind?))
        (-map
         (-lambda ((start-window . end-window))
           ;; Make the overlay only if the reference is visible
@@ -9151,100 +9145,6 @@ These don't work if you have a big line-height.
   (interactive)
   (let ((org-agenda-skip-function '(+org/agenda-skip-without-match "+WORK-HIDE_CALENDAR")))
       (call-interactively #'=calendar)))
-#+END_SRC
-*** Config
-**** Custom Holidays (Austrian)
-
-Emacs comes with a lot of custom calendars that I don't want.
-This is mostly copied from [[https://thenybble.de/projects/german-emacs-calendar.html][How to set up a german emacs calendar]].
-
-#+begin_src elisp
-(use-package! calfw
-  :config
-  (setq my-calendar::holidays:general
-        '((holiday-fixed 1 1 "New Years")
-          (holiday-fixed 5 1 "1st Mai")))
-  (setq my-calendar::holidays:austria
-        `((holiday-fixed 1 6 "Heilige drei Könige")
-          (holiday-fixed 5 1 "Staatsfeiertag")
-          (holiday-fixed 8 15 "Mariä Himmelfahrt")
-          (holiday-fixed 10 26 "Nationalfeiertag")
-          (holiday-fixed 11 1 "Allerheiligen")
-          (holiday-fixed 12 8 "Mariä Empfängnis")
-          (holiday-fixed 12 24 "Weihnachten")
-          (holiday-fixed 12 25 "Christtag")
-          (holiday-fixed 12 26 "Stefanitag")
-          (holiday-easter-etc -2 "Karfreitag")
-          (holiday-easter-etc 0 "Ostersonntag")
-          (holiday-easter-etc 1 "Ostermontag")
-          (holiday-easter-etc 39 "Christi Himmelfahrt")
-          (holiday-easter-etc 49 "Pfingstsonntag")
-          (holiday-easter-etc 50 "Pfingstmontag")
-          (holiday-easter-etc 60 "Fronleichnam")))
-  (setq calendar-holidays (append
-                           my-calendar::holidays:general
-                           my-calendar::holidays:austria
-                           holiday-solar-holidays)))
-#+end_src
-
-
-
-***** General Holidays
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq general-holidays
-        '((holiday-fixed 1 1 "New Years")
-          (holiday-fixed 5 1 "1st Mai"))))
-#+END_SRC
-
-***** Austrian Holidays
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq austrian-holidays
-        `((holiday-fixed 1 6 "Heilige drei Könige")
-          (holiday-fixed 5 1 "Staatsfeiertag")
-          (holiday-fixed 8 15 "Mariä Himmelfahrt")
-          (holiday-fixed 10 26 "Nationalfeiertag")
-          (holiday-fixed 11 1 "Allerheiligen")
-          (holiday-fixed 12 8 "Mariä Empfängnis")
-          (holiday-fixed 12 24 "Weihnachten")
-          (holiday-fixed 12 25 "Christtag")
-          (holiday-fixed 12 26 "Stefanitag")
-          ;; variable
-          (holiday-easter-etc -2 "Karfreitag")
-          (holiday-easter-etc 0 "Ostersonntag")
-          (holiday-easter-etc 1 "Ostermontag")
-          (holiday-easter-etc 39 "Christi Himmelfahrt")
-          (holiday-easter-etc 49 "Pfingstsonntag")
-          (holiday-easter-etc 50 "Pfingstmontag")
-          (holiday-easter-etc 60 "Fronleichnam"))))
-#+END_SRC
-
-***** Set calendars
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq calendar-holidays
-        (append
-          general-holidays
-          austrian-holidays
-          holiday-solar-holidays)))
-#+END_SRC
-
-**** General
-
-#+BEGIN_SRC elisp
-(after! calfw
-  :config
-  (setq calendar-week-start-day 1)
-  (setq calendar-time-display-form
-        '(24-hours ":" minutes (and time-zone (concat " (" time-zone ")"))))
-  (setq calendar-abbrev-length 2))
 #+END_SRC
 ** Calc
 *** Config
