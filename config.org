@@ -2996,7 +2996,8 @@ I want buffers added whenever I visit a buffer.
     (if-let* ((name (buffer-name))
               (add-buffer? (or (buffer-file-name)
                                (s-matches? "\\*Org Src.*" name)
-                               (s-matches? "\\*Code Review" name))))
+                               (s-matches? "\\*Code Review" name)
+                               (s-matches? "\\*claude-code.*" name))))
       (persp-add-buffer (current-buffer) (get-current-persp))))
 
   (add-hook 'doom-switch-buffer-hook #'my-workspaces*add-special-buffer))
@@ -6213,6 +6214,28 @@ BODY is executed within the chat buffer context."
  :desc "Auto Accept" :gni "M-S-RET" #'eca-chat-tool-call-accept-all-and-remember
  :desc "Insert newline" :i "M-RET" #'my-eca-chat/insert-newline)
 #+end_src
+
+*** claude-code.el
+
+**** Package
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! claude-code :recipe (:host github :repo "stevemolitor/claude-code.el"))
+#+END_SRC
+
+**** Config
+
+#+BEGIN_SRC elisp
+(use-package! claude-code
+  :config
+  ;; Use eat-yank for paste bindings since normal paste doesn't work in eat terminals
+  (map! :map claude-code-mode-map
+        :n "p" #'eat-yank
+        :n "P" #'eat-yank
+        :n "S-v" #'eat-yank
+        :v "p" #'eat-yank))
+#+END_SRC
+
 
 *** Python
 
