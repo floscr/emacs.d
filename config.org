@@ -54,6 +54,41 @@ There are only a few exceptions, which I'm keeping without the prefix for ease o
 ;; -*- no-byte-compile: t; -*-
 #+END_SRC
 
+** Early Fixes
+
+Fix errors that occur early in the startup process and prevent error popups.
+
+#+BEGIN_SRC emacs-lisp :comments link
+;; Suppress ALL defvaralias warnings completely 
+(setq warning-suppress-log-types '((defvaralias))
+      warning-suppress-types '((defvaralias)))
+
+;; Disable Emacs bookmarks completely to prevent defvaralias warnings
+;; Set these before any aliasing can happen
+(setq bookmark-save-flag nil
+      bookmark-default-file "/tmp/emacs-bookmarks-file")
+
+;; Prevent warning/error popups from creating buffer windows  
+;; Keep errors in messages buffer only
+(setq warning-minimum-level :error
+      warning-minimum-log-level :warning)
+
+;; Suppress editorconfig error popup specifically  
+(with-eval-after-load 'warnings
+  (add-to-list 'warning-suppress-types '(editorconfig)))
+
+;; Define missing editorconfig variables to prevent void-variable errors
+(defvar editorconfig-exclude-regexps nil
+  "List of regexps to exclude from editorconfig processing.")
+
+;; Ensure editorconfig variables are defined before the mode loads
+(with-eval-after-load 'editorconfig
+  (unless (boundp 'editorconfig-exclude-regexps)
+    (defvar editorconfig-exclude-regexps nil))
+  (unless (boundp 'editorconfig-exclude-modes)
+    (defvar editorconfig-exclude-modes nil)))
+#+END_SRC
+
 
 *** Fix transient version
 
@@ -1098,12 +1133,12 @@ https://github.com/floscr/dotfiles/blob/6102660b90048f6be9fbaeb9e710c7de80a85f4c
 *** Config
 **** Disable Emacs bookmarks
 
-#+BEGIN_SRC elisp
-(setq bookmark-save-flag nil)
+Note: This configuration has been moved to the [[*Early Fixes][Early Fixes]] section to prevent defvaralias warnings.
 
-;; Can't set to nil as bookmarks are still set up to hooks
-;; Instead I'll keep it in this file which will be trashed on every reboot
-(setq bookmark-file "/tmp/emacs-bookmarks-file")
+#+BEGIN_SRC elisp :tangle no
+;; Moved to Early Fixes section
+;; (setq bookmark-save-flag nil)
+;; (setq bookmark-file "/tmp/emacs-bookmarks-file")
 #+END_SRC
 
 *** Functions
@@ -2394,10 +2429,14 @@ Change and reset line-spacing for all buffers.
 (defvar my-ui:default-line-spacing-increment-step 1)
 (defvar my-ui:default-big-line-spacing-increment-step 10)
 
-(defun my-ui/set-line-spacing (&optional increment)
+(setq-default line-spacing 10)
+
+(cl-defun my-ui/set-line-spacing (&optional increment)
   "Set the line spacing
 When no line spacing is given is the default-line-spacing"
   (setq-default line-spacing (+ (or increment my-ui:default-line-spacing-increment-step) line-spacing)))
+
+(my-ui/set-line-spacing 2)
 
 (defun my-ui|reset-line-spacing ()
   (interactive)
@@ -2538,7 +2577,7 @@ Remove the rainbow colors from dired.
   '(diredfl-exec-priv :foreground "#80899E")
   '(diredfl-other-priv :foreground "#80899E")
 
-  '(all-the-icons-dired-dir-face :foreground "#80899E")
+  '(nerd-icons-dired-dir-face :foreground "#80899E")
 
   '(diredfl-dir-priv :foreground "#282C34")
   '(diredfl-k-modified :foreground "#FF8E90")
@@ -2742,7 +2781,7 @@ But this private repository host went down a few times, so I'll stick to github.
 Fix for missing package
 
 #+BEGIN_QUOTE
-s-replace-all: Symbol’s function definition is void: rxt-quote-pcre
+s-replace-all: Symbol's function definition is void: rxt-quote-pcre
 #+END_QUOTE
 
 #+begin_src elisp :tangle "packages.el" :comments link
@@ -2802,7 +2841,12 @@ These will be written to ~init.el~ so it overwrites the doom standard values.
     ("^\\*Flycheck checker" :size 0.2 :select nil)
     ("^\\*cider-error" :size 0.2 :select nil :ttl t)
     ("^\\*aider" :ttl nil :quit nil)
-    ("^\\*Gptel" :ttl nil :quit nil)))
+    ("^\\*Gptel" :ttl nil :quit nil)
+    ;; Suppress error/warning buffer popups - keep them in messages buffer only
+    ("^\\*Warnings\\*" :ignore t)
+    ("^\\*Error\\*" :ignore t) 
+    ("^\\*doom.*error\\*" :ignore t)
+    ("^\\*Backtrace\\*" :ignore t)))
 #+END_SRC
 *** Workspaces
 **** Functions
@@ -4959,7 +5003,7 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 **** Packages
 ***** clj-kondo
 
-#+begin_src elisp 
+#+begin_src elisp
 (use-package! flycheck-clj-kondo
   :when t
   :after flycheck)
@@ -5919,7 +5963,7 @@ machine api.openai.com login apikey password TOKEN
         `((default . "To assist:  Be terse.  Do not offer unprompted advice or clarifications. Speak in specific,
  topic relevant terminology. Do NOT hedge or qualify. Do not waffle. Speak
  directly and be willing to make creative guesses. Explain your reasoning. if you
- don’t know, say you don’t know.
+ don't know, say you don't know.
 
  Remain neutral on all topics. Be willing to reference less reputable sources for
  ideas.
@@ -5931,7 +5975,7 @@ machine api.openai.com login apikey password TOKEN
           (explain . "Explain what this code does to a novice programmer.")
           ;; https://github.com/pitch-io/uix/blob/master/docs/chat-gpt.md
           (uix . "You are language to language translator. Your job is to translate code from JS, React, JSX to Clojure. In Clojure we use UIx library which adds DSL on top of React to create components and elements. The library provides uix.core namespace which includes top level api, as well as react hooks.
-Components are created using defui macro, here’s the syntax: (defui component-name [props-map] body)
+Components are created using defui macro, here's the syntax: (defui component-name [props-map] body)
 Elements are created using $ macro: ($ :dom-element optional-props-map …children)
 Component names and props are written in kebab-case. Dom element keywords support hyper script syntax to define classes and id: :div#id.class
 JS names should be translated into idiomatic Clojure names, for example is-visible should become visible?
@@ -6210,7 +6254,7 @@ So I disable it
 #+BEGIN_SRC elisp
 (after! lsp-mode
   (add-to-list 'lsp-language-id-configuration '(haxe-mode . "haxe"))
-  
+
   (lsp-register-client
    (make-lsp-client
     :new-connection (lsp-stdio-connection '("node" "/home/floscr/Code/Repositories/haxe-language-server/bin/server.js"))
@@ -7339,6 +7383,12 @@ To append something, just state the flag that you see in the transient popup as 
 #+end_src
 
 ** Dired :DIRED:ORGANIZATION:
+*** Disable colorful nerd-icons
+
+#+BEGIN_SRC elisp
+(setq nerd-icons-color-icons nil)
+#+END_SRC
+
 *** Packages
 **** [[https://github.com/Fuco1/dired-hacks#dired-filter][dired-hacks - dired-filter]]
 
@@ -8514,17 +8564,17 @@ Bindings
   (defun my/setup-typescript-lsp ()
     (setq-local lsp-enabled-clients '(ts-ls))
     (setq-local lsp-disabled-clients '(vue-semantic-server volar)))
-  
+
   (add-hook 'typescript-mode-hook #'my/setup-typescript-lsp)
   (add-hook 'typescript-ts-mode-hook #'my/setup-typescript-lsp)
-  
+
   ;; For Vue files, ONLY allow vue-semantic-server
   (defun my/setup-vue-lsp ()
     (setq-local lsp-enabled-clients '(vue-semantic-server))
     (setq-local lsp-disabled-clients '(ts-ls)))
-  
+
   (add-hook 'vue-mode-hook #'my/setup-vue-lsp)
-  
+
   ;; Language ID mappings
   (add-to-list 'lsp-language-id-configuration '(vue-mode . "vue"))
   (add-to-list 'lsp-language-id-configuration '(typescript-mode . "typescript"))
@@ -10309,7 +10359,7 @@ To undo this behavior just add =g= flag
            '(("'" . "'")
              ("\"" . "\"")
              ("`" . "`")
-             ("“" . "”"))))
+             (""" . """))))
       (evil-textobj-anyblock--make-textobj beg end type count nil)))
 
   (evil-define-text-object my-evil-textobj-anyblock-a-quote
@@ -10319,7 +10369,7 @@ To undo this behavior just add =g= flag
            '(("'" . "'")
              ("\"" . "\"")
              ("`" . "`")
-             ("“" . "”"))))
+             (""" . """))))
       (evil-textobj-anyblock--make-textobj beg end type count t)))
 
   (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
@@ -10724,7 +10774,7 @@ Change inner bracket with ~r~
            '(("'" . "'")
              ("\"" . "\"")
              ("`" . "'")
-             ("“" . "”"))))
+             (""" . """))))
       (evil-textobj-anyblock--make-textobj beg end type count nil)))
 
   (evil-define-text-object my-evil-textobj-anyblock-a-quote
@@ -10734,7 +10784,7 @@ Change inner bracket with ~r~
            '(("'" . "'")
              ("\"" . "\"")
              ("`" . "'")
-             ("“" . "”"))))
+             (""" . """))))
       (evil-textobj-anyblock--make-textobj beg end type count t)))
 
   (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
@@ -11472,13 +11522,15 @@ I honestly don't know where this comes from.
 I'm using ~woman~ for manuals, but it throws this error on first launch
 
 #+BEGIN_QUOTE
-Warning (defvaralias): Overwriting value of ‘woman-topic-history’ by aliasing to ‘Man-topic-history’
+Warning (defvaralias): Overwriting value of 'woman-topic-history' by aliasing to 'Man-topic-history'
 #+END_QUOTE
 
 Solution from here: [[https://discord.com/channels/406534637242810369/406554085794381833/703782241766998067][Doom Discord question]]
 
-#+BEGIN_SRC elisp
-(add-to-list 'warning-suppress-types '(defvaralias))
+Note: This fix has been moved to the [[*Early Fixes][Early Fixes]] section to run before other config.
+
+#+BEGIN_SRC elisp :tangle no
+;; (add-to-list 'warning-suppress-types '(defvaralias))
 #+END_SRC
 
 ** Stupid workaround where splitting a window with evil-ex-results breaks emacs...
