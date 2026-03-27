@@ -9706,12 +9706,12 @@ Take me to the literate source file when using ~find-function~ etc.
 
 **** Get url title
 
-Fetches the link title for the current link using the ~get_url_title~ command from [[https://github.com/floscr/dotfiles/blob/07156f2d059da2676d13d17d67eb8fed596557db/new/modules/scripts/src/get_url_title.clj][dotfiles/get_url_title.clj at 07156f2d059da2676d13d17d67eb8fed596557db · floscr/dotfiles · GitHub]]
+Fetches the link title for the current link using the ~org content link-title~ CLI command.
 
 #+begin_src elisp
 (defun my-org/fetch-link-title-command (url)
-  "Fetches the link title with get_url_title (https://github.com/floscr/nim-utils#get_url_title)."
-  (or (my/shell-command-str "get_url_title" url "--org")
+  "Fetches the link title with `org content link-title`."
+  (or (my/shell-command-str "org" "content" "link-title" url)
       (user-error "Error: Could not get title for url \"%s\"" url)))
 
 (defun my-org/fetch-link-title (&optional fn)
@@ -9735,7 +9735,7 @@ Fetches the link title for the current link using the ~get_url_title~ command fr
   "Fetches the title for the plain link under the cursor."
   (interactive)
   (let ((fn (lambda (url)
-              (my/shell-command-str "get_url_title" "rss" url))))
+              (my/shell-command-str "org" "content" "link-title" url))))
     (my-org/update-link-title fn)))
 
 (defun my-org|fetch-this-org-link-title ()
