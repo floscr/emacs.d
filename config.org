@@ -148,7 +148,7 @@ Force update transient to latest version to fix void-function transient--set-lay
 #+end_src
 
 #+begin_src elisp
-(-some->> (f-expand "~/Code/My/src/cli/core.el")
+(-some->> (f-expand "~/.config/dotfiles/modules/scripts/src/cli/core.el")
           (-id-when #'f-exists?)
           (load-file))
 #+end_src
