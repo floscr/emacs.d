@@ -2275,7 +2275,6 @@ which I name after the matching url.
   +dictionary
   +offline)
  eval
- editorconfig
  (magit +forge)
  rgb
  pdf
