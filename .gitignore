@@ -19,3 +19,4 @@ init.el
 /tests.el
 /config.sh
 /.eca/
+.split-join-tag.js
