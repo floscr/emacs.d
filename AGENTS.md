@@ -4,6 +4,18 @@
 
 This Doom Emacs setup keeps all user-facing configuration under `config.org`, which tangles into `init.el`, `config.el`, `packages.el`, and helper autoloads. Shared utilities live in `autoload.el` and `src/`, while feature-specific tweaks reside under `modules/private/*` (for example, `modules/private/org/` holds org-mode packages, autoloads, and per-topic `+*.org` overrides). Reusable snippets, templates, and assets are stored in `snippets/`, `file-templates/`, and `project-templates/`. Keep tests in `tests.el` and any experimental elisp in `src/project-modes/` until it stabilizes.
 
+## Literate Config & Tangling
+
+**Always edit `config.org` (or the relevant `.org` file), never the tangled `.el` files directly.** The `.el` files (`init.el`, `config.el`, `packages.el`, etc.) are generated outputs and will be overwritten on the next tangle.
+
+After editing an `.org` file, run `org tangle <file.org>` to regenerate the `.el` files:
+
+```sh
+org tangle config.org
+```
+
+Use `--dry-run` to preview what would be generated without writing files.
+
 ## Coding Style & Naming Conventions
 Elisp here follows Doom defaults: two-space indentation, lexical-binding where possible, and functional helpers from `dash.el`, `s.el`, and `ht.el`. Private symbols always start with the `my` prefix (`my-namespace/function`, `my|interactive`, `my@macro`, `my*hook`) so upstream code never collides. Prefer template literals via `(t! "Version <<VERSION>>")`, favor pure functions, and keep side effects confined to module-specific files. Document unusual forms inline using terse comments.
 
