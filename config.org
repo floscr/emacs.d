@@ -116,6 +116,12 @@ Force update transient to latest version to fix void-function transient--set-lay
 (package! ct)
 #+END_SRC
 
+**** [[https://github.com/clojure-emacs/parseedn][clojure-emacs/parseedn: EDN parser]]
+
+#+BEGIN_SRC emacs-lisp :tangle "packages.el" :comments link
+(package! parseedn)
+#+END_SRC
+
 *** Load Libraries
 
 - [[https://github.com/magnars/dash.el][magnars/dash.el: List Manipulation]]
@@ -128,6 +134,7 @@ Force update transient to latest version to fix void-function transient--set-lay
 (require 'f)
 (require 'noflet)
 (require 'ct)
+(require 'parseedn)
 #+END_SRC
 
 #+BEGIN_SRC elisp :tangle "autoload.el" :comments link
@@ -137,6 +144,7 @@ Force update transient to latest version to fix void-function transient--set-lay
 (require 'f)
 (require 'noflet)
 (require 'ct)
+(require 'parseedn)
 #+END_SRC
 
 *** Load custom scripts
@@ -2163,6 +2171,15 @@ And I will load them on system start:
 (setq blink-matching-paren nil)
 (setq visible-cursor nil)
 #+END_SRC
+
+*** Prevent echo area from resizing
+
+Keep the echo area (where ~message~ output appears) to a single line.
+
+#+BEGIN_SRC elisp
+(setq resize-mini-windows nil)
+#+END_SRC
+
 *** Safe local variables
 
 Variables that I want to safely set from ~.dir-locals~ files.
@@ -4869,7 +4886,10 @@ Edit nix script regions in an indirect buffer just like ~org-edit-special~.
 #+begin_src elisp
 (map! (:map markdown-mode-map
        :n "<"    #'markdown-promote
-       :n ">"    #'markdown-demote))
+       :n ">"    #'markdown-demote
+       "C-c -" #'markdown-insert-list-item
+       :localleader
+       :desc "Toggle list item" "-" #'markdown-insert-list-item))
 #+end_src
 *** Astro
 
@@ -6215,6 +6235,132 @@ BODY is executed within the chat buffer context."
  :desc "Insert newline" :i "M-RET" #'my-eca-chat/insert-newline)
 #+end_src
 
+**** Usage Bar
+
+#+begin_src elisp
+(defvar my-eca:usage-file "~/.cache/eca-usage.edn"
+  "Path to the ECA usage EDN file.")
+
+(defvar my-eca:usage-data nil
+  "Cached ECA usage data.")
+
+(defvar my-eca:usage-last-update 0
+  "Last time usage data was updated.")
+
+(defvar my-eca:modeline-timer nil
+  "Timer for updating ECA modeline.")
+
+(defun my-eca/read-edn-file (file)
+  "Read EDN file and parse into elisp data structure."
+  (when (file-exists-p file)
+    (condition-case err
+        (let* ((data (parseedn-read-str (f-read-text file)))
+               (usage (gethash :usage data))
+               (five-hour (when usage (gethash :five_hour usage)))
+               (seven-day (when usage (gethash :seven_day usage)))
+               (five-hour-util (when five-hour (gethash :utilization five-hour)))
+               (seven-day-util (when seven-day (gethash :utilization seven-day))))
+          `((five-hour . ,five-hour-util)
+            (seven-day . ,seven-day-util)))
+      (error 
+       (message "ECA: Error reading usage file: %s" (error-message-string err))
+       nil))))
+
+(defun my-eca/get-usage-data ()
+  "Get usage data, using cache if recent enough."
+  (let ((current-time (float-time)))
+    (when (or (null my-eca:usage-data)
+              (> (- current-time my-eca:usage-last-update) 30)) ; Refresh every 30 seconds
+      (setq my-eca:usage-data (my-eca/read-edn-file my-eca:usage-file)
+            my-eca:usage-last-update current-time)))
+  my-eca:usage-data)
+
+(defun my-eca/format-usage-bar (utilization)
+  "Format a usage bar for the modeline."
+  (if (and utilization (numberp utilization))
+      (let* ((pct (/ utilization 100.0))
+             (bar-width 10)
+             (filled (floor (* pct bar-width)))
+             (empty (- bar-width filled))
+             (color (cond
+                     ((< utilization 50) 'success)
+                     ((< utilization 80) 'warning)
+                     (t 'error))))
+        (propertize
+         (format "%s%s %d%%"
+                 (make-string filled ?█)
+                 (make-string empty ?░)
+                 (floor utilization))
+         'face (pcase color
+                 ('success 'success)
+                 ('warning 'warning)
+                 ('error 'error))))
+    (propertize "No data" 'face 'warning)))
+
+(defun my-eca/modeline-usage ()
+  "Generate modeline segment for ECA usage."
+  (let* ((usage-data (my-eca/get-usage-data))
+         (five-hour (alist-get 'five-hour usage-data))
+         (seven-day (alist-get 'seven-day usage-data)))
+    (when (or five-hour seven-day)
+      (concat
+       " "
+       (propertize "ECA:" 'face 'bold)
+       " 5h:"
+       (my-eca/format-usage-bar five-hour)
+       " 7d:"
+       (my-eca/format-usage-bar seven-day)
+       " "))))
+
+(defun my-eca/update-modeline-in-eca-buffers ()
+  "Force modeline update in all eca-chat buffers."
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (derived-mode-p 'eca-chat-mode)
+        (force-mode-line-update)))))
+
+(defun my-eca/start-modeline-timer ()
+  "Start timer to update ECA modeline every 30 seconds."
+  (when my-eca:modeline-timer
+    (cancel-timer my-eca:modeline-timer))
+  (setq my-eca:modeline-timer
+        (run-with-timer 30 30 #'my-eca/update-modeline-in-eca-buffers)))
+
+(defun my-eca/stop-modeline-timer ()
+  "Stop the ECA modeline update timer."
+  (when my-eca:modeline-timer
+    (cancel-timer my-eca:modeline-timer)
+    (setq my-eca:modeline-timer nil)))
+
+;; Add to modeline
+(add-hook 'eca-chat-mode-hook
+          (lambda ()
+            ;; Remove any existing instances first
+            (setq mode-line-format
+                  (cl-remove-if (lambda (item)
+                                  (and (listp item)
+                                       (eq (car item) :eval)
+                                       (equal (cadr item) '(my-eca/modeline-usage))))
+                                mode-line-format))
+            ;; Now add it once
+            (setq mode-line-format
+                  (cons '(:eval (my-eca/modeline-usage))
+                        mode-line-format))
+            ;; Start the update timer
+            (my-eca/start-modeline-timer)))
+
+;; Clean up timer when killing eca-chat buffers
+(add-hook 'kill-buffer-hook
+          (lambda ()
+            (when (derived-mode-p 'eca-chat-mode)
+              ;; Only stop timer if this is the last eca-chat buffer
+              (unless (cl-some (lambda (buf)
+                                 (and (not (eq buf (current-buffer)))
+                                      (with-current-buffer buf
+                                        (derived-mode-p 'eca-chat-mode))))
+                               (buffer-list))
+                (my-eca/stop-modeline-timer)))))
+#+end_src
 *** claude-code.el
 
 **** Package
@@ -6228,12 +6374,22 @@ BODY is executed within the chat buffer context."
 #+BEGIN_SRC elisp
 (use-package! claude-code
   :config
-  ;; Use eat-yank for paste bindings since normal paste doesn't work in eat terminals
-  (map! :map claude-code-mode-map
-        :n "p" #'eat-yank
-        :n "P" #'eat-yank
-        :n "S-v" #'eat-yank
-        :v "p" #'eat-yank))
+  ;; Disable evil mode in claude-code buffers (use M-x evil-mode to re-enable)
+  (evil-set-initial-state 'claude-code-mode 'emacs)
+  ;; Hide the cursor in claude-code buffers
+  (add-hook 'claude-code-mode-hook (lambda () (setq-local cursor-type nil)))
+
+  ;; Toggle between Emacs and Evil insert state with C-\
+  (defun my/toggle-emacs-insert-state ()
+    "Toggle between Emacs state and Evil insert state."
+    (interactive)
+    (if (evil-emacs-state-p)
+        (evil-normal-state)
+      (evil-emacs-state)))
+
+  (map! :nie "C-\\" #'my/toggle-emacs-insert-state)
+  (map! :map code-review-mode-map
+        :ge "S-v" #'eat-yank))
 #+END_SRC
 
 
@@ -7186,8 +7342,20 @@ converted to kebab-case, lowercase and limited to MAX-TITLE-LENGTH chars."
 #+begin_src elisp
 (defun my-git|prune-merged-branches ()
   (interactive)
-  (-> (magit-list-unmerged-branches)
-      (-each #'magit-branch-delete)))
+  (message "Fetching from origin with prune...")
+  (magit-fetch-all-prune)
+  (let* ((protected-branches '("main" "master" "develop" "dev" "staging" "production"))
+         (merged-branches (magit-list-merged-branches))
+         (branches-to-delete (-remove (lambda (branch)
+                                        (-contains? protected-branches branch))
+                                      merged-branches)))
+    (if branches-to-delete
+        (progn
+          (message "Deleting %d merged branch(es): %s" 
+                   (length branches-to-delete)
+                   (s-join ", " branches-to-delete))
+          (magit-branch-delete branches-to-delete t))
+      (message "No merged branches to delete"))))
 #+end_src
 **** Visit blame
 
@@ -7567,6 +7735,52 @@ Prevent any action when pressing Enter on the first line (directory header) on w
 (defun my-dired|photos-viewer ()
   (interactive)
   (my-shell/async-command-no-window  "find . -type f -iregex '.*\.\(jpg\|jpeg\|png\|gif\|JPG\|JPEG\|PNG\|GIF\|orf\|raw\|ORF\|RAW\)' -print0 | xargs -0 geeqie"))
+#+end_src
+
+**** Hide/Show Comment Lines
+
+#+begin_src elisp
+(defvar-local my-comments-hidden nil
+  "Track if comments are currently hidden.")
+
+(defun my|toggle-hide-comments ()
+  "Toggle visibility of comment lines in the current buffer."
+  (interactive)
+  (if my-comments-hidden
+      (my/show-comments)
+    (my/hide-comments)))
+
+(defun my/hide-comments ()
+  "Hide all comment-only lines in the current buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let ((comment-start-regexp (if comment-start
+                                    (regexp-quote (s-trim comment-start))
+                                  "^\\s-*#")))
+      (while (not (eobp))
+        (beginning-of-line)
+        (when (and (not (looking-at "^\\s-*$"))  ; Not empty line
+                   (save-excursion
+                     (back-to-indentation)
+                     (looking-at comment-start-regexp)))
+          (let ((overlay (make-overlay (line-beginning-position)
+                                       (1+ (line-end-position)))))
+            (overlay-put overlay 'invisible t)
+            (overlay-put overlay 'my-comment-overlay t)))
+        (forward-line 1)))
+    (setq my-comments-hidden t)
+    (message "Comments hidden")))
+
+(defun my/show-comments ()
+  "Show all hidden comment lines in the current buffer."
+  (interactive)
+  (remove-overlays (point-min) (point-max) 'my-comment-overlay t)
+  (setq my-comments-hidden nil)
+  (message "Comments shown"))
+
+(map! :leader
+      :desc "Toggle hide comments" "t C" #'my|toggle-hide-comments)
 #+end_src
 
 
@@ -11505,29 +11719,9 @@ Since the minibuffer has no evil mode, i've got these bindings to help out:
 * Hacks
 ** Override default browser
 
-Why does this not work out of the box?
-
 #+BEGIN_SRC elisp
-(defun browse-url-brave (url &optional _new-window)
-  "Ask the Chromium WWW browser to load URL.
-Default to the URL around or before point.  The strings in
-variable `browse-url-chromium-arguments' are also passed to
-Chromium.
-The optional argument NEW-WINDOW is not used."
-  (interactive (browse-url-interactive-arg "URL: "))
-  (setq url (browse-url-encode-url url))
-  (let* ((process-environment (browse-url-process-environment)))
-    (apply #'start-process
-           (concat "brave " url) nil
-           "brave"
-           (append
-            browse-url-chromium-arguments
-            (list url)))))
-
-(pcase (getenv "BROWSER")
-  ("brave" (setq browse-url-browser-function 'browse-url-brave))
-  ("chromium" (setq browse-url-browser-function 'browse-url-chromium))
-  ("firefox" (setq browse-url-browser-function 'browse-url-firefox)))
+(setq browse-url-generic-program "browser_open")
+(setq browse-url-browser-function 'browse-url-generic)
 #+END_SRC
 
 ** Fix ~evil-org-mode-map~
