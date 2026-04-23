@@ -12094,10 +12094,7 @@ I will make sure I don't override any files (easily enough...)
 
 (defun my-attach/follow (path)
   (let ((path* (my-attach/resolve-path path)))
-    (if (or (string-match-p (image-file-name-regexp) path)
-            (f-ext-p path "pdf"))
-        (find-file path*)
-      (my-dired::open-external/xdg-open path*))))
+    (org-open-file path*)))
 
 (defun my-attach/image-data-fun (protocol path _for)
   (let ((attach-dir (expand-file-name my-attach:dir)))
@@ -12116,6 +12113,16 @@ I will make sure I don't override any files (easily enough...)
                          :follow #'my-attach/follow
                          :display #'org-link
                          :image-data-fun #'my-attach/image-data-fun)
+
+(defadvice! my-attach*dwim-follow (fn &optional arg)
+  "Follow my-attach links with `org-open-at-point' instead of toggling inline images."
+  :around #'+org/dwim-at-point
+  (let* ((context (org-element-context))
+         (type (org-element-type context))
+         (lineage (and (eq type 'link) (org-element-lineage context '(link) t))))
+    (if (and lineage (equal (org-element-property :type lineage) "my-attach"))
+        (org-open-at-point arg)
+      (funcall fn arg))))
 
 (cl-defun my-attach|dwim (&optional screenshot?)
   (interactive)
