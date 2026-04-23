@@ -465,17 +465,6 @@ Only takes evil visual selected text."
 
 ** System
 
-*** Check if clipboard is binary
-
-Get clipboard with ~(x-get-clipboard)~
-
-#+BEGIN_SRC elisp :tangle "autoload.el" :comments link
-(defun my/clipboard-binary? ()
-  "Check if the current clipboard content is likely to be binary."
-  (let ((content (x-get-selection 'CLIPBOARD)))
-    (= 1 (string-match-p "[\0-\8\11-\12\14-\31\127-\255]" content))))
-#+END_SRC
-
 ** Shell Commands & Aliases
 *** Async Command No Window
 :PROPERTIES:
@@ -9832,8 +9821,6 @@ error in process filter: End of buffer
 ;; Async execute src blocks
 (package! ob-async)
 
-;; Download from clipboard to attachment
-(package! org-download)
 ;; Sync caldav with org
 (package! org-caldav :recipe (:host github :repo "floscr/org-caldav"))
 (package! org-journal)
@@ -11329,19 +11316,6 @@ Return the path of the file."
   (org-agenda-filter-apply org-agenda-tag-filter 'tag t))
 #+END_SRC
 
-**** Attach File
-
-#+BEGIN_SRC elisp
-(defun +org|attach-file (x)
-  "Attach a file and insert the link."
-  (interactive "P")
-  (->>
-   (or x (let ((default-directory my-directories:downloads-dir))
-           (flet ((counsel-find-file-action (identity)))
-             (counsel-find-file))))
-   (+org/attach-file-and-insert-link)))
-#+END_SRC
-
 **** Insert Checkbox
 
 #+BEGIN_SRC elisp
@@ -12145,22 +12119,26 @@ I will make sure I don't override any files (easily enough...)
 
 (cl-defun my-attach|dwim (&optional screenshot?)
   (interactive)
-  (let* ((ext (condition-case nil
-                  (with-timeout (0.2 'aborted)
-                    (image-type-from-data (x-get-clipboard)))
-                (error 'aborted)))
+  (let* ((clipboard (condition-case nil
+                        (gui-get-selection 'CLIPBOARD 'STRING)
+                      (error nil)))
+         (ext (when clipboard
+                (condition-case nil
+                    (image-type-from-data clipboard)
+                  (error nil))))
          (file-name (cond
-                     ((eq ext 'aborted) (my-file/last-modified-file-in-dir "~/Media/Screencapture"))
+                     (screenshot? (my-file/last-modified-file-in-dir "~/Media/Screencapture"))
                      (ext (let* ((file-name (make-temp-file nil nil (concat "." (symbol-name ext)))))
-                            (f-write (x-get-clipboard) 'binary file-name)
+                            (f-write clipboard 'binary file-name)
                             file-name))
-                     ((my/clipboard-binary?) nil)
-                     (t (x-get-clipboard)))))
+                     ((and clipboard (not (s-blank-str? clipboard)))
+                      clipboard)
+                     (t (my-file/last-modified-file-in-dir "~/Media/Screencapture")))))
     (when file-name
       (save-evil-excursion
        (when (evil-normal-state-p)
          (evil-append 0))
-       (when-let* ((output (-some-> (my/shell-command-str "org_attach" file-name
+       (when-let* ((output (-some-> (my/shell-command-str "org" "attach" file-name
                                                           "--attach-dir" (f-expand my-attach:dir)
                                                           (when screenshot? "--screenshot"))
                                     (s-trim))))
@@ -12176,7 +12154,7 @@ I will make sure I don't override any files (easily enough...)
    (when (evil-normal-state-p)
      (evil-append 0))
    (when-let ((file-name (my-file/last-modified-file-in-dir "~/Downloads")))
-     (-some->> (my/shell-command-str "org_attach" file-name "--attach-dir" (f-expand my-attach:dir))
+     (-some->> (my/shell-command-str "org" "attach" file-name "--attach-dir" (f-expand my-attach:dir))
                (s-trim)
                (insert)))))
 #+end_src
@@ -12276,45 +12254,6 @@ Requires emacs 29
   :config
   (if (executable-find "notify-send")
       (setq alert-default-style 'libnotify)))
-#+END_SRC
-
-**** Org Download
-
-#+BEGIN_SRC elisp
-(setq org-download-screenshot-method "flameshot gui --raw > %s")
-
-(defun +org|attach-yank-image ()
-  "Instert the image from the clipboard as an attachment."
-  (interactive)
-  (let ((path (concat (make-temp-file "screenshot") ".png")))
-    (shell-command-to-string (t! "xclip -selection clipboard -target image/png -out > <<path>>"))
-    (+org/attach-file-and-insert-link path)))
-
-(defun +org-attach|dwim ()
-  "Function docstring"
-  (interactive)
-  (let ((timeout "timeout 0.05")
-        (targets
-         (->> (shell-command-to-string "xclip -selection clipboard -t TARGETS -o")
-              (s-trim)
-              (s-split "\n"))))
-    (cond ((--find (s-contains? "text/plain" it) targets)
-           (let* ((txt (substring-no-properties (current-kill 0))))
-             (-some->> txt
-               (s-trim)
-               (f-expand)
-               (-id-when #'f-exists?)
-               (+org/attach-file-and-insert-link))))
-          (t (let* ((txt (shell-command-to-string (t! "<<timeout>> xclip -o -selection clipboard"))))
-               (cond
-                ((or (string= "End of file during parsing" txt)
-                     (string= "" txt))
-                 (-log "xclip timed out"))
-                ((s-matches-p url-handler-regexp txt)
-                 (+org/attach-file-and-insert-link txt))
-                (t (user-error "Could not save clipboard contents:\n%s" txt))))))))
-
-(setq org-download-screenshot-method "xclip -selection clipboard -t image/png -o > %s")
 #+END_SRC
 
 **** Journal
@@ -12620,7 +12559,9 @@ So I make sure to remove all caldav files and just do a fresh sync."
        :desc "Link" "L" '+org|cut-link)
 
       (:prefix-map ("i" . "Insert")
-       :desc "Attachment"         "a" #'+org|attach-file
+       :desc "Attachment"         "a" #'my-attach|dwim
+       :desc "Attachment Screenshot" "S" (cmd! (my-attach|dwim t))
+       :desc "Last download"      "d" #'my-attach|last-download
        :desc "Inavtive Timestamp" "i" (cmd! (+evil-org/normal-mode-paste-fix #'org-time-stamp-inactive))
        :desc "Timestamp"          "t" (cmd! (+evil-org/normal-mode-paste-fix #'org-time-stamp))
        :desc "Subheadeing"        "s" (cmd!
@@ -13990,10 +13931,7 @@ redefines its keys every time `eshell-mode' is enabled."
       :desc "Fetch url title"          "u" #'my-org|fetch-this-org-link-title
       :desc "Fetch rss feed from link" "r" #'my-org|fetch-this-org-link-rss
       (:prefix-map ("i" . "Insert")
-       :desc "Created Property"        "c" #'my-org|add-created-property
-       :desc "Attachment"              "a" #'my-attach|dwim
-       :desc "Attachment Screenshot"   "s" (cmd! (my-attach|dwim t))
-       :desc "Last download"           "d" #'my-attach|last-download))
+       :desc "Created Property"        "c" #'my-org|add-created-property))
 #+end_src
 
 *** Org Mode Agenda
