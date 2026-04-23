@@ -6630,6 +6630,7 @@ BODY is executed within the chat buffer context."
 
 #+BEGIN_SRC elisp
 (use-package! claude-code
+  :defer t
   :config
   ;; Disable evil mode in claude-code buffers (use M-x evil-mode to re-enable)
   (evil-set-initial-state 'claude-code-mode 'emacs)
