@@ -505,6 +505,25 @@ The proram persists when emacs is closed."
        (template "nohup 1>/dev/null 2>/dev/null <<cmd>> <<args-str>> &") nil nil)))
 #+END_SRC
 
+*** Convert TRAMP path to URL
+
+Convert TRAMP paths like ~/ssh:pi:/home/floscr/file.mp4~ to ~sftp://pi/home/floscr/file.mp4~ so external programs (mpv, xdg-open) can access remote files.
+
+#+BEGIN_SRC elisp
+(defun my/tramp-path-to-url (path)
+  "Convert a TRAMP PATH to an sftp:// URL for external programs.
+Returns the original PATH unchanged if it's not a TRAMP path."
+  (if-let* ((remote (file-remote-p path))
+            (host (file-remote-p path 'host))
+            (localname (file-remote-p path 'localname))
+            (user (file-remote-p path 'user)))
+      (format "sftp://%s@%s%s" user host localname)
+    (if-let* ((host (file-remote-p path 'host))
+              (localname (file-remote-p path 'localname)))
+        (format "sftp://%s%s" host localname)
+      path)))
+#+END_SRC
+
 *** Open youtube link with MPV
 
 #+BEGIN_SRC elisp :tangle "autoload.el" :comments link
@@ -1223,8 +1242,10 @@ Except for friday, then return the number of days until next wednesday."
 ;;;###autoload
 (defun +org|mpv-link-at-point ()
   (interactive)
-  (-some->> (+org|offer-links-at-point)
-    (my-shell/mpv-youtube-url)))
+  (-when-let (url (+org|offer-links-at-point))
+    (if (file-remote-p url)
+        (my-shell/no-exit-command "mpv" (s-wrap (my/tramp-path-to-url url) "\""))
+      (my-shell/mpv-youtube-url url))))
 #+END_SRC
 
 *** Parse Link
@@ -8255,7 +8276,7 @@ respectively."
   "Open marked dired file(s) at point with an external application."
   (let ((file-list (or (list file) (dired-get-marked-files)))
         (process-connection-type nil))
-    (--map (my-shell/no-exit-command "xdg-open" (s-wrap (expand-file-name it) "\"")) file-list)))
+    (--map (my-shell/no-exit-command "xdg-open" (s-wrap (my/tramp-path-to-url (expand-file-name it)) "\"")) file-list)))
 
 (defun my-dired::open-external|open-dwim (&optional file)
   (interactive)
@@ -8267,7 +8288,7 @@ respectively."
                               (ext (-some-> (f-ext path)
                                             (s-downcase))))
                          (if (-contains? my-dired::open-external:extensions ext)
-                             (my-shell/no-exit-command "xdg-open" (s-wrap path "\""))
+                             (my-shell/no-exit-command "mpv" (s-wrap (my/tramp-path-to-url path) "\""))
                            (dired-find-file)))))))
 #+END_SRC
 **** Convert Images

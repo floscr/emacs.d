@@ -16,6 +16,8 @@ org tangle config.org
 
 Use `--dry-run` to preview what would be generated without writing files.
 
+**Do not tangle new functions to `autoload.el`.** Use plain `#+BEGIN_SRC elisp` blocks (which tangle to `config.el` by default). Only existing autoloaded functions should stay in `autoload.el`.
+
 ## Coding Style & Naming Conventions
 Elisp here follows Doom defaults: two-space indentation, lexical-binding where possible, and functional helpers from `dash.el`, `s.el`, and `ht.el`. Private symbols always start with the `my` prefix (`my-namespace/function`, `my|interactive`, `my@macro`, `my*hook`) so upstream code never collides. Prefer template literals via `(t! "Version <<VERSION>>")`, favor pure functions, and keep side effects confined to module-specific files. Document unusual forms inline using terse comments.
 
